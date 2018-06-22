@@ -102,3 +102,13 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Pycharm
+.idea/
+
+# Mkdocs
+site/
+
+# travis CI
+github_travis_rsa*
+reports
