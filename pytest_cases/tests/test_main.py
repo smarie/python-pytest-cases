@@ -1,19 +1,16 @@
-from math import isfinite
-
 import pytest
-
-from pytest_cases import cases_data, CaseData, unfold_expected_err, extract_cases_from_module
 from pytest_cases.tests.example_code import super_function_i_want_to_test
 
+from pytest_cases import cases_data, CaseDataGetter, unfold_expected_err, extract_cases_from_module
+from pytest_cases.tests import test_main_cases
 
-from pytest_cases.tests import test_main_data
 
 # Manual way:
-cases = extract_cases_from_module(test_main_data)
+cases = extract_cases_from_module(test_main_cases)
 
 
 @pytest.mark.parametrize('case_data', cases, ids=str)
-def test_with_cases_manual(case_data: CaseData):
+def test_with_cases_manual(case_data: CaseDataGetter):
     """ Example unit test that is automatically parametrized with @cases_data """
 
     # Grab the test case data (this can trigger parsing, data generation, etc.)
@@ -42,8 +39,8 @@ def test_with_cases_manual(case_data: CaseData):
 
 
 # Decorator way:
-@cases_data(test_main_data)
-def test_with_cases_decorated(case_data: CaseData):
+@cases_data(test_main_cases)
+def test_with_cases_decorated(case_data: CaseDataGetter):
     """ Example unit test that is automatically parametrized with @cases_data """
 
     # Grab the test case data (this can trigger parsing, data generation, etc.)

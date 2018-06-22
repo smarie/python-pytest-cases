@@ -84,7 +84,7 @@ setup(
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Software Development :: Testing',
 
         # Pick your license as you wish (should match "license" above)
         LICENSE_LONG,

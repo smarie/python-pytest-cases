@@ -20,7 +20,7 @@ def cases_data(module, case_data_argname: str= 'case_data'):
         """
         The generated test function decorator.
 
-        It is equivalent to @mark.parametrize('case_data', cases) where cases is a tuple containing a CaseData for
+        It is equivalent to @mark.parametrize('case_data', cases) where cases is a tuple containing a CaseDataGetter for
         all case generator functions
 
         :param test_func:
@@ -79,15 +79,16 @@ def case_name(name: str):
 Given = Any
 ExpectedNormal = Optional[Any]
 ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], bool]]]
+CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
 
 
-class CaseData(metaclass=ABCMeta):
+class CaseDataGetter(metaclass=ABCMeta):
     """
     Represents the contract that a test case dataset has to provide.
     It offers a single 'get()' method to get the contents of the test case
     """
     @abstractmethod
-    def get(self) -> Tuple[Given, ExpectedNormal, ExpectedError]:
+    def get(self) -> CaseData:
         """
         Getter for the contents of the tet case
         :return:
@@ -95,12 +96,12 @@ class CaseData(metaclass=ABCMeta):
 
 
 # Type hint for the simple functions
-DataGeneratorFunc = Callable[[], Tuple[Given, ExpectedNormal, ExpectedError]]
+DataGeneratorFunc = Callable[[], CaseData]
 
 
-class CaseDataFromFunction(CaseData):
+class CaseDataFromFunction(CaseDataGetter):
     """
-    A CaseData relying on a function
+    A CaseDataGetter relying on a function
     """
     def __init__(self, data_generator_func: DataGeneratorFunc):
         """
