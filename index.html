@@ -275,22 +275,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#write-some-code" title="Write some code" class="md-nav__link">
-    Write some code
+  <a href="#a-some-code-to-test" title="a- Some code to test" class="md-nav__link">
+    a- Some code to test
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-cases-data-generators" title="Test cases data generators" class="md-nav__link">
-    Test cases data generators
+  <a href="#b-case-functions" title="b- Case functions" class="md-nav__link">
+    b- Case functions
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-functions" title="Test functions" class="md-nav__link">
-    Test functions
+  <a href="#c-test-functions" title="c- Test functions" class="md-nav__link">
+    c- Test functions
   </a>
   
 </li>
@@ -405,22 +405,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#write-some-code" title="Write some code" class="md-nav__link">
-    Write some code
+  <a href="#a-some-code-to-test" title="a- Some code to test" class="md-nav__link">
+    a- Some code to test
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-cases-data-generators" title="Test cases data generators" class="md-nav__link">
-    Test cases data generators
+  <a href="#b-case-functions" title="b- Case functions" class="md-nav__link">
+    b- Case functions
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-functions" title="Test functions" class="md-nav__link">
-    Test functions
+  <a href="#c-test-functions" title="c- Test functions" class="md-nav__link">
+    c- Test functions
   </a>
   
 </li>
@@ -486,23 +486,27 @@
                 <h1 id="pytest-cases">pytest-cases<a class="headerlink" href="#pytest-cases" title="Permanent link">&para;</a></h1>
 <p><em>Separate test code from test cases in <code>pytest</code>.</em></p>
 <p><a href="https://travis-ci.org/smarie/python-pytest-cases"><img alt="Build Status" src="https://travis-ci.org/smarie/python-pytest-cases.svg?branch=master" /></a> <a href="https://smarie.github.io/python-pytest-cases/junit/report.html"><img alt="Tests Status" src="https://smarie.github.io/python-pytest-cases/junit/junit-badge.svg?dummy=8484744" /></a> <a href="https://codecov.io/gh/smarie/python-pytest-cases"><img alt="codecov" src="https://codecov.io/gh/smarie/python-pytest-cases/branch/master/graph/badge.svg" /></a> <a href="https://smarie.github.io/python-pytest-cases/"><img alt="Documentation" src="https://img.shields.io/badge/docs-latest-blue.svg" /></a> <a href="https://pypi.python.org/pypi/pytest_cases/"><img alt="PyPI" src="https://img.shields.io/badge/PyPI-pytest_cases-blue.svg" /></a></p>
-<p>Did you ever thought that most of your test functions were actually the same test code, but with different data inputs and expected results/exceptions ? This is quite frequent, especially if you develop data science code. </p>
-<p>If so, you probably discovered <code>pytest</code> and its great <code>@pytest.mark.parametrize</code> decorator. However there are many possible ways for you to leverage this capability. <code>pytest-cases</code> proposes one way to organize your tests, by introducing the concept of "case functions".</p>
+<p>Did you ever thought that most of your test functions were actually <em>the same test code</em>, but with <em>different data inputs</em> and expected results/exceptions ?</p>
+<p><code>pytest-cases</code> leverages <code>pytest</code> and its great <code>@pytest.mark.parametrize</code> decorator, so that you can <strong>separate your test cases from your test functions</strong>. For example with <code>pytest-cases</code> you can now write your tests with the following pattern:</p>
+<ul>
+<li>on one hand, the usual <code>test_xxxx.py</code> file containing your test functions</li>
+<li>on the other hand, a new <code>test_xxxx_cases.py</code> containing your cases functions</li>
+</ul>
 <h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span>&gt; pip install pytest_cases
 </pre></div>
 
 
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<h3 id="write-some-code">Write some code<a class="headerlink" href="#write-some-code" title="Permanent link">&para;</a></h3>
+<h3 id="a-some-code-to-test">a- Some code to test<a class="headerlink" href="#a-some-code-to-test" title="Permanent link">&para;</a></h3>
 <p>Let's consider the following <code>foo</code> function under test:</p>
 <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">+</span> <span class="mi">1</span>
 </pre></div>
 
 
-<h3 id="test-cases-data-generators">Test cases data generators<a class="headerlink" href="#test-cases-data-generators" title="Permanent link">&para;</a></h3>
-<p>First we create a <code>test_foo_cases</code> file. This file will contain <em>test cases data generators</em>:</p>
+<h3 id="b-case-functions">b- Case functions<a class="headerlink" href="#b-case-functions" title="Permanent link">&para;</a></h3>
+<p>First we create a <code>test_foo_cases.py</code> file. This file will contain <em>test cases generator</em> functions, that we will call <strong>case functions</strong> for brevity:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span>
 
 <span class="k">def</span> <span class="nf">case_two_positive_ints</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
@@ -523,10 +527,11 @@
 </pre></div>
 
 
-<p><em>test cases data generators</em> do not have any requirement, apart from their names starting with <code>case_</code>. However as shown in the example above, <code>pytest_cases</code> proposes to adopt a convention where the functions always returns a tuple of inputs/outputs/errors.</p>
-<p>In these functions, you will typically either parse some test data files, or generate some simulated test data.</p>
-<h3 id="test-functions">Test functions<a class="headerlink" href="#test-functions" title="Permanent link">&para;</a></h3>
-<p>Finally, as usual we write our <code>pytest</code> functions starting with <code>test_</code>, in a <code>test_foo</code> file:</p>
+<p>In these functions, you will typically either parse some test data files, or generate some simulated test data and expected results. </p>
+<p>Case functions <strong>do not have any particular requirement</strong>, apart from their names starting with <code>case_</code>. They can return anything that is considered useful to run the associated test. </p>
+<p>However, as shown in the example above, <code>pytest_cases</code> proposes to adopt a convention where the functions always returns a tuple of inputs/outputs/errors. A handy <code>CaseData</code> PEP484 type hint can be used to denote that.</p>
+<h3 id="c-test-functions">c- Test functions<a class="headerlink" href="#c-test-functions" title="Permanent link">&para;</a></h3>
+<p>Finally, as usual we write our <code>pytest</code> functions starting with <code>test_</code>, in a <code>test_foo.py</code> file:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseData</span>
 <span class="kn">from</span> <span class="nn">example</span> <span class="kn">import</span> <span class="n">foo</span>
 
@@ -535,7 +540,7 @@
 
 
 <span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">test_foo_cases</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_with_cases_decorated</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseData</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseData</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Example unit test that is automatically parametrized with @cases_data &quot;&quot;&quot;</span>
 
     <span class="c1"># 1- Grab the test case data</span>
@@ -548,16 +553,33 @@
         <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># **** Error test: see &lt;Usage&gt; page ****</span>
-        <span class="o">...</span>
+        <span class="c1"># **** Error tests: see &lt;Usage&gt; page to fill this ****</span>
+        <span class="k">pass</span>
 </pre></div>
 
 
-<p>See <a href="./Usage">Usage</a> for a complete example with exceptions handling and more.</p>
+<p>As you can see above there are three things that are needed to bind a test function with associated case functions:</p>
+<ul>
+<li>decorate your test function with <code>@cases_data</code>, indicating which module contains the cases functions</li>
+<li>add an input argument to your test function, named <code>case_data</code> with optional type hint <code>CaseData</code></li>
+<li>use that input argument at the beginning of the test function, to retrieve the test data: <code>i, expected_o, expected_e = case_data.get()</code></li>
+</ul>
+<p>Once you have done these three steps, executing <code>pytest</code> will run your test function <strong>once for every case function</strong>:</p>
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; <span class="nv">pytest</span>
+<span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
+<span class="o">(</span>...<span class="o">)</span>
+&lt;your_project&gt;/tests/test_foo.py::test_foo<span class="o">[</span>case_two_positive_ints<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">50</span>%<span class="o">]</span>
+&lt;your_project&gt;/tests/test_foo.py::test_foo<span class="o">[</span>case_two_negative_ints<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">100</span>%<span class="o">]</span>
+
+<span class="o">==========================</span> <span class="m">2</span> passed in <span class="m">0</span>.24 <span class="nv">seconds</span> <span class="o">==========================</span>
+</pre></div>
+
+
+<p>See <a href="./usage">Usage</a> for a complete example with exceptions handling and more.</p>
 <h2 id="main-features-benefits">Main features / benefits<a class="headerlink" href="#main-features-benefits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>Separation of concerns</strong>: test code on one hand, test data on the other hand. This is particularly relevant for data science projects where a lot of test datasets are used on the same block of test code.</p>
+<p><strong>Separation of concerns</strong>: test code on one hand, test cases data on the other hand. This is particularly relevant for data science projects where a lot of test datasets are used on the same block of test code.</p>
 </li>
 <li>
 <p><strong>Everything in the test</strong>, not outside. A side-effect of <code>@pytest.mark.parametrize</code> is that users tend to create or parse their datasets outside of the test function. <code>pytest_cases</code> suggests a model where the potentially time and memory consuming step of case data gathering is performed <em>inside</em> the test case, thus keeping every test case run more independent.</p>

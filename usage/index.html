@@ -376,9 +376,9 @@
                 
                 
                 <h1 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h1>
-<p>You have seen in the [main page] a small example to understand the concepts. <code>pytest_cases</code> provides a few additional goodies to go further.</p>
+<p>You have seen in the <a href="../index">main page</a> a small example to understand the concepts. <code>pytest_cases</code> provides a few additional goodies to go further.</p>
 <h2 id="customizing-case-names">Customizing case names<a class="headerlink" href="#customizing-case-names" title="Permanent link">&para;</a></h2>
-<p>You can use the <code>@case_name</code> decorator on any case generator function to customize the resulting pytest case name:</p>
+<p>By default the name of the case function is used for the generated test case name. To override this, you can use the <code>@case_name</code> decorator:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">case_name</span>
 
 
@@ -418,7 +418,13 @@
 </pre></div>
 
 
-<p><code>pytest_cases</code> proposes three ways to perform exception checking: either you provide an expected exception type, or an expected exception instance, or a callable.</p>
+<p><code>pytest_cases</code> proposes three ways to perform exception checking: </p>
+<ul>
+<li>either you provide an expected exception <strong>type</strong>, </li>
+<li>or an expected exception <strong>instance</strong>, </li>
+<li>or an exception validation <strong>callable</strong>.</li>
+</ul>
+<p>The example below illustrates the three ways:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">inf</span>
 <span class="kn">from</span> <span class="nn">example</span> <span class="kn">import</span> <span class="n">InfiniteInput</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span>
@@ -453,7 +459,7 @@
 </pre></div>
 
 
-<p>Then you can use <code>unfold_expected_err</code> in your test functions in order to perform some reasoning on the exception, as shown below:</p>
+<p>In order to perform the associated assertions in your test functions, you can simply use the <code>unfold_expected_err</code> utility function bundled in <code>pytest_cases</code>:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">unfold_expected_err</span>
 <span class="kn">from</span> <span class="nn">example</span> <span class="kn">import</span> <span class="n">foo</span>
@@ -477,9 +483,10 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># **** Error test ****</span>
+        <span class="c1"># First see what we need to assert</span>
         <span class="n">err_type</span><span class="p">,</span> <span class="n">err_inst</span><span class="p">,</span> <span class="n">err_checker</span> <span class="o">=</span> <span class="n">unfold_expected_err</span><span class="p">(</span><span class="n">expected_e</span><span class="p">)</span>
 
-        <span class="c1"># Exception capture and type check</span>
+        <span class="c1"># Run with exception capture and type check</span>
         <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">err_type</span><span class="p">)</span> <span class="k">as</span> <span class="n">err_info</span><span class="p">:</span>
             <span class="n">foo</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
 
