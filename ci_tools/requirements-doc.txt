@@ -1,0 +1,3 @@
+# requirements needed to generate the doc using mkdocs
+mkdocs-material
+# mkdocs this is to prevent a version non-compliant with mkdocs-material to be installed.

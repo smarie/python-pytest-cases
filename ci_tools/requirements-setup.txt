@@ -1,0 +1,5 @@
+# requirements needed to execute setup.py (whatever the goal)
+pytest-runner
+setuptools_scm
+pandoc
+pypandoc

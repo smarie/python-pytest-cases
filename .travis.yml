@@ -1,0 +1,93 @@
+language: python
+
+cache: pip
+
+python:
+#  - "2.6"
+#  - "2.7"
+#  - "3.2"
+#  - "3.3"
+#  - "3.4"
+  - "3.5"
+#  - "3.5-dev" # 3.5 development branch
+  - "3.6"
+#  - "3.6-dev" # 3.6 development branch
+  - "3.7"
+#  - "3.7-dev" # 3.7 development branch
+#  - "nightly" # currently points to 3.7-dev
+# PyPy versions
+#  - "pypy"  # PyPy2 2.5.0
+#  - "pypy3" # Pypy3 2.4.0
+#  - "pypy-5.3.1"
+#
+
+env:
+  global:
+  - GH_REF: git@github.com:smarie/python-pytest-cases.git
+
+before_install:
+  - sudo apt-get install pandoc
+  - sudo apt-get install ant
+  - sudo apt-get install ant-optional
+
+install:
+  - pip install -r ci_tools/requirements-setup.txt
+  - pip install -r ci_tools/requirements-test.txt
+  - pip install -r ci_tools/requirements-report.txt
+  - pip install -r ci_tools/requirements-doc.txt
+  - pip install codecov    # https://github.com/codecov/example-python. This is specific to travis integration
+# - pip install coveralls  # this is an alternative to codecov
+
+script:
+#  - coverage run tests.py
+  - pip install .
+  - python -c "import os; os.chdir('..'); import pytest_cases"
+# ***tests***
+#  - coverage run tests.py
+#  - pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./pytest_cases -v pytest_cases/tests/
+# now done in a dedicated script to capture exit code 1 and transform it to 0
+  - chmod a+x ./ci_tools/run_tests.sh
+  - sh ./ci_tools/run_tests.sh
+
+after_success:
+# ***reporting***
+#  - junit2html junit.xml testrun.html  output is really not nice
+  - ant -f ci_tools/generate-junit-html.xml  # generates the html for the test results. Actually we dont use it anymore
+  - python ci_tools/generate-junit-badge.py  # generates the badge for the test results
+  - codecov
+  - pylint pytest_cases  # note that at the moment the report is simply lost, we dont transform the result into anything
+# ***documentation***
+  - mkdocs build -f docs/mkdocs.yml
+  - mv reports/junit site/
+  # mkdocs gh-deploy requires special care :
+  # ---grant the possibility to push on the repo---
+  - openssl aes-256-cbc -K $encrypted_b1669b6e8c83_key -iv $encrypted_b1669b6e8c83_iv -in ci_tools/github_travis_rsa.enc -out ci_tools/github_travis_rsa -d
+  - chmod 600 ci_tools/github_travis_rsa
+  - eval `ssh-agent -s`  # launch the authentication agent
+  - ssh-add ci_tools/github_travis_rsa  # register the key
+  - git config user.name "Automatic Publish"
+  - git config user.email "sylvain.marie@schneider-electric.com"
+  - git remote add gh-remote "${GH_REF}";
+  - git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;
+  # push but only if this is not a build triggered by a pull request
+  # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v --dirty -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
+#  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; git push gh-remote gh-pages; fi;
+
+deploy:
+  provider: pypi
+  user: "smarie"
+  password:
+    secure: "iWtaX7rsW1e1dQGMEo4nAa6O9cv27rT7pZMrHe2sN/oODf1CErBLD5MarReA1XLXEcqdO/Qvsx6+djl0Z3daVa6Pk7FMt+5lKBuw1QPUNuU56/MAty36nnH06H4627GZK5gEFbV107BNqnt+1eR7QIlndFVtImdA1m61JyW/5ydCgCy4ppCTNGxwxpkPWimxXMVVwS/vMT/TNzTIUIJfAXObDoBra2bVvyymjPAIJoJWghE/FG1mbsLIhMUq/HWE5k22LwcFWNHRzVddfSCzh6Qw2NyFJaV4QjCLxK3Ia6AmrF7gjpC8GqTSnoClgiW1N9Cl6+h8099BLq46FSAw4eJjkD5BrWzKxtdHg1TBWhoqEPmP4gxTbk/3lT5nYl0Vo0xdXsvjIuiHmy3RGQVNutTUT7ms1w7It0ioX2wPLaTseafOWzf4y1CQceB6AKEXCAFKA0zsj5oxDXokVTSgLpvgFaKHFfy1zz60Ga8TqJY2GD70oxA31NgmGRO+Quamas8iIsFwTmKEjLRtRt/ShTG96wYvZNlOMU4DQ4X5h0BHc5HbZLl8CVWY3NNXISbtH48E+mdvVvw5fJMnan6aK3AGLmn3i+pPX9dfn25avQ2+ulPJbvrxK/x8Ys/ZD2zDlZUdZRS8ffqfeyYFVbMwlt60DkP98zZYibdkGYPcwno="
+  on:
+    tags: true
+    python: 3.5  #only one of the builds have to be deployed
+#  server: https://test.pypi.org/legacy/
+  distributions: "sdist bdist_wheel"
+
+matrix:
+    fast_finish: true
+
+notifications:
+  email:
+    on_success: never  # options: [always|never|change] default: always

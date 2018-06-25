@@ -1,0 +1,5 @@
+# private key
+github_travis_rsa*
+
+# coverage results
+.coverage

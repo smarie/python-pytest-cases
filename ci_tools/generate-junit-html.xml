@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MXUnitTask" basedir="." default="generate-report">
+    <mkdir dir="../reports/junit"/>
+    <target name="generate-report" description="Generates junit report">
+      <junitreport todir="../reports/junit">
+        <fileset dir="..">
+            <include name="junit.xml"/>
+        </fileset>
+        <report todir="../reports/junit"/>
+      </junitreport>
+    </target>
+</project>

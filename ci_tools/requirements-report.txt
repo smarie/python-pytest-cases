@@ -1,0 +1,7 @@
+# requirements needed to generate the reports
+pytest-html
+requests
+xunitparser
+pytest-cov
+coverage
+pylint
