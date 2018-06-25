@@ -1,10 +1,10 @@
 # Usage
 
-You have seen in the [main page] a small example to understand the concepts. `pytest_cases` provides a few additional goodies to go further.
+You have seen in the [main page](./index) a small example to understand the concepts. `pytest_cases` provides a few additional goodies to go further.
 
 ## Customizing case names
 
-You can use the `@case_name` decorator on any case generator function to customize the resulting pytest case name:
+By default the name of the case function is used for the generated test case name. To override this, you can use the `@case_name` decorator:
 
 ```python
 from pytest_cases import CaseData, case_name
@@ -47,7 +47,13 @@ def foo(a, b):
     return a + 1, b + 1
 ```
 
-`pytest_cases` proposes three ways to perform exception checking: either you provide an expected exception type, or an expected exception instance, or a callable.
+`pytest_cases` proposes three ways to perform exception checking: 
+
+ - either you provide an expected exception **type**, 
+ - or an expected exception **instance**, 
+ - or an exception validation **callable**.
+
+The example below illustrates the three ways:
 
 ```python
 from math import inf
@@ -83,7 +89,7 @@ def case_simple_error_callable() -> CaseData:
     return ins, None, is_good_error
 ```
 
-Then you can use `unfold_expected_err` in your test functions in order to perform some reasoning on the exception, as shown below:
+In order to perform the associated assertions in your test functions, you can simply use the `unfold_expected_err` utility function bundled in `pytest_cases`:
 
 ```python
 import pytest
@@ -109,9 +115,10 @@ def test_with_cases_decorated(case_data: CaseData):
 
     else:
         # **** Error test ****
+        # First see what we need to assert
         err_type, err_inst, err_checker = unfold_expected_err(expected_e)
 
-        # Exception capture and type check
+        # Run with exception capture and type check
         with pytest.raises(err_type) as err_info:
             foo(**i)
 
