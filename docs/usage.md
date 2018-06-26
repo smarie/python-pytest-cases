@@ -93,7 +93,7 @@ In order to perform the associated assertions in your test functions, you can si
 
 ```python
 import pytest
-from pytest_cases import cases_data, CaseData, unfold_expected_err
+from pytest_cases import cases_data, CaseDataGetter, unfold_expected_err
 from example import foo
 
 # import the module containing the test cases
@@ -101,7 +101,7 @@ import test_foo_cases
 
 
 @cases_data(module=test_foo_cases)
-def test_with_cases_decorated(case_data: CaseData):
+def test_with_cases_decorated(case_data: CaseDataGetter):
     """ Example unit test that is automatically parametrized with @cases_data """
 
     # 1- Grab the test case data

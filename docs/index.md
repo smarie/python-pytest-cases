@@ -64,7 +64,7 @@ However, as shown in the example above, `pytest_cases` proposes to adopt a conve
 Finally, as usual we write our `pytest` functions starting with `test_`, in a `test_foo.py` file:
 
 ```python
-from pytest_cases import cases_data, CaseData
+from pytest_cases import cases_data, CaseDataGetter
 from example import foo
 
 # import the module containing the test cases
@@ -72,7 +72,7 @@ import test_foo_cases
 
 
 @cases_data(module=test_foo_cases)
-def test_foo(case_data: CaseData):
+def test_foo(case_data: CaseDataGetter):
     """ Example unit test that is automatically parametrized with @cases_data """
 
     # 1- Grab the test case data
