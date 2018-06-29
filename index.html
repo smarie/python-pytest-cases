@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="./assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-0.17.4, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-0.17.4, mkdocs-material-2.9.2">
     
     
       
@@ -532,7 +532,7 @@
 <p>However, as shown in the example above, <code>pytest_cases</code> proposes to adopt a convention where the functions always returns a tuple of inputs/outputs/errors. A handy <code>CaseData</code> PEP484 type hint can be used to denote that.</p>
 <h3 id="c-test-functions">c- Test functions<a class="headerlink" href="#c-test-functions" title="Permanent link">&para;</a></h3>
 <p>Finally, as usual we write our <code>pytest</code> functions starting with <code>test_</code>, in a <code>test_foo.py</code> file:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseData</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
 <span class="kn">from</span> <span class="nn">example</span> <span class="kn">import</span> <span class="n">foo</span>
 
 <span class="c1"># import the module containing the test cases</span>
@@ -540,7 +540,7 @@
 
 
 <span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">test_foo_cases</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseData</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Example unit test that is automatically parametrized with @cases_data &quot;&quot;&quot;</span>
 
     <span class="c1"># 1- Grab the test case data</span>
