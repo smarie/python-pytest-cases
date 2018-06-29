@@ -1,4 +1,4 @@
-# python-pytest-cases
+# pytest-cases
 
 Separate test code from test cases in `pytest`.
 
