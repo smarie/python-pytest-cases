@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.4.0 - support for data caching with lru_cache
+
+ * cases can now be decorated with `@lru_cache`. `@cases_generator` also provides a `lru_cache` parameter to enable caching. Fixes [#6](https://github.com/smarie/python-pytest-cases/issues/6)
+
 ### 0.3.0 - case generators
 
  * New decorator `@cases_generator` to define case generators. Fixes [#1](https://github.com/smarie/python-pytest-cases/issues/1)

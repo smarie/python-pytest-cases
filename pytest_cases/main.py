@@ -3,6 +3,7 @@ from abc import abstractmethod, ABC
 from inspect import getmembers
 from itertools import product
 from typing import Callable, Union, Optional, Any, Tuple, List, Dict
+from functools import lru_cache as lru
 
 # noinspection PyBroadException
 try:
@@ -114,6 +115,15 @@ def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
     return datasets_decorator
 
 
+def get_code(f):
+    if hasattr(f, '__code__'):
+        return f.__code__
+    elif hasattr(f, '__wrapped__'):
+        return get_code(f.__wrapped__)
+    else:
+        raise ValueError("Cannot get code information for function " + str(f))
+
+
 def extract_cases_from_module(module, filter: Any=None) -> List[CaseDataGetter]:
     """
     Internal method used to create all cases available from the given module
@@ -128,41 +138,40 @@ def extract_cases_from_module(module, filter: Any=None) -> List[CaseDataGetter]:
         # only keep the functions
         #  - from the module file (not the imported ones),
         #  - starting with prefix 'case_'
-        if f_name.startswith(CASE_PREFIX) \
-                and f.__code__.co_filename == module.__file__:
-            #  - with the optional filter tag
-            if filter is None \
-                    or hasattr(f, CASE_TAGS_FIELD) and filter in getattr(f, CASE_TAGS_FIELD):
+        if f_name.startswith(CASE_PREFIX):
+            code = get_code(f)
+            if code.co_filename == module.__file__:
+                #  - with the optional filter tag
+                if filter is None \
+                        or hasattr(f, CASE_TAGS_FIELD) and filter in getattr(f, CASE_TAGS_FIELD):
 
-                # Handle case generators
-                gen = getattr(f, GENERATOR_FIELD, False)
-                if gen:
-                    already_used_names = []
+                    # Handle case generators
+                    gen = getattr(f, GENERATOR_FIELD, False)
+                    if gen:
+                        already_used_names = []
 
-                    name_template = gen[0]
-                    kwargs = gen[1]
-                    param_ids = list(kwargs.keys())
-                    all_cases_params = list(product(*kwargs.values()))
-                    nb_cases_generated = len(all_cases_params)
-                    for gen_case_id, case_params_values in enumerate(all_cases_params):
-                        # build the dictionary of parameters for the case functions
-                        gen_case_params_dct = dict(zip(param_ids, case_params_values))
+                        name_template, param_ids, all_param_values_combinations = gen
+                        nb_cases_generated = len(all_param_values_combinations)
 
-                        # generate the case name by applying the name template
-                        gen_case_name = name_template.format(**gen_case_params_dct)
-                        if gen_case_name in already_used_names:
-                            raise ValueError("Generated function names for generator case function {} are not unique."
-                                             " Please use all parameter names in the string format variables"
-                                             "".format(f_name))
-                        else:
-                            already_used_names.append(gen_case_name)
+                        for gen_case_id, case_params_values in enumerate(all_param_values_combinations):
+                            # build the dictionary of parameters for the case functions
+                            gen_case_params_dct = dict(zip(param_ids, case_params_values))
 
-                        # finally save the result, with an artificial floating point line number to keep order in dict
-                        gen_line_nb = f.__code__.co_firstlineno + (gen_case_id / nb_cases_generated)
-                        cases_dct[gen_line_nb] = CaseDataFromFunction(f, gen_case_name, gen_case_params_dct)
-                else:
-                    # single case
-                    cases_dct[f.__code__.co_firstlineno] = CaseDataFromFunction(f)
+                            # generate the case name by applying the name template
+                            gen_case_name = name_template.format(**gen_case_params_dct)
+                            if gen_case_name in already_used_names:
+                                raise ValueError("Generated function names for generator case function {} are not unique."
+                                                 " Please use all parameter names in the string format variables"
+                                                 "".format(f_name))
+                            else:
+                                already_used_names.append(gen_case_name)
+
+                            # save the result, with an artificial floating point line number to keep order in dict
+                            gen_line_nb = code.co_firstlineno + (gen_case_id / nb_cases_generated)
+                            cases_dct[gen_line_nb] = CaseDataFromFunction(f, gen_case_name, gen_case_params_dct)
+                    else:
+                        # single case
+                        cases_dct[code.co_firstlineno] = CaseDataFromFunction(f)
 
     # convert into a tuple, taking all cases in order of appearance in the code (sort by source code line number)
     cases = [cases_dct[k] for k in sorted(cases_dct.keys())]
@@ -258,7 +267,7 @@ THIS_MODULE = object()
 GENERATOR_FIELD = '__cases_generator__'
 
 
-def cases_generator(name_template, **kwargs):
+def cases_generator(name_template, lru_cache=False, **kwargs):
     """
     Decorator to declare a case function as being a cases generator.
 
@@ -273,7 +282,13 @@ def cases_generator(name_template, **kwargs):
     """
 
     def cases_generator_decorator(test_func):
-        setattr(test_func, GENERATOR_FIELD, (name_template, kwargs))
+        kwarg_values = list(product(*kwargs.values()))
+        setattr(test_func, GENERATOR_FIELD, (name_template, kwargs.keys(), kwarg_values))
+        if lru_cache:
+            nb_cases = len(kwarg_values)
+            # decorate the function
+            test_func = lru(maxsize=nb_cases)(test_func)
+
         return test_func
 
     return cases_generator_decorator
