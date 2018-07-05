@@ -384,6 +384,112 @@ Test functions will be able to retrieve the above case if:
  - they use `filter=bar`
  - or they use `filter='fast'`
 
+## Test "suites": several steps on each case 
+
+Sometimes you wish to execute a series of tests on the same dataset, and then to move to another one. This is feasible with `pytest_cases`:
+
+```python
+from pytest_cases import test_steps, cases_data, CaseDataGetter, THIS_MODULE, \
+ CaseData
+
+# -------- test cases
+def case_simple() -> CaseData:
+    ins = dict(a=1, b=2)
+    return ins, None, None
+
+def case_simple2() -> CaseData:
+    ins = dict(a=-1, b=2)
+    return ins, None, None
+
+# ------- test steps
+def step_check_a(ins, expected_o, expected_e):
+    """ Step a of the test """
+    # Use the three items as usual
+    print(ins)
+
+def step_check_b(ins, expected_o, expected_e):
+    """ Step b of the test """
+    # Use the three items as usual
+    print(ins)
+
+# ------- test suite
+@test_steps(step_check_a, step_check_b)
+@cases_data(module=THIS_MODULE)
+def test_suite(test_step, case_data: CaseDataGetter):
+    # Get the data for this step
+    ins, expected_o, expected_e = case_data.get()
+
+    # Execute the step
+    test_step(ins, expected_o, expected_e)
+```
+
+This yields:
+
+```bash
+============================= test session starts =============================
+...
+test_parametrized_blend.py::test_suite[case_simple-step_check_a] PASSED  [ 25%]{'a': 1, 'b': 2}
+test_parametrized_blend.py::test_suite[case_simple-step_check_b] PASSED  [ 50%]{'a': 1, 'b': 2}
+test_parametrized_blend.py::test_suite[case_simple2-step_check_a] PASSED [ 75%]{'a': -1, 'b': 2}
+test_parametrized_blend.py::test_suite[case_simple2-step_check_b] PASSED [100%]{'a': -1, 'b': 2}
+========================== 4 passed in 0.13 seconds ===========================
+```
+
+You see that for each case, all steps are executed in order. You can wish (more rarely) to invert the order, executing all cases on step a then all cases on step b etc. Simply invert the order of decorators and it will work (`pytest` is great!).
+
+But what if each step requires different expected output or errors ? 
+
+```python
+from pytest_cases import test_steps, cases_data, CaseDataGetter, THIS_MODULE, \
+ MultipleStepsCaseData
+
+# -------- test cases
+def case_simple() -> MultipleStepsCaseData:
+    ins = dict(a=1, b=2)
+
+    outs_for_a = 2, 3
+    outs_for_b = 5, 4
+    outs = dict(step_check_a=outs_for_a, step_check_b=outs_for_b)
+
+    return ins, outs, None
+
+def case_simple2() -> MultipleStepsCaseData:
+    ins = dict(a=-1, b=2)
+
+    outs_for_a = 2, 3
+    outs_for_b = 5, 4
+    outs = dict(step_check_a=outs_for_a, step_check_b=outs_for_b)
+
+    return ins, outs, None
+
+# ------- test steps
+def step_check_a(ins, expected_o, expected_e):
+    """ Step a of the test """
+    # Use the three items as usual
+    print(ins)
+
+def step_check_b(ins, expected_o, expected_e):
+    """ Step b of the test """
+    # Use the three items as usual
+    print(ins)
+
+# ------- test suite
+@test_steps(step_check_a, step_check_b)
+@cases_data(module=THIS_MODULE)
+def test_suite(test_step, case_data: CaseDataGetter):
+    # Get the data for this step
+    ins, expected_o, expected_e = case_data.get_for(test_step.__name__)
+
+    # Execute the step
+    test_step(ins, expected_o, expected_e)
+```
+
+There are two main differences with the first version:
+
+ - in the final `test_suite` we use `case_data.get_for(test_step.__name__)` to get the case data **for a given step**
+ - in the `case_simple` and `case_simple2` case functions, we provide the expected output and expected error as dictionaries, where the key is the step name.
+
+
 ## Advanced Pytest: Manual parametrization
 
 The `@cases_data` decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced pytest usages:
@@ -401,5 +507,13 @@ cases = extract_cases_from_module(test_foo_cases)
 # parametrize the test function manually
 @pytest.mark.parametrize('case_data', cases, ids=str)
 def test_with_cases_decorated(case_data: CaseData):
+    ...
+```
+
+Similarly the `@test_steps` decorator is equivalent to 
+
+```python
+@pytest.mark.parametrize('test_step', (step_check_a, step_check_b), ids=lambda x: x.__name__)
+def test_(test_step):
     ...
 ```

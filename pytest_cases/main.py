@@ -22,6 +22,9 @@ ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception
 CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
 
 
+MultipleStepsCaseData = Tuple[Given, Tuple[ExpectedNormal, ...], Tuple[ExpectedError, ...]]
+
+
 class CaseDataGetter(ABC):
     """
     Represents the contract that a test case dataset has to provide.
@@ -33,6 +36,21 @@ class CaseDataGetter(ABC):
         Getter for the contents of the tet case
         :return:
         """
+
+    def get_for(self, key) -> CaseData:
+        """
+        Returns a new case data getter where the data is automatically filtered with the key.
+        This only works if the function returns a `MultipleStepsCaseData`
+        :return:
+        """
+        data = self.get()
+
+        # assume that the data is a MultiStepsCaseData = a tuple with 3 items and the second and third are dict or None
+        ins = data[0]
+        outs = None if data[1] is None else data[1][key]
+        err = None if data[2] is None else data[2][key]
+
+        return ins, outs, err
 
 
 # Type hint for the simple functions
@@ -46,6 +64,7 @@ class CaseDataFromFunction(CaseDataGetter):
     """
     A CaseDataGetter relying on a function
     """
+
     def __init__(self, data_generator_func: Union[CaseFunc, GeneratedCaseFunc], case_name: str = None,
                  function_kwargs: Dict[str, Any] = None):
         """
@@ -67,12 +86,48 @@ class CaseDataFromFunction(CaseDataGetter):
     def __repr__(self):
         return "Test Case Data generator - [" + self.f.__name__ + "] - " + str(self.f)
 
-    def get(self):
+    def get(self) -> CaseData:
         """
         This implementation relies on the inner function to generate the dataset
         :return:
         """
         return self.f(**self.function_kwargs)
+
+
+def test_steps(*steps, test_step_argname: str= 'test_step'):
+    """
+    Decorates a test function so as to automatically parametrize it with all steps listed as arguments.
+
+    When the steps are functions, this is equivalent to
+    @pytest.mark.parametrize(test_step_argname, steps, ids=lambda x: x.__name__)
+
+    :param steps:
+    :return:
+    """
+    def steps_decorator(test_func):
+        """
+        The generated test function decorator.
+
+        It is equivalent to @mark.parametrize('case_data', cases) where cases is a tuple containing a CaseDataGetter for
+        all case generator functions
+
+        :param test_func:
+        :return:
+        """
+        def get_id(f):
+            if callable(f) and hasattr(f, '__name__'):
+                return f.__name__
+            else:
+                return str(f)
+
+        # Finally create the pytest decorator and apply it
+        parametrizer = pytest.mark.parametrize(test_step_argname, steps, ids=get_id)
+        return parametrizer(test_func)
+
+    return steps_decorator
+
+
+test_steps.__test__ = False  # to prevent pytest to think that this is a test !
 
 
 CASE_PREFIX = 'case_'
@@ -81,7 +136,28 @@ CASE_PREFIX = 'case_'
 def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
     """
     Decorates a test function so as to automatically parametrize it with all cases listed in module `module`.
-    This functions
+
+    It is equivalent to
+     * extracting all cases from module
+     * then decorating your function with @pytest.mark.parametrize
+
+    You can perform the two steps manually with:
+
+    ```python
+    import pytest
+    from pytest_cases import extract_cases_from_module, CaseData
+
+    # import the module containing the test cases
+    import test_foo_cases
+
+    # manually list the available cases
+    cases = extract_cases_from_module(test_foo_cases)
+
+    # parametrize the test function manually
+    @pytest.mark.parametrize('case_data', cases, ids=str)
+    def test_with_cases_decorated(case_data: CaseData):
+        ...
+    ```
 
     :param module:
     :param case_data_argname: the name of the function parameter that should receive the `CaseDataGetter` object.
@@ -104,8 +180,6 @@ def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
             cases = extract_cases_from_module(sys.modules[test_func.__module__], filter=filter)
         else:
             cases = extract_cases_from_module(module, filter=filter)
-
-        # TODO if the function is already parametrized, combine this tuple with the existing one ? Actually not needed
 
         # Finally create the pytest decorator and apply it
         parametrizer = pytest.mark.parametrize(case_data_argname, cases, ids=str)
