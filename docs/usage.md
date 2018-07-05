@@ -227,7 +227,7 @@ def test_2(case_data: CaseDataGetter):
 
 After starting to reuse cases in several test functions, you might end-up thinking *"why do I have to spend the data parsing/generation time several times ? It is the same case."*. You can solve this issue by using a cache.
 
-For simple cases you can simply decorate your case function with `@lru_cache()maxsize=1)` since simple case functions do not have parameters:
+For simple cases you can simply decorate your case function with `@lru_cache(maxsize=1)` since simple case functions do not have parameters:
 
 ```python
 from functools import lru_cache
@@ -240,7 +240,8 @@ def case_a():
 For case generators you **can** also use `@lru_cache(maxsize=x)`, but you will have to set the max size according to the number of generated cases (or `None` to allow auto-grow). Otherwise, simply use the `lru_cache=True` parameter and `pytest-cases` will do it for you:
 
 ```python
-from pytest_cases import CaseData, cases_data, CaseDataGetter, THIS_MODULE, cases_generator
+from pytest_cases import CaseData, cases_data, CaseDataGetter, THIS_MODULE, \
+  cases_generator
 
 # case generator with caching enabled
 @cases_generator("case {i}", i=range(3), lru_cache=True)
