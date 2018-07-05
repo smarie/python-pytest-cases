@@ -9,7 +9,6 @@ By default the name of the case function is used for the generated test case nam
 ```python
 from pytest_cases import CaseData, case_name
 
-
 @case_name("Simplest")
 def case_simple_named() -> CaseData:
     """ The simplest case but with a custom name using @case_name annotation """
@@ -18,6 +17,40 @@ def case_simple_named() -> CaseData:
     outs = 2, 3
 
     return ins, outs, None
+```
+
+## Case generators
+
+A case function generator is a function that will generate several test cases, once for every combination of its declared input parameters. 
+ 
+ - The function should have at least one parameter
+ - It should be decorated using `@cases_generator`, passing as keyword arguments one iterable for each parameter
+ - Since all generated cases need to have a unique name, you should also provide a name template, following the [new string formatting](https://docs.python.org/3.7/library/stdtypes.html#str.format) syntax, and referencing all parameters as keyword arguments:
+
+```python
+from pytest_cases import cases_generator, CaseData
+
+@cases_generator("case i={i}, j={j}", i=range(2), j=range(3))
+def case_simple_generator(i, j) -> CaseData:
+    ins = dict(a=i, b=j)
+    outs = i+1, j+1
+    return ins, outs, None
+```
+
+The above case generator will generate one test case for every combination of argument values, so 6 test cases:
+
+```bash
+>>> pytest
+============================= test session starts =============================
+(...)
+<your_project>/tests/test_foo.py::test_foo[case i=0, j=0] PASSED [ 17%]
+<your_project>/tests/test_foo.py::test_foo[case i=0, j=1] PASSED [ 33%]
+<your_project>/tests/test_foo.py::test_foo[case i=0, j=2] PASSED [ 50%]
+<your_project>/tests/test_foo.py::test_foo[case i=1, j=0] PASSED [ 67%]
+<your_project>/tests/test_foo.py::test_foo[case i=1, j=1] PASSED [ 83%]
+<your_project>/tests/test_foo.py::test_foo[case i=1, j=2] PASSED [ 100%]
+
+========================== 9 passed in 0.84 seconds ==========================
 ```
 
 ## Handling Exceptions
@@ -281,9 +314,9 @@ Test functions will be able to retrieve the above case if:
  - they use `filter=bar`
  - or they use `filter='fast'`
 
-## Advanced: Manual parametrization
+## Advanced Pytest: Manual parametrization
 
-The `@cases_data` decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced usage:
+The `@cases_data` decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced pytest usages:
 
 ```python
 import pytest

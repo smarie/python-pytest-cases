@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.3.0 - case generators
+
+ * New decorator `@cases_generator` to define case generators. Fixes [#1](https://github.com/smarie/python-pytest-cases/issues/1)
+ * Also, removed unused functions `is_expected_error_instance` and `assert_exception_equal`
+
 ### 0.2.0 - THIS_MODULE constant + Tagging/Filtering + doc
 
  * New constant `THIS_MODULE` so that cases and test functions can coexist in the same file. This fixes [#5](https://github.com/smarie/python-pytest-cases/issues/5)
