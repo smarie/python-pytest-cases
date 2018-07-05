@@ -279,6 +279,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#case-generators" title="Case generators" class="md-nav__link">
+    Case generators
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#handling-exceptions" title="Handling Exceptions" class="md-nav__link">
     Handling Exceptions
   </a>
@@ -320,8 +327,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-manual-parametrization" title="Advanced: Manual parametrization" class="md-nav__link">
-    Advanced: Manual parametrization
+  <a href="#advanced-pytest-manual-parametrization" title="Advanced Pytest: Manual parametrization" class="md-nav__link">
+    Advanced Pytest: Manual parametrization
   </a>
   
 </li>
@@ -377,6 +384,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#case-generators" title="Case generators" class="md-nav__link">
+    Case generators
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#handling-exceptions" title="Handling Exceptions" class="md-nav__link">
     Handling Exceptions
   </a>
@@ -418,8 +432,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-manual-parametrization" title="Advanced: Manual parametrization" class="md-nav__link">
-    Advanced: Manual parametrization
+  <a href="#advanced-pytest-manual-parametrization" title="Advanced Pytest: Manual parametrization" class="md-nav__link">
+    Advanced Pytest: Manual parametrization
   </a>
   
 </li>
@@ -449,7 +463,6 @@
 <p>By default the name of the case function is used for the generated test case name. To override this, you can use the <code>@case_name</code> decorator:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">case_name</span>
 
-
 <span class="nd">@case_name</span><span class="p">(</span><span class="s2">&quot;Simplest&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">case_simple_named</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; The simplest case but with a custom name using @case_name annotation &quot;&quot;&quot;</span>
@@ -458,6 +471,38 @@
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
 
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+</pre></div>
+
+
+<h2 id="case-generators">Case generators<a class="headerlink" href="#case-generators" title="Permanent link">&para;</a></h2>
+<p>A case function generator is a function that will generate several test cases, once for every combination of its declared input parameters. </p>
+<ul>
+<li>The function should have at least one parameter</li>
+<li>It should be decorated using <code>@cases_generator</code>, passing as keyword arguments one iterable for each parameter</li>
+<li>Since all generated cases need to have a unique name, you should also provide a name template, following the <a href="https://docs.python.org/3.7/library/stdtypes.html#str.format">new string formatting</a> syntax, and referencing all parameters as keyword arguments:</li>
+</ul>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_generator</span><span class="p">,</span> <span class="n">CaseData</span>
+
+<span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;case i={i}, j={j}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">case_simple_generator</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+</pre></div>
+
+
+<p>The above case generator will generate one test case for every combination of argument values, so 6 test cases:</p>
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt; <span class="nv">pytest</span>
+<span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
+<span class="o">(</span>...<span class="o">)</span>
+&lt;your_project&gt;/tests/test_foo.py::test_foo<span class="o">[</span><span class="k">case</span> <span class="nv">i</span><span class="o">=</span><span class="m">0</span>, <span class="nv">j</span><span class="o">=</span><span class="m">0</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">17</span>%<span class="o">]</span>
+&lt;your_project&gt;/tests/test_foo.py::test_foo<span class="o">[</span><span class="k">case</span> <span class="nv">i</span><span class="o">=</span><span class="m">0</span>, <span class="nv">j</span><span class="o">=</span><span class="m">1</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">33</span>%<span class="o">]</span>
+&lt;your_project&gt;/tests/test_foo.py::test_foo<span class="o">[</span><span class="k">case</span> <span class="nv">i</span><span class="o">=</span><span class="m">0</span>, <span class="nv">j</span><span class="o">=</span><span class="m">2</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">50</span>%<span class="o">]</span>
+&lt;your_project&gt;/tests/test_foo.py::test_foo<span class="o">[</span><span class="k">case</span> <span class="nv">i</span><span class="o">=</span><span class="m">1</span>, <span class="nv">j</span><span class="o">=</span><span class="m">0</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">67</span>%<span class="o">]</span>
+&lt;your_project&gt;/tests/test_foo.py::test_foo<span class="o">[</span><span class="k">case</span> <span class="nv">i</span><span class="o">=</span><span class="m">1</span>, <span class="nv">j</span><span class="o">=</span><span class="m">1</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">83</span>%<span class="o">]</span>
+&lt;your_project&gt;/tests/test_foo.py::test_foo<span class="o">[</span><span class="k">case</span> <span class="nv">i</span><span class="o">=</span><span class="m">1</span>, <span class="nv">j</span><span class="o">=</span><span class="m">2</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">100</span>%<span class="o">]</span>
+
+<span class="o">==========================</span> <span class="m">9</span> passed in <span class="m">0</span>.84 <span class="nv">seconds</span> <span class="o">==========================</span>
 </pre></div>
 
 
@@ -703,8 +748,8 @@
 <li>they use <code>filter=bar</code></li>
 <li>or they use <code>filter='fast'</code></li>
 </ul>
-<h2 id="advanced-manual-parametrization">Advanced: Manual parametrization<a class="headerlink" href="#advanced-manual-parametrization" title="Permanent link">&para;</a></h2>
-<p>The <code>@cases_data</code> decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced usage:</p>
+<h2 id="advanced-pytest-manual-parametrization">Advanced Pytest: Manual parametrization<a class="headerlink" href="#advanced-pytest-manual-parametrization" title="Permanent link">&para;</a></h2>
+<p>The <code>@cases_data</code> decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced pytest usages:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">extract_cases_from_module</span><span class="p">,</span> <span class="n">CaseData</span>
 
