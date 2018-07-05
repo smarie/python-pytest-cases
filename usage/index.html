@@ -300,9 +300,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reuse-cases-in-several-tests" title="Reuse cases in several Tests" class="md-nav__link">
-    Reuse cases in several Tests
+  <a href="#reusing-cases-in-several-tests" title="Reusing cases in several Tests" class="md-nav__link">
+    Reusing cases in several Tests
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caching" title="Caching" class="md-nav__link">
+    Caching
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -405,9 +418,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reuse-cases-in-several-tests" title="Reuse cases in several Tests" class="md-nav__link">
-    Reuse cases in several Tests
+  <a href="#reusing-cases-in-several-tests" title="Reusing cases in several Tests" class="md-nav__link">
+    Reusing cases in several Tests
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caching" title="Caching" class="md-nav__link">
+    Caching
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -638,7 +664,7 @@
 
 
 <p>However <strong>WARNING</strong>: only the case functions located BEFORE the test function in the module file will be taken into account!</p>
-<h2 id="reuse-cases-in-several-tests">Reuse cases in several Tests<a class="headerlink" href="#reuse-cases-in-several-tests" title="Permanent link">&para;</a></h2>
+<h2 id="reusing-cases-in-several-tests">Reusing cases in several Tests<a class="headerlink" href="#reusing-cases-in-several-tests" title="Permanent link">&para;</a></h2>
 <p>You might wish to use the same test cases in several test functions. This works out of the box: simply refer to the same test case module in the <code>@case_data</code> decorator of several test functions, and you're set!</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
@@ -666,6 +692,68 @@
 </pre></div>
 
 
+<h3 id="caching">Caching<a class="headerlink" href="#caching" title="Permanent link">&para;</a></h3>
+<p>After starting to reuse cases in several test functions, you might end-up thinking <em>"why do I have to spend the data parsing/generation time several times ? It is the same case."</em>. You can solve this issue by using a cache.</p>
+<p>For simple cases you can simply decorate your case function with <code>@lru_cache()maxsize=1)</code> since simple case functions do not have parameters:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">case_a</span><span class="p">():</span>
+    <span class="c1"># ... (as usual)</span>
+</pre></div>
+
+
+<p>For case generators you <strong>can</strong> also use <code>@lru_cache(maxsize=x)</code>, but you will have to set the max size according to the number of generated cases (or <code>None</code> to allow auto-grow). Otherwise, simply use the <code>lru_cache=True</code> parameter and <code>pytest-cases</code> will do it for you:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">cases_generator</span>
+
+<span class="c1"># case generator with caching enabled</span>
+<span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;case {i}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">lru_cache</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">case_gen</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;generating case &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="n">outs</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="n">err</span>
+
+<span class="c1"># ----------------------TESTS--------------------------</span>
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_a</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># 1- Grab the test case data</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># 2- Use it</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_b</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># 1- Grab the test case data</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># 2- Use it</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+
+
+<p>yields:</p>
+<div class="codehilite"><pre><span></span><span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
+...
+collecting ... collected <span class="m">6</span> items
+test_memoize_generators.py::test_a<span class="o">[</span><span class="k">case</span> <span class="m">0</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">16</span>%<span class="o">]</span>generating <span class="k">case</span> <span class="m">0</span>
+<span class="m">0</span>
+test_memoize_generators.py::test_a<span class="o">[</span><span class="k">case</span> <span class="m">1</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">33</span>%<span class="o">]</span>generating <span class="k">case</span> <span class="m">1</span>
+<span class="m">1</span>
+test_memoize_generators.py::test_a<span class="o">[</span><span class="k">case</span> <span class="m">2</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">50</span>%<span class="o">]</span>generating <span class="k">case</span> <span class="m">2</span>
+<span class="m">2</span>
+test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</span> <span class="m">0</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">66</span>%<span class="o">]</span><span class="m">0</span>
+test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</span> <span class="m">1</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">83</span>%<span class="o">]</span><span class="m">1</span>
+test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</span> <span class="m">2</span><span class="o">]</span> PASSED <span class="o">[</span><span class="m">100</span>%<span class="o">]</span><span class="nv">2</span>
+<span class="o">==========================</span> <span class="m">6</span> passed in <span class="m">0</span>.16 <span class="nv">seconds</span> <span class="o">===========================</span>
+</pre></div>
+
+
+<p>You can see that the second time each case is needed, the cached value is used instead of executing the case generation function again.</p>
+<p>See <a href="https://docs.python.org/3/library/functools.html#functools.lru_cache">doc on lru_cache</a> for implementation details.</p>
 <h2 id="test-cases-with-different-purposes-in-the-same-file">Test cases with different purposes in the same file<a class="headerlink" href="#test-cases-with-different-purposes-in-the-same-file" title="Permanent link">&para;</a></h2>
 <p>Sometimes it would just be tideous to create a dedicated file to contain the case functions for each test function. However, still, it is frequent to have different test functions using different test cases. </p>
 <p>There is therefore a need to <strong>associate test functions with test cases in a more fine-grain way</strong>.</p>
