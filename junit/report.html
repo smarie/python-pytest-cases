@@ -235,7 +235,7 @@ function filter_table(elem) {
 }
 </script>
     <h1>report.html</h1>
-    <p>Report generated on 05-Jul-2018 at 21:30:20 by<a href="https://pypi.python.org/pypi/pytest-html"> pytest-html</a> v1.19.0</p>
+    <p>Report generated on 05-Jul-2018 at 21:43:01 by<a href="https://pypi.python.org/pypi/pytest-html"> pytest-html</a> v1.19.0</p>
     <h2>Environment</h2>
     <table id="environment">
       <tr>
@@ -252,37 +252,34 @@ function filter_table(elem) {
         <td>Linux-4.4.0-101-generic-x86_64-with-debian-jessie-sid</td></tr>
       <tr>
         <td>Plugins</td>
-        <td>{&apos;cov&apos;: &apos;2.5.1&apos;, &apos;metadata&apos;: &apos;1.7.0&apos;, &apos;html&apos;: &apos;1.19.0&apos;}</td></tr>
+        <td>{&apos;metadata&apos;: &apos;1.7.0&apos;, &apos;cov&apos;: &apos;2.5.1&apos;, &apos;html&apos;: &apos;1.19.0&apos;}</td></tr>
       <tr>
         <td>Python</td>
         <td>3.5.5</td></tr>
       <tr>
         <td>TRAVIS_BRANCH</td>
-        <td>master</td></tr>
+        <td>0.5.0</td></tr>
       <tr>
         <td>TRAVIS_BUILD_ID</td>
-        <td>400627397</td></tr>
+        <td>400631910</td></tr>
       <tr>
         <td>TRAVIS_BUILD_NUMBER</td>
-        <td>16</td></tr>
+        <td>18</td></tr>
       <tr>
         <td>TRAVIS_COMMIT</td>
-        <td>62ff01566c588797093eee10f3131048b514fa26</td></tr>
+        <td>ef819672f7a16781c80a811eba1309c60c50d475</td></tr>
       <tr>
         <td>TRAVIS_COMMIT_MESSAGE</td>
-        <td>test functions can now be decorated with `@test_steps` to easily define a test suite with several steps. This fixes #7</td></tr>
-      <tr>
-        <td>TRAVIS_COMMIT_RANGE</td>
-        <td>7d1a3727c0da...62ff01566c58</td></tr>
+        <td>0.5.0 changelog</td></tr>
       <tr>
         <td>TRAVIS_EVENT_TYPE</td>
         <td>push</td></tr>
       <tr>
         <td>TRAVIS_JOB_ID</td>
-        <td>400627398</td></tr>
+        <td>400631911</td></tr>
       <tr>
         <td>TRAVIS_JOB_NUMBER</td>
-        <td>16.1</td></tr>
+        <td>18.1</td></tr>
       <tr>
         <td>TRAVIS_OS_NAME</td>
         <td>linux</td></tr>
@@ -294,9 +291,12 @@ function filter_table(elem) {
         <td>smarie/python-pytest-cases</td></tr>
       <tr>
         <td>TRAVIS_SUDO</td>
-        <td>true</td></tr></table>
+        <td>true</td></tr>
+      <tr>
+        <td>TRAVIS_TAG</td>
+        <td>0.5.0</td></tr></table>
     <h2>Summary</h2>
-    <p>43 tests ran in 0.35 seconds. </p>
+    <p>43 tests ran in 0.42 seconds. </p>
     <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">43 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
     <h2>Results</h2>
     <table id="results-table">
@@ -329,24 +329,6 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/test_generators.py::test_with_cases_decorated[test with i=0, j=1]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/test_generators.py::test_with_cases_decorated[test with i=0, j=2]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/test_generators.py::test_with_cases_decorated[test with i=1, j=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
@@ -356,7 +338,25 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/test_generators.py::test_with_cases_decorated[test with i=0, j=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/test_generators.py::test_with_cases_decorated[test with i=1, j=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/test_generators.py::test_with_cases_decorated[test with i=0, j=2]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -598,7 +598,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: 1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -608,7 +608,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: 1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -618,7 +618,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: -1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -628,7 +628,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: -1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
