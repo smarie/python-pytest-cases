@@ -575,14 +575,17 @@
 </pre></div>
 
 
-<p>See <a href="./usage">Usage</a> for a complete example with exceptions handling and more.</p>
+<p>See <a href="./usage">Usage</a> for a complete example with custom case names, case generators, exceptions handling, and more.</p>
 <h2 id="main-features-benefits">Main features / benefits<a class="headerlink" href="#main-features-benefits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>Separation of concerns</strong>: test code on one hand, test cases data on the other hand. This is particularly relevant for data science projects where a lot of test datasets are used on the same block of test code.</p>
 </li>
 <li>
-<p><strong>Everything in the test</strong>, not outside. A side-effect of <code>@pytest.mark.parametrize</code> is that users tend to create or parse their datasets outside of the test function. <code>pytest_cases</code> suggests a model where the potentially time and memory consuming step of case data gathering is performed <em>inside</em> the test case, thus keeping every test case run more independent.</p>
+<p><strong>Everything in the test</strong>, not outside. A side-effect of <code>@pytest.mark.parametrize</code> is that users tend to create or parse their datasets outside of the test function. <code>pytest_cases</code> suggests a model where the potentially time and memory consuming step of case data generation/retrieval is performed <em>inside</em> the test case, thus keeping every test case run more independent. It is also easy to put debug breakpoints on specific test cases.</p>
+</li>
+<li>
+<p><strong>Easier iterable-based test case generation</strong>. If you wish to generate several test cases using the same function, <code>@cases_generator</code> makes it very intuitive to do so. See <a href="./usage#case-generators">here</a> for details.</p>
 </li>
 <li>
 <p><strong>User-friendly features</strong>: easily customize your test cases with friendly names, reuse the same cases for different test functions by tagging/filtering, and more... See <a href="./usage">Usage</a> for details.</p>
@@ -591,7 +594,7 @@
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <p><a href="https://docs.pytest.org/en/latest/parametrize.html">pytest documentation on parametrize</a></p>
 <h3 id="others">Others<a class="headerlink" href="#others" title="Permanent link">&para;</a></h3>
-<p><em>Do you like this library ? You might also like <a href="https://github.com/smarie?utf8=%E2%9C%93&amp;tab=repositories&amp;q=&amp;type=&amp;language=python">my other python libraries</a></em> </p>
+<p><em>Do you like this library ? You might also like <a href="https://github.com/smarie/OVERVIEW#python">my other python libraries</a></em> </p>
 <h2 id="want-to-contribute">Want to contribute ?<a class="headerlink" href="#want-to-contribute" title="Permanent link">&para;</a></h2>
 <p>Details on the github page: <a href="https://github.com/smarie/python-pytest-cases">https://github.com/smarie/python-pytest-cases</a></p>
                 
