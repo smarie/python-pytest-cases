@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.5.0 - support for test suites
+
+ * test functions can now be decorated with `@test_steps` to easily define a test suite with several steps. This fixes [#7](https://github.com/smarie/python-pytest-cases/issues/7)
+
 ### 0.4.0 - support for data caching with lru_cache
 
  * cases can now be decorated with `@lru_cache`. `@cases_generator` also provides a `lru_cache` parameter to enable caching. Fixes [#6](https://github.com/smarie/python-pytest-cases/issues/6)
