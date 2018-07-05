@@ -131,8 +131,157 @@ def test_with_cases_decorated(case_data: CaseDataGetter):
             err_checker(err_info.value)
 ```
 
+## Cases in the same file than Tests
 
-## Manual parametrization
+It is not mandatory that case functions should be in a different file than the test functions: both can be in the same file. For this you can use the `THIS_MODULE` constant to refer to the module in which the test function is located:
+
+```python
+from pytest_cases import CaseData, cases_data, THIS_MODULE, CaseDataGetter
+
+def case_simple() -> CaseData:
+    ins = dict(a=1, b=2)
+    outs = 2, 3
+    return ins, outs, None
+
+def case_simple2() -> CaseData:
+    ins = dict(a=-1, b=2)
+    outs = 0, 3
+    return ins, outs, None
+
+@cases_data(module=THIS_MODULE)
+def test_with_cases_decorated(case_data: CaseDataGetter):
+    # 1- Grab the test case data
+    i, expected_o, expected_e = case_data.get()
+
+    # 2- Use it
+    # ...
+```
+
+However **WARNING**: only the case functions located BEFORE the test function in the module file will be taken into account!
+
+
+## Reuse cases in several Tests
+
+You might wish to use the same test cases in several test functions. This works out of the box: simply refer to the same test case module in the `@case_data` decorator of several test functions, and you're set!
+
+```python
+import pytest
+from pytest_cases import cases_data, CaseDataGetter
+
+# import the module containing the test cases
+import test_foo_cases
+
+
+@cases_data(module=test_foo_cases)
+def test_1(case_data: CaseDataGetter):
+    # 1- Grab the test case data
+    i, expected_o, expected_e = case_data.get()
+    
+    # 2- Use it
+    # ...
+
+@cases_data(module=test_foo_cases)
+def test_2(case_data: CaseDataGetter):
+    """ Another test that uses exactly the same test case data than test_1 """
+    # 1- Grab the test case data
+    i, expected_o, expected_e = case_data.get()
+    
+    # 2- Use it
+    # ...
+```
+
+## Test cases with different purposes in the same file
+
+Sometimes it would just be tideous to create a dedicated file to contain the case functions for each test function. However, still, it is frequent to have different test functions using different test cases. 
+
+There is therefore a need to **associate test functions with test cases in a more fine-grain way**.
+
+The simplest approach is to use the function under test as a common reference to bind the tests and the cases:
+ 
+On the cases side, simply use the `@test_target` decorator:
+
+```python
+from pytest_cases import CaseData, test_target
+
+# the 2 functions that we want to test
+from mycode import foo, bar
+
+# a case only to be used when function foo is under test
+@test_target(foo)
+def case_foo_simple() -> CaseData:
+    ins = dict(a=1, b=2)
+    outs = 2, 3
+    return ins, outs, None
+
+# a case only to be used when function bar is under test
+@test_target(bar)
+def case_bar_simple() -> CaseData:
+    ins = dict(a=1, b=2)
+    outs = 2, 3
+    return ins, outs, None
+```
+
+On the test functions side, filter the cases in `@cases_data` using `filter=<target>`:
+
+```python
+from pytest_cases import CaseDataGetter, cases_data
+
+# the module containing the cases above
+from . import shared_cases
+
+# the 2 functions that we want to test
+from mycode import foo, bar
+
+@cases_data(module=shared_cases, filter=foo)
+def test_foo(case_data: CaseDataGetter):
+    """ This test will only be executed on cases tagged with 'foo'"""
+    
+    # 1- Grab the test case data
+    i, expected_o, expected_e = case_data.get()
+
+    # 2- Use it: nominal test only
+    assert expected_e is None
+    outs = foo(**i)
+    assert outs == expected_o
+
+
+@cases_data(module=shared_cases, filter=bar)
+def test_bar(case_data: CaseDataGetter):
+    """ This test will only be executed on cases tagged with 'bar'"""
+    
+    # 1- Grab the test case data
+    i, expected_o, expected_e = case_data.get()
+
+    # 2- Use it: nominal test only
+    assert expected_e is None
+    outs = bar(**i)
+    assert outs == expected_o
+```
+
+Of course this does not prevent other test functions to use all cases by not using any filter.
+
+### Advanced: Tagging & Filtering
+
+The above example is just a particular case of **tag** put on a case, and **filter** put on the test function. You can actually put **several** tags on the cases, not only a single one (like `@test_target` does):
+
+```python
+from pytest_cases import CaseData, case_tags
+
+# a case with two tags
+@case_tags(bar, 'fast')
+def case_multitag_simple() -> CaseData:
+    ins = dict(a=1, b=2)
+    outs = 2, 3
+    return ins, outs, None
+```
+
+Test functions will be able to retrieve the above case if:
+
+ - they do not `filter` at all
+ - they use `filter=bar`
+ - or they use `filter='fast'`
+
+## Advanced: Manual parametrization
 
 The `@cases_data` decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced usage:
 

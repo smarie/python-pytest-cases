@@ -118,6 +118,7 @@ See [Usage](./usage) for a complete example with exceptions handling and more.
  
  * **Everything in the test**, not outside. A side-effect of `@pytest.mark.parametrize` is that users tend to create or parse their datasets outside of the test function. `pytest_cases` suggests a model where the potentially time and memory consuming step of case data gathering is performed *inside* the test case, thus keeping every test case run more independent.
 
+ * **User-friendly features**: easily customize your test cases with friendly names, reuse the same cases for different test functions by tagging/filtering, and more... See [Usage](./usage) for details.
 
 ## See Also
 
