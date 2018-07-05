@@ -5,12 +5,9 @@ from pytest_cases import cases_data, CaseDataGetter, unfold_expected_err, extrac
 from pytest_cases.tests import test_main_cases
 
 
-# Manual way:
-cases = extract_cases_from_module(test_main_cases)
-
-
-@pytest.mark.parametrize('case_data', cases, ids=str)
-def test_with_cases_manual(case_data: CaseDataGetter):
+# Decorator way:
+@cases_data(test_main_cases)
+def test_with_cases_decorated(case_data: CaseDataGetter):
     """ Example unit test that is automatically parametrized with @cases_data """
 
     # 1- Grab the test case data
@@ -40,9 +37,12 @@ def test_with_cases_manual(case_data: CaseDataGetter):
             err_checker(err_info.value)
 
 
-# Decorator way:
-@cases_data(test_main_cases)
-def test_with_cases_decorated(case_data: CaseDataGetter):
+# ----------------- Advanced: Manual way: -------------
+cases = extract_cases_from_module(test_main_cases)
+
+
+@pytest.mark.parametrize('case_data', cases, ids=str)
+def test_with_cases_manual(case_data: CaseDataGetter):
     """ Example unit test that is automatically parametrized with @cases_data """
 
     # 1- Grab the test case data
