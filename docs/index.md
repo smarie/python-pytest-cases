@@ -109,14 +109,16 @@ Once you have done these three steps, executing `pytest` will run your test func
 ```
 
 
-See [Usage](./usage) for a complete example with exceptions handling and more.
+See [Usage](./usage) for a complete example with custom case names, case generators, exceptions handling, and more.
 
 
 ## Main features / benefits
 
  * **Separation of concerns**: test code on one hand, test cases data on the other hand. This is particularly relevant for data science projects where a lot of test datasets are used on the same block of test code.
  
- * **Everything in the test**, not outside. A side-effect of `@pytest.mark.parametrize` is that users tend to create or parse their datasets outside of the test function. `pytest_cases` suggests a model where the potentially time and memory consuming step of case data gathering is performed *inside* the test case, thus keeping every test case run more independent.
+ * **Everything in the test**, not outside. A side-effect of `@pytest.mark.parametrize` is that users tend to create or parse their datasets outside of the test function. `pytest_cases` suggests a model where the potentially time and memory consuming step of case data generation/retrieval is performed *inside* the test case, thus keeping every test case run more independent. It is also easy to put debug breakpoints on specific test cases.
+
+ * **Easier iterable-based test case generation**. If you wish to generate several test cases using the same function, `@cases_generator` makes it very intuitive to do so. See [here](./usage#case-generators) for details.
 
  * **User-friendly features**: easily customize your test cases with friendly names, reuse the same cases for different test functions by tagging/filtering, and more... See [Usage](./usage) for details.
 
@@ -126,7 +128,7 @@ See [Usage](./usage) for a complete example with exceptions handling and more.
 
 ### Others
 
-*Do you like this library ? You might also like [my other python libraries](https://github.com/smarie?utf8=%E2%9C%93&tab=repositories&q=&type=&language=python)* 
+*Do you like this library ? You might also like [my other python libraries](https://github.com/smarie/OVERVIEW#python)* 
 
 ## Want to contribute ?
 
