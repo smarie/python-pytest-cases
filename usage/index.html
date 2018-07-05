@@ -286,8 +286,42 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#manual-parametrization" title="Manual parametrization" class="md-nav__link">
-    Manual parametrization
+  <a href="#cases-in-the-same-file-than-tests" title="Cases in the same file than Tests" class="md-nav__link">
+    Cases in the same file than Tests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reuse-cases-in-several-tests" title="Reuse cases in several Tests" class="md-nav__link">
+    Reuse cases in several Tests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-cases-with-different-purposes-in-the-same-file" title="Test cases with different purposes in the same file" class="md-nav__link">
+    Test cases with different purposes in the same file
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced-tagging-filtering" title="Advanced: Tagging &amp; Filtering" class="md-nav__link">
+    Advanced: Tagging &amp; Filtering
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-manual-parametrization" title="Advanced: Manual parametrization" class="md-nav__link">
+    Advanced: Manual parametrization
   </a>
   
 </li>
@@ -350,8 +384,42 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#manual-parametrization" title="Manual parametrization" class="md-nav__link">
-    Manual parametrization
+  <a href="#cases-in-the-same-file-than-tests" title="Cases in the same file than Tests" class="md-nav__link">
+    Cases in the same file than Tests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reuse-cases-in-several-tests" title="Reuse cases in several Tests" class="md-nav__link">
+    Reuse cases in several Tests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-cases-with-different-purposes-in-the-same-file" title="Test cases with different purposes in the same file" class="md-nav__link">
+    Test cases with different purposes in the same file
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced-tagging-filtering" title="Advanced: Tagging &amp; Filtering" class="md-nav__link">
+    Advanced: Tagging &amp; Filtering
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-manual-parametrization" title="Advanced: Manual parametrization" class="md-nav__link">
+    Advanced: Manual parametrization
   </a>
   
 </li>
@@ -500,7 +568,142 @@
 </pre></div>
 
 
-<h2 id="manual-parametrization">Manual parametrization<a class="headerlink" href="#manual-parametrization" title="Permanent link">&para;</a></h2>
+<h2 id="cases-in-the-same-file-than-tests">Cases in the same file than Tests<a class="headerlink" href="#cases-in-the-same-file-than-tests" title="Permanent link">&para;</a></h2>
+<p>It is not mandatory that case functions should be in a different file than the test functions: both can be in the same file. For this you can use the <code>THIS_MODULE</code> constant to refer to the module in which the test function is located:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
+
+<span class="k">def</span> <span class="nf">case_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">case_simple2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_with_cases_decorated</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># 1- Grab the test case data</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># 2- Use it</span>
+    <span class="c1"># ...</span>
+</pre></div>
+
+
+<p>However <strong>WARNING</strong>: only the case functions located BEFORE the test function in the module file will be taken into account!</p>
+<h2 id="reuse-cases-in-several-tests">Reuse cases in several Tests<a class="headerlink" href="#reuse-cases-in-several-tests" title="Permanent link">&para;</a></h2>
+<p>You might wish to use the same test cases in several test functions. This works out of the box: simply refer to the same test case module in the <code>@case_data</code> decorator of several test functions, and you're set!</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
+
+<span class="c1"># import the module containing the test cases</span>
+<span class="kn">import</span> <span class="nn">test_foo_cases</span>
+
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">test_foo_cases</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_1</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># 1- Grab the test case data</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># 2- Use it</span>
+    <span class="c1"># ...</span>
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">test_foo_cases</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_2</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Another test that uses exactly the same test case data than test_1 &quot;&quot;&quot;</span>
+    <span class="c1"># 1- Grab the test case data</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># 2- Use it</span>
+    <span class="c1"># ...</span>
+</pre></div>
+
+
+<h2 id="test-cases-with-different-purposes-in-the-same-file">Test cases with different purposes in the same file<a class="headerlink" href="#test-cases-with-different-purposes-in-the-same-file" title="Permanent link">&para;</a></h2>
+<p>Sometimes it would just be tideous to create a dedicated file to contain the case functions for each test function. However, still, it is frequent to have different test functions using different test cases. </p>
+<p>There is therefore a need to <strong>associate test functions with test cases in a more fine-grain way</strong>.</p>
+<p>The simplest approach is to use the function under test as a common reference to bind the tests and the cases:</p>
+<p>On the cases side, simply use the <code>@test_target</code> decorator:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">test_target</span>
+
+<span class="c1"># the 2 functions that we want to test</span>
+<span class="kn">from</span> <span class="nn">mycode</span> <span class="kn">import</span> <span class="n">foo</span><span class="p">,</span> <span class="n">bar</span>
+
+<span class="c1"># a case only to be used when function foo is under test</span>
+<span class="nd">@test_target</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">case_foo_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="c1"># a case only to be used when function bar is under test</span>
+<span class="nd">@test_target</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">case_bar_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+</pre></div>
+
+
+<p>On the test functions side, filter the cases in <code>@cases_data</code> using <code>filter=&lt;target&gt;</code>:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">cases_data</span>
+
+<span class="c1"># the module containing the cases above</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">shared_cases</span>
+
+<span class="c1"># the 2 functions that we want to test</span>
+<span class="kn">from</span> <span class="nn">mycode</span> <span class="kn">import</span> <span class="n">foo</span><span class="p">,</span> <span class="n">bar</span>
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">shared_cases</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">foo</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This test will only be executed on cases tagged with &#39;foo&#39;&quot;&quot;&quot;</span>
+
+    <span class="c1"># 1- Grab the test case data</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># 2- Use it: nominal test only</span>
+    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
+
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">shared_cases</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">bar</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_bar</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This test will only be executed on cases tagged with &#39;bar&#39;&quot;&quot;&quot;</span>
+
+    <span class="c1"># 1- Grab the test case data</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># 2- Use it: nominal test only</span>
+    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="n">bar</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
+</pre></div>
+
+
+<p>Of course this does not prevent other test functions to use all cases by not using any filter.</p>
+<h3 id="advanced-tagging-filtering">Advanced: Tagging &amp; Filtering<a class="headerlink" href="#advanced-tagging-filtering" title="Permanent link">&para;</a></h3>
+<p>The above example is just a particular case of <strong>tag</strong> put on a case, and <strong>filter</strong> put on the test function. You can actually put <strong>several</strong> tags on the cases, not only a single one (like <code>@test_target</code> does):</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">case_tags</span>
+
+<span class="c1"># a case with two tags</span>
+<span class="nd">@case_tags</span><span class="p">(</span><span class="n">bar</span><span class="p">,</span> <span class="s1">&#39;fast&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">case_multitag_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+</pre></div>
+
+
+<p>Test functions will be able to retrieve the above case if:</p>
+<ul>
+<li>they do not <code>filter</code> at all</li>
+<li>they use <code>filter=bar</code></li>
+<li>or they use <code>filter='fast'</code></li>
+</ul>
+<h2 id="advanced-manual-parametrization">Advanced: Manual parametrization<a class="headerlink" href="#advanced-manual-parametrization" title="Permanent link">&para;</a></h2>
 <p>The <code>@cases_data</code> decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced usage:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">extract_cases_from_module</span><span class="p">,</span> <span class="n">CaseData</span>

@@ -584,6 +584,9 @@
 <li>
 <p><strong>Everything in the test</strong>, not outside. A side-effect of <code>@pytest.mark.parametrize</code> is that users tend to create or parse their datasets outside of the test function. <code>pytest_cases</code> suggests a model where the potentially time and memory consuming step of case data gathering is performed <em>inside</em> the test case, thus keeping every test case run more independent.</p>
 </li>
+<li>
+<p><strong>User-friendly features</strong>: easily customize your test cases with friendly names, reuse the same cases for different test functions by tagging/filtering, and more... See <a href="./usage">Usage</a> for details.</p>
+</li>
 </ul>
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <p><a href="https://docs.pytest.org/en/latest/parametrize.html">pytest documentation on parametrize</a></p>

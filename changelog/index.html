@@ -284,8 +284,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#020-in-progress" title="0.2.0 in progress" class="md-nav__link">
-    0.2.0 in progress
+  <a href="#020-this_module-constant-taggingfiltering-doc" title="0.2.0 - THIS_MODULE constant + Tagging/Filtering + doc" class="md-nav__link">
+    0.2.0 - THIS_MODULE constant + Tagging/Filtering + doc
   </a>
   
 </li>
@@ -329,8 +329,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#020-in-progress" title="0.2.0 in progress" class="md-nav__link">
-    0.2.0 in progress
+  <a href="#020-this_module-constant-taggingfiltering-doc" title="0.2.0 - THIS_MODULE constant + Tagging/Filtering + doc" class="md-nav__link">
+    0.2.0 - THIS_MODULE constant + Tagging/Filtering + doc
   </a>
   
 </li>
@@ -362,9 +362,22 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="020-in-progress">0.2.0 in progress<a class="headerlink" href="#020-in-progress" title="Permanent link">&para;</a></h3>
+<h3 id="020-this_module-constant-taggingfiltering-doc">0.2.0 - THIS_MODULE constant + Tagging/Filtering + doc<a class="headerlink" href="#020-this_module-constant-taggingfiltering-doc" title="Permanent link">&para;</a></h3>
 <ul>
-<li>fixed documentation</li>
+<li>
+<p>New constant <code>THIS_MODULE</code> so that cases and test functions can coexist in the same file. This fixes <a href="https://github.com/smarie/python-pytest-cases/issues/5">#5</a></p>
+</li>
+<li>
+<p>Added <code>@test_target</code> and <code>@case_tags</code> decorators for case functions, and added <code>filter</code> parameter in <code>@cases_data</code>. This allows users to :</p>
+<ul>
+<li>tag a case function with any item (and in particular with the reference to the function it relates to), </li>
+<li>and to filter the case functions used by a test function according to a particular tag.</li>
+</ul>
+</li>
+</ul>
+<p>This fixes <a href="https://github.com/smarie/python-pytest-cases/issues/4">#4</a></p>
+<ul>
+<li>Improved documentation</li>
 </ul>
 <h3 id="010-first-public-version">0.1.0 - First public version<a class="headerlink" href="#010-first-public-version" title="Permanent link">&para;</a></h3>
 <ul>
