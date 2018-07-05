@@ -15,7 +15,7 @@ import pytest
 # Type hints that you can use in your functions
 Given = Any
 ExpectedNormal = Optional[Any]
-ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], bool]]]
+ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], Optional[bool]]]]
 CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
 
 
@@ -64,7 +64,7 @@ class CaseDataFromFunction(CaseDataGetter):
 CASE_PREFIX = 'case_'
 
 
-def cases_data(module, case_data_argname: str= 'case_data'):
+def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
     """
     Decorates a test function so as to automatically parametrize it with all cases listed in module `module`.
     This functions
@@ -72,6 +72,7 @@ def cases_data(module, case_data_argname: str= 'case_data'):
     :param module:
     :param case_data_argname: the name of the function parameter that should receive the `CaseDataGetter` object.
     Default is `case_data`
+    :param filter: a tag used to filter the cases. Only cases with the given tag will be selected
     :return:
     """
     def datasets_decorator(test_func):
@@ -85,7 +86,7 @@ def cases_data(module, case_data_argname: str= 'case_data'):
         :return:
         """
         # Gather all cases from the reference module
-        cases = extract_cases_from_module(module)
+        cases = extract_cases_from_module(module, filter=filter)
 
         # TODO if the function is already parametrized, combine this tuple with the existing one ? Actually not needed
 
@@ -97,21 +98,26 @@ def cases_data(module, case_data_argname: str= 'case_data'):
     return datasets_decorator
 
 
-def extract_cases_from_module(module) -> List[CaseDataGetter]:
+def extract_cases_from_module(module, filter: Any=None) -> List[CaseDataGetter]:
     """
     Internal method used to create all cases available from the given module
 
     :param module:
+    :param filter: a tag used to filter the cases. Only cases with the given tag will be selected
     :return:
     """
     # First gather all case data providers in the reference module
     cases_dct = dict()
     for f_name, f in getmembers(module, callable):
-        # only keep the functions from the module file (not the imported ones), starting with prefix 'case_'
-        if f_name.startswith(CASE_PREFIX) and f.__code__.co_filename == module.__file__:
-            # TODO AND relates to test_func
-            # cases_dct[f_name] = f
-            cases_dct[f.__code__.co_firstlineno] = f
+        # only keep the functions
+        #  - from the module file (not the imported ones),
+        #  - starting with prefix 'case_'
+        if f_name.startswith(CASE_PREFIX) \
+                and f.__code__.co_filename == module.__file__:
+            #  - with the optional filter tag
+            if filter is None \
+                    or hasattr(f, CASE_TAGS_FIELD) and filter in getattr(f, CASE_TAGS_FIELD):
+                cases_dct[f.__code__.co_firstlineno] = f
 
     # convert into a tuple
     cases = [CaseDataFromFunction(cases_dct[k]) for k in sorted(cases_dct.keys())]
@@ -131,6 +137,43 @@ def case_name(name: str):
         return test_func
 
     return case_name_decorator
+
+
+CASE_TAGS_FIELD = '__case_tags__'
+
+
+def case_tags(tags: List[Any]):
+    """
+    Decorator to tag a case function with a list of tags.
+    Tags can be used in the @cases_data test function decorator to specify cases within a module, that should be applied
+
+    :param tags: a list of tags to decorate this case.
+    :return:
+    """
+    def case_tags_decorator(test_func):
+        existing_tags = getattr(test_func, CASE_TAGS_FIELD, None)
+        if existing_tags is None:
+            # there are no tags yet. Use the provided
+            setattr(test_func, CASE_TAGS_FIELD, tags)
+        else:
+            # there are some tags already, let's try to add the new to the existing
+            setattr(test_func, CASE_TAGS_FIELD, existing_tags + tags)
+        return test_func
+
+    return case_tags_decorator
+
+
+def tested_function(function: Union[str, Callable[[Any], Any]]):
+    """
+    A simple decorator to declare that a case function is associated with a particular test function
+
+    :param function: either a string representing the function name, or a callable
+    :return:
+    """
+    return case_tags([function])
+
+
+tested_function.__test__ = False  # disable this function in pytest (otherwise name starts with 'test' > it will appear)
 
 
 def unfold_expected_err(expected_e: ExpectedError) -> Tuple[Optional['Type[Exception]'],
