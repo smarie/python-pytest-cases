@@ -694,7 +694,7 @@
 
 <h3 id="caching">Caching<a class="headerlink" href="#caching" title="Permanent link">&para;</a></h3>
 <p>After starting to reuse cases in several test functions, you might end-up thinking <em>"why do I have to spend the data parsing/generation time several times ? It is the same case."</em>. You can solve this issue by using a cache.</p>
-<p>For simple cases you can simply decorate your case function with <code>@lru_cache()maxsize=1)</code> since simple case functions do not have parameters:</p>
+<p>For simple cases you can simply decorate your case function with <code>@lru_cache(maxsize=1)</code> since simple case functions do not have parameters:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 
 <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -704,7 +704,8 @@
 
 
 <p>For case generators you <strong>can</strong> also use <code>@lru_cache(maxsize=x)</code>, but you will have to set the max size according to the number of generated cases (or <code>None</code> to allow auto-grow). Otherwise, simply use the <code>lru_cache=True</code> parameter and <code>pytest-cases</code> will do it for you:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">cases_generator</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
+  <span class="n">cases_generator</span>
 
 <span class="c1"># case generator with caching enabled</span>
 <span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;case {i}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">lru_cache</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
