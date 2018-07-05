@@ -340,6 +340,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#test-suites-several-steps-on-each-case" title="Test "suites": several steps on each case" class="md-nav__link">
+    Test "suites": several steps on each case
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#advanced-pytest-manual-parametrization" title="Advanced Pytest: Manual parametrization" class="md-nav__link">
     Advanced Pytest: Manual parametrization
   </a>
@@ -454,6 +461,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-suites-several-steps-on-each-case" title="Test "suites": several steps on each case" class="md-nav__link">
+    Test "suites": several steps on each case
+  </a>
   
 </li>
       
@@ -837,6 +851,106 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 <li>they use <code>filter=bar</code></li>
 <li>or they use <code>filter='fast'</code></li>
 </ul>
+<h2 id="test-suites-several-steps-on-each-case">Test "suites": several steps on each case<a class="headerlink" href="#test-suites-several-steps-on-each-case" title="Permanent link">&para;</a></h2>
+<p>Sometimes you wish to execute a series of tests on the same dataset, and then to move to another one. This is feasible with <code>pytest_cases</code>:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">test_steps</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
+ <span class="n">CaseData</span>
+
+<span class="c1"># -------- test cases</span>
+<span class="k">def</span> <span class="nf">case_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">case_simple2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="c1"># ------- test steps</span>
+<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Step a of the test &quot;&quot;&quot;</span>
+    <span class="c1"># Use the three items as usual</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Step b of the test &quot;&quot;&quot;</span>
+    <span class="c1"># Use the three items as usual</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+
+<span class="c1"># ------- test suite</span>
+<span class="nd">@test_steps</span><span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">)</span>
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">,</span> <span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># Get the data for this step</span>
+    <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="c1"># Execute the step</span>
+    <span class="n">test_step</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This yields:</p>
+<div class="codehilite"><pre><span></span><span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
+...
+test_parametrized_blend.py::test_suite<span class="o">[</span>case_simple-step_check_a<span class="o">]</span> PASSED  <span class="o">[</span> <span class="m">25</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: <span class="m">1</span>, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
+test_parametrized_blend.py::test_suite<span class="o">[</span>case_simple-step_check_b<span class="o">]</span> PASSED  <span class="o">[</span> <span class="m">50</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: <span class="m">1</span>, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
+test_parametrized_blend.py::test_suite<span class="o">[</span>case_simple2-step_check_a<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">75</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: -1, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
+test_parametrized_blend.py::test_suite<span class="o">[</span>case_simple2-step_check_b<span class="o">]</span> PASSED <span class="o">[</span><span class="m">100</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: -1, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
+<span class="o">==========================</span> <span class="m">4</span> passed in <span class="m">0</span>.13 <span class="nv">seconds</span> <span class="o">===========================</span>
+</pre></div>
+
+
+<p>You see that for each case, all steps are executed in order. You can wish (more rarely) to invert the order, executing all cases on step a then all cases on step b etc. Simply invert the order of decorators and it will work (<code>pytest</code> is great!).</p>
+<p>But what if each step requires different expected output or errors ? </p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">test_steps</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
+ <span class="n">MultipleStepsCaseData</span>
+
+<span class="c1"># -------- test cases</span>
+<span class="k">def</span> <span class="nf">case_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MultipleStepsCaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">outs_for_a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+    <span class="n">outs_for_b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">step_check_a</span><span class="o">=</span><span class="n">outs_for_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="o">=</span><span class="n">outs_for_b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">case_simple2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MultipleStepsCaseData</span><span class="p">:</span>
+    <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">outs_for_a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+    <span class="n">outs_for_b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">step_check_a</span><span class="o">=</span><span class="n">outs_for_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="o">=</span><span class="n">outs_for_b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="c1"># ------- test steps</span>
+<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Step a of the test &quot;&quot;&quot;</span>
+    <span class="c1"># Use the three items as usual</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Step b of the test &quot;&quot;&quot;</span>
+    <span class="c1"># Use the three items as usual</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+
+<span class="c1"># ------- test suite</span>
+<span class="nd">@test_steps</span><span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">)</span>
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">,</span> <span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># Get the data for this step</span>
+    <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get_for</span><span class="p">(</span><span class="n">test_step</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="c1"># Execute the step</span>
+    <span class="n">test_step</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
+</pre></div>
+
+
+<p>There are two main differences with the first version:</p>
+<ul>
+<li>in the final <code>test_suite</code> we use <code>case_data.get_for(test_step.__name__)</code> to get the case data <strong>for a given step</strong></li>
+<li>in the <code>case_simple</code> and <code>case_simple2</code> case functions, we provide the expected output and expected error as dictionaries, where the key is the step name.</li>
+</ul>
 <h2 id="advanced-pytest-manual-parametrization">Advanced Pytest: Manual parametrization<a class="headerlink" href="#advanced-pytest-manual-parametrization" title="Permanent link">&para;</a></h2>
 <p>The <code>@cases_data</code> decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced pytest usages:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
@@ -851,6 +965,13 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 <span class="c1"># parametrize the test function manually</span>
 <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s1">&#39;case_data&#39;</span><span class="p">,</span> <span class="n">cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_with_cases_decorated</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseData</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+
+
+<p>Similarly the <code>@test_steps</code> decorator is equivalent to </p>
+<div class="codehilite"><pre><span></span><span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s1">&#39;test_step&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">),</span> <span class="n">ids</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_</span><span class="p">(</span><span class="n">test_step</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
                 
