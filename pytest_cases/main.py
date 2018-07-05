@@ -1,3 +1,4 @@
+import sys
 from abc import abstractmethod, ABC
 from inspect import getmembers
 from typing import Callable, Union, Optional, Any, Tuple, List
@@ -86,7 +87,10 @@ def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
         :return:
         """
         # Gather all cases from the reference module
-        cases = extract_cases_from_module(module, filter=filter)
+        if module is THIS_MODULE:
+            cases = extract_cases_from_module(sys.modules[test_func.__module__], filter=filter)
+        else:
+            cases = extract_cases_from_module(module, filter=filter)
 
         # TODO if the function is already parametrized, combine this tuple with the existing one ? Actually not needed
 
@@ -142,7 +146,7 @@ def case_name(name: str):
 CASE_TAGS_FIELD = '__case_tags__'
 
 
-def case_tags(tags: List[Any]):
+def case_tags(*tags: Any):
     """
     Decorator to tag a case function with a list of tags.
     Tags can be used in the @cases_data test function decorator to specify cases within a module, that should be applied
@@ -154,26 +158,26 @@ def case_tags(tags: List[Any]):
         existing_tags = getattr(test_func, CASE_TAGS_FIELD, None)
         if existing_tags is None:
             # there are no tags yet. Use the provided
-            setattr(test_func, CASE_TAGS_FIELD, tags)
+            setattr(test_func, CASE_TAGS_FIELD, list(tags))
         else:
             # there are some tags already, let's try to add the new to the existing
-            setattr(test_func, CASE_TAGS_FIELD, existing_tags + tags)
+            setattr(test_func, CASE_TAGS_FIELD, existing_tags + list(tags))
         return test_func
 
     return case_tags_decorator
 
 
-def tested_function(function: Union[str, Callable[[Any], Any]]):
+def test_target(target: Any):
     """
-    A simple decorator to declare that a case function is associated with a particular test function
+    A simple decorator to declare that a case function is associated with a particular target.
 
-    :param function: either a string representing the function name, or a callable
+    :param target: for example a function, a class... or a string representing a function, a class...
     :return:
     """
-    return case_tags([function])
+    return case_tags(target)
 
 
-tested_function.__test__ = False  # disable this function in pytest (otherwise name starts with 'test' > it will appear)
+test_target.__test__ = False  # disable this function in pytest (otherwise name starts with 'test' > it will appear)
 
 
 def unfold_expected_err(expected_e: ExpectedError) -> Tuple[Optional['Type[Exception]'],
@@ -231,3 +235,6 @@ def assert_exception_equal(e: ExpectedError, expected_e: ExpectedError):
     else:
         raise TypeError("ExpectedNormal exception should either by an exception type or an exception instance, found: "
                         + str(expected_e))
+
+
+THIS_MODULE = object()

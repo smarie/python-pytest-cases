@@ -26,3 +26,18 @@ def super_function_i_want_to_test(a, b):
         raise InfiniteInput('b')
 
     return a + 1, b + 1
+
+
+def super_function_i_want_to_test2(a, b):
+    """
+    An example function to be tested
+    :param a:
+    :param b:
+    :return:
+    """
+    if not isfinite(a):
+        raise InfiniteInput('a')
+    if not isfinite(b):
+        raise InfiniteInput('b')
+
+    return a + 1, b + 1
