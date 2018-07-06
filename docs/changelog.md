@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.7.0 - Hardcoded cases selection, and multi-module selection
+
+ * `@cases_data` has a new parameters `cases` that can be used to hardcode a case or a list of cases. Its `module` parameter can also now take a list of modules
+
 ### 0.6.0 - Case parameters and better test suites
 
  * `get_for` is deprecated: it was too specific to a given case data format.
