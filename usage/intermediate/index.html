@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-0.17.4, mkdocs-material-2.9.2">
+      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.2">
     
     
       
@@ -575,7 +575,7 @@
 </pre></div>
 
 
-<p>On the test functions side, filter the cases in <code>@cases_data</code> using <code>filter=&lt;target&gt;</code>:</p>
+<p>On the test functions side, filter the cases in <code>@cases_data</code> using <code>has_tag=&lt;target&gt;</code>:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">cases_data</span>
 
 <span class="c1"># the module containing the cases above</span>
@@ -584,7 +584,7 @@
 <span class="c1"># the 2 functions that we want to test</span>
 <span class="kn">from</span> <span class="nn">mycode</span> <span class="kn">import</span> <span class="n">foo</span><span class="p">,</span> <span class="n">bar</span>
 
-<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">shared_cases</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">foo</span><span class="p">)</span>
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">shared_cases</span><span class="p">,</span> <span class="n">has_tag</span><span class="o">=</span><span class="n">foo</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; This test will only be executed on cases tagged with &#39;foo&#39;&quot;&quot;&quot;</span>
 
@@ -597,7 +597,7 @@
     <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
 
 
-<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">shared_cases</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">bar</span><span class="p">)</span>
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">shared_cases</span><span class="p">,</span> <span class="n">has_tag</span><span class="o">=</span><span class="n">bar</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_bar</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; This test will only be executed on cases tagged with &#39;bar&#39;&quot;&quot;&quot;</span>
 
@@ -625,12 +625,45 @@
 </pre></div>
 
 
-<p>Test functions will be able to retrieve the above case if:</p>
+<p>Test functions can use two things to perform their selection:</p>
 <ul>
-<li>they do not <code>filter</code> at all</li>
-<li>they use <code>filter=bar</code></li>
-<li>or they use <code>filter='fast'</code></li>
+<li>the <code>has_tag</code> parameter, has seen above</li>
+<li>the <code>filter</code> parameter, that should be a callable taking as input a list of tags and returning a boolean.</li>
 </ul>
+<p>If both are provided, a AND will be applied.</p>
+<p>For example:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
+
+<span class="k">def</span> <span class="nf">has_a_or_b</span><span class="p">(</span><span class="n">tags</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;a&#39;</span> <span class="ow">in</span> <span class="n">tags</span> <span class="ow">or</span> <span class="s1">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">tags</span>
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">has_a_or_b</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_with_cases_a_or_b</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+</pre></div>
+
+
+<p>Or with a lambda function:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tags</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span> <span class="ow">in</span> <span class="n">tags</span> <span class="ow">or</span> <span class="s1">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_with_cases_a_or_b</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+</pre></div>
+
+
+<p>Or with a mini lambda expression:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
+
+<span class="kn">from</span> <span class="nn">mini_lambda</span> <span class="kn">import</span> <span class="n">InputVar</span><span class="p">,</span> <span class="n">_</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="n">InputVar</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="n">tags</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">tags</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)))</span>
+<span class="k">def</span> <span class="nf">test_with_cases_a_or_b</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+</pre></div>
+
+
 <h2 id="to-go-further">To go further<a class="headerlink" href="#to-go-further" title="Permanent link">&para;</a></h2>
 <p>Are you at ease with the above concepts ? It's time to move to the <a href="../advanced/">advanced</a> section!</p>
                 
@@ -706,7 +739,7 @@
     
       <script src="../../assets/javascripts/application.a59e2a89.js"></script>
       
-      <script>app.initialize({version:"0.17.4",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
       
     
     
