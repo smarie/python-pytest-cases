@@ -3,7 +3,11 @@ site_name: pytest_cases
 repo_url: https://github.com/smarie/python-pytest-cases
 pages:
     - Home: index.md
-    - Usage details: usage.md
+    - Usage details:
+        - Overview: usage.md
+        - Basics: usage/basics.md
+        - Intermediate: usage/intermediate.md
+        - Advanced: usage/advanced.md
     - Changelog: changelog.md
 theme: material  # readthedocs  mkdocs
 
