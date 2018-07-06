@@ -6,7 +6,7 @@ from pytest_cases.tests import test_main_cases
 
 
 # Decorator way:
-@cases_data(test_main_cases)
+@cases_data(module=test_main_cases)
 def test_with_cases_decorated(case_data: CaseDataGetter):
     """ Example unit test that is automatically parametrized with @cases_data """
 

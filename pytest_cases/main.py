@@ -144,11 +144,12 @@ test_steps.__test__ = False  # to prevent pytest to think that this is a test !
 CASE_PREFIX = 'case_'
 
 
-def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
+def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, filter: Any=None):
     """
-    Decorates a test function so as to automatically parametrize it with all cases listed in module `module`.
+    Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with
+    all cases listed explicitly in `cases`.
 
-    It is equivalent to
+    Using it with a non-None `module` argument is equivalent to
      * extracting all cases from module
      * then decorating your function with @pytest.mark.parametrize
 
@@ -170,9 +171,10 @@ def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
         ...
     ```
 
-    :param module:
     :param case_data_argname: the name of the function parameter that should receive the `CaseDataGetter` object.
-    Default is `case_data`
+        Default is `case_data`.
+    :param cases: a case or hardcoded list of cases to use. This can not be used together with `module`
+    :param module: a module or hardcoded list of modules to use. This can not be used together with `module`
     :param filter: a tag used to filter the cases. Only cases with the given tag will be selected
     :return:
     """
@@ -186,14 +188,30 @@ def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
         :param test_func:
         :return:
         """
-        # Gather all cases from the reference module
-        if module is THIS_MODULE:
-            cases = extract_cases_from_module(sys.modules[test_func.__module__], filter=filter)
+        if module is not None and cases is not None:
+            raise ValueError("Only one of module and cases should be provided")
+        elif module is None:
+            # Hardcoded sequence of cases, or single case
+            if callable(cases):
+                # single element
+                _cases = (case_getter for case_getter in get_case_getter_s(cases))
+            else:
+                # already a sequence
+                _cases = (case_getter for c in cases for case_getter in get_case_getter_s(c))
         else:
-            cases = extract_cases_from_module(module, filter=filter)
+            # Gather all cases from the reference module(s)
+            try:
+                _cases = []
+                for m in module:
+                    m = sys.modules[test_func.__module__] if m is THIS_MODULE else m
+                    _cases += extract_cases_from_module(m, filter=filter)
+            except TypeError:
+                # 'module' object is not iterable
+                m = sys.modules[test_func.__module__] if module is THIS_MODULE else module
+                _cases = extract_cases_from_module(m, filter=filter)
 
         # Finally create the pytest decorator and apply it
-        parametrizer = pytest.mark.parametrize(case_data_argname, cases, ids=str)
+        parametrizer = pytest.mark.parametrize(case_data_argname, _cases, ids=str)
 
         return parametrizer(test_func)
 
@@ -201,6 +219,11 @@ def cases_data(module, case_data_argname: str= 'case_data', filter: Any=None):
 
 
 def get_code(f):
+    """
+    Returns the source code associated to function f. It is robust to wrappers such as @lru_cache
+    :param f:
+    :return:
+    """
     if hasattr(f, '__code__'):
         return f.__code__
     elif hasattr(f, '__wrapped__'):
@@ -230,38 +253,74 @@ def extract_cases_from_module(module, filter: Any=None) -> List[CaseDataGetter]:
                 if filter is None \
                         or hasattr(f, CASE_TAGS_FIELD) and filter in getattr(f, CASE_TAGS_FIELD):
 
-                    # Handle case generators
-                    gen = getattr(f, GENERATOR_FIELD, False)
-                    if gen:
-                        already_used_names = []
+                    # update the dictionary with the case getters
+                    get_case_getter_s(f, code, cases_dct)
 
-                        name_template, param_ids, all_param_values_combinations = gen
-                        nb_cases_generated = len(all_param_values_combinations)
-
-                        for gen_case_id, case_params_values in enumerate(all_param_values_combinations):
-                            # build the dictionary of parameters for the case functions
-                            gen_case_params_dct = dict(zip(param_ids, case_params_values))
-
-                            # generate the case name by applying the name template
-                            gen_case_name = name_template.format(**gen_case_params_dct)
-                            if gen_case_name in already_used_names:
-                                raise ValueError("Generated function names for generator case function {} are not unique."
-                                                 " Please use all parameter names in the string format variables"
-                                                 "".format(f_name))
-                            else:
-                                already_used_names.append(gen_case_name)
-
-                            # save the result, with an artificial floating point line number to keep order in dict
-                            gen_line_nb = code.co_firstlineno + (gen_case_id / nb_cases_generated)
-                            cases_dct[gen_line_nb] = CaseDataFromFunction(f, gen_case_name, gen_case_params_dct)
-                    else:
-                        # single case
-                        cases_dct[code.co_firstlineno] = CaseDataFromFunction(f)
-
-    # convert into a tuple, taking all cases in order of appearance in the code (sort by source code line number)
+    # convert into a list, taking all cases in order of appearance in the code (sort by source code line number)
     cases = [cases_dct[k] for k in sorted(cases_dct.keys())]
 
     return cases
+
+
+def get_case_getter_s(f, f_code=None, cases_dct=None) -> Optional[List[CaseDataFromFunction]]:
+    """
+    Creates the case function getter or the several cases function getters (in case of a generator) associated with
+    function f. If cases_dct is provided, they are stored in this dictionary with a key equal to their code line number.
+    For generated cases, a floating line number is created to preserve order.
+
+    :param f:
+    :param f_code: should be provided if cases_dct is provided.
+    :param cases_dct: an optional dictionary where to store the created function wrappers
+    :return:
+    """
+
+    # create a return variable if needed
+    if cases_dct is None:
+        cases_list = []
+    else:
+        cases_list = None
+
+    # Handle case generators
+    gen = getattr(f, GENERATOR_FIELD, False)
+    if gen:
+        already_used_names = []
+
+        name_template, param_ids, all_param_values_combinations = gen
+        nb_cases_generated = len(all_param_values_combinations)
+
+        for gen_case_id, case_params_values in enumerate(all_param_values_combinations):
+            # build the dictionary of parameters for the case functions
+            gen_case_params_dct = dict(zip(param_ids, case_params_values))
+
+            # generate the case name by applying the name template
+            gen_case_name = name_template.format(**gen_case_params_dct)
+            if gen_case_name in already_used_names:
+                raise ValueError("Generated function names for generator case function {} are not "
+                                 "unique. Please use all parameter names in the string format variables"
+                                 "".format(f.__name__))
+            else:
+                already_used_names.append(gen_case_name)
+            case_getter = CaseDataFromFunction(f, gen_case_name, gen_case_params_dct)
+
+            # save the result
+            if cases_dct is None:
+                cases_list.append(case_getter)
+            else:
+                # with an artificial floating point line number to keep order in dict
+                gen_line_nb = f_code.co_firstlineno + (gen_case_id / nb_cases_generated)
+                cases_dct[gen_line_nb] = case_getter
+    else:
+        # single case
+        case_getter = CaseDataFromFunction(f)
+
+        # save the result
+        if cases_dct is None:
+            cases_list.append(case_getter)
+        else:
+            cases_dct[f_code.co_firstlineno] = case_getter
+
+    if cases_dct is None:
+        return cases_list
 
 
 def case_name(name: str):
