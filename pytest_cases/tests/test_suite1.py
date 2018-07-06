@@ -40,8 +40,13 @@ def step_check_b(ins, expected_o, expected_e):
 @cases_data(module=THIS_MODULE)
 def test_suite(test_step, case_data: CaseDataGetter):
 
-    # Get the data for this step
-    ins, expected_o, expected_e = case_data.get_for(test_step.__name__)
+    # Get the data
+    ins, expected_o, expected_e = case_data.get()
+
+    # Filter it based on the step
+    key = test_step.__name__
+    expected_o = None if expected_o is None else expected_o[key]
+    expected_e = None if expected_e is None else expected_e[key]
 
     # Execute the step
     test_step(ins, expected_o, expected_e)

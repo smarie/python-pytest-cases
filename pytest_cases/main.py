@@ -24,7 +24,9 @@ ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception
 CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
 
 
-MultipleStepsCaseData = Tuple[Given, Tuple[ExpectedNormal, ...], Tuple[ExpectedError, ...]]
+MultipleStepsCaseData = Tuple[Union[Given, Dict[str, Given]],
+                              Union[ExpectedNormal, Dict[str, ExpectedNormal]],
+                              Union[ExpectedError, Dict[str, ExpectedError]]]
 
 
 class CaseDataGetter(ABC):
