@@ -6,6 +6,8 @@ from typing import Callable, Union, Optional, Any, Tuple, List, Dict
 from functools import lru_cache as lru
 
 # noinspection PyBroadException
+from warnings import warn
+
 try:
     from typing import Type
 except:
@@ -39,10 +41,17 @@ class CaseDataGetter(ABC):
 
     def get_for(self, key) -> CaseData:
         """
+        DEPRECATED as it is hardcoded for a very particular format of case data. Please rather use get() directly, and
+        do the selection in the results yourself based on your case data format.
+        ---
         Returns a new case data getter where the data is automatically filtered with the key.
         This only works if the function returns a `MultipleStepsCaseData`
         :return:
         """
+        warn("This method is deprecated, as it is hardcoded for a very particular format of case data. Please rather"
+             "use get() directly, and do the selection in the results yourself based on your case data format",
+             category=DeprecationWarning, stacklevel=2)
+
         data = self.get()
 
         # assume that the data is a MultiStepsCaseData = a tuple with 3 items and the second and third are dict or None
