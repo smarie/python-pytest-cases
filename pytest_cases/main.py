@@ -144,7 +144,8 @@ test_steps.__test__ = False  # to prevent pytest to think that this is a test !
 CASE_PREFIX = 'case_'
 
 
-def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, filter: Any=None):
+def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, has_tag: Any=None,
+               filter: Callable[[List[Any]], bool]=None):
     """
     Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with
     all cases listed explicitly in `cases`.
@@ -175,7 +176,9 @@ def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, fil
         Default is `case_data`.
     :param cases: a case or hardcoded list of cases to use. This can not be used together with `module`
     :param module: a module or hardcoded list of modules to use. This can not be used together with `module`
-    :param filter: a tag used to filter the cases. Only cases with the given tag will be selected
+    :param has_tag: a tag used to filter the cases. Only cases with the given tag will be selected
+    :param filter: a function taking as an input a list of tags associated with a case, and returning a boolean
+        indicating if the case should be selected
     :return:
     """
     def datasets_decorator(test_func):
@@ -204,11 +207,11 @@ def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, fil
                 _cases = []
                 for m in module:
                     m = sys.modules[test_func.__module__] if m is THIS_MODULE else m
-                    _cases += extract_cases_from_module(m, filter=filter)
+                    _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter)
             except TypeError:
                 # 'module' object is not iterable
                 m = sys.modules[test_func.__module__] if module is THIS_MODULE else module
-                _cases = extract_cases_from_module(m, filter=filter)
+                _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
 
         # Finally create the pytest decorator and apply it
         parametrizer = pytest.mark.parametrize(case_data_argname, _cases, ids=str)
@@ -232,14 +235,21 @@ def get_code(f):
         raise ValueError("Cannot get code information for function " + str(f))
 
 
-def extract_cases_from_module(module, filter: Any=None) -> List[CaseDataGetter]:
+def extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[Any]], bool]=None) \
+        -> List[CaseDataGetter]:
     """
     Internal method used to create all cases available from the given module
 
     :param module:
-    :param filter: a tag used to filter the cases. Only cases with the given tag will be selected
+    :param has_tag: a tag used to filter the cases. Only cases with the given tag will be selected
+    :param filter: a function taking as an input a list of tags associated with a case, and returning a boolean
+        indicating if the case should be selected
     :return:
     """
+    if filter is not None and not callable(filter):
+        raise ValueError("`filter` should be a callable starting in pytest-cases 0.8.0. If you wish to provide a single"
+                         " tag to match, use `has_tag` instead.")
+
     # First gather all case data providers in the reference module
     cases_dct = dict()
     for f_name, f in getmembers(module, callable):
@@ -249,10 +259,16 @@ def extract_cases_from_module(module, filter: Any=None) -> List[CaseDataGetter]:
         if f_name.startswith(CASE_PREFIX):
             code = get_code(f)
             if code.co_filename == module.__file__:
-                #  - with the optional filter tag
-                if filter is None \
-                        or hasattr(f, CASE_TAGS_FIELD) and filter in getattr(f, CASE_TAGS_FIELD):
+                #  - with the optional filter/tag
+                _tags = getattr(f, CASE_TAGS_FIELD, ())
 
+                selected = True  # by default select the case, then AND the conditions
+                if has_tag is not None:
+                    selected = selected and (has_tag in _tags)
+                if filter is not None:
+                    selected = selected and filter(_tags)
+
+                if selected:
                     # update the dictionary with the case getters
                     get_case_getter_s(f, code, cases_dct)
 

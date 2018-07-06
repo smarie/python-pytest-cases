@@ -14,7 +14,7 @@ here = path.abspath(path.dirname(__file__))
 INSTALL_REQUIRES = []
 DEPENDENCY_LINKS = []
 SETUP_REQUIRES = ['pytest-runner', 'setuptools_scm', 'pypandoc', 'pandoc']
-TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov']
+TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'mini_lambda']
 EXTRAS_REQUIRE = {}
 
 # simple check
@@ -65,7 +65,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    #version=VERSION, NOW HANDLED BY GIT
+    # version=VERSION, NOW HANDLED BY GIT
 
     maintainer=MAINTAINER,
     maintainer_email=MAINTAINER_EMAIL,

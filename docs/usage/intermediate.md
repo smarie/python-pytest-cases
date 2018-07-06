@@ -97,7 +97,7 @@ def case_bar_simple() -> CaseData:
     return ins, outs, None
 ```
 
-On the test functions side, filter the cases in `@cases_data` using `filter=<target>`:
+On the test functions side, filter the cases in `@cases_data` using `has_tag=<target>`:
 
 ```python
 from pytest_cases import CaseDataGetter, cases_data
@@ -108,7 +108,7 @@ from . import shared_cases
 # the 2 functions that we want to test
 from mycode import foo, bar
 
-@cases_data(module=shared_cases, filter=foo)
+@cases_data(module=shared_cases, has_tag=foo)
 def test_foo(case_data: CaseDataGetter):
     """ This test will only be executed on cases tagged with 'foo'"""
     
@@ -121,7 +121,7 @@ def test_foo(case_data: CaseDataGetter):
     assert outs == expected_o
 
 
-@cases_data(module=shared_cases, filter=bar)
+@cases_data(module=shared_cases, has_tag=bar)
 def test_bar(case_data: CaseDataGetter):
     """ This test will only be executed on cases tagged with 'bar'"""
     
@@ -151,11 +151,49 @@ def case_multitag_simple() -> CaseData:
     return ins, outs, None
 ```
 
-Test functions will be able to retrieve the above case if:
+Test functions can use two things to perform their selection:
 
- - they do not `filter` at all
- - they use `filter=bar`
- - or they use `filter='fast'`
+ - the `has_tag` parameter, has seen above
+ - the `filter` parameter, that should be a callable taking as input a list of tags and returning a boolean.
+
+If both are provided, a AND will be applied.
+
+For example:
+
+```python
+from pytest_cases import THIS_MODULE, cases_data, CaseDataGetter
+
+def has_a_or_b(tags):
+    return 'a' in tags or 'b' in tags
+
+@cases_data(module=THIS_MODULE, filter=has_a_or_b)
+def test_with_cases_a_or_b(case_data: CaseDataGetter):
+    # ...
+```
+
+Or with a lambda function:
+
+```python
+from pytest_cases import THIS_MODULE, cases_data, CaseDataGetter
+
+@cases_data(module=THIS_MODULE, filter=lambda tags: 'a' in tags or 'b' in tags)
+def test_with_cases_a_or_b(case_data: CaseDataGetter):
+    # ...
+```
+
+Or with a mini lambda expression:
+
+```python
+from pytest_cases import THIS_MODULE, cases_data, CaseDataGetter
+
+from mini_lambda import InputVar, _
+tags = InputVar('tags', list)
+
+@cases_data(module=THIS_MODULE, filter=_(tags.contains('a') | tags.contains('b')))
+def test_with_cases_a_or_b(case_data: CaseDataGetter):
+    # ...
+```
+
 
 ## To go further
 

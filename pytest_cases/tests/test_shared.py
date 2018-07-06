@@ -6,7 +6,7 @@ from pytest_cases.tests.example_code import super_function_i_want_to_test, super
 from pytest_cases.tests import test_shared_cases
 
 
-@cases_data(module=test_shared_cases, filter=super_function_i_want_to_test)
+@cases_data(module=test_shared_cases, has_tag=super_function_i_want_to_test)
 def test_with_filter(case_data: CaseDataGetter):
 
     # 1- Grab the test case data
@@ -18,7 +18,7 @@ def test_with_filter(case_data: CaseDataGetter):
     assert outs == expected_o
 
 
-@cases_data(module=test_shared_cases, filter=super_function_i_want_to_test2)
+@cases_data(module=test_shared_cases, has_tag=super_function_i_want_to_test2)
 def test_with_filter2(case_data: CaseDataGetter):
 
     # 1- Grab the test case data

@@ -30,7 +30,7 @@ def case_3() -> CaseData:
     return ins, outs, err
 
 
-@cases_data(module=THIS_MODULE, filter='a')
+@cases_data(module=THIS_MODULE, has_tag='a')
 def test_a(case_data: CaseDataGetter):
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
@@ -39,7 +39,7 @@ def test_a(case_data: CaseDataGetter):
     # see pytest-cases usage page for suggestions
 
 
-@cases_data(module=THIS_MODULE, filter='b')
+@cases_data(module=THIS_MODULE, has_tag='b')
 def test_b(case_data: CaseDataGetter):
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
