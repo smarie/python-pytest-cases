@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.8.0 - Filtering can now be done using a callable.
+
+ * `@cases_data`: the `filter` argument now contains a filtering function. WARNING: the previous behaviour is still available but has been renamed `has_tag`. Fixes [#8](https://github.com/smarie/python-pytest-cases/issues/8)
+
 ### 0.7.0 - Hardcoded cases selection, and multi-module selection
 
  * `@cases_data` has a new parameters `cases` that can be used to hardcode a case or a list of cases. Its `module` parameter can also now take a list of modules
