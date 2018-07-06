@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.6.0 - Case parameters and better test suites
+
+ * `get_for` is deprecated: it was too specific to a given case data format.
+ * `MultipleStepsCaseData` was fixed to also support multiple inputs.
+ * Case functions can now have parameters (even case generators). This is particularly useful for test suites. Fixes [#9](https://github.com/smarie/python-pytest-cases/issues/9)
+
 ### 0.5.0 - support for test suites
 
  * test functions can now be decorated with `@test_steps` to easily define a test suite with several steps. This fixes [#7](https://github.com/smarie/python-pytest-cases/issues/7)
