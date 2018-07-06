@@ -35,7 +35,7 @@ class CaseDataGetter(ABC):
     It offers a single 'get()' method to get the contents of the test case
     """
     @abstractmethod
-    def get(self) -> CaseData:
+    def get(self, *args, **kwargs) -> CaseData:
         """
         Getter for the contents of the tet case
         :return:
@@ -97,12 +97,12 @@ class CaseDataFromFunction(CaseDataGetter):
     def __repr__(self):
         return "Test Case Data generator - [" + self.f.__name__ + "] - " + str(self.f)
 
-    def get(self) -> CaseData:
+    def get(self, *args, **kwargs) -> CaseData:
         """
         This implementation relies on the inner function to generate the dataset
         :return:
         """
-        return self.f(**self.function_kwargs)
+        return self.f(*args, **kwargs, **self.function_kwargs)
 
 
 def test_steps(*steps, test_step_argname: str= 'test_step'):
