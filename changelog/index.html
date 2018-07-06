@@ -244,10 +244,70 @@
       
 
 
-  <li class="md-nav__item">
-    <a href="../usage/" title="Usage details" class="md-nav__link">
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
       Usage details
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Usage details
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/" title="Overview" class="md-nav__link">
+      Overview
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/basics/" title="Basics" class="md-nav__link">
+      Basics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/intermediate/" title="Intermediate" class="md-nav__link">
+      Intermediate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/advanced/" title="Advanced" class="md-nav__link">
+      Advanced
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -282,6 +342,13 @@
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#070-hardcoded-cases-selection-and-multi-module-selection" title="0.7.0 - Hardcoded cases selection, and multi-module selection" class="md-nav__link">
+    0.7.0 - Hardcoded cases selection, and multi-module selection
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#060-case-parameters-and-better-test-suites" title="0.6.0 - Case parameters and better test suites" class="md-nav__link">
@@ -357,6 +424,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#070-hardcoded-cases-selection-and-multi-module-selection" title="0.7.0 - Hardcoded cases selection, and multi-module selection" class="md-nav__link">
+    0.7.0 - Hardcoded cases selection, and multi-module selection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#060-case-parameters-and-better-test-suites" title="0.6.0 - Case parameters and better test suites" class="md-nav__link">
     0.6.0 - Case parameters and better test suites
   </a>
@@ -418,6 +492,10 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="070-hardcoded-cases-selection-and-multi-module-selection">0.7.0 - Hardcoded cases selection, and multi-module selection<a class="headerlink" href="#070-hardcoded-cases-selection-and-multi-module-selection" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>@cases_data</code> has a new parameters <code>cases</code> that can be used to hardcode a case or a list of cases. Its <code>module</code> parameter can also now take a list of modules</li>
+</ul>
 <h3 id="060-case-parameters-and-better-test-suites">0.6.0 - Case parameters and better test suites<a class="headerlink" href="#060-case-parameters-and-better-test-suites" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>get_for</code> is deprecated: it was too specific to a given case data format.</li>
@@ -478,7 +556,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../usage/" title="Usage details" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../usage/advanced/" title="Advanced" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -487,7 +565,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Usage details
+                Advanced
               </span>
             </div>
           </a>

@@ -11,6 +11,21 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
+     <loc>/usage/basics/</loc>
+     <lastmod>2018-07-06</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>/usage/intermediate/</loc>
+     <lastmod>2018-07-06</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>/usage/advanced/</loc>
+     <lastmod>2018-07-06</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
      <loc>/changelog/</loc>
      <lastmod>2018-07-06</lastmod>
      <changefreq>daily</changefreq>
