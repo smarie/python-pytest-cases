@@ -371,6 +371,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#0-the-test_steps-decorator" title="0- The @test_steps decorator" class="md-nav__link">
+    0- The @test_steps decorator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-identical-cases-for-all" title="a- Identical cases for all" class="md-nav__link">
     a- Identical cases for all
   </a>
@@ -492,6 +499,13 @@
   
     <nav class="md-nav">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#0-the-test_steps-decorator" title="0- The @test_steps decorator" class="md-nav__link">
+    0- The @test_steps decorator
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#a-identical-cases-for-all" title="a- Identical cases for all" class="md-nav__link">
@@ -681,12 +695,37 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 <p><strong>WARNING</strong> if you use <a href="#case_parameters">case parameters</a>, do not forget to take the additional parameter values into account to estimate the total cache size. Note that the <code>lru_cache=</code> option of <code>@cases_generator</code> is not intelligent enough to handle additional parameters: do not use it, and instead manually apply the <code>@lru_cache</code> decorator.</p>
 <h2 id="test-suites-several-steps-on-each-case">Test "suites": several steps on each case<a class="headerlink" href="#test-suites-several-steps-on-each-case" title="Permanent link">&para;</a></h2>
 <p>Sometimes you wish to execute a series of tests on the same dataset, and then to move to another one. This is feasible with <code>pytest_cases</code>.</p>
-<h3 id="a-identical-cases-for-all">a- Identical cases for all<a class="headerlink" href="#a-identical-cases-for-all" title="Permanent link">&para;</a></h3>
-<p>It is very easy define test steps and make them all use the same identical cases data. For this, simply:</p>
+<h3 id="0-the-test_steps-decorator">0- The <code>@test_steps</code> decorator<a class="headerlink" href="#0-the-test_steps-decorator" title="Permanent link">&para;</a></h3>
+<p>This decorator can be used independently from the rest of this package. It is simply a convenient and readable specialization of <code>@pytest.mark.parametrize</code> so as to breakdown a test into sub-steps. To use it, simply:</p>
 <ul>
 <li>create several step functions, e.g. <code>step_check_a</code>, <code>step_check_b</code>...</li>
-<li>create a test function representing the "suite", and decorate it with <code>@test_steps</code>:</li>
+<li>create a test function representing the "suite", and decorate it with <code>@test_steps</code></li>
+<li>fill the function so as to retrieve the appropriate data in each step. It can be done within the function body as shown below, or thanks to additional <code>parametrize</code> decorators.</li>
 </ul>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">test_steps</span>
+
+<span class="c1"># ------- test steps</span>
+<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Step a of the test &quot;&quot;&quot;</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Step b of the test &quot;&quot;&quot;</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+
+<span class="c1"># ------- test suite</span>
+<span class="nd">@test_steps</span><span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">):</span>
+    <span class="c1"># Get the data for this step</span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">todo_get_data_for_step</span><span class="p">(</span><span class="n">test_step</span><span class="p">)</span>
+
+    <span class="c1"># Execute the step</span>
+    <span class="n">test_step</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
+</pre></div>
+
+
+<h3 id="a-identical-cases-for-all">a- Identical cases for all<a class="headerlink" href="#a-identical-cases-for-all" title="Permanent link">&para;</a></h3>
+<p>It is very easy to make all test steps use the same identical cases data:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">test_steps</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
  <span class="n">CaseData</span>
 
