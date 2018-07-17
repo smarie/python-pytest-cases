@@ -11,6 +11,8 @@ Did you ever thought that most of your test functions were actually *the same te
  * on one hand, the usual `test_xxxx.py` file containing your test functions
  * on the other hand, a new `test_xxxx_cases.py` containing your cases functions
 
+In addition as a goodie, `pytest-cases` also provides a way to create **test suites with several steps**. This is an independent mechanism, but obviously work with the test cases, see [usage page for details](./usage/advanced/#test-suites-several-steps-on-each-case).
+
 
 ## Installing
 

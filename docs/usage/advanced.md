@@ -153,12 +153,40 @@ See [doc on lru_cache](https://docs.python.org/3/library/functools.html#functool
 
 Sometimes you wish to execute a series of tests on the same dataset, and then to move to another one. This is feasible with `pytest_cases`.
 
-### a- Identical cases for all
+### 0- The `@test_steps` decorator
 
-It is very easy define test steps and make them all use the same identical cases data. For this, simply:
+This decorator can be used independently from the rest of this package. It is simply a convenient and readable specialization of `@pytest.mark.parametrize` so as to breakdown a test into sub-steps. To use it, simply:
 
  - create several step functions, e.g. `step_check_a`, `step_check_b`...
- - create a test function representing the "suite", and decorate it with `@test_steps`:
+ - create a test function representing the "suite", and decorate it with `@test_steps`
+ - fill the function so as to retrieve the appropriate data in each step. It can be done within the function body as shown below, or thanks to additional `parametrize` decorators.
+
+```python
+from pytest_cases import test_steps
+
+# ------- test steps
+def step_check_a(inputs, expected_o, expected_e):
+    """ Step a of the test """
+    print(inputs)
+
+def step_check_b(inputs, expected_o, expected_e):
+    """ Step b of the test """
+    print(inputs)
+
+# ------- test suite
+@test_steps(step_check_a, step_check_b)
+def test_suite(test_step):
+    # Get the data for this step
+    inputs, expected_o, expected_e = todo_get_data_for_step(test_step)
+
+    # Execute the step
+    test_step(inputs, expected_o, expected_e)
+```
+
+
+### a- Identical cases for all
+
+It is very easy to make all test steps use the same identical cases data:
 
 ```python
 from pytest_cases import test_steps, cases_data, CaseDataGetter, THIS_MODULE, \
