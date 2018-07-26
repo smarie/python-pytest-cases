@@ -100,42 +100,6 @@ class CaseDataFromFunction(CaseDataGetter):
         return self.f(*args, **kwargs, **self.function_kwargs)
 
 
-def test_steps(*steps, test_step_argname: str= 'test_step'):
-    """
-    Decorates a test function so as to automatically parametrize it with all steps listed as arguments.
-
-    When the steps are functions, this is equivalent to
-    @pytest.mark.parametrize(test_step_argname, steps, ids=lambda x: x.__name__)
-
-    :param steps:
-    :return:
-    """
-    def steps_decorator(test_func):
-        """
-        The generated test function decorator.
-
-        It is equivalent to @mark.parametrize('case_data', cases) where cases is a tuple containing a CaseDataGetter for
-        all case generator functions
-
-        :param test_func:
-        :return:
-        """
-        def get_id(f):
-            if callable(f) and hasattr(f, '__name__'):
-                return f.__name__
-            else:
-                return str(f)
-
-        # Finally create the pytest decorator and apply it
-        parametrizer = pytest.mark.parametrize(test_step_argname, steps, ids=get_id)
-        return parametrizer(test_func)
-
-    return steps_decorator
-
-
-test_steps.__test__ = False  # to prevent pytest to think that this is a test !
-
-
 CASE_PREFIX = 'case_'
 """Prefix used by default to identify case functions within a module"""
 
