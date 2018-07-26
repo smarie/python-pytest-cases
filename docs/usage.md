@@ -6,3 +6,5 @@ You have seen in the [main page](./index) a small example to understand the conc
  - [Intermediate](usage/intermediate.md)
  - [Advanced](usage/advanced.md)
  
+ 
+You can also wish to look at the [API reference](./api_reference.md) in addition.
