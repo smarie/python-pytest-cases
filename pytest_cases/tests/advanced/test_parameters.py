@@ -1,6 +1,6 @@
 import pytest
 
-from pytest_cases.tests.example_code import super_function_i_want_to_test
+from example_code import super_function_i_want_to_test
 
 from pytest_cases import CaseData, cases_data, CaseDataGetter, THIS_MODULE, cases_generator
 
@@ -31,6 +31,7 @@ def case_gen(version: str, i, j) -> CaseData:
 @cases_data(module=THIS_MODULE)
 @pytest.mark.parametrize("version", ["1.0.0", "2.0.0"])
 def test_with_parameters(case_data: CaseDataGetter, version):
+    """ This test checks that you can blend with your own pytest fixtures/parameters """
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get(version)

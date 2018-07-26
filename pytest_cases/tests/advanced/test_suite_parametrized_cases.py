@@ -44,7 +44,7 @@ def step_check_b(ins, expected_o, expected_e):
 # equivalent to @pytest.mark.parametrize('test_step', (step_check_a, step_check_b), ids=lambda x: x.__name__)
 @test_steps(step_check_a, step_check_b)
 @cases_data(module=THIS_MODULE)
-def test_suite(test_step, case_data: CaseDataGetter):
+def test_suite_parametrized_cases(test_step, case_data: CaseDataGetter):
 
     # Get the data for this particular case
     ins, expected_o, expected_e = case_data.get(test_step.__name__)

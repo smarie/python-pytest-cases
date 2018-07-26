@@ -1,8 +1,6 @@
-import pytest
+from example_code import super_function_i_want_to_test
 
-from pytest_cases.tests.example_code import super_function_i_want_to_test
-
-from pytest_cases import case_name, CaseData, cases_data, CaseDataGetter, THIS_MODULE, cases_generator
+from pytest_cases import CaseData, cases_data, CaseDataGetter, THIS_MODULE, cases_generator
 
 
 def case_simple() -> CaseData:

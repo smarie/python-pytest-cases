@@ -8,6 +8,8 @@ from functools import lru_cache as lru
 # noinspection PyBroadException
 from warnings import warn
 
+from pytest_cases.case_funcs import CaseData, ExpectedError, _GENERATOR_FIELD, CASE_TAGS_FIELD
+
 try:
     from typing import Type
 except:
@@ -17,27 +19,20 @@ except:
 import pytest
 
 
-# Type hints that you can use in your functions
-Given = Any
-ExpectedNormal = Optional[Any]
-ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], Optional[bool]]]]
-CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
-
-
-MultipleStepsCaseData = Tuple[Union[Given, Dict[str, Given]],
-                              Union[ExpectedNormal, Dict[str, ExpectedNormal]],
-                              Union[ExpectedError, Dict[str, ExpectedError]]]
-
-
 class CaseDataGetter(ABC):
     """
-    Represents the contract that a test case dataset has to provide.
-    It offers a single 'get()' method to get the contents of the test case
+    A proxy for a test case. Instances of this class are created by `@cases_data` or `extract_cases_from_module`.
+
+    It provides a single method: `get(self, *args, **kwargs) -> CaseData`
+    This method calls the actual underlying case with arguments propagation, and returns the result.
+
+    The case functions can use the proposed standard `CaseData` type hint and return outputs matching this type hint,
+    but this is not mandatory.
     """
     @abstractmethod
-    def get(self, *args, **kwargs) -> CaseData:
+    def get(self, *args, **kwargs) -> Union[CaseData, Any]:
         """
-        Getter for the contents of the tet case
+        Retrieves the contents of the test case, with the provided arguments.
         :return:
         """
 
@@ -97,9 +92,9 @@ class CaseDataFromFunction(CaseDataGetter):
     def __repr__(self):
         return "Test Case Data generator - [" + self.f.__name__ + "] - " + str(self.f)
 
-    def get(self, *args, **kwargs) -> CaseData:
+    def get(self, *args, **kwargs) -> Union[CaseData, Any]:
         """
-        This implementation relies on the inner function to generate the dataset
+        This implementation relies on the inner function to generate the case data.
         :return:
         """
         return self.f(*args, **kwargs, **self.function_kwargs)
@@ -142,19 +137,36 @@ test_steps.__test__ = False  # to prevent pytest to think that this is a test !
 
 
 CASE_PREFIX = 'case_'
+"""Prefix used by default to identify case functions within a module"""
+
+THIS_MODULE = object()
+"""Marker that can be used instead of a module name to indicate that the module is the current one"""
 
 
-def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, has_tag: Any=None,
+def cases_data(cases=None, module=None, case_data_argname: str= 'case_data', has_tag: Any=None,
                filter: Callable[[List[Any]], bool]=None):
     """
     Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with
     all cases listed explicitly in `cases`.
 
     Using it with a non-None `module` argument is equivalent to
-     * extracting all cases from module
-     * then decorating your function with @pytest.mark.parametrize
+     * extracting all cases from `module`
+     * then decorating your function with @pytest.mark.parametrize with all the cases
 
-    You can perform the two steps manually with:
+    So
+
+    ```python
+    from pytest_cases import cases_data, CaseData
+
+    # import the module containing the test cases
+    import test_foo_cases
+
+    @cases_data(test_foo_cases)
+    def test_foo(case_data: CaseData):
+        ...
+    ```
+
+    is equivalent to:
 
     ```python
     import pytest
@@ -168,17 +180,20 @@ def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, has
 
     # parametrize the test function manually
     @pytest.mark.parametrize('case_data', cases, ids=str)
-    def test_with_cases_decorated(case_data: CaseData):
+    def test_foo(case_data: CaseData):
         ...
     ```
 
-    :param case_data_argname: the name of the function parameter that should receive the `CaseDataGetter` object.
-        Default is `case_data`.
-    :param cases: a case or hardcoded list of cases to use. This can not be used together with `module`
-    :param module: a module or hardcoded list of modules to use. This can not be used together with `module`
-    :param has_tag: a tag used to filter the cases. Only cases with the given tag will be selected
-    :param filter: a function taking as an input a list of tags associated with a case, and returning a boolean
-        indicating if the case should be selected
+    :param cases: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
+    :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
+        module is the current one. Only one of `cases` and `module` should be set.
+    :param case_data_argname: the optional name of the function parameter that should receive the `CaseDataGetter`
+        object. Default is `case_data`.
+    :param has_tag: an optional tag used to filter the cases. Only cases with the given tag will be selected. Only
+        cases with the given tag will be selected.
+    :param filter: an optional filtering function taking as an input a list of tags associated with a case, and
+        returning a boolean indicating if the case should be selected. It will be used to filter the cases in the
+        `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
     def datasets_decorator(test_func):
@@ -197,10 +212,10 @@ def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, has
             # Hardcoded sequence of cases, or single case
             if callable(cases):
                 # single element
-                _cases = (case_getter for case_getter in get_case_getter_s(cases))
+                _cases = [case_getter for case_getter in _get_case_getter_s(cases)]
             else:
                 # already a sequence
-                _cases = (case_getter for c in cases for case_getter in get_case_getter_s(c))
+                _cases = [case_getter for c in cases for case_getter in _get_case_getter_s(c)]
         else:
             # Gather all cases from the reference module(s)
             try:
@@ -213,15 +228,19 @@ def cases_data(case_data_argname: str= 'case_data', cases=None, module=None, has
                 m = sys.modules[test_func.__module__] if module is THIS_MODULE else module
                 _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
 
+        # old: use id getter function : cases_ids = str
+        # new: hardcode the case ids, safer (?) in case this is mixed with another fixture
+        cases_ids = [str(c) for c in _cases]
+
         # Finally create the pytest decorator and apply it
-        parametrizer = pytest.mark.parametrize(case_data_argname, _cases, ids=str)
+        parametrizer = pytest.mark.parametrize(case_data_argname, _cases, ids=cases_ids)
 
         return parametrizer(test_func)
 
     return datasets_decorator
 
 
-def get_code(f):
+def _get_code(f):
     """
     Returns the source code associated to function f. It is robust to wrappers such as @lru_cache
     :param f:
@@ -230,7 +249,7 @@ def get_code(f):
     if hasattr(f, '__code__'):
         return f.__code__
     elif hasattr(f, '__wrapped__'):
-        return get_code(f.__wrapped__)
+        return _get_code(f.__wrapped__)
     else:
         raise ValueError("Cannot get code information for function " + str(f))
 
@@ -238,7 +257,8 @@ def get_code(f):
 def extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[Any]], bool]=None) \
         -> List[CaseDataGetter]:
     """
-    Internal method used to create all cases available from the given module
+    Internal method used to create a list of `CaseDataGetter` for all cases available from the given module.
+    See `@cases_data`
 
     :param module:
     :param has_tag: a tag used to filter the cases. Only cases with the given tag will be selected
@@ -257,7 +277,7 @@ def extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[
         #  - from the module file (not the imported ones),
         #  - starting with prefix 'case_'
         if f_name.startswith(CASE_PREFIX):
-            code = get_code(f)
+            code = _get_code(f)
             if code.co_filename == module.__file__:
                 #  - with the optional filter/tag
                 _tags = getattr(f, CASE_TAGS_FIELD, ())
@@ -270,7 +290,7 @@ def extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[
 
                 if selected:
                     # update the dictionary with the case getters
-                    get_case_getter_s(f, code, cases_dct)
+                    _get_case_getter_s(f, code, cases_dct)
 
     # convert into a list, taking all cases in order of appearance in the code (sort by source code line number)
     cases = [cases_dct[k] for k in sorted(cases_dct.keys())]
@@ -278,7 +298,7 @@ def extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[
     return cases
 
 
-def get_case_getter_s(f, f_code=None, cases_dct=None) -> Optional[List[CaseDataFromFunction]]:
+def _get_case_getter_s(f, f_code=None, cases_dct=None) -> Optional[List[CaseDataFromFunction]]:
     """
     Creates the case function getter or the several cases function getters (in case of a generator) associated with
     function f. If cases_dct is provided, they are stored in this dictionary with a key equal to their code line number.
@@ -297,7 +317,7 @@ def get_case_getter_s(f, f_code=None, cases_dct=None) -> Optional[List[CaseDataF
         cases_list = None
 
     # Handle case generators
-    gen = getattr(f, GENERATOR_FIELD, False)
+    gen = getattr(f, _GENERATOR_FIELD, False)
     if gen:
         already_used_names = []
 
@@ -339,73 +359,21 @@ def get_case_getter_s(f, f_code=None, cases_dct=None) -> Optional[List[CaseDataF
         return cases_list
 
 
-def case_name(name: str):
-    """
-    Decorator to simply change the name of a case generator function
-
-    :param name: the name that will be used in the test case, instead of the case generator function name
-    :return:
-    """
-    def case_name_decorator(test_func):
-        test_func.__name__ = name
-        return test_func
-
-    return case_name_decorator
-
-
-CASE_TAGS_FIELD = '__case_tags__'
-
-
-def case_tags(*tags: Any):
-    """
-    Decorator to tag a case function with a list of tags.
-    Tags can be used in the @cases_data test function decorator to specify cases within a module, that should be applied
-
-    :param tags: a list of tags to decorate this case.
-    :return:
-    """
-    def case_tags_decorator(test_func):
-        existing_tags = getattr(test_func, CASE_TAGS_FIELD, None)
-        if existing_tags is None:
-            # there are no tags yet. Use the provided
-            setattr(test_func, CASE_TAGS_FIELD, list(tags))
-        else:
-            # there are some tags already, let's try to add the new to the existing
-            setattr(test_func, CASE_TAGS_FIELD, existing_tags + list(tags))
-        return test_func
-
-    return case_tags_decorator
-
-
-def test_target(target: Any):
-    """
-    A simple decorator to declare that a case function is associated with a particular target.
-
-    >>> @test_target(int)
-    >>> def case_to_test_int():
-    >>>     ...
-
-    This is actually an alias for `@case_tags(target)`, but it is a bit more readable
-
-    :param target: for example a function, a class... or a string representing a function, a class...
-    :return:
-    """
-    return case_tags(target)
-
-
-test_target.__test__ = False  # disable this function in pytest (otherwise name starts with 'test' > it will appear)
-
-
 def unfold_expected_err(expected_e: ExpectedError) -> Tuple[Optional['Type[Exception]'],
                                                             Optional[Exception],
                                                             Optional[Callable[[Exception], bool]]]:
     """
-    'Unfolds' the expected error to return a tuple of
+    'Unfolds' the expected error `expected_e` to return a tuple of
      - expected error type
      - expected error instance
      - error validation callable
 
-    :param expected_e:
+    If `expected_e` is an exception type, returns `expected_e, None, None`
+    If `expected_e` is an exception instance, returns `type(expected_e), expected_e, None`
+    If `expected_e` is an exception validation function, returns `Exception, None, expected_e`
+
+    :param expected_e: an `ExpectedError`, that is, either an exception type, an exception instance, or an exception
+        validation function
     :return:
     """
     if type(expected_e) is type and issubclass(expected_e, Exception):
@@ -419,36 +387,3 @@ def unfold_expected_err(expected_e: ExpectedError) -> Tuple[Optional['Type[Excep
 
     raise ValueError("ExpectedNormal error should either be an exception type, an exception instance, or an exception "
                      "validation callable")
-
-
-THIS_MODULE = object()
-
-
-GENERATOR_FIELD = '__cases_generator__'
-
-
-def cases_generator(name_template, lru_cache=False, **kwargs):
-    """
-    Decorator to declare a case function as being a cases generator.
-
-    >>> @cases_generator("test with i={i}", i=range(10))
-    >>> def case_10_times(i):
-    >>>     ''' Generates 10 cases '''
-    >>>     ins = dict(a=i, b=i+1)
-    >>>     outs = i+1, i+2
-    >>>     return ins, outs, None
-
-    :return:
-    """
-
-    def cases_generator_decorator(test_func):
-        kwarg_values = list(product(*kwargs.values()))
-        setattr(test_func, GENERATOR_FIELD, (name_template, kwargs.keys(), kwarg_values))
-        if lru_cache:
-            nb_cases = len(kwarg_values)
-            # decorate the function
-            test_func = lru(maxsize=nb_cases)(test_func)
-
-        return test_func
-
-    return cases_generator_decorator
