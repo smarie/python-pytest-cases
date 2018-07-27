@@ -8,6 +8,7 @@ pages:
         - Basics: usage/basics.md
         - Intermediate: usage/intermediate.md
         - Advanced: usage/advanced.md
+    - API reference: api_reference.md
     - Changelog: changelog.md
 theme: material  # readthedocs  mkdocs
 

@@ -423,6 +423,18 @@
 
 
   <li class="md-nav__item">
+    <a href="api_reference/" title="API reference" class="md-nav__link">
+      API reference
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="changelog/" title="Changelog" class="md-nav__link">
       Changelog
     </a>
@@ -552,7 +564,7 @@
 <li>on one hand, the usual <code>test_xxxx.py</code> file containing your test functions</li>
 <li>on the other hand, a new <code>test_xxxx_cases.py</code> containing your cases functions</li>
 </ul>
-<p>In addition as a goodie, <code>pytest-cases</code> also provides a way to create <strong>test suites with several steps</strong>. This is an independent mechanism, but obviously work with the test cases, see <a href="./usage/advanced/#test-suites-several-steps-on-each-case">usage page for details</a>.</p>
+<p><code>pytest-cases</code> is fully compliant with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a> so you can create test suites with several steps and send each case on the full suite. See <a href="./usage/advanced/#test-suites-several-steps-on-each-case">usage page for details</a>.</p>
 <h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span>&gt; pip install pytest_cases
 </pre></div>
@@ -653,7 +665,10 @@
 </li>
 </ul>
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
-<p><a href="https://docs.pytest.org/en/latest/parametrize.html">pytest documentation on parametrize</a></p>
+<ul>
+<li><a href="https://docs.pytest.org/en/latest/parametrize.html">pytest documentation on parametrize</a></li>
+<li><a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a></li>
+</ul>
 <h3 id="others">Others<a class="headerlink" href="#others" title="Permanent link">&para;</a></h3>
 <p><em>Do you like this library ? You might also like <a href="https://github.com/smarie/OVERVIEW#python">my other python libraries</a></em> </p>
 <h2 id="want-to-contribute">Want to contribute ?<a class="headerlink" href="#want-to-contribute" title="Permanent link">&para;</a></h2>

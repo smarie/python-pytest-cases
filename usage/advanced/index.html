@@ -329,8 +329,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#case-parameters" title="Case parameters" class="md-nav__link">
-    Case parameters
+  <a href="#case-arguments" title="Case arguments" class="md-nav__link">
+    Case arguments
   </a>
   
 </li>
@@ -363,37 +363,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#test-suites-several-steps-on-each-case" title="Test "suites": several steps on each case" class="md-nav__link">
-    Test "suites": several steps on each case
+  <a href="#incremental-tests-with-pytest-steps" title="Incremental tests with pytest-steps" class="md-nav__link">
+    Incremental tests with pytest-steps
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#0-the-test_steps-decorator" title="0- The @test_steps decorator" class="md-nav__link">
-    0- The @test_steps decorator
+  <a href="#1-if-steps-can-run-with-the-same-data" title="1- If steps can run with the same data" class="md-nav__link">
+    1- If steps can run with the same data
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#a-identical-cases-for-all" title="a- Identical cases for all" class="md-nav__link">
-    a- Identical cases for all
+  <a href="#2-if-steps-require-different-data-a-dicts" title="2- If steps require different data (A: dicts)" class="md-nav__link">
+    2- If steps require different data (A: dicts)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#b-per-step-case-variants-v05" title="b- Per-step Case variants v0.5" class="md-nav__link">
-    b- Per-step Case variants v0.5
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#c-per-step-case-variants-v1" title="c- Per-step Case variants v1" class="md-nav__link">
-    c- Per-step Case variants v1
+  <a href="#3-if-steps-require-different-data-b-arguments-recommended" title="3- If steps require different data (B: arguments, recommended)" class="md-nav__link">
+    3- If steps require different data (B: arguments, recommended)
   </a>
   
 </li>
@@ -432,6 +425,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../api_reference/" title="API reference" class="md-nav__link">
+      API reference
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../../changelog/" title="Changelog" class="md-nav__link">
       Changelog
     </a>
@@ -459,8 +464,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#case-parameters" title="Case parameters" class="md-nav__link">
-    Case parameters
+  <a href="#case-arguments" title="Case arguments" class="md-nav__link">
+    Case arguments
   </a>
   
 </li>
@@ -493,37 +498,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#test-suites-several-steps-on-each-case" title="Test "suites": several steps on each case" class="md-nav__link">
-    Test "suites": several steps on each case
+  <a href="#incremental-tests-with-pytest-steps" title="Incremental tests with pytest-steps" class="md-nav__link">
+    Incremental tests with pytest-steps
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#0-the-test_steps-decorator" title="0- The @test_steps decorator" class="md-nav__link">
-    0- The @test_steps decorator
+  <a href="#1-if-steps-can-run-with-the-same-data" title="1- If steps can run with the same data" class="md-nav__link">
+    1- If steps can run with the same data
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#a-identical-cases-for-all" title="a- Identical cases for all" class="md-nav__link">
-    a- Identical cases for all
+  <a href="#2-if-steps-require-different-data-a-dicts" title="2- If steps require different data (A: dicts)" class="md-nav__link">
+    2- If steps require different data (A: dicts)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#b-per-step-case-variants-v05" title="b- Per-step Case variants v0.5" class="md-nav__link">
-    b- Per-step Case variants v0.5
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#c-per-step-case-variants-v1" title="c- Per-step Case variants v1" class="md-nav__link">
-    c- Per-step Case variants v1
+  <a href="#3-if-steps-require-different-data-b-arguments-recommended" title="3- If steps require different data (B: arguments, recommended)" class="md-nav__link">
+    3- If steps require different data (B: arguments, recommended)
   </a>
   
 </li>
@@ -560,8 +558,8 @@
                 
                 
                 <h1 id="advanced-usage">Advanced usage<a class="headerlink" href="#advanced-usage" title="Permanent link">&para;</a></h1>
-<h2 id="case-parameters">Case parameters<a class="headerlink" href="#case-parameters" title="Permanent link">&para;</a></h2>
-<p>Case functions can have parameters. This makes it very easy to combine test cases with more elaborate pytest concepts (fixtures, parameters):</p>
+<h2 id="case-arguments">Case arguments<a class="headerlink" href="#case-arguments" title="Permanent link">&para;</a></h2>
+<p>Case functions can have arguments. This makes it very easy to combine test cases with more elaborate pytest concepts (fixtures, parameters):</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span>
 
@@ -589,7 +587,7 @@
 </pre></div>
 
 
-<p>This also works with case generators: simply add the parameter(s) to the function signature, without declaring them in the <code>@cases_generator</code> decorator.</p>
+<p>This also works with case generators: simply add the argument(s) to the function signature, <em>without</em> declaring them in the <code>@cases_generator</code> decorator.</p>
 <div class="codehilite"><pre><span></span><span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;gen case i={i}, j={j}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">case_gen</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;using version &quot;</span> <span class="o">+</span> <span class="n">version</span><span class="p">)</span>
@@ -628,10 +626,10 @@
 
 
 <h3 id="with-variants">With variants<a class="headerlink" href="#with-variants" title="Permanent link">&para;</a></h3>
-<p>If the tests use the same shared cases but with small differences, you may wish to add <a href="#case_parameters">parameters</a> to your case functions.</p>
+<p>If the tests use the same shared cases but with small differences, you may wish to add <a href="#case_arguments">arguments</a> to your case functions.</p>
 <h3 id="caching">Caching<a class="headerlink" href="#caching" title="Permanent link">&para;</a></h3>
 <p>After starting to reuse cases in several test functions, you might end-up thinking <em>"why do I have to spend the data parsing/generation time several times ? It is the same case."</em>. You can solve this issue by using a cache.</p>
-<p>For simple cases you can simply decorate your case function with <code>@lru_cache(maxsize=1)</code> since simple case functions do not have parameters:</p>
+<p>For simple cases you can simply decorate your case function with <code>@lru_cache(maxsize=1)</code> since simple case functions do not have arguments:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 
 <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -660,7 +658,7 @@
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># 2- Use it</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="o">...</span>
 
 
 <span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
@@ -669,7 +667,7 @@
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># 2- Use it</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="o">...</span>
 </pre></div>
 
 
@@ -692,42 +690,14 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 
 <p>You can see that the second time each case is needed, the cached value is used instead of executing the case generation function again.</p>
 <p>See <a href="https://docs.python.org/3/library/functools.html#functools.lru_cache">doc on lru_cache</a> for implementation details.</p>
-<p><strong>WARNING</strong> if you use <a href="#case_parameters">case parameters</a>, do not forget to take the additional parameter values into account to estimate the total cache size. Note that the <code>lru_cache=</code> option of <code>@cases_generator</code> is not intelligent enough to handle additional parameters: do not use it, and instead manually apply the <code>@lru_cache</code> decorator.</p>
-<h2 id="test-suites-several-steps-on-each-case">Test "suites": several steps on each case<a class="headerlink" href="#test-suites-several-steps-on-each-case" title="Permanent link">&para;</a></h2>
-<p>Sometimes you wish to execute a series of tests on the same dataset, and then to move to another one. This is feasible with <code>pytest_cases</code>.</p>
-<h3 id="0-the-test_steps-decorator">0- The <code>@test_steps</code> decorator<a class="headerlink" href="#0-the-test_steps-decorator" title="Permanent link">&para;</a></h3>
-<p>This decorator can be used independently from the rest of this package. It is simply a convenient and readable specialization of <code>@pytest.mark.parametrize</code> so as to breakdown a test into sub-steps. To use it, simply:</p>
-<ul>
-<li>create several step functions, e.g. <code>step_check_a</code>, <code>step_check_b</code>...</li>
-<li>create a test function representing the "suite", and decorate it with <code>@test_steps</code></li>
-<li>fill the function so as to retrieve the appropriate data in each step. It can be done within the function body as shown below, or thanks to additional <code>parametrize</code> decorators.</li>
-</ul>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">test_steps</span>
-
-<span class="c1"># ------- test steps</span>
-<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Step a of the test &quot;&quot;&quot;</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Step b of the test &quot;&quot;&quot;</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-
-<span class="c1"># ------- test suite</span>
-<span class="nd">@test_steps</span><span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">):</span>
-    <span class="c1"># Get the data for this step</span>
-    <span class="n">inputs</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">todo_get_data_for_step</span><span class="p">(</span><span class="n">test_step</span><span class="p">)</span>
-
-    <span class="c1"># Execute the step</span>
-    <span class="n">test_step</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
-</pre></div>
-
-
-<h3 id="a-identical-cases-for-all">a- Identical cases for all<a class="headerlink" href="#a-identical-cases-for-all" title="Permanent link">&para;</a></h3>
-<p>It is very easy to make all test steps use the same identical cases data:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">test_steps</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
- <span class="n">CaseData</span>
+<p><strong>WARNING</strong> if you use <a href="#case_arguments">case arguments</a>, do not forget to take the additional parameter values into account to estimate the total cache size. Note that the <code>lru_cache=</code> option of <code>@cases_generator</code> is not intelligent enough to handle additional arguments: do not use it, and instead manually apply the <code>@lru_cache</code> decorator.</p>
+<h2 id="incremental-tests-with-pytest-steps">Incremental tests with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a><a class="headerlink" href="#incremental-tests-with-pytest-steps" title="Permanent link">&para;</a></h2>
+<p>Sometimes you wish to execute a series of test steps on the same dataset, and then to move to another one. There are many ways to do this with <code>pytest</code> but some of them are not easy to blend with the notion of 'cases' in an intuitive manner. <code>pytest-cases</code> is compliant with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a>: you can easily create incremental tests and throw your cases on them.</p>
+<p>This tutorial assumes that you are already familiar with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a>.</p>
+<h3 id="1-if-steps-can-run-with-the-same-data">1- If steps can run with the same data<a class="headerlink" href="#1-if-steps-can-run-with-the-same-data" title="Permanent link">&para;</a></h3>
+<p>If all of the test steps require the same data to execute, it is very easy:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">CaseData</span>
+<span class="kn">from</span> <span class="nn">pytest_steps</span> <span class="kn">import</span> <span class="n">test_steps</span>
 
 <span class="c1"># -------- test cases</span>
 <span class="k">def</span> <span class="nf">case_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
@@ -739,47 +709,61 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
 
 <span class="c1"># ------- test steps</span>
-<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">step_a</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Step a of the test &quot;&quot;&quot;</span>
     <span class="c1"># Use the three items as usual</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="c1"># You can also store intermediate results in steps_data</span>
 
-<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">step_b</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Step b of the test &quot;&quot;&quot;</span>
     <span class="c1"># Use the three items as usual</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="c1"># You can also retrieve intermediate results from steps_data</span>
 
 <span class="c1"># ------- test suite</span>
-<span class="nd">@test_steps</span><span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">)</span>
+<span class="nd">@test_steps</span><span class="p">(</span><span class="n">step_a</span><span class="p">,</span> <span class="n">step_b</span><span class="p">)</span>
 <span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">,</span> <span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">,</span> <span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">steps_data</span><span class="p">):</span>
     <span class="c1"># Get the data for this step</span>
     <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># Execute the step</span>
-    <span class="n">test_step</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
+    <span class="n">test_step</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
 </pre></div>
 
 
 <p>This yields:</p>
 <div class="codehilite"><pre><span></span><span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
 ...
-test_p.py::test_suite<span class="o">[</span>case_simple-step_check_a<span class="o">]</span> PASSED  <span class="o">[</span> <span class="m">25</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: <span class="m">1</span>, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
-test_p.py::test_suite<span class="o">[</span>case_simple-step_check_b<span class="o">]</span> PASSED  <span class="o">[</span> <span class="m">50</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: <span class="m">1</span>, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
-test_p.py::test_suite<span class="o">[</span>case_simple2-step_check_a<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">75</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: -1, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
-test_p.py::test_suite<span class="o">[</span>case_simple2-step_check_b<span class="o">]</span> PASSED <span class="o">[</span><span class="m">100</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: -1, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
+test_p.py::test_suite<span class="o">[</span>case_simple-step_a<span class="o">]</span> PASSED  <span class="o">[</span> <span class="m">25</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: <span class="m">1</span>, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
+test_p.py::test_suite<span class="o">[</span>case_simple-step_b<span class="o">]</span> PASSED  <span class="o">[</span> <span class="m">50</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: <span class="m">1</span>, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
+test_p.py::test_suite<span class="o">[</span>case_simple2-step_a<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">75</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: -1, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
+test_p.py::test_suite<span class="o">[</span>case_simple2-step_b<span class="o">]</span> PASSED <span class="o">[</span><span class="m">100</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: -1, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
 <span class="o">==========================</span> <span class="m">4</span> passed in <span class="m">0</span>.13 <span class="nv">seconds</span> <span class="o">===========================</span>
 </pre></div>
 
 
-<p>You see that for each case data, all steps are executed in order. You can wish (more rarely) to invert the order, executing all cases on step a then all cases on step b etc. Simply invert the order of decorators and it will work (<code>pytest</code> is great!).</p>
+<p>You see that for each case data, all steps are executed in order. If you use an IDE it will appear in this intuitive order too:</p>
+<div class="codehilite"><pre><span></span>case_simple
+ - step_a
+ - step_b
+case_simple2
+ - step_a
+ - step_b
+</pre></div>
+
+
+<p>If for some reason you wish to invert the order (executing all cases on step a then all cases on step b etc.) simply invert the order of decorators and it will work (<code>pytest</code> is great!). This is not recommended though, as it is a lot less intuitive.</p>
 <p>Of course you might want to <a href="#caching">enable caching</a> so that the cases will be read only once, and not once for each test step.</p>
-<h3 id="b-per-step-case-variants-v05">b- Per-step Case variants v0.5<a class="headerlink" href="#b-per-step-case-variants-v05" title="Permanent link">&para;</a></h3>
-<p>What if each step requires different expected output or errors for the same case ? Or even slightly different inputs ? Simply adapt your case data format definition! Since <code>pytest-cases</code> does not impose <strong>any</strong> format for your case functions outputs, you can decide to return lists, dictionaries, etc.</p>
-<p>If you wish to start with something, you can choose the format proposed by <code>MultipleStepsCaseData</code>, where each item in the tuple (the inputs, outputs and error) can either be a single element, or a dictionary of name -&gt; element. This allows you to store alternate contents whenever your test steps require it.</p>
+<h3 id="2-if-steps-require-different-data-a-dicts">2- If steps require different data (A: dicts)<a class="headerlink" href="#2-if-steps-require-different-data-a-dicts" title="Permanent link">&para;</a></h3>
+<p>In real-world usage, each step will probably have different expected output or errors for the same case - except if the steps are very similar. The steps may even need slightly different input, for example the same dataset but in two different formats.</p>
+<p>This is actually quite straightforward: simply adapt your custom case data format definition! Since <code>pytest-cases</code> does not impose <strong>any</strong> format for your case functions outputs, you can decide that your case functions return lists, dictionaries, etc.</p>
+<p>For example you can choose the format proposed by the <code>MultipleStepsCaseData</code> type hint, where each item in the returned inputs/outputs/errors tuple can either be a single element, or a dictionary of name -&gt; element. This allows your case functions to return alternate contents depending on the test step being executed.</p>
 <p>The example below shows a test suite where the inputs of the steps are the same, but the outputs and expected errors are different:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">test_steps</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
- <span class="n">MultipleStepsCaseData</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
+  <span class="n">MultipleStepsCaseData</span>
+<span class="kn">from</span> <span class="nn">pytest_steps</span> <span class="kn">import</span> <span class="n">test_steps</span>
 
 <span class="c1"># -------- test cases</span>
 <span class="k">def</span> <span class="nf">case_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MultipleStepsCaseData</span><span class="p">:</span>
@@ -805,20 +789,22 @@ test_p.py::test_suite<span class="o">[</span>case_simple2-step_check_b<span clas
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
 
 <span class="c1"># ------- test steps</span>
-<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Step a of the test &quot;&quot;&quot;</span>
     <span class="c1"># Use the three items as usual</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="c1"># You can also store intermediate results in steps_data</span>
 
-<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Step b of the test &quot;&quot;&quot;</span>
     <span class="c1"># Use the three items as usual</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="c1"># You can also retrieve intermediate results from steps_data</span>
 
 <span class="c1"># ------- test suite</span>
 <span class="nd">@test_steps</span><span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">)</span>
 <span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">,</span> <span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">,</span> <span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">steps_data</span><span class="p">):</span>
     <span class="c1"># Get the case data for all steps (sad...)</span>
     <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
@@ -828,21 +814,21 @@ test_p.py::test_suite<span class="o">[</span>case_simple2-step_check_b<span clas
     <span class="n">expected_e</span> <span class="o">=</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">expected_e</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="c1"># Execute the step</span>
-    <span class="n">test_step</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
+    <span class="n">test_step</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
 </pre></div>
 
 
-<p>There are two main differences with the first version:</p>
+<p>There are two main differences with the previous example:</p>
 <ul>
-<li>in the <code>case_simple</code> and <code>case_simple2</code> case functions, we choose to provide the expected output and expected error as dictionaries when they are non-<code>None</code>, where the key is the step name. We also choose that the input is the same for all steps, but we could have done otherwise using a dictionary with step name keys as well.</li>
-<li>in the final <code>test_suite</code> we use the step name to filter the case data contents <strong>for a given step</strong></li>
+<li>in the <code>case_simple</code> and <code>case_simple2</code> case functions, we choose to provide the expected output and expected error as <strong>dictionaries indexed by the test step name</strong> when they are non-<code>None</code>. We also choose that the input is the same for all steps, but we could have done otherwise - using a dictionary with step name keys as well.</li>
+<li>in the final <code>test_suite</code> we use the test step name dictionary key to get the case data contents <strong>for a given step</strong>.</li>
 </ul>
 <p>Once again you might want to <a href="#caching">enable caching</a> in order for the cases to be read only once, and not once for each test step.</p>
-<h3 id="c-per-step-case-variants-v1">c- Per-step Case variants v1<a class="headerlink" href="#c-per-step-case-variants-v1" title="Permanent link">&para;</a></h3>
+<h3 id="3-if-steps-require-different-data-b-arguments-recommended">3- If steps require different data (B: arguments, recommended)<a class="headerlink" href="#3-if-steps-require-different-data-b-arguments-recommended" title="Permanent link">&para;</a></h3>
 <p>The above example might seem a bit disappointing as it breaks the philosophy of doing each data access <strong>only when it is needed</strong>. Indeed everytime a single step is run it actually gets the data for all steps and then has to do some filtering.</p>
-<p>The style suggested below, making use of <a href="../advanced#case_parameters">case parameters</a> is probably better: </p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">test_steps</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
-  <span class="n">CaseData</span>
+<p>The style suggested below, making use of <a href="../advanced#case_arguments">case arguments</a>, is probably better: </p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">CaseData</span>
+<span class="kn">from</span> <span class="nn">pytest_steps</span> <span class="kn">import</span> <span class="n">test_steps</span>
 
 <span class="c1"># -------- test cases</span>
 <span class="k">def</span> <span class="nf">case_simple</span><span class="p">(</span><span class="n">step_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
@@ -870,30 +856,33 @@ test_p.py::test_suite<span class="o">[</span>case_simple2-step_check_b<span clas
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
 
 <span class="c1"># ------- test steps</span>
-<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Step a of the test &quot;&quot;&quot;</span>
     <span class="c1"># Use the three items as usual</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="c1"># You can also store intermediate results in steps_data</span>
 
-<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">step_check_b</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Step b of the test &quot;&quot;&quot;</span>
     <span class="c1"># Use the three items as usual</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="c1"># You can also retrieve intermediate results from steps_data</span>
 
 <span class="c1"># ------- test suite</span>
 <span class="nd">@test_steps</span><span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">)</span>
 <span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">,</span> <span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_suite</span><span class="p">(</span><span class="n">test_step</span><span class="p">,</span> <span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">steps_data</span><span class="p">):</span>
 
     <span class="c1"># Get the data for this particular case</span>
     <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">test_step</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="c1"># Execute the step</span>
-    <span class="n">test_step</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
+    <span class="n">test_step</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
 </pre></div>
 
 
-<p>Notice that now <strong>the test step name is a parameter of the case function</strong>. So for each step, only the data relevant to this step is retrieved. Of course if there are common parts across the steps for the same case, you can still put them in a shared function with <code>@lru_cache</code> enabled:</p>
+<p>Notice that now <strong>the test step name is a parameter of the case function</strong>. So for each step, only the data relevant to this step is retrieved. </p>
+<p>Once again you might want to enable caching in order for the cases to be read only once, and not once for each test step. However since the case functions now have arguments, you should <strong>not</strong> use <code>@lru_cache()</code> directly on the case function but you should put it in a separate subfunction:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 
@@ -915,7 +904,8 @@ test_p.py::test_suite<span class="o">[</span>case_simple2-step_check_b<span clas
 </pre></div>
 
 
-<p>See <a href="#caching">caching</a> for details</p>
+<p>That way, <code>input_for_case_simple</code> will be cached across the steps.</p>
+<p>See <a href="#caching">caching</a> for details.</p>
 <h2 id="advanced-pytest-manual-parametrization">Advanced Pytest: Manual parametrization<a class="headerlink" href="#advanced-pytest-manual-parametrization" title="Permanent link">&para;</a></h2>
 <p>The <code>@cases_data</code> decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced pytest usages:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
@@ -930,13 +920,6 @@ test_p.py::test_suite<span class="o">[</span>case_simple2-step_check_b<span clas
 <span class="c1"># parametrize the test function manually</span>
 <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s1">&#39;case_data&#39;</span><span class="p">,</span> <span class="n">cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_with_cases_decorated</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseData</span><span class="p">):</span>
-    <span class="o">...</span>
-</pre></div>
-
-
-<p>Similarly the <code>@test_steps</code> decorator is equivalent to </p>
-<div class="codehilite"><pre><span></span><span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s1">&#39;test_step&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">step_check_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="p">),</span> <span class="n">ids</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_</span><span class="p">(</span><span class="n">test_step</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
                 
@@ -974,13 +957,13 @@ test_p.py::test_suite<span class="o">[</span>case_simple2-step_check_b<span clas
           </a>
         
         
-          <a href="../../changelog/" title="Changelog" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../api_reference/" title="API reference" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Changelog
+                API reference
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
