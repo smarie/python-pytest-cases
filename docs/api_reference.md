@@ -169,3 +169,65 @@ If `expected_e` is an exception validation function, returns `Exception, None, e
 `extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[Any]], bool]=None) -> List[CaseDataGetter]`
 
 Internal method used to create a list of `CaseDataGetter` for all cases available from the given module. See `@cases_data` for parameters usage.
+
+
+## 3 - Test steps
+
+This is completely independent of the usage of case functions.
+
+### `@test_steps`
+
+Decorates a test function so as to automatically parametrize it with all steps listed as arguments.
+
+When the steps are functions, this is equivalent to
+`@pytest.mark.parametrize(test_step_argname, steps, ids=lambda x: x.__name__)`
+
+```python
+from pytest_cases import test_steps
+
+def step_a():
+    # perform this step
+    print("step a")
+    assert not False
+
+def step_b():
+    # perform this step
+    print("step b")
+    assert not False
+
+@test_steps(step_a, step_b)
+def test_suite_no_results(test_step):
+    # Execute the step
+    test_step()
+```
+
+You can add a 'results' parameter to your test function if you wish to share a `ResultsHolder` object between your
+steps.
+
+```python    
+def step_a(results: ResultsHolder):
+    # perform this step
+    print("step a")
+    assert not False
+
+    # intermediate results can be stored in results
+    results.intermediate_a = 'some intermediate result created in step a'
+
+def step_b(results: ResultsHolder):
+    # perform this step, leveraging the previous step's results
+    print("step b")
+    new_text = results.intermediate_a + " ... augmented"
+    print(new_text)
+    assert len(new_text) == 56
+
+@test_steps(step_a, step_b)
+def test_suite_with_results(test_step, results: ResultsHolder):
+    # Execute the step with access to the results holder
+    test_step(results)
+```
+
+**Parameters:**
+
+ - `steps`: a list of test steps. They can be anything, but typically they are non-test (not prefixed with 'test') functions.
+ - `test_step_argname`: the optional name of the function argument that will receive the test step object. Default is 'test_step'.
+ - `test_results_argname`: the optional name of the function argument that will receive the shared `ResultsHolder` object if present. Default is 'results'.

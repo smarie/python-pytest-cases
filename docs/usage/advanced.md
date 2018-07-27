@@ -113,7 +113,7 @@ def test_a(case_data: CaseDataGetter):
     i, expected_o, expected_e = case_data.get()
 
     # 2- Use it
-    print(i)
+    ...
 
 
 @cases_data(module=THIS_MODULE)
@@ -122,7 +122,7 @@ def test_b(case_data: CaseDataGetter):
     i, expected_o, expected_e = case_data.get()
 
     # 2- Use it
-    print(i)
+    ...
 ```
 
 yields:
@@ -151,7 +151,7 @@ See [doc on lru_cache](https://docs.python.org/3/library/functools.html#functool
 
 ## Test "suites": several steps on each case 
 
-Sometimes you wish to execute a series of tests on the same dataset, and then to move to another one. This is feasible with `pytest_cases`.
+Sometimes you wish to execute a series of tests on the same dataset, and then to move to another one. There are many ways to do this with `pytest` but some of them are not easy to blend with the notion of 'cases' in an intuitive manner. `pytest_cases` provides the following tools to help you:
 
 ### 0- The `@test_steps` decorator
 
@@ -160,31 +160,36 @@ This decorator can be used independently from the rest of this package. It is si
  - create several step functions, e.g. `step_check_a`, `step_check_b`...
  - create a test function representing the "suite", and decorate it with `@test_steps`
  - fill the function so as to retrieve the appropriate data in each step. It can be done within the function body as shown below, or thanks to additional `parametrize` decorators.
+ - optionally you can add a `results` parameter to you function: it can be used to share results across your test steps. See [API reference](../api_reference.md) for details.
 
 ```python
 from pytest_cases import test_steps
 
 # ------- test steps
-def step_check_a(inputs, expected_o, expected_e):
+def step_check_a(results, inputs, expected_o, expected_e):
     """ Step a of the test """
-    print(inputs)
+    ...
+    # You can store intermediate test results in `results`
+    results.one = 1
 
-def step_check_b(inputs, expected_o, expected_e):
+def step_check_b(results, inputs, expected_o, expected_e):
     """ Step b of the test """
-    print(inputs)
+    ...
+    # You can reuse intermediate results from the previous tests
+    x = results.one + 1
 
 # ------- test suite
 @test_steps(step_check_a, step_check_b)
-def test_suite(test_step):
+def test_suite(test_step, results):
     # Get the data for this step
     inputs, expected_o, expected_e = todo_get_data_for_step(test_step)
 
     # Execute the step
-    test_step(inputs, expected_o, expected_e)
+    test_step(results, inputs, expected_o, expected_e)
 ```
 
 
-### a- Identical cases for all
+### 1- Identical cases for all
 
 It is very easy to make all test steps use the same identical cases data:
 
@@ -202,25 +207,25 @@ def case_simple2() -> CaseData:
     return ins, None, None
 
 # ------- test steps
-def step_check_a(ins, expected_o, expected_e):
+def step_check_a(storage, ins, expected_o, expected_e):
     """ Step a of the test """
     # Use the three items as usual
-    print(ins)
+    ...
 
-def step_check_b(ins, expected_o, expected_e):
+def step_check_b(storage, ins, expected_o, expected_e):
     """ Step b of the test """
     # Use the three items as usual
-    print(ins)
+    ...
 
 # ------- test suite
 @test_steps(step_check_a, step_check_b)
 @cases_data(module=THIS_MODULE)
-def test_suite(test_step, case_data: CaseDataGetter):
+def test_suite(test_step, case_data: CaseDataGetter, results):
     # Get the data for this step
     ins, expected_o, expected_e = case_data.get()
 
     # Execute the step
-    test_step(ins, expected_o, expected_e)
+    test_step(results, ins, expected_o, expected_e)
 ```
 
 This yields:
@@ -239,7 +244,7 @@ You see that for each case data, all steps are executed in order. You can wish (
 
 Of course you might want to [enable caching](#caching) so that the cases will be read only once, and not once for each test step.
 
-### b- Per-step Case variants v0.5
+### 2- Per-step Case variants, method A
 
 What if each step requires different expected output or errors for the same case ? Or even slightly different inputs ? Simply adapt your case data format definition! Since `pytest-cases` does not impose **any** format for your case functions outputs, you can decide to return lists, dictionaries, etc.
 
@@ -275,20 +280,20 @@ def case_simple2() -> MultipleStepsCaseData:
     return ins, outs, None
 
 # ------- test steps
-def step_check_a(ins, expected_o, expected_e):
+def step_check_a(storage, ins, expected_o, expected_e):
     """ Step a of the test """
     # Use the three items as usual
-    print(ins)
+    ...
 
-def step_check_b(ins, expected_o, expected_e):
+def step_check_b(storage, ins, expected_o, expected_e):
     """ Step b of the test """
     # Use the three items as usual
-    print(ins)
+    ...
 
 # ------- test suite
 @test_steps(step_check_a, step_check_b)
 @cases_data(module=THIS_MODULE)
-def test_suite(test_step, case_data: CaseDataGetter):
+def test_suite(test_step, case_data: CaseDataGetter, results):
     # Get the case data for all steps (sad...)
     ins, expected_o, expected_e = case_data.get()
 
@@ -298,7 +303,7 @@ def test_suite(test_step, case_data: CaseDataGetter):
     expected_e = None if expected_e is None else expected_e[key]
 
     # Execute the step
-    test_step(ins, expected_o, expected_e)
+    test_step(results, ins, expected_o, expected_e)
 ```
 
 There are two main differences with the first version:
@@ -308,7 +313,7 @@ There are two main differences with the first version:
 
 Once again you might want to [enable caching](#caching) in order for the cases to be read only once, and not once for each test step.
 
-### c- Per-step Case variants v1
+### 3- Per-step Case variants, method B (recommended)
 
 The above example might seem a bit disappointing as it breaks the philosophy of doing each data access **only when it is needed**. Indeed everytime a single step is run it actually gets the data for all steps and then has to do some filtering.
 
@@ -344,26 +349,26 @@ def case_simple2(step_name: str) -> CaseData:
     return ins, outs, None
 
 # ------- test steps
-def step_check_a(ins, expected_o, expected_e):
+def step_check_a(storage, ins, expected_o, expected_e):
     """ Step a of the test """
     # Use the three items as usual
-    print(ins)
+    ...
 
-def step_check_b(ins, expected_o, expected_e):
+def step_check_b(storage, ins, expected_o, expected_e):
     """ Step b of the test """
     # Use the three items as usual
-    print(ins)
+    ...
 
 # ------- test suite
 @test_steps(step_check_a, step_check_b)
 @cases_data(module=THIS_MODULE)
-def test_suite(test_step, case_data: CaseDataGetter):
+def test_suite(test_step, case_data: CaseDataGetter, results):
 
     # Get the data for this particular case
     ins, expected_o, expected_e = case_data.get(test_step.__name__)
 
     # Execute the step
-    test_step(ins, expected_o, expected_e)
+    test_step(results, ins, expected_o, expected_e)
 ```
 
 Notice that now **the test step name is a parameter of the case function**. So for each step, only the data relevant to this step is retrieved. Of course if there are common parts across the steps for the same case, you can still put them in a shared function with `@lru_cache` enabled:
