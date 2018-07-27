@@ -1,6 +1,6 @@
 from pytest_cases import cases_data, CaseDataGetter
-from intermediate import test_shared_cases
-from simple import test_main_cases
+from pytest_cases.tests.intermediate import test_shared_cases
+from pytest_cases.tests.simple import test_main_cases
 
 
 # Decorator way:

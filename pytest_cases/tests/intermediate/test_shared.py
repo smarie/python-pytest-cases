@@ -3,7 +3,7 @@ from pytest_cases import CaseDataGetter, cases_data
 from pytest_cases.tests.example_code import super_function_i_want_to_test, super_function_i_want_to_test2
 
 # the file with case functions
-from intermediate import test_shared_cases
+from pytest_cases.tests.intermediate import test_shared_cases
 
 
 @cases_data(module=test_shared_cases, has_tag=super_function_i_want_to_test)

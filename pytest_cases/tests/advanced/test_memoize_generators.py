@@ -1,4 +1,3 @@
-from functools import lru_cache
 from pytest_cases import CaseData, cases_data, CaseDataGetter, THIS_MODULE, cases_generator
 
 
