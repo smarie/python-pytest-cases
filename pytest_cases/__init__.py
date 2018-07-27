@@ -3,14 +3,11 @@ from pytest_cases.case_funcs import CaseData, Given, ExpectedNormal, ExpectedErr
 
 from pytest_cases.main import cases_data, CaseDataGetter, unfold_expected_err, extract_cases_from_module, THIS_MODULE
 
-from pytest_cases.steps import test_steps, ResultsHolder
-
 __all__ = [
     # the 2 submodules
-    'main', 'steps',
+    'main', 'case_funcs',
     # all symbols imported above
     'cases_data', 'CaseData', 'CaseDataGetter', 'unfold_expected_err', 'extract_cases_from_module',
     'case_name', 'Given', 'ExpectedNormal', 'ExpectedError',
-    'test_target', 'case_tags', 'THIS_MODULE', 'cases_generator', 'MultipleStepsCaseData',
-    'test_steps', 'ResultsHolder'
+    'test_target', 'case_tags', 'THIS_MODULE', 'cases_generator', 'MultipleStepsCaseData'
 ]

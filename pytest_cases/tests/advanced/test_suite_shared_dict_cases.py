@@ -1,4 +1,5 @@
-from pytest_cases import test_steps, cases_data, CaseDataGetter, THIS_MODULE, MultipleStepsCaseData, ResultsHolder
+from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, MultipleStepsCaseData
+from pytest_steps import test_steps, StepsDataHolder
 
 
 def case_simple() -> MultipleStepsCaseData:
@@ -21,26 +22,26 @@ def case_simple2() -> MultipleStepsCaseData:
     return ins, outs, None
 
 
-def step_check_a(storage, ins, expected_o, expected_e):
+def step_check_a(test_data, ins, expected_o, expected_e):
     """ Step a of the test """
 
     # Use the three items as usual
     print(ins)
-    assert not hasattr(storage, 'ins')
-    storage.ins = ins
+    assert not hasattr(test_data, 'ins')
+    test_data.ins = ins
 
 
-def step_check_b(storage, ins, expected_o, expected_e):
+def step_check_b(test_data, ins, expected_o, expected_e):
     """ Step b of the test """
 
     # Use the three items as usual
-    print(storage.ins)
+    print(test_data.ins)
 
 
 # equivalent to @pytest.mark.parametrize('test_step', (step_check_a, step_check_b), ids=lambda x: x.__name__)
 @test_steps(step_check_a, step_check_b)
 @cases_data(module=THIS_MODULE)
-def test_suite_shared_dict_cases(test_step, case_data: CaseDataGetter, results: ResultsHolder):
+def test_suite_shared_dict_cases(test_step, case_data: CaseDataGetter, steps_data: StepsDataHolder):
     """ """
 
     # Get the data
@@ -52,4 +53,4 @@ def test_suite_shared_dict_cases(test_step, case_data: CaseDataGetter, results: 
     expected_e = None if expected_e is None else expected_e[key]
 
     # Execute the step
-    test_step(results, ins, expected_o, expected_e)
+    test_step(steps_data, ins, expected_o, expected_e)

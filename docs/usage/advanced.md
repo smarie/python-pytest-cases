@@ -1,8 +1,8 @@
 # Advanced usage
 
-## Case parameters
+## Case arguments
 
-Case functions can have parameters. This makes it very easy to combine test cases with more elaborate pytest concepts (fixtures, parameters):
+Case functions can have arguments. This makes it very easy to combine test cases with more elaborate pytest concepts (fixtures, parameters):
 
 ```python
 import pytest
@@ -31,7 +31,7 @@ def test_with_parameters(case_data: CaseDataGetter, version):
     # ...
 ```
 
-This also works with case generators: simply add the parameter(s) to the function signature, without declaring them in the `@cases_generator` decorator.
+This also works with case generators: simply add the argument(s) to the function signature, *without* declaring them in the `@cases_generator` decorator.
 
 ```python
 @cases_generator("gen case i={i}, j={j}", i=range(2), j=range(2))
@@ -75,13 +75,13 @@ def test_2(case_data: CaseDataGetter):
 
 ### With variants
 
-If the tests use the same shared cases but with small differences, you may wish to add [parameters](#case_parameters) to your case functions.
+If the tests use the same shared cases but with small differences, you may wish to add [arguments](#case_arguments) to your case functions.
 
 ### Caching
 
 After starting to reuse cases in several test functions, you might end-up thinking *"why do I have to spend the data parsing/generation time several times ? It is the same case."*. You can solve this issue by using a cache.
 
-For simple cases you can simply decorate your case function with `@lru_cache(maxsize=1)` since simple case functions do not have parameters:
+For simple cases you can simply decorate your case function with `@lru_cache(maxsize=1)` since simple case functions do not have arguments:
 
 ```python
 from functools import lru_cache
@@ -147,55 +147,24 @@ You can see that the second time each case is needed, the cached value is used i
 
 See [doc on lru_cache](https://docs.python.org/3/library/functools.html#functools.lru_cache) for implementation details.
 
-**WARNING** if you use [case parameters](#case_parameters), do not forget to take the additional parameter values into account to estimate the total cache size. Note that the `lru_cache=` option of `@cases_generator` is not intelligent enough to handle additional parameters: do not use it, and instead manually apply the `@lru_cache` decorator.
+**WARNING** if you use [case arguments](#case_arguments), do not forget to take the additional parameter values into account to estimate the total cache size. Note that the `lru_cache=` option of `@cases_generator` is not intelligent enough to handle additional arguments: do not use it, and instead manually apply the `@lru_cache` decorator.
 
-## Test "suites": several steps on each case 
 
-Sometimes you wish to execute a series of tests on the same dataset, and then to move to another one. There are many ways to do this with `pytest` but some of them are not easy to blend with the notion of 'cases' in an intuitive manner. `pytest_cases` provides the following tools to help you:
+## Incremental tests with [pytest-steps](https://smarie.github.io/python-pytest-steps/)
 
-### 0- The `@test_steps` decorator
+Sometimes you wish to execute a series of test steps on the same dataset, and then to move to another one. There are many ways to do this with `pytest` but some of them are not easy to blend with the notion of 'cases' in an intuitive manner. `pytest-cases` is compliant with [pytest-steps](https://smarie.github.io/python-pytest-steps/): you can easily create incremental tests and throw your cases on them.
 
-This decorator can be used independently from the rest of this package. It is simply a convenient and readable specialization of `@pytest.mark.parametrize` so as to breakdown a test into sub-steps. To use it, simply:
+This tutorial assumes that you are already familiar with [pytest-steps](https://smarie.github.io/python-pytest-steps/).
 
- - create several step functions, e.g. `step_check_a`, `step_check_b`...
- - create a test function representing the "suite", and decorate it with `@test_steps`
- - fill the function so as to retrieve the appropriate data in each step. It can be done within the function body as shown below, or thanks to additional `parametrize` decorators.
- - optionally you can add a `results` parameter to you function: it can be used to share results across your test steps. See [API reference](../api_reference.md) for details.
+
+### 1- If steps can run with the same data
+
+If all of the test steps require the same data to execute, it is very easy:
+
 
 ```python
-from pytest_cases import test_steps
-
-# ------- test steps
-def step_check_a(results, inputs, expected_o, expected_e):
-    """ Step a of the test """
-    ...
-    # You can store intermediate test results in `results`
-    results.one = 1
-
-def step_check_b(results, inputs, expected_o, expected_e):
-    """ Step b of the test """
-    ...
-    # You can reuse intermediate results from the previous tests
-    x = results.one + 1
-
-# ------- test suite
-@test_steps(step_check_a, step_check_b)
-def test_suite(test_step, results):
-    # Get the data for this step
-    inputs, expected_o, expected_e = todo_get_data_for_step(test_step)
-
-    # Execute the step
-    test_step(results, inputs, expected_o, expected_e)
-```
-
-
-### 1- Identical cases for all
-
-It is very easy to make all test steps use the same identical cases data:
-
-```python
-from pytest_cases import test_steps, cases_data, CaseDataGetter, THIS_MODULE, \
- CaseData
+from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, CaseData
+from pytest_steps import test_steps
 
 # -------- test cases
 def case_simple() -> CaseData:
@@ -207,25 +176,27 @@ def case_simple2() -> CaseData:
     return ins, None, None
 
 # ------- test steps
-def step_check_a(storage, ins, expected_o, expected_e):
+def step_a(steps_data, ins, expected_o, expected_e):
     """ Step a of the test """
     # Use the three items as usual
     ...
+    # You can also store intermediate results in steps_data
 
-def step_check_b(storage, ins, expected_o, expected_e):
+def step_b(steps_data, ins, expected_o, expected_e):
     """ Step b of the test """
     # Use the three items as usual
     ...
+    # You can also retrieve intermediate results from steps_data
 
 # ------- test suite
-@test_steps(step_check_a, step_check_b)
+@test_steps(step_a, step_b)
 @cases_data(module=THIS_MODULE)
-def test_suite(test_step, case_data: CaseDataGetter, results):
+def test_suite(test_step, case_data: CaseDataGetter, steps_data):
     # Get the data for this step
     ins, expected_o, expected_e = case_data.get()
 
     # Execute the step
-    test_step(results, ins, expected_o, expected_e)
+    test_step(steps_data, ins, expected_o, expected_e)
 ```
 
 This yields:
@@ -233,28 +204,42 @@ This yields:
 ```bash
 ============================= test session starts =============================
 ...
-test_p.py::test_suite[case_simple-step_check_a] PASSED  [ 25%]{'a': 1, 'b': 2}
-test_p.py::test_suite[case_simple-step_check_b] PASSED  [ 50%]{'a': 1, 'b': 2}
-test_p.py::test_suite[case_simple2-step_check_a] PASSED [ 75%]{'a': -1, 'b': 2}
-test_p.py::test_suite[case_simple2-step_check_b] PASSED [100%]{'a': -1, 'b': 2}
+test_p.py::test_suite[case_simple-step_a] PASSED  [ 25%]{'a': 1, 'b': 2}
+test_p.py::test_suite[case_simple-step_b] PASSED  [ 50%]{'a': 1, 'b': 2}
+test_p.py::test_suite[case_simple2-step_a] PASSED [ 75%]{'a': -1, 'b': 2}
+test_p.py::test_suite[case_simple2-step_b] PASSED [100%]{'a': -1, 'b': 2}
 ========================== 4 passed in 0.13 seconds ===========================
 ```
 
-You see that for each case data, all steps are executed in order. You can wish (more rarely) to invert the order, executing all cases on step a then all cases on step b etc. Simply invert the order of decorators and it will work (`pytest` is great!).
+You see that for each case data, all steps are executed in order. If you use an IDE it will appear in this intuitive order too:
+
+```bash
+case_simple
+ - step_a
+ - step_b
+case_simple2
+ - step_a
+ - step_b
+``` 
+
+If for some reason you wish to invert the order (executing all cases on step a then all cases on step b etc.) simply invert the order of decorators and it will work (`pytest` is great!). This is not recommended though, as it is a lot less intuitive.
 
 Of course you might want to [enable caching](#caching) so that the cases will be read only once, and not once for each test step.
 
-### 2- Per-step Case variants, method A
+### 2- If steps require different data (A: dicts)
 
-What if each step requires different expected output or errors for the same case ? Or even slightly different inputs ? Simply adapt your case data format definition! Since `pytest-cases` does not impose **any** format for your case functions outputs, you can decide to return lists, dictionaries, etc.
+In real-world usage, each step will probably have different expected output or errors for the same case - except if the steps are very similar. The steps may even need slightly different input, for example the same dataset but in two different formats.
 
-If you wish to start with something, you can choose the format proposed by `MultipleStepsCaseData`, where each item in the tuple (the inputs, outputs and error) can either be a single element, or a dictionary of name -> element. This allows you to store alternate contents whenever your test steps require it.
+This is actually quite straightforward: simply adapt your custom case data format definition! Since `pytest-cases` does not impose **any** format for your case functions outputs, you can decide that your case functions return lists, dictionaries, etc.
+
+For example you can choose the format proposed by the `MultipleStepsCaseData` type hint, where each item in the returned inputs/outputs/errors tuple can either be a single element, or a dictionary of name -> element. This allows your case functions to return alternate contents depending on the test step being executed.
 
 The example below shows a test suite where the inputs of the steps are the same, but the outputs and expected errors are different:
 
 ```python
-from pytest_cases import test_steps, cases_data, CaseDataGetter, THIS_MODULE, \
- MultipleStepsCaseData
+from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, \
+  MultipleStepsCaseData
+from pytest_steps import test_steps
 
 # -------- test cases
 def case_simple() -> MultipleStepsCaseData:
@@ -280,20 +265,22 @@ def case_simple2() -> MultipleStepsCaseData:
     return ins, outs, None
 
 # ------- test steps
-def step_check_a(storage, ins, expected_o, expected_e):
+def step_check_a(steps_data, ins, expected_o, expected_e):
     """ Step a of the test """
     # Use the three items as usual
     ...
+    # You can also store intermediate results in steps_data
 
-def step_check_b(storage, ins, expected_o, expected_e):
+def step_check_b(steps_data, ins, expected_o, expected_e):
     """ Step b of the test """
     # Use the three items as usual
     ...
+    # You can also retrieve intermediate results from steps_data
 
 # ------- test suite
 @test_steps(step_check_a, step_check_b)
 @cases_data(module=THIS_MODULE)
-def test_suite(test_step, case_data: CaseDataGetter, results):
+def test_suite(test_step, case_data: CaseDataGetter, steps_data):
     # Get the case data for all steps (sad...)
     ins, expected_o, expected_e = case_data.get()
 
@@ -303,25 +290,25 @@ def test_suite(test_step, case_data: CaseDataGetter, results):
     expected_e = None if expected_e is None else expected_e[key]
 
     # Execute the step
-    test_step(results, ins, expected_o, expected_e)
+    test_step(steps_data, ins, expected_o, expected_e)
 ```
 
-There are two main differences with the first version:
+There are two main differences with the previous example:
 
- - in the `case_simple` and `case_simple2` case functions, we choose to provide the expected output and expected error as dictionaries when they are non-`None`, where the key is the step name. We also choose that the input is the same for all steps, but we could have done otherwise using a dictionary with step name keys as well.
- - in the final `test_suite` we use the step name to filter the case data contents **for a given step**
+ - in the `case_simple` and `case_simple2` case functions, we choose to provide the expected output and expected error as **dictionaries indexed by the test step name** when they are non-`None`. We also choose that the input is the same for all steps, but we could have done otherwise - using a dictionary with step name keys as well.
+ - in the final `test_suite` we use the test step name dictionary key to get the case data contents **for a given step**.
 
 Once again you might want to [enable caching](#caching) in order for the cases to be read only once, and not once for each test step.
 
-### 3- Per-step Case variants, method B (recommended)
+### 3- If steps require different data (B: arguments, recommended)
 
 The above example might seem a bit disappointing as it breaks the philosophy of doing each data access **only when it is needed**. Indeed everytime a single step is run it actually gets the data for all steps and then has to do some filtering.
 
-The style suggested below, making use of [case parameters](./advanced#case_parameters) is probably better: 
+The style suggested below, making use of [case arguments](./advanced#case_arguments), is probably better: 
 
 ```python
-from pytest_cases import test_steps, cases_data, CaseDataGetter, THIS_MODULE, \
-  CaseData
+from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, CaseData
+from pytest_steps import test_steps
 
 # -------- test cases
 def case_simple(step_name: str) -> CaseData:
@@ -349,29 +336,33 @@ def case_simple2(step_name: str) -> CaseData:
     return ins, outs, None
 
 # ------- test steps
-def step_check_a(storage, ins, expected_o, expected_e):
+def step_check_a(steps_data, ins, expected_o, expected_e):
     """ Step a of the test """
     # Use the three items as usual
     ...
+    # You can also store intermediate results in steps_data
 
-def step_check_b(storage, ins, expected_o, expected_e):
+def step_check_b(steps_data, ins, expected_o, expected_e):
     """ Step b of the test """
     # Use the three items as usual
     ...
+    # You can also retrieve intermediate results from steps_data
 
 # ------- test suite
 @test_steps(step_check_a, step_check_b)
 @cases_data(module=THIS_MODULE)
-def test_suite(test_step, case_data: CaseDataGetter, results):
+def test_suite(test_step, case_data: CaseDataGetter, steps_data):
 
     # Get the data for this particular case
     ins, expected_o, expected_e = case_data.get(test_step.__name__)
 
     # Execute the step
-    test_step(results, ins, expected_o, expected_e)
+    test_step(steps_data, ins, expected_o, expected_e)
 ```
 
-Notice that now **the test step name is a parameter of the case function**. So for each step, only the data relevant to this step is retrieved. Of course if there are common parts across the steps for the same case, you can still put them in a shared function with `@lru_cache` enabled:
+Notice that now **the test step name is a parameter of the case function**. So for each step, only the data relevant to this step is retrieved. 
+
+Once again you might want to enable caching in order for the cases to be read only once, and not once for each test step. However since the case functions now have arguments, you should **not** use `@lru_cache()` directly on the case function but you should put it in a separate subfunction:
 
 ```python
 from pytest_cases import CaseData
@@ -394,7 +385,9 @@ def case_simple(step_name: str) -> CaseData:
     return ins, outs, None
 ```
 
-See [caching](#caching) for details
+That way, `input_for_case_simple` will be cached across the steps.
+
+See [caching](#caching) for details.
 
 
 ## Advanced Pytest: Manual parametrization
@@ -414,13 +407,5 @@ cases = extract_cases_from_module(test_foo_cases)
 # parametrize the test function manually
 @pytest.mark.parametrize('case_data', cases, ids=str)
 def test_with_cases_decorated(case_data: CaseData):
-    ...
-```
-
-Similarly the `@test_steps` decorator is equivalent to 
-
-```python
-@pytest.mark.parametrize('test_step', (step_check_a, step_check_b), ids=lambda x: x.__name__)
-def test_(test_step):
     ...
 ```

@@ -29,9 +29,9 @@ error can be defined as an exception type, an exception instance, or an exceptio
 CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
 
 
-MultipleStepsCaseData = Tuple[Union[Given, Dict[str, Given]],
-                              Union[ExpectedNormal, Dict[str, ExpectedNormal]],
-                              Union[ExpectedError, Dict[str, ExpectedError]]]
+MultipleStepsCaseData = Tuple[Union[Given, Dict[Any, Given]],
+                              Union[ExpectedNormal, Dict[Any, ExpectedNormal]],
+                              Union[ExpectedError, Dict[Any, ExpectedError]]]
 
 
 _GENERATOR_FIELD = '__cases_generator__'

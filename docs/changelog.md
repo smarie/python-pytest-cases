@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.9.0 - pytest-steps is now an independent project
+
+ * Light refactoring: some internal function names are now private, and there are now two submodules.
+ * [pytest-steps](https://smarie.github.io/python-pytest-steps/) is now an independent project. Examples in the documentation have been updated
+ * New documentation page: API reference
+
 ### 0.8.0 - Filtering can now be done using a callable.
 
  * `@cases_data`: the `filter` argument now contains a filtering function. WARNING: the previous behaviour is still available but has been renamed `has_tag`. Fixes [#8](https://github.com/smarie/python-pytest-cases/issues/8)
