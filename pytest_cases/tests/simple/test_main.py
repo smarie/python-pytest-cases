@@ -1,5 +1,5 @@
 import pytest
-from example_code import super_function_i_want_to_test
+from pytest_cases.tests.example_code import super_function_i_want_to_test
 
 from pytest_cases import cases_data, CaseDataGetter, unfold_expected_err, extract_cases_from_module
 from simple import test_main_cases

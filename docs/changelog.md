@@ -1,6 +1,6 @@
 # Changelog
 
-### 0.9.0 - pytest-steps is now an independent project
+### 0.9.1 - pytest-steps is now an independent project
 
  * Light refactoring: some internal function names are now private, and there are now two submodules.
  * [pytest-steps](https://smarie.github.io/python-pytest-steps/) is now an independent project. Examples in the documentation have been updated

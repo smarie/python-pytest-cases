@@ -1,7 +1,7 @@
 from math import inf
 
 from pytest_cases import case_name, CaseData
-from example_code import InfiniteInput
+from pytest_cases.tests.example_code import InfiniteInput
 
 
 def case_simple() -> CaseData:

@@ -1,4 +1,4 @@
-from example_code import super_function_i_want_to_test, super_function_i_want_to_test2
+from pytest_cases.tests.example_code import super_function_i_want_to_test, super_function_i_want_to_test2
 
 from pytest_cases import CaseData, test_target, case_tags
 
