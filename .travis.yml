@@ -62,17 +62,22 @@ after_success:
   # mkdocs gh-deploy requires special care :
   # ---grant the possibility to push on the repo---
   - openssl aes-256-cbc -K $encrypted_b1669b6e8c83_key -iv $encrypted_b1669b6e8c83_iv -in ci_tools/github_travis_rsa.enc -out ci_tools/github_travis_rsa -d
-  - chmod 600 ci_tools/github_travis_rsa
-  - eval `ssh-agent -s`  # launch the authentication agent
-  - ssh-add ci_tools/github_travis_rsa  # register the key
-  - git config user.name "Automatic Publish"
-  - git config user.email "sylvain.marie@schneider-electric.com"
-  - git remote add gh-remote "${GH_REF}";
-  - git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;
-  # push but only if this is not a build triggered by a pull request
-  # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
-  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v --dirty -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
-#  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; git push gh-remote gh-pages; fi;
+  # If the output file does not exist, that is because the secret is invalid. This can happen in forked repos so do not fail the build
+  - |
+    if [ -s "ci_tools/github_travis_rsa" ]; then
+      chmod 600 ci_tools/github_travis_rsa
+      eval `ssh-agent -s`  # launch the authentication agent
+      ssh-add ci_tools/github_travis_rsa  # register the key
+      git config user.name "Automatic Publish"
+      git config user.email "sylvain.marie@schneider-electric.com"
+      git remote add gh-remote "${GH_REF}";
+      git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;
+      # push but only if this is not a build triggered by a pull request
+      # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
+      if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v --dirty -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
+    else
+      echo "File 'ci_tools/github_travis_rsa' has not been created, please check your encrypted repo token in .travis.yml, on the line starting with 'openssl aes-256-cbc...'"
+    fi
 
 deploy:
   provider: pypi
