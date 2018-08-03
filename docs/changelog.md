@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.10.0 - support for python 2
+
+Python 2 is now supported. Fixed [#3](https://github.com/smarie/python-pytest-cases/issues/3) 
+
+ - Note: `CaseData`, `Given`, `ExpectedNormal`, `ExpectedError`, and `MultipleStepsCaseData` type hints is not created in python 2 and python<3.5
+
 ### 0.9.1 - pytest-steps is now an independent project
 
  * Light refactoring: some internal function names are now private, and there are now two submodules.
