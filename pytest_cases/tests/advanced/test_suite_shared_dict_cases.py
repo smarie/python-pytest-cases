@@ -1,8 +1,13 @@
-from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, MultipleStepsCaseData
+from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE
 from pytest_steps import test_steps, StepsDataHolder
+try:  # python 3.5+
+    from pytest_cases import MultipleStepsCaseData
+except ImportError:
+    pass
 
 
-def case_simple() -> MultipleStepsCaseData:
+def case_simple():
+    # type: () -> MultipleStepsCaseData
     ins = dict(a=1, b=2)
 
     outs_for_a = 2, 3
@@ -12,7 +17,8 @@ def case_simple() -> MultipleStepsCaseData:
     return ins, outs, None
 
 
-def case_simple2() -> MultipleStepsCaseData:
+def case_simple2():
+    # type: () -> MultipleStepsCaseData
     ins = dict(a=-1, b=2)
 
     outs_for_a = 2, 3
@@ -41,7 +47,10 @@ def step_check_b(test_data, ins, expected_o, expected_e):
 # equivalent to @pytest.mark.parametrize('test_step', (step_check_a, step_check_b), ids=lambda x: x.__name__)
 @test_steps(step_check_a, step_check_b)
 @cases_data(module=THIS_MODULE)
-def test_suite_shared_dict_cases(test_step, case_data: CaseDataGetter, steps_data: StepsDataHolder):
+def test_suite_shared_dict_cases(test_step,
+                                 case_data,  # type: CaseDataGetter
+                                 steps_data  # type: StepsDataHolder
+                                 ):
     """ """
 
     # Get the data

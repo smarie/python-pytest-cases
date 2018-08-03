@@ -7,7 +7,8 @@ from pytest_cases.tests.simple import test_main_cases
 
 # Decorator way:
 @cases_data(module=test_main_cases)
-def test_with_cases_decorated(case_data: CaseDataGetter):
+def test_with_cases_decorated(case_data  # type: CaseDataGetter
+                              ):
     """ Example unit test that is automatically parametrized with @cases_data """
 
     # 1- Grab the test case data
@@ -42,7 +43,8 @@ cases = extract_cases_from_module(test_main_cases)
 
 
 @pytest.mark.parametrize('case_data', cases, ids=str)
-def test_with_cases_manual(case_data: CaseDataGetter):
+def test_with_cases_manual(case_data  # type: CaseDataGetter
+                           ):
     """ Example unit test that is automatically parametrized with @cases_data """
 
     # 1- Grab the test case data

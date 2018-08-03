@@ -1,22 +1,29 @@
 from pytest_cases.tests.example_code import super_function_i_want_to_test
 
-from pytest_cases import CaseData, cases_data, CaseDataGetter, THIS_MODULE
+from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE
+try:  # python 3.5+
+    from pytest_cases import CaseData
+except ImportError:
+    pass
 
 
-def case_simple() -> CaseData:
+def case_simple():
+    # type: () -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
     return ins, outs, None
 
 
-def case_simple2() -> CaseData:
+def case_simple2():
+    # type: () -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
     return ins, outs, None
 
 
 @cases_data(module=THIS_MODULE)
-def test_with_cases_decorated(case_data: CaseDataGetter):
+def test_with_cases_decorated(case_data  # type: CaseDataGetter
+                              ):
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()

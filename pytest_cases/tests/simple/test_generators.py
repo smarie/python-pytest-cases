@@ -1,9 +1,14 @@
 from pytest_cases.tests.example_code import super_function_i_want_to_test
 
-from pytest_cases import CaseData, cases_data, CaseDataGetter, THIS_MODULE, cases_generator
+from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, cases_generator
+try:
+    from pytest_cases import CaseData
+except ImportError:
+    pass
 
 
-def case_simple() -> CaseData:
+def case_simple():
+    # type: (...) -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
     return ins, outs, None
@@ -19,14 +24,16 @@ def case_simple() -> CaseData:
 
 
 @cases_generator("test with i={i}, j={j}", i=range(2), j=range(3))
-def case_simple_generator(i, j) -> CaseData:
+def case_simple_generator(i, j):
+    # type: (...) -> CaseData
     ins = dict(a=i, b=j)
     outs = i+1, j+1
     return ins, outs, None
 
 
 @cases_data(module=THIS_MODULE)
-def test_with_cases_decorated(case_data: CaseDataGetter):
+def test_with_cases_decorated(case_data  # type: CaseDataGetter
+                              ):
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()

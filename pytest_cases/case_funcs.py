@@ -1,44 +1,47 @@
-import sys
-from abc import abstractmethod, ABC
-from inspect import getmembers
+from __future__ import division
+
+try:  # python 3.2+
+    from functools import lru_cache as lru
+except ImportError:
+    from functools32 import lru_cache as lru
+
 from itertools import product
-from typing import Callable, Union, Optional, Any, Tuple, List, Dict
-from functools import lru_cache as lru
 
-# noinspection PyBroadException
-from warnings import warn
+try:  # python 3.5+
+    from typing import Callable, Union, Optional, Any, Tuple, Dict, Iterable
 
-try:
+    # Type hints that you can use in your functions
+    Given = Any
+    """The input(s) for the test. It can be anything"""
+
+    ExpectedNormal = Optional[Any]
+    """The expected test results in case success is expected, or None if this test should fail"""
+
+    ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], Optional[bool]]]]
+    """The expected error in case failure is expected, or None if the test should succeed. It is proposed that expected 
+    error can be defined as an exception type, an exception instance, or an exception validation function"""
+
+    CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
+
+    MultipleStepsCaseData = Tuple[Union[Given, Dict[Any, Given]],
+                                  Union[ExpectedNormal, Dict[Any, ExpectedNormal]],
+                                  Union[ExpectedError, Dict[Any, ExpectedError]]]
+except:
+    pass
+
+try:  # python 3.5.4+
     from typing import Type
 except:
     # on old versions of typing module the above does not work. Since our code below has all Type hints quoted it's ok
     pass
 
 
-# Type hints that you can use in your functions
-Given = Any
-"""The input(s) for the test. It can be anything"""
-
-ExpectedNormal = Optional[Any]
-"""The expected test results in case success is expected, or None if this test should fail"""
-
-ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], Optional[bool]]]]
-"""The expected error in case failure is expected, or None if the test should succeed. It is proposed that expected 
-error can be defined as an exception type, an exception instance, or an exception validation function"""
-
-CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
-
-
-MultipleStepsCaseData = Tuple[Union[Given, Dict[Any, Given]],
-                              Union[ExpectedNormal, Dict[Any, ExpectedNormal]],
-                              Union[ExpectedError, Dict[Any, ExpectedError]]]
-
-
 _GENERATOR_FIELD = '__cases_generator__'
 """Internal marker used for cases generators"""
 
 
-def case_name(name: str):
+def case_name(name  # type: str
+              ):
     """
     Decorator to override the name of a case function. The new name will be used instead of the function name,
     in test names.
@@ -62,7 +65,8 @@ def case_name(name: str):
 CASE_TAGS_FIELD = '__case_tags__'
 
 
-def case_tags(*tags: Any):
+def case_tags(*tags  # type: Any
+              ):
     """
     Decorator to tag a case function with a list of tags. These tags can then be used in the `@cases_data` test
     function decorator to filter cases within the selected module(s).
@@ -84,7 +88,8 @@ def case_tags(*tags: Any):
     return case_tags_decorator
 
 
-def test_target(target: Any):
+def test_target(target  # type: Any
+                ):
     """
     A simple decorator to declare that a case function is associated with a particular target.
 
@@ -103,7 +108,10 @@ def test_target(target: Any):
 test_target.__test__ = False  # disable this function in pytest (otherwise name starts with 'test' > it will appear)
 
 
-def cases_generator(name_template: str, lru_cache: bool=False, **param_ranges):
+def cases_generator(name_template,    # type: str
+                    lru_cache=False,  # type: bool
+                    **param_ranges    # type: Iterable[Any]
+                    ):
     """
     Decorator to declare a case function as being a cases generator. `param_ranges` should be a named list of parameter
     ranges to explore to generate the cases.

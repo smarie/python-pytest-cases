@@ -7,7 +7,8 @@ from pytest_cases.tests.intermediate import test_shared_cases
 
 
 @cases_data(module=test_shared_cases, has_tag=super_function_i_want_to_test)
-def test_with_filter(case_data: CaseDataGetter):
+def test_with_filter(case_data  # type: CaseDataGetter
+                     ):
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
@@ -19,7 +20,8 @@ def test_with_filter(case_data: CaseDataGetter):
 
 
 @cases_data(module=test_shared_cases, has_tag=super_function_i_want_to_test2)
-def test_with_filter2(case_data: CaseDataGetter):
+def test_with_filter2(case_data  # type: CaseDataGetter
+                      ):
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
@@ -31,7 +33,8 @@ def test_with_filter2(case_data: CaseDataGetter):
 
 
 @cases_data(module=test_shared_cases)
-def test_with_no_filter_all_cases(case_data: CaseDataGetter):
+def test_with_no_filter_all_cases(case_data  # type: CaseDataGetter
+                                  ):
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()

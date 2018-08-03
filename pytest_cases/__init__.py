@@ -1,5 +1,9 @@
-from pytest_cases.case_funcs import CaseData, Given, ExpectedNormal, ExpectedError, MultipleStepsCaseData, case_name, \
-    test_target, case_tags, cases_generator
+from pytest_cases.case_funcs import case_name, test_target, case_tags, cases_generator
+try:
+    # python 3.5+
+    from pytest_cases.case_funcs import CaseData, Given, ExpectedNormal, ExpectedError, MultipleStepsCaseData
+except ImportError:
+    pass
 
 from pytest_cases.main import cases_data, CaseDataGetter, unfold_expected_err, extract_cases_from_module, THIS_MODULE
 

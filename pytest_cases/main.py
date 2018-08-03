@@ -1,25 +1,41 @@
+from __future__ import division
+
 import sys
-from abc import abstractmethod, ABC
+from abc import abstractmethod, ABCMeta
 from inspect import getmembers
-from itertools import product
-from typing import Callable, Union, Optional, Any, Tuple, List, Dict
-from functools import lru_cache as lru
+from types import ModuleType
+
+try:  # python 3+
+    from typing import Callable, Union, Optional, Any, Tuple, List, Dict, Iterable
+
+    from pytest_cases.case_funcs import CaseData, ExpectedError
+
+    # Type hint for the simple functions
+    CaseFunc = Callable[[], CaseData]
+
+    # Type hint for generator functions
+    GeneratedCaseFunc = Callable[[Any], CaseData]
+
+except ImportError:
+    pass
 
 # noinspection PyBroadException
 from warnings import warn
 
-from pytest_cases.case_funcs import CaseData, ExpectedError, _GENERATOR_FIELD, CASE_TAGS_FIELD
+import six
+
+from pytest_cases.case_funcs import _GENERATOR_FIELD, CASE_TAGS_FIELD
 
 try:
     from typing import Type
-except:
+except ImportError:
     # on old versions of typing module the above does not work. Since our code below has all Type hints quoted it's ok
     pass
 
 import pytest
 
 
-class CaseDataGetter(ABC):
+class CaseDataGetter(six.with_metaclass(ABCMeta)):
     """
     A proxy for a test case. Instances of this class are created by `@cases_data` or `extract_cases_from_module`.
 
@@ -30,13 +46,15 @@ class CaseDataGetter(ABC):
     but this is not mandatory.
     """
     @abstractmethod
-    def get(self, *args, **kwargs) -> Union[CaseData, Any]:
+    def get(self, *args, **kwargs):
+        # type: (...) -> Union[CaseData, Any]
         """
         Retrieves the contents of the test case, with the provided arguments.
         :return:
         """
 
-    def get_for(self, key) -> CaseData:
+    def get_for(self, key):
+        # type: (...) -> CaseData
         """
         DEPRECATED as it is hardcoded for a very particular format of case data. Please rather use get() directly, and
         do the selection in the results yourself based on your case data format.
@@ -59,20 +77,15 @@ class CaseDataGetter(ABC):
         return ins, outs, err
 
 
-# Type hint for the simple functions
-CaseFunc = Callable[[], CaseData]
-
-# Type hint for generator functions
-GeneratedCaseFunc = Callable[[Any], CaseData]
-
-
 class CaseDataFromFunction(CaseDataGetter):
     """
     A CaseDataGetter relying on a function
     """
 
-    def __init__(self, data_generator_func: Union[CaseFunc, GeneratedCaseFunc], case_name: str = None,
-                 function_kwargs: Dict[str, Any] = None):
+    def __init__(self, data_generator_func,  # type: Union[CaseFunc, GeneratedCaseFunc]
+                 case_name=None,             # type: str
+                 function_kwargs=None        # type: Dict[str, Any]
+                 ):
         """
 
         :param data_generator_func:
@@ -92,12 +105,14 @@ class CaseDataFromFunction(CaseDataGetter):
     def __repr__(self):
         return "Test Case Data generator - [" + self.f.__name__ + "] - " + str(self.f)
 
-    def get(self, *args, **kwargs) -> Union[CaseData, Any]:
+    def get(self, *args, **kwargs):
+        # type: (...) -> Union[CaseData, Any]
         """
         This implementation relies on the inner function to generate the case data.
         :return:
         """
-        return self.f(*args, **kwargs, **self.function_kwargs)
+        kwargs.update(self.function_kwargs)
+        return self.f(*args, **kwargs)
 
 
 CASE_PREFIX = 'case_'
@@ -107,8 +122,12 @@ THIS_MODULE = object()
 """Marker that can be used instead of a module name to indicate that the module is the current one"""
 
 
-def cases_data(cases=None, module=None, case_data_argname: str= 'case_data', has_tag: Any=None,
-               filter: Callable[[List[Any]], bool]=None):
+def cases_data(cases=None,                       # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
+               module=None,                      # type: Union[ModuleType, Iterable[ModuleType]]
+               case_data_argname='case_data',    # type: str
+               has_tag=None,                     # type: Any
+               filter=None                       # type: Callable[[List[Any]], bool]
+               ):
     """
     Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with
     all cases listed explicitly in `cases`.
@@ -188,7 +207,7 @@ def cases_data(cases=None, module=None, case_data_argname: str= 'case_data', has
                     m = sys.modules[test_func.__module__] if m is THIS_MODULE else m
                     _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter)
             except TypeError:
-                # 'module' object is not iterable
+                # 'module' object is not iterable: a single module was provided
                 m = sys.modules[test_func.__module__] if module is THIS_MODULE else module
                 _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
 
@@ -210,16 +229,19 @@ def _get_code(f):
     :param f:
     :return:
     """
-    if hasattr(f, '__code__'):
-        return f.__code__
-    elif hasattr(f, '__wrapped__'):
+    if hasattr(f, '__wrapped__'):
         return _get_code(f.__wrapped__)
+    elif hasattr(f, '__code__'):
+        return f.__code__
     else:
         raise ValueError("Cannot get code information for function " + str(f))
 
 
-def extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[Any]], bool]=None) \
-        -> List[CaseDataGetter]:
+def extract_cases_from_module(module,        # type: ModuleType
+                              has_tag=None,  # type: Any
+                              filter=None    # type: Callable[[List[Any]], bool]
+                              ):
+    # type: (...) -> List[CaseDataGetter]
     """
     Internal method used to create a list of `CaseDataGetter` for all cases available from the given module.
     See `@cases_data`
@@ -242,7 +264,8 @@ def extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[
         #  - starting with prefix 'case_'
         if f_name.startswith(CASE_PREFIX):
             code = _get_code(f)
-            if code.co_filename == module.__file__:
+            # check if the function is actually defined in this module (not imported)
+            if code.co_filename == module.__file__:  # or we could use f.__module__ == module.__name__ ?
                 #  - with the optional filter/tag
                 _tags = getattr(f, CASE_TAGS_FIELD, ())
 
@@ -262,7 +285,10 @@ def extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[
     return cases
 
 
-def _get_case_getter_s(f, f_code=None, cases_dct=None) -> Optional[List[CaseDataFromFunction]]:
+def _get_case_getter_s(f,
+                       f_code=None,
+                       cases_dct=None):
+    # type: (...) -> Optional[List[CaseDataFromFunction]]
     """
     Creates the case function getter or the several cases function getters (in case of a generator) associated with
     function f. If cases_dct is provided, they are stored in this dictionary with a key equal to their code line number.
@@ -302,7 +328,7 @@ def _get_case_getter_s(f, f_code=None, cases_dct=None) -> Optional[List[CaseData
                 already_used_names.append(gen_case_name)
             case_getter = CaseDataFromFunction(f, gen_case_name, gen_case_params_dct)
 
-            # save the result
+            # save the result in the list or the dict
             if cases_dct is None:
                 cases_list.append(case_getter)
             else:
@@ -323,9 +349,9 @@ def _get_case_getter_s(f, f_code=None, cases_dct=None) -> Optional[List[CaseData
         return cases_list
 
 
-def unfold_expected_err(expected_e: ExpectedError) -> Tuple[Optional['Type[Exception]'],
-                                                            Optional[Exception],
-                                                            Optional[Callable[[Exception], bool]]]:
+def unfold_expected_err(expected_e  # type: ExpectedError
+                        ):
+    # type: (...) -> Tuple[Optional['Type[Exception]'], Optional[Exception], Optional[Callable[[Exception], bool]]]
     """
     'Unfolds' the expected error `expected_e` to return a tuple of
      - expected error type

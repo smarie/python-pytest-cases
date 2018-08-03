@@ -1,4 +1,15 @@
-from math import isfinite
+try:
+    from math import isfinite
+except ImportError:
+    from math import isnan, isinf
+
+    def isfinite(x):
+        """
+        isfinite(x) -> bool
+
+        Return True if x is neither an infinity nor a NaN, and False otherwise.
+        """
+        return not (isinf(x) or isnan(x))
 
 
 class InfiniteInput(Exception):
