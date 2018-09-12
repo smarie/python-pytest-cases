@@ -1,3 +1,4 @@
 # requirements needed to generate the doc using mkdocs
-mkdocs-material
-# mkdocs this is to prevent a version non-compliant with mkdocs-material to be installed.
+mkdocs-material==2.7.3
+# this is to prevent a version non-compliant with mkdocs-material to be installed.
+mkdocs==0.17.3
