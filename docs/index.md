@@ -61,6 +61,9 @@ Case functions **do not have any particular requirement**, apart from their name
 
 However, as shown in the example above, `pytest_cases` proposes to adopt a convention where the functions always returns a tuple of inputs/outputs/errors. A handy `CaseData` PEP484 type hint can be used to denote that.
 
+!!! note "A case function can return **anything**"
+    Even if in all examples in this documentation we chose to return a tuple (inputs/outputs/errors) (type hint `CaseData`), you can decide to return anything: a single variable, a dictionary, a tuple of a different length, etc. Whatever you return will be available through `case_data.get()` (see below).
+
 ### c- Test functions
 
 Finally, as usual we write our `pytest` functions starting with `test_`, in a `test_foo.py` file:
