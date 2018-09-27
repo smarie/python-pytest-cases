@@ -28,7 +28,7 @@ except Exception as e:
 # ************** ID card *****************
 DISTNAME = 'pytest-cases'
 DESCRIPTION = 'Separate test code from test cases in pytest.'
-MAINTAINER = 'Sylvain Marié'
+MAINTAINER = 'Sylvain MARIE'
 MAINTAINER_EMAIL = 'sylvain.marie@schneider-electric.com'
 URL = 'https://github.com/smarie/python-pytest-cases'
 LICENSE = 'BSD 3-Clause'

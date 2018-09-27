@@ -1,5 +1,7 @@
 # Changelog
 
+### 0.10.1 - minor encoding issue in setup.py
+
 ### 0.10.0 - support for python 2
 
 Python 2 is now supported. Fixed [#3](https://github.com/smarie/python-pytest-cases/issues/3) 

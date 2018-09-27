@@ -171,7 +171,7 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
     :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
         module is the current one. Only one of `cases` and `module` should be set.
     :param case_data_argname: the optional name of the function parameter that should receive the `CaseDataGetter`
-        object. Default is `case_data`.
+        object. Default is 'case_data'.
     :param has_tag: an optional tag used to filter the cases. Only cases with the given tag will be selected. Only
         cases with the given tag will be selected.
     :param filter: an optional filtering function taking as an input a list of tags associated with a case, and
