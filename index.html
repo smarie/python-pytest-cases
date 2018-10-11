@@ -602,6 +602,10 @@
 <p>In these functions, you will typically either parse some test data files, or generate some simulated test data and expected results. </p>
 <p>Case functions <strong>do not have any particular requirement</strong>, apart from their names starting with <code>case_</code>. They can return anything that is considered useful to run the associated test. </p>
 <p>However, as shown in the example above, <code>pytest_cases</code> proposes to adopt a convention where the functions always returns a tuple of inputs/outputs/errors. A handy <code>CaseData</code> PEP484 type hint can be used to denote that.</p>
+<div class="admonition note">
+<p class="admonition-title">A case function can return <strong>anything</strong></p>
+<p>Even if in all examples in this documentation we chose to return a tuple (inputs/outputs/errors) (type hint <code>CaseData</code>), you can decide to return anything: a single variable, a dictionary, a tuple of a different length, etc. Whatever you return will be available through <code>case_data.get()</code> (see below).</p>
+</div>
 <h3 id="c-test-functions">c- Test functions<a class="headerlink" href="#c-test-functions" title="Permanent link">&para;</a></h3>
 <p>Finally, as usual we write our <code>pytest</code> functions starting with <code>test_</code>, in a <code>test_foo.py</code> file:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
