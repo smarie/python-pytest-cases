@@ -45,7 +45,7 @@ pip install -r ci_tools/requirements-setup.txt
 This project uses `mkdocs` to generate its documentation page. Therefore building a local copy of the doc page may be done using:
 
 ```bash
-mkdocs build
+mkdocs build -f docs/mkdocs.yml
 ```
 
 You may need to install requirements for doc beforehand, using 
