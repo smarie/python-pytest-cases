@@ -103,7 +103,7 @@ class CaseDataFromFunction(CaseDataGetter):
             return self.f.__name__
 
     def __repr__(self):
-        return "Test Case Data generator - [" + self.f.__name__ + "] - " + str(self.f)
+        return "Test Case Data generator - [" + str(self) + "] - " + str(self.f)
 
     def get(self, *args, **kwargs):
         # type: (...) -> Union[CaseData, Any]
