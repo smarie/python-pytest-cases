@@ -1,17 +1,12 @@
 language: python
 
-cache: pip
+# DO NOT CACHE PIP: we rather use a fresh conda
+# cache: pip
 
 python:
-#  - "2.6"
   - "2.7"
-#  - "3.2"
-#  - "3.3"
-#  - "3.4"
   - "3.5"
-#  - "3.5-dev" # 3.5 development branch
   - "3.6"
-#  - "3.6-dev" # 3.6 development branch
 #  - "3.7"  NOT AVAILABLE ON TRAVIS YET..
 #  - "3.7-dev" # 3.7 development branch
 #  - "nightly" # currently points to 3.7-dev
@@ -19,24 +14,45 @@ python:
 #  - "pypy"  # PyPy2 2.5.0
 #  - "pypy3" # Pypy3 2.4.0
 #  - "pypy-5.3.1"
-#
 
 env:
   global:
   - GH_REF: git@github.com:smarie/python-pytest-cases.git
+  matrix:
+  - PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
+  - PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
 
 before_install:
+  # (a) linux dependencies
   - sudo apt-get install pandoc
   - sudo apt-get install ant
   - sudo apt-get install ant-optional
 
+  # ------------ USE CONDA BECAUSE OTHERWISE WE HAVE VERSION CONFLICTS WITH PYTEST AND ITS PLUGINS ---
+  # (b) install conda - from https://conda.io/docs/user-guide/tasks/use-conda-with-travis-ci.html
+  - echo "downloading miniconda"; if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      sudo wget -q https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      sudo wget -q https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - echo "installing miniconda to $HOME/miniconda";  bash miniconda.sh -b -p $HOME/miniconda; export PATH="$HOME/miniconda/bin:$PATH"
+  - echo "configuring miniconda"; hash -r; conda config --set always_yes yes --set changeps1 no
+  # - conda update -q conda NO !!!!
+
+  # (c) base conda environment
+  - echo "creating conda environment"; conda create -q -y -n test-environment python=$TRAVIS_PYTHON_VERSION
+  - echo "activating conda environment"; source activate test-environment
+
 install:
-  - pip install -r ci_tools/requirements-setup.txt
-  - pip install -r ci_tools/requirements-test.txt
-  - pip install -r ci_tools/requirements-report.txt
-  - pip install -r ci_tools/requirements-doc.txt
-  - pip install codecov    # https://github.com/codecov/example-python. This is specific to travis integration
-# - pip install coveralls  # this is an alternative to codecov
+  - conda list
+  - python ci_tools/py_install.py conda ci_tools/requirements-conda.txt
+  - python ci_tools/py_install.py pip ci_tools/requirements-pip.txt
+  # travis-specific installs
+  - pip install PyGithub  # for ci_tools/github_release.py
+  - pip install codecov  # See https://github.com/codecov/example-python.
+  - conda list
+  # WARNING to use the "true" pytest (or py.test) depending on version, "pytest" is NOT the way to go !
+  - python -m pytest --version  #  - pytest --version
 
 script:
 #  - coverage run tests.py
@@ -48,12 +64,12 @@ script:
 # now done in a dedicated script to capture exit code 1 and transform it to 0
   - chmod a+x ./ci_tools/run_tests.sh
   - sh ./ci_tools/run_tests.sh
+  - python ci_tools/generate-junit-badge.py 100  # generates the badge for the test results and fail build if less than x%
 
 after_success:
 # ***reporting***
 #  - junit2html junit.xml testrun.html  output is really not nice
   - ant -f ci_tools/generate-junit-html.xml  # generates the html for the test results. Actually we dont use it anymore
-  - python ci_tools/generate-junit-badge.py  # generates the badge for the test results
   - codecov
   - pylint pytest_cases  # note that at the moment the report is simply lost, we dont transform the result into anything
 # ***documentation***
@@ -71,7 +87,7 @@ after_success:
       git config user.name "Automatic Publish"
       git config user.email "sylvain.marie@schneider-electric.com"
       git remote add gh-remote "${GH_REF}";
-      git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;
+      git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;  # make sure we have the latest gh-remote
       # push but only if this is not a build triggered by a pull request
       # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
       if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v --dirty -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
@@ -80,15 +96,26 @@ after_success:
     fi
 
 deploy:
-  provider: pypi
-  user: "smarie"
-  password:
-    secure: "iWtaX7rsW1e1dQGMEo4nAa6O9cv27rT7pZMrHe2sN/oODf1CErBLD5MarReA1XLXEcqdO/Qvsx6+djl0Z3daVa6Pk7FMt+5lKBuw1QPUNuU56/MAty36nnH06H4627GZK5gEFbV107BNqnt+1eR7QIlndFVtImdA1m61JyW/5ydCgCy4ppCTNGxwxpkPWimxXMVVwS/vMT/TNzTIUIJfAXObDoBra2bVvyymjPAIJoJWghE/FG1mbsLIhMUq/HWE5k22LwcFWNHRzVddfSCzh6Qw2NyFJaV4QjCLxK3Ia6AmrF7gjpC8GqTSnoClgiW1N9Cl6+h8099BLq46FSAw4eJjkD5BrWzKxtdHg1TBWhoqEPmP4gxTbk/3lT5nYl0Vo0xdXsvjIuiHmy3RGQVNutTUT7ms1w7It0ioX2wPLaTseafOWzf4y1CQceB6AKEXCAFKA0zsj5oxDXokVTSgLpvgFaKHFfy1zz60Ga8TqJY2GD70oxA31NgmGRO+Quamas8iIsFwTmKEjLRtRt/ShTG96wYvZNlOMU4DQ4X5h0BHc5HbZLl8CVWY3NNXISbtH48E+mdvVvw5fJMnan6aK3AGLmn3i+pPX9dfn25avQ2+ulPJbvrxK/x8Ys/ZD2zDlZUdZRS8ffqfeyYFVbMwlt60DkP98zZYibdkGYPcwno="
-  on:
-    tags: true
-    python: 3.5  #only one of the builds have to be deployed
-#  server: https://test.pypi.org/legacy/
-  distributions: "sdist bdist_wheel"
+  # Deploy on PyPI on tags
+  - provider: pypi
+    user: "smarie"
+    password:
+      secure: "iWtaX7rsW1e1dQGMEo4nAa6O9cv27rT7pZMrHe2sN/oODf1CErBLD5MarReA1XLXEcqdO/Qvsx6+djl0Z3daVa6Pk7FMt+5lKBuw1QPUNuU56/MAty36nnH06H4627GZK5gEFbV107BNqnt+1eR7QIlndFVtImdA1m61JyW/5ydCgCy4ppCTNGxwxpkPWimxXMVVwS/vMT/TNzTIUIJfAXObDoBra2bVvyymjPAIJoJWghE/FG1mbsLIhMUq/HWE5k22LwcFWNHRzVddfSCzh6Qw2NyFJaV4QjCLxK3Ia6AmrF7gjpC8GqTSnoClgiW1N9Cl6+h8099BLq46FSAw4eJjkD5BrWzKxtdHg1TBWhoqEPmP4gxTbk/3lT5nYl0Vo0xdXsvjIuiHmy3RGQVNutTUT7ms1w7It0ioX2wPLaTseafOWzf4y1CQceB6AKEXCAFKA0zsj5oxDXokVTSgLpvgFaKHFfy1zz60Ga8TqJY2GD70oxA31NgmGRO+Quamas8iIsFwTmKEjLRtRt/ShTG96wYvZNlOMU4DQ4X5h0BHc5HbZLl8CVWY3NNXISbtH48E+mdvVvw5fJMnan6aK3AGLmn3i+pPX9dfn25avQ2+ulPJbvrxK/x8Ys/ZD2zDlZUdZRS8ffqfeyYFVbMwlt60DkP98zZYibdkGYPcwno="
+    on:
+      tags: true
+      python: 3.5  #only one of the builds have to be deployed
+      condition: $PYTEST_VERSION = "<3"
+    #  server: https://test.pypi.org/legacy/
+    distributions: "sdist bdist_wheel"
+
+  # Create a github release on tags
+  - provider: script
+    script: python ci_tools/github_release.py -s $GITHUB_TOKEN --repo-slug smarie/python-pytest-cases -cf ./docs/changelog.md -d https://smarie.github.io/python-pytest-cases/changelog/ $TRAVIS_TAG
+    skip_cleanup: true
+    on:
+      tags: true
+      python: 3.5  #only one of the builds have to be deployed
+      condition: $PYTEST_VERSION = "<3"
 
 matrix:
     fast_finish: true

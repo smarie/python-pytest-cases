@@ -1,0 +1,24 @@
+# --- to execute setup.py whatever the goal
+# pytest-runner
+setuptools_scm
+pandoc
+pypandoc
+
+# --- to install
+
+# --- to run the tests
+# (pip) pytest$PYTEST_VERSION
+# (pip) pytest-logging  # ==2015.11.4
+# (pip) pytest-steps
+
+# --- to generate the reports (see scripts in ci_tools, called by .travis)
+# (pip) pytest-html$PYTEST_HTML_VERSION
+requests
+# (pip) xunitparser
+# pytest-cov  # ==2.5
+coverage
+pylint
+
+# --- to generate the doc (see .travis)
+# (pip) mkdocs-material==2.7.3
+# (pip) mkdocs==0.17.3  # this is to prevent a version non-compliant with mkdocs-material to be installed.

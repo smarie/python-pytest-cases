@@ -1,0 +1,20 @@
+# --- to execute setup.py whatever the goal
+pytest-runner
+
+# -- to install
+
+# --- to generate the reports (see scripts in ci_tools, called by .travis)
+pytest-html$PYTEST_HTML_VERSION
+xunitparser
+
+# --- to run the tests
+pytest$PYTEST_VERSION
+pytest-logging  # ==2015.11.4
+pytest-steps
+
+# --- to generate the reports (see scripts in ci_tools, called by .travis)
+pytest-cov  # ==2.5
+
+# --- to generate the doc (see .travis)
+mkdocs-material==2.7.3
+mkdocs==0.17.3  # this is to prevent a version non-compliant with mkdocs-material to be installed.
