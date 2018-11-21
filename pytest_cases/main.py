@@ -2,13 +2,16 @@ from __future__ import division
 
 import sys
 from abc import abstractmethod, ABCMeta
-from inspect import getmembers
-from types import ModuleType
+from inspect import getmembers, isgeneratorfunction
 
-try:  # python 3+
+from pytest_cases.decorator_hack import my_decorate
+
+try:  # type hints, python 3+
     from typing import Callable, Union, Optional, Any, Tuple, List, Dict, Iterable
 
     from pytest_cases.case_funcs import CaseData, ExpectedError
+
+    from types import ModuleType
 
     # Type hint for the simple functions
     CaseFunc = Callable[[], CaseData]
@@ -122,6 +125,58 @@ THIS_MODULE = object()
 """Marker that can be used instead of a module name to indicate that the module is the current one"""
 
 
+def cases_fixture(cases=None,                       # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
+                  module=None,                      # type: Union[ModuleType, Iterable[ModuleType]]
+                  case_data_argname='case_data',    # type: str
+                  has_tag=None,                     # type: Any
+                  filter=None,                      # type: Callable[[List[Any]], bool]
+                  **kwargs
+                  ):
+    """
+    Decorates a function so that it becomes a parametrized fixture.
+
+    :param cases:
+    :param module:
+    :param case_data_argname:
+    :param has_tag:
+    :param filter:
+    :return:
+    """
+    def fixture_decorator(fixture_func):
+        """
+        The generated fixture function decorator.
+
+        :param fixture_func:
+        :return:
+        """
+        # First list all cases according to user preferences
+        _cases = get_all_cases(cases, module, fixture_func, has_tag, filter)
+
+        # old: use id getter function : cases_ids = str
+        # new: hardcode the case ids, safer (?) in case this is mixed with another fixture
+        cases_ids = [str(c) for c in _cases]
+
+        # create a fixture function wrapper
+        if not isgeneratorfunction(fixture_func):
+            def wrapper(f, request, args, kwargs):
+                kwargs[case_data_argname] = request.param
+                return f(*args, **kwargs)
+        else:
+            def wrapper(f, request, args, kwargs):
+                kwargs[case_data_argname] = request.param
+                for res in f(*args, **kwargs):
+                    yield res
+
+        fixture_func_wrapper = my_decorate(fixture_func, wrapper, additional_args=['request'],
+                                           removed_args=[case_data_argname])
+
+        # Finally create the pytest decorator and apply it
+        parametrizer = pytest.fixture(params=_cases, ids=cases_ids, **kwargs)
+        return parametrizer(fixture_func_wrapper)
+
+    return fixture_decorator
+
+
 def cases_data(cases=None,                       # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
                module=None,                      # type: Union[ModuleType, Iterable[ModuleType]]
                case_data_argname='case_data',    # type: str
@@ -189,27 +244,8 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
         :param test_func:
         :return:
         """
-        if module is not None and cases is not None:
-            raise ValueError("Only one of module and cases should be provided")
-        elif module is None:
-            # Hardcoded sequence of cases, or single case
-            if callable(cases):
-                # single element
-                _cases = [case_getter for case_getter in _get_case_getter_s(cases)]
-            else:
-                # already a sequence
-                _cases = [case_getter for c in cases for case_getter in _get_case_getter_s(c)]
-        else:
-            # Gather all cases from the reference module(s)
-            try:
-                _cases = []
-                for m in module:
-                    m = sys.modules[test_func.__module__] if m is THIS_MODULE else m
-                    _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter)
-            except TypeError:
-                # 'module' object is not iterable: a single module was provided
-                m = sys.modules[test_func.__module__] if module is THIS_MODULE else module
-                _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
+        # First list all cases according to user preferences
+        _cases = get_all_cases(cases, module, test_func, has_tag, filter)
 
         # old: use id getter function : cases_ids = str
         # new: hardcode the case ids, safer (?) in case this is mixed with another fixture
@@ -222,6 +258,45 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
 
     return datasets_decorator
 
+
+def get_all_cases(cases, module, test_func, has_tag, filter):
+    """
+    Internal method to get all desired cases from the user inputs.
+
+    :param cases: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
+    :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
+        module is the current one. Only one of `cases` and `module` should be set.
+    :param test_func: the test function. It is used when module contains `THIS_MODULE`, to find the module.
+    :param has_tag: an optional tag used to filter the cases. Only cases with the given tag will be selected. Only
+        cases with the given tag will be selected.
+    :param filter: an optional filtering function taking as an input a list of tags associated with a case, and
+        returning a boolean indicating if the case should be selected. It will be used to filter the cases in the
+        `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
+    :return:
+    """
+    if module is not None and cases is not None:
+        raise ValueError("Only one of module and cases should be provided")
+    elif module is None:
+        # Hardcoded sequence of cases, or single case
+        if callable(cases):
+            # single element
+            _cases = [case_getter for case_getter in _get_case_getter_s(cases)]
+        else:
+            # already a sequence
+            _cases = [case_getter for c in cases for case_getter in _get_case_getter_s(c)]
+    else:
+        # Gather all cases from the reference module(s)
+        try:
+            _cases = []
+            for m in module:
+                m = sys.modules[test_func.__module__] if m is THIS_MODULE else m
+                _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter)
+        except TypeError:
+            # 'module' object is not iterable: a single module was provided
+            m = sys.modules[test_func.__module__] if module is THIS_MODULE else module
+            _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
+
+    return _cases
 
 def _get_code(f):
     """

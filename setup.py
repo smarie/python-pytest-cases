@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 here = path.abspath(path.dirname(__file__))
 
 # *************** Dependencies *********
-INSTALL_REQUIRES = []
+INSTALL_REQUIRES = ['decorator']
 DEPENDENCY_LINKS = []
 SETUP_REQUIRES = ['pytest-runner', 'setuptools_scm', 'pypandoc', 'pandoc']
 TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'pytest-steps']
