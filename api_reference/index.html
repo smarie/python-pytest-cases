@@ -406,6 +406,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#cases_fixture" title="@cases_fixture" class="md-nav__link">
+    @cases_fixture
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cases_data" title="@cases_data" class="md-nav__link">
     @cases_data
   </a>
@@ -427,8 +434,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#extract_cases_from_module" title="extract_cases_from_module" class="md-nav__link">
-    extract_cases_from_module
+  <a href="#get_all_cases" title="get_all_cases" class="md-nav__link">
+    get_all_cases
   </a>
   
 </li>
@@ -545,6 +552,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#cases_fixture" title="@cases_fixture" class="md-nav__link">
+    @cases_fixture
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cases_data" title="@cases_data" class="md-nav__link">
     @cases_data
   </a>
@@ -566,8 +580,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#extract_cases_from_module" title="extract_cases_from_module" class="md-nav__link">
-    extract_cases_from_module
+  <a href="#get_all_cases" title="get_all_cases" class="md-nav__link">
+    get_all_cases
   </a>
   
 </li>
@@ -668,8 +682,51 @@
                                Union[ExpectedNormal, Dict[Any, ExpectedNormal]],
                                Union[ExpectedError, Dict[Any, ExpectedError]]]</code></p>
 <h2 id="2-on-test-functions-side">2 - On test functions side<a class="headerlink" href="#2-on-test-functions-side" title="Permanent link">&para;</a></h2>
+<h3 id="cases_fixture"><code>@cases_fixture</code><a class="headerlink" href="#cases_fixture" title="Permanent link">&para;</a></h3>
+<p><code>@cases_fixture(cases=None, module=None, case_data_argname='case_data', has_tag=None, filter=None)</code></p>
+<p>Decorates a function so that it becomes a parametrized fixture.</p>
+<p>The fixture will be automatically parametrized with all cases listed in module <code>module</code>, or with
+all cases listed explicitly in <code>cases</code>.</p>
+<p>Using it with a non-None <code>module</code> argument is equivalent to
+ * extracting all cases from <code>module</code>
+ * then decorating your function with @pytest.fixture(params=cases) with all the cases</p>
+<p>So</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_fixture</span><span class="p">,</span> <span class="n">CaseData</span>
+
+<span class="c1"># import the module containing the test cases</span>
+<span class="kn">import</span> <span class="nn">test_foo_cases</span>
+
+<span class="nd">@cases_fixture</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">test_foo_cases</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo_fixture</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseData</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+
+
+<p>is equivalent to:</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">get_all_cases</span>
+
+<span class="c1"># import the module containing the test cases</span>
+<span class="kn">import</span> <span class="nn">test_foo_cases</span>
+
+<span class="c1"># manually list the available cases</span>
+<span class="n">cases</span> <span class="o">=</span> <span class="n">get_all_cases</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">test_foo_cases</span><span class="p">)</span>
+
+<span class="c1"># parametrize the fixture manually</span>
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">cases</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo_fixture</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">case_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>  <span class="c1"># type: CaseData</span>
+    <span class="o">...</span>
+</pre></div>
+
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li><code>case_data_argname</code>: the optional name of the function parameter that should receive the <code>CaseDataGetter</code> object. Default is <code>case_data</code>.</li>
+<li>Other parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering, of cases to include. See <code>get_all_cases()</code> for details about them.</li>
+</ul>
 <h3 id="cases_data"><code>@cases_data</code><a class="headerlink" href="#cases_data" title="Permanent link">&para;</a></h3>
-<p><code>@cases_data(cases=None, module=None, case_data_argname: str= 'case_data', has_tag: Any=None, filter: Callable[[List[Any]], bool]=None</code></p>
+<p><code>@cases_data(cases=None, module=None, case_data_argname='case_data', has_tag=None, filter=None)</code></p>
 <p>Decorates a test function so as to automatically parametrize it with all cases listed in module <code>module</code>, or with all cases listed explicitly in <code>cases</code>.</p>
 <p>Using it with a non-None <code>module</code> argument is equivalent to</p>
 <ul>
@@ -705,13 +762,10 @@
 </pre></div>
 
 
-<p><strong>Parameters:</strong></p>
+<p><strong>Parameters</strong></p>
 <ul>
-<li><code>cases</code>: a single case or a hardcoded list of cases to use. Only one of <code>cases</code> and <code>module</code> should be set.</li>
-<li><code>module</code>: a module or a hardcoded list of modules to use. You may use <code>THIS_MODULE</code> to indicate that the module is the current one. Only one of <code>cases</code> and <code>module</code> should be set.</li>
 <li><code>case_data_argname</code>: the optional name of the function parameter that should receive the <code>CaseDataGetter</code> object. Default is <code>case_data</code>.</li>
-<li><code>has_tag</code>: an optional tag used to filter the cases in the <code>module</code>. Only cases with the given tag will be selected.</li>
-<li><code>filter</code>: an optional filtering function taking as an input a list of tags associated with a case, and returning a boolean indicating if the case should be selected. It will be used to filter the cases in the <code>module</code>. It both <code>has_tag</code> and <code>filter</code> are set, both will be applied in sequence.</li>
+<li>Other parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering, of cases to include. See <code>get_all_cases()</code> for details about them.</li>
 </ul>
 <h3 id="casedatagetter"><code>CaseDataGetter</code><a class="headerlink" href="#casedatagetter" title="Permanent link">&para;</a></h3>
 <p>A proxy for a test case. Instances of this class are created by <code>@cases_data</code> or <code>extract_cases_from_module</code>. It provides a single method:</p>
@@ -731,9 +785,17 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 <ul>
 <li><code>expected_e</code>: an <code>ExpectedError</code>, that is, either an exception type, an exception instance, or an exception validation function</li>
 </ul>
-<h3 id="extract_cases_from_module"><code>extract_cases_from_module</code><a class="headerlink" href="#extract_cases_from_module" title="Permanent link">&para;</a></h3>
-<p><code>extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[Any]], bool]=None) -&gt; List[CaseDataGetter]</code></p>
-<p>Internal method used to create a list of <code>CaseDataGetter</code> for all cases available from the given module. See <code>@cases_data</code> for parameters usage.</p>
+<h3 id="get_all_cases"><code>get_all_cases</code><a class="headerlink" href="#get_all_cases" title="Permanent link">&para;</a></h3>
+<p><code>get_all_cases(cases=None, module=None, this_module_object=None, has_tag=None, filter=None) -&gt; List[CaseDataGetter]</code></p>
+<p>Lists all desired cases for a given user query. This function may be convenient for debugging purposes.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>cases</code>: a single case or a hardcoded list of cases to use. Only one of <code>cases</code> and <code>module</code> should be set.</li>
+<li><code>module</code>: a module or a hardcoded list of modules to use. You may use <code>THIS_MODULE</code> to indicate that the module is the current one. Only one of <code>cases</code> and <code>module</code> should be set.</li>
+<li><code>this_module_object</code>: any variable defined in the module of interest, for example a function. It is used to find "this module", when <code>module</code> contains <code>THIS_MODULE</code>. </li>
+<li><code>has_tag</code>: an optional tag used to filter the cases in the <code>module</code>. Only cases with the given tag will be selected.</li>
+<li><code>filter</code>: an optional filtering function taking as an input a list of tags associated with a case, and returning a boolean indicating if the case should be selected. It will be used to filter the cases in the <code>module</code>. It both <code>has_tag</code> and <code>filter</code> are set, both will be applied in sequence.</li>
+</ul>
                 
                   
                 

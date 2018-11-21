@@ -694,7 +694,7 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 <p>Sometimes you wish to execute a series of test steps on the same dataset, and then to move to another one. There are many ways to do this with <code>pytest</code> but some of them are not easy to blend with the notion of 'cases' in an intuitive manner. <code>pytest-cases</code> is compliant with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a>: you can easily create incremental tests and throw your cases on them.</p>
 <p>This tutorial assumes that you are already familiar with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a>.</p>
 <h3 id="1-if-steps-can-run-with-the-same-data">1- If steps can run with the same data<a class="headerlink" href="#1-if-steps-can-run-with-the-same-data" title="Permanent link">&para;</a></h3>
-<p>If all of the test steps require the same data to execute, it is very easy:</p>
+<p>If all of the test steps require the same data to execute, it is straightforward, both in parametrizer mode (shown below) or in the new pytest steps generator mode (not shown):</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">CaseData</span>
 <span class="kn">from</span> <span class="nn">pytest_steps</span> <span class="kn">import</span> <span class="n">test_steps</span>
 
@@ -759,7 +759,7 @@ case_simple2
 <p>In real-world usage, each step will probably have different expected output or errors for the same case - except if the steps are very similar. The steps may even need slightly different input, for example the same dataset but in two different formats.</p>
 <p>This is actually quite straightforward: simply adapt your custom case data format definition! Since <code>pytest-cases</code> does not impose <strong>any</strong> format for your case functions outputs, you can decide that your case functions return lists, dictionaries, etc.</p>
 <p>For example you can choose the format proposed by the <code>MultipleStepsCaseData</code> type hint, where each item in the returned inputs/outputs/errors tuple can either be a single element, or a dictionary of name -&gt; element. This allows your case functions to return alternate contents depending on the test step being executed.</p>
-<p>The example below shows a test suite where the inputs of the steps are the same, but the outputs and expected errors are different:</p>
+<p>The example below shows a test suite where the inputs of the steps are the same, but the outputs and expected errors are different. Note that once again the example relies on the legacy "parametrizer" mode of pytest-steps, but it would be similar with the new "generator" mode.</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
   <span class="n">MultipleStepsCaseData</span>
 <span class="kn">from</span> <span class="nn">pytest_steps</span> <span class="kn">import</span> <span class="n">test_steps</span>
