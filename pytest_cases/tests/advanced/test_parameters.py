@@ -1,6 +1,7 @@
 import pytest
 
 from pytest_cases.tests.example_code import super_function_i_want_to_test
+from pytest_cases.tests.utils import nb_pytest_parameters, get_pytest_param
 
 from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, cases_generator
 try:
@@ -57,12 +58,14 @@ def test_with_parameters(case_data,  # type: CaseDataGetter
 def test_assert_parametrized():
     """Asserts that all tests are parametrized with the correct number of cases"""
 
-    assert len(test_with_parameters.pytestmark) == 2
+    assert nb_pytest_parameters(test_with_parameters) == 2
 
-    assert len(test_with_parameters.pytestmark[0].args) == 2
-    assert test_with_parameters.pytestmark[0].args[0] == 'version'
-    assert len(test_with_parameters.pytestmark[0].args[1]) == 2
+    param_args = get_pytest_param(test_with_parameters, 0)
+    assert len(param_args) == 2
+    assert param_args[0] == 'version'
+    assert len(param_args[1]) == 2
 
-    assert len(test_with_parameters.pytestmark[1].args) == 2
-    assert test_with_parameters.pytestmark[1].args[0] == 'case_data'
-    assert len(test_with_parameters.pytestmark[1].args[1]) == 1 + 1 + 2 * 2
+    param_args = get_pytest_param(test_with_parameters, 1)
+    assert len(param_args) == 2
+    assert param_args[0] == 'case_data'
+    assert len(param_args[1]) == 1 + 1 + 2 * 2

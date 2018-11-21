@@ -1,4 +1,5 @@
 from pytest_cases import cases_data, THIS_MODULE, cases_generator, CaseDataGetter, extract_cases_from_module
+from pytest_cases.tests.utils import nb_pytest_parameters, get_pytest_param
 
 try:  # python 3+: type hints
     from pytest_cases import CaseData
@@ -46,12 +47,14 @@ def test_assert_cases_are_here():
 def test_assert_parametrized():
     """Asserts that test_b is parametrized with the correct number of cases"""
 
-    assert len(test_a.pytestmark) == 1
-    assert len(test_a.pytestmark[0].args) == 2
-    assert test_a.pytestmark[0].args[0] == 'case_data'
-    assert len(test_a.pytestmark[0].args[1]) == 3
+    assert nb_pytest_parameters(test_a) == 1
+    param_args = get_pytest_param(test_a, 0)
+    assert len(param_args) == 2
+    assert param_args[0] == 'case_data'
+    assert len(param_args[1]) == 3
 
-    assert len(test_b.pytestmark) == 1
-    assert len(test_b.pytestmark[0].args) == 2
-    assert test_b.pytestmark[0].args[0] == 'case_data'
-    assert len(test_b.pytestmark[0].args[1]) == 3
+    assert nb_pytest_parameters(test_b) == 1
+    param_args = get_pytest_param(test_b, 0)
+    assert len(param_args) == 2
+    assert param_args[0] == 'case_data'
+    assert len(param_args[1]) == 3
