@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.0.0 - `@cases_fixture` + pytest 2.x support 
+
+Pytest 2.x is now supported. Fixes [#14](https://github.com/smarie/python-pytest-cases/issues/14)
+
+**New feature:** `@cases_fixture` ! Now you can put your cases data retrieval in a fixture so that its duration does not enter into the test duration. This is particularly interesting if you use [pytest-harvest](https://smarie.github.io/python-pytest-harvest/) to create benchmarks: you probably do not want the case data retrieval/parsing to be counted in the test duration, especially if you use caching on the case function to accelerate subsequent retrievals. Fixes [#15](https://github.com/smarie/python-pytest-cases/issues/15)
+
 ### 0.10.1 - minor encoding issue in setup.py
 
 ### 0.10.0 - support for python 2
