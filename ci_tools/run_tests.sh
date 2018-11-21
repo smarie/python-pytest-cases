@@ -11,4 +11,4 @@ cleanup() {
 }
 
 trap "cleanup" INT TERM EXIT
-pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./pytest_cases -v pytest_cases/tests/
+python -m pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./pytest_cases -v pytest_cases/tests/
