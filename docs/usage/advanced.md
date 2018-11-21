@@ -159,7 +159,7 @@ This tutorial assumes that you are already familiar with [pytest-steps](https://
 
 ### 1- If steps can run with the same data
 
-If all of the test steps require the same data to execute, it is very easy:
+If all of the test steps require the same data to execute, it is straightforward, both in parametrizer mode (shown below) or in the new pytest steps generator mode (not shown):
 
 
 ```python
@@ -234,7 +234,7 @@ This is actually quite straightforward: simply adapt your custom case data forma
 
 For example you can choose the format proposed by the `MultipleStepsCaseData` type hint, where each item in the returned inputs/outputs/errors tuple can either be a single element, or a dictionary of name -> element. This allows your case functions to return alternate contents depending on the test step being executed.
 
-The example below shows a test suite where the inputs of the steps are the same, but the outputs and expected errors are different:
+The example below shows a test suite where the inputs of the steps are the same, but the outputs and expected errors are different. Note that once again the example relies on the legacy "parametrizer" mode of pytest-steps, but it would be similar with the new "generator" mode.
 
 ```python
 from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, \

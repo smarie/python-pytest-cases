@@ -135,11 +135,58 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
     """
     Decorates a function so that it becomes a parametrized fixture.
 
-    :param cases:
-    :param module:
-    :param case_data_argname:
-    :param has_tag:
-    :param filter:
+    The fixture will be automatically parametrized with all cases listed in module `module`, or with
+    all cases listed explicitly in `cases`.
+
+    Using it with a non-None `module` argument is equivalent to
+     * extracting all cases from `module`
+     * then decorating your function with @pytest.fixture(params=cases) with all the cases
+
+    So
+
+    ```python
+    from pytest_cases import cases_fixture, CaseData
+
+    # import the module containing the test cases
+    import test_foo_cases
+
+    @cases_fixture(module=test_foo_cases)
+    def foo_fixture(case_data: CaseData):
+        ...
+    ```
+
+    is equivalent to:
+
+    ```python
+    import pytest
+    from pytest_cases import extract_cases_from_module, CaseData
+
+    # import the module containing the test cases
+    import test_foo_cases
+
+    # manually list the available cases
+    cases = get_all_cases(module=test_foo_cases)
+
+    # parametrize the fixture manually
+    @pytest.fixture(params=cases)
+    def foo_fixture(request):
+        case_data = request.param  # type: CaseData
+        ...
+    ```
+
+    Parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering. See
+    `get_all_cases()` for details.
+
+    :param cases: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
+    :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
+        module is the current one. Only one of `cases` and `module` should be set.
+    :param case_data_argname: the optional name of the function parameter that should receive the `CaseDataGetter`
+        object. Default is 'case_data'.
+    :param has_tag: an optional tag used to filter the cases. Only cases with the given tag will be selected. Only
+        cases with the given tag will be selected.
+    :param filter: an optional filtering function taking as an input a list of tags associated with a case, and
+        returning a boolean indicating if the case should be selected. It will be used to filter the cases in the
+        `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
     def fixture_decorator(fixture_func):
@@ -199,7 +246,7 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
     # import the module containing the test cases
     import test_foo_cases
 
-    @cases_data(test_foo_cases)
+    @cases_data(module=test_foo_cases)
     def test_foo(case_data: CaseData):
         ...
     ```
@@ -208,19 +255,22 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
 
     ```python
     import pytest
-    from pytest_cases import extract_cases_from_module, CaseData
+    from pytest_cases import get_all_cases, CaseData
 
     # import the module containing the test cases
     import test_foo_cases
 
     # manually list the available cases
-    cases = extract_cases_from_module(test_foo_cases)
+    cases = get_all_cases(module=test_foo_cases)
 
     # parametrize the test function manually
     @pytest.mark.parametrize('case_data', cases, ids=str)
     def test_foo(case_data: CaseData):
         ...
     ```
+
+    Parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering. See
+    `get_all_cases()` for details.
 
     :param cases: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
     :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
@@ -259,14 +309,21 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
     return datasets_decorator
 
 
-def get_all_cases(cases, module, test_func, has_tag, filter):
+def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
+                  module=None,              # type: Union[ModuleType, Iterable[ModuleType]]
+                  this_module_object=None,  # type: Any
+                  has_tag=None,             # type: Any
+                  filter=None               # type: Callable[[List[Any]], bool]
+                  ):
+    # type: (...) -> List[CaseDataGetter]
     """
-    Internal method to get all desired cases from the user inputs.
+    Lists all desired cases from the user inputs. This function may be convenient for debugging purposes.
 
     :param cases: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
     :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
         module is the current one. Only one of `cases` and `module` should be set.
-    :param test_func: the test function. It is used when module contains `THIS_MODULE`, to find the module.
+    :param this_module_object: any variable defined in the module of interest, for example a function. It is used to
+        find "this module", when `module` contains `THIS_MODULE`.
     :param has_tag: an optional tag used to filter the cases. Only cases with the given tag will be selected. Only
         cases with the given tag will be selected.
     :param filter: an optional filtering function taking as an input a list of tags associated with a case, and
@@ -289,14 +346,15 @@ def get_all_cases(cases, module, test_func, has_tag, filter):
         try:
             _cases = []
             for m in module:
-                m = sys.modules[test_func.__module__] if m is THIS_MODULE else m
+                m = sys.modules[this_module_object.__module__] if m is THIS_MODULE else m
                 _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter)
         except TypeError:
             # 'module' object is not iterable: a single module was provided
-            m = sys.modules[test_func.__module__] if module is THIS_MODULE else module
+            m = sys.modules[this_module_object.__module__] if module is THIS_MODULE else module
             _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
 
     return _cases
+
 
 def _get_code(f):
     """

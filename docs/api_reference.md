@@ -97,9 +97,59 @@ You may wish to use this type hint instead of `CaseData` when your case function
 
 ## 2 - On test functions side
 
+### `@cases_fixture`
+
+`@cases_fixture(cases=None, module=None, case_data_argname='case_data', has_tag=None, filter=None)`
+
+Decorates a function so that it becomes a parametrized fixture.
+
+The fixture will be automatically parametrized with all cases listed in module `module`, or with
+all cases listed explicitly in `cases`.
+
+Using it with a non-None `module` argument is equivalent to
+ * extracting all cases from `module`
+ * then decorating your function with @pytest.fixture(params=cases) with all the cases
+
+So
+
+```python
+from pytest_cases import cases_fixture, CaseData
+
+# import the module containing the test cases
+import test_foo_cases
+
+@cases_fixture(module=test_foo_cases)
+def foo_fixture(case_data: CaseData):
+    ...
+```
+
+is equivalent to:
+
+```python
+import pytest
+from pytest_cases import get_all_cases
+
+# import the module containing the test cases
+import test_foo_cases
+
+# manually list the available cases
+cases = get_all_cases(module=test_foo_cases)
+
+# parametrize the fixture manually
+@pytest.fixture(params=cases)
+def foo_fixture(request):
+    case_data = request.param  # type: CaseData
+    ...
+```
+
+**Parameters**
+
+ - `case_data_argname`: the optional name of the function parameter that should receive the `CaseDataGetter` object. Default is `case_data`.
+ - Other parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering, of cases to include. See `get_all_cases()` for details about them.
+
 ### `@cases_data`
 
-`@cases_data(cases=None, module=None, case_data_argname: str= 'case_data', has_tag: Any=None, filter: Callable[[List[Any]], bool]=None`
+`@cases_data(cases=None, module=None, case_data_argname='case_data', has_tag=None, filter=None)`
 
 Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with all cases listed explicitly in `cases`.
 
@@ -139,13 +189,10 @@ def test_foo(case_data: CaseData):
     ...
 ```
 
-**Parameters:**
+**Parameters**
 
- - `cases`: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
- - `module`: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the module is the current one. Only one of `cases` and `module` should be set.
  - `case_data_argname`: the optional name of the function parameter that should receive the `CaseDataGetter` object. Default is `case_data`.
- - `has_tag`: an optional tag used to filter the cases in the `module`. Only cases with the given tag will be selected.
- - `filter`: an optional filtering function taking as an input a list of tags associated with a case, and returning a boolean indicating if the case should be selected. It will be used to filter the cases in the `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
+ - Other parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering, of cases to include. See `get_all_cases()` for details about them.
 
 ### `CaseDataGetter`
 
@@ -172,8 +219,17 @@ If `expected_e` is an exception validation function, returns `Exception, None, e
  - `expected_e`: an `ExpectedError`, that is, either an exception type, an exception instance, or an exception validation function
 
 
-### `extract_cases_from_module`
+### `get_all_cases`
 
-`extract_cases_from_module(module, has_tag: Any=None, filter: Callable[[List[Any]], bool]=None) -> List[CaseDataGetter]`
+`get_all_cases(cases=None, module=None, this_module_object=None, has_tag=None, filter=None) -> List[CaseDataGetter]`
 
-Internal method used to create a list of `CaseDataGetter` for all cases available from the given module. See `@cases_data` for parameters usage.
+Lists all desired cases for a given user query. This function may be convenient for debugging purposes.
+    
+
+**Parameters:**
+
+ - `cases`: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
+ - `module`: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the module is the current one. Only one of `cases` and `module` should be set.
+ - `this_module_object`: any variable defined in the module of interest, for example a function. It is used to find "this module", when `module` contains `THIS_MODULE`. 
+ - `has_tag`: an optional tag used to filter the cases in the `module`. Only cases with the given tag will be selected.
+ - `filter`: an optional filtering function taking as an input a list of tags associated with a case, and returning a boolean indicating if the case should be selected. It will be used to filter the cases in the `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
