@@ -105,7 +105,7 @@ deploy:
       tags: true
       python: 3.5  #only one of the builds have to be deployed
       condition: $PYTEST_VERSION = "<3"
-    #  server: https://test.pypi.org/legacy/
+    # server: https://test.pypi.org/legacy/
     distributions: "sdist bdist_wheel"
 
   # Create a github release on tags
