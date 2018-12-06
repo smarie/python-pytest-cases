@@ -1,8 +1,11 @@
 # a clone of the ruby example https://gist.github.com/valeriomazzeo/5491aee76f758f7352e2e6611ce87ec1
 import os
+from os import path
+
 import re
 
 import click
+from click import Path
 from github import Github, UnknownObjectException
 # from valid8 import validate  not compliant with python 2.7
 
@@ -14,8 +17,10 @@ from github import Github, UnknownObjectException
 @click.option('-r', '--repo-slug', help='Repo slug. i.e.: apple/swift')
 @click.option('-cf', '--changelog-file', help='Changelog file path')
 @click.option('-d', '--doc-url', help='Documentation url')
+@click.option('-df', '--data-file', help='Data file to upload', type=Path(exists=True, file_okay=True, dir_okay=False,
+                                                                          resolve_path=True))
 @click.argument('tag')
-def create_or_update_release(user, pwd, secret, repo_slug, changelog_file, doc_url, tag):
+def create_or_update_release(user, pwd, secret, repo_slug, changelog_file, doc_url, data_file, tag):
     """
     Creates or updates (TODO)
     a github release corresponding to git tag <TAG>.
@@ -38,7 +43,7 @@ def create_or_update_release(user, pwd, secret, repo_slug, changelog_file, doc_u
     click.echo("Logged in as {user_name}".format(user_name=g.get_user()))
 
     # 2- CHANGELOG VALIDATION
-    regex_pattern = "[\s\S]*[\n][#]+[\s]*(?P<title>[\S ]*%s[\S ]*)[\n]+(?P<body>[\s\S]*?)[\n]*(\n#|$)" % re.escape(tag)
+    regex_pattern = "[\s\S]*[\n][#]+[\s]*(?P<title>[\S ]*%s[\S ]*)[\n]+?(?P<body>[\s\S]*?)[\n]*?(\n#|$)" % re.escape(tag)
     changelog_section = re.compile(regex_pattern)
     if changelog_file is not None:
         # validate('changelog_file', changelog_file, custom=os.path.exists,
@@ -86,6 +91,13 @@ def create_or_update_release(user, pwd, secret, repo_slug, changelog_file, doc_u
         repo.create_git_release(tag=tag, name=title,
                                 message=message,
                                 draft=False, prerelease=False)
+
+        # add the asset file if needed
+        if data_file is not None:
+            release = None
+            while release is None:
+                release = repo.get_release(tag)
+            release.upload_asset(path=data_file, label=path.split(data_file)[1], content_type="application/gzip")
 
         # --- Memo ---
         # release.target_commitish  # 'master'
