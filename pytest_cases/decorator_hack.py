@@ -1,7 +1,5 @@
 import sys
 
-from itertools import chain
-
 from decorator import FunctionMaker
 from inspect import isgeneratorfunction
 

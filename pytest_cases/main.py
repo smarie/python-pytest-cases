@@ -1,3 +1,4 @@
+# Use true division operator always even in old python 2.x (used in `_get_case_getter_s`)
 from __future__ import division
 
 import sys
