@@ -97,18 +97,21 @@ Once you have done these three steps, executing `pytest` will run your test func
 
 ### d- Case fixtures
 
-You might be concerned that case data is gathered inside test execution. Indeed gathering case data is not part of the test *per se*. Besides if you use for example [pytest-harvest](https://smarie.github.io/python-pytest-harvest/) to benchmark your tests durations, you may want the test duration to be computed without acccounting for the data retrieval time (especially if you decide to add some caching mechanism as explained [here](https://smarie.github.io/python-pytest-cases/usage/advanced/#caching)).
+You might be concerned that case data is gathered or created *during* test execution. 
 
-The answer is simple: instead of parametrizing your test function, rather create a parametrized fixture:
+Indeed creating or collecting case data is not part of the test *per se*. Besides, if you benchmark your tests durations (for example with [pytest-harvest](https://smarie.github.io/python-pytest-harvest/)), you may want the test duration to be computed without acccounting for the data retrieval time - especially if you decide to add some caching mechanism as explained [here](https://smarie.github.io/python-pytest-cases/usage/advanced/#caching).
+
+It might therefore be more interesting for you to parametrize **case fixtures** instead of parametrizing your test function:
 
 ```python
-from pytest_cases import cases_fixture
+from pytest_cases import pytest_fixture_plus, cases_data
 from example import foo
 
 # import the module containing the test cases
 import test_foo_cases
 
-@cases_fixture(module=test_foo_cases)
+@pytest_fixture_plus
+@cases_data(module=test_foo_cases)
 def inputs(case_data):
     """ Example fixture that is automatically parametrized with @cases_data """
     # retrieve case data
@@ -119,7 +122,12 @@ def test_foo(inputs):
     foo(**inputs)
 ```
 
+In the above example, the `test_foo` test does not spend time collecting or generating data. When it is executed, it receives the required data directly as `inputs`. The test case creation instead happens when each `inputs` fixture instance is created by `pytest` - this is done in a separate pytest phase (named "setup"), and therefore is not counted in the test duration.
+
 Note: you can still use `request` in your fixture's signature if you wish to.
+
+!!! note "`@pytest_fixture_plus` deprecation if/when `@pytest.fixture` supports `@pytest.mark.parametrize`"
+    The ability for pytest fixtures to support the `@pytest.mark.parametrize` annotation is a feature that clearly belongs to `pytest` scope, and has been [requested already](https://github.com/pytest-dev/pytest/issues/3960). It is therefore expected that `@pytest_fixture_plus` will be deprecated in favor of `@pytest_fixture` if/when the `pytest` team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.
 
 ## Usage - 'True' test cases
 

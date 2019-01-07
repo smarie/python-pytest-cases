@@ -3,8 +3,10 @@ from __future__ import division
 
 import sys
 from abc import abstractmethod, ABCMeta
-from inspect import getmembers, isgeneratorfunction
+from distutils.version import LooseVersion
+from inspect import getmembers, isgeneratorfunction, getmodule
 
+from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks
 from pytest_cases.decorator_hack import my_decorate
 
 try:  # type hints, python 3+
@@ -134,6 +136,14 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
                   **kwargs
                   ):
     """
+    DEPRECATED - use double annotation `@pytest_fixture_plus` + `@cases_data` instead
+
+    ```python
+    @pytest_fixture_plus
+    @cases_data(module=xxx)
+    def my_fixture(case_data)
+    ```
+
     Decorates a function so that it becomes a parametrized fixture.
 
     The fixture will be automatically parametrized with all cases listed in module `module`, or with
@@ -190,39 +200,198 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
         `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
-    def fixture_decorator(fixture_func):
-        """
-        The generated fixture function decorator.
+    def _double_decorator(f):
+        # apply @cases_data (that will translate to a @pytest.mark.parametrize)
+        parametrized_f = cases_data(cases=cases, module=module,
+                                    case_data_argname=case_data_argname, has_tag=has_tag, filter=filter)(f)
+        # apply @pytest_fixture_plus
+        return pytest_fixture_plus(**kwargs)(parametrized_f)
 
-        :param fixture_func:
-        :return:
-        """
-        # First list all cases according to user preferences
-        _cases = get_all_cases(cases, module, fixture_func, has_tag, filter)
+    return _double_decorator
 
-        # old: use id getter function : cases_ids = str
-        # new: hardcode the case ids, safer (?) in case this is mixed with another fixture
-        cases_ids = [str(c) for c in _cases]
 
-        # create a fixture function wrapper
-        if not isgeneratorfunction(fixture_func):
-            def wrapper(f, request, args, kwargs):
-                kwargs[case_data_argname] = request.param
-                return f(*args, **kwargs)
+def pytest_fixture_plus(scope="function",
+                        params=None,
+                        autouse=False,
+                        ids=None,
+                        name=None,
+                        **kwargs):
+    """ (return a) decorator to mark a fixture factory function.
+
+    Identical to `@pytest.fixture` decorator, except that it supports multi-parametrization with
+    `@pytest.mark.parametrize` as requested in https://github.com/pytest-dev/pytest/issues/3960.
+
+    :param scope: the scope for which this fixture is shared, one of
+                "function" (default), "class", "module" or "session".
+    :param params: an optional list of parameters which will cause multiple
+                invocations of the fixture function and all of the tests
+                using it.
+    :param autouse: if True, the fixture func is activated for all tests that
+                can see it.  If False (the default) then an explicit
+                reference is needed to activate the fixture.
+    :param ids: list of string ids each corresponding to the params
+                so that they are part of the test id. If no ids are provided
+                they will be generated automatically from the params.
+    :param name: the name of the fixture. This defaults to the name of the
+                decorated function. If a fixture is used in the same module in
+                which it is defined, the function name of the fixture will be
+                shadowed by the function arg that requests the fixture; one way
+                to resolve this is to name the decorated function
+                ``fixture_<fixturename>`` and then use
+                ``@pytest.fixture(name='<fixturename>')``.
+    :param kwargs: other keyword arguments for `@pytest.fixture`
+    """
+
+    if callable(scope) and params is None and autouse is False:
+        # direct decoration without arguments
+        return decorate_pytest_fixture_plus(scope)
+    else:
+        # arguments have been provided
+        def _decorator(f):
+            return decorate_pytest_fixture_plus(f,
+                                                scope=scope, params=params, autouse=autouse, ids=ids, name=name,
+                                                **kwargs)
+        return _decorator
+
+
+def decorate_pytest_fixture_plus(fixture_func,
+                                 scope="function",
+                                 params=None,
+                                 autouse=False,
+                                 ids=None,
+                                 name=None,
+                                 **kwargs):
+    """
+    Manual decorator equivalent to `@pytest_fixture_plus`
+
+    :param fixture_func: the function to decorate
+
+    :param scope: the scope for which this fixture is shared, one of
+                "function" (default), "class", "module" or "session".
+    :param params: an optional list of parameters which will cause multiple
+                invocations of the fixture function and all of the tests
+                using it.
+    :param autouse: if True, the fixture func is activated for all tests that
+                can see it.  If False (the default) then an explicit
+                reference is needed to activate the fixture.
+    :param ids: list of string ids each corresponding to the params
+                so that they are part of the test id. If no ids are provided
+                they will be generated automatically from the params.
+    :param name: the name of the fixture. This defaults to the name of the
+                decorated function. If a fixture is used in the same module in
+                which it is defined, the function name of the fixture will be
+                shadowed by the function arg that requests the fixture; one way
+                to resolve this is to name the decorated function
+                ``fixture_<fixturename>`` and then use
+                ``@pytest.fixture(name='<fixturename>')``.
+    :param kwargs:
+    :return:
+    """
+    # Compatibility for the 'name' argument
+    if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+        # pytest version supports "name" keyword argument
+        kwargs['name'] = name
+    elif name is not None:
+        # 'name' argument is not supported in this old version, use the __name__ trick.
+        fixture_func.__name__ = name
+
+    # Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
+    parametrizer_marks = get_pytest_parametrize_marks(fixture_func)
+
+    # the module will be used to add fixtures dynamically
+    module = getmodule(fixture_func)
+
+    # for each dependency create an associated "param" fixture
+    # Note: we could instead have created a huge parameter containing all parameters...
+    # Pros = no additional fixture. Cons: less readable and ids would be difficult to create
+    params_map = dict()
+    for m in parametrizer_marks:
+        # check what the mark specifies in terms of parameters
+        if len(m.param_names) < 1:
+            raise ValueError("Fixture function '%s' decorated with '@pytest_fixture_plus' has an empty parameter "
+                             "name in a @pytest.mark.parametrize mark")
+
         else:
-            def wrapper(f, request, args, kwargs):
-                kwargs[case_data_argname] = request.param
-                for res in f(*args, **kwargs):
-                    yield res
+            # create a fixture function for this parameter
+            def _param_fixture(request):
+                """a dummy fixture that simply returns the parameter"""
+                return request.param
 
-        fixture_func_wrapper = my_decorate(fixture_func, wrapper, additional_args=['request'],
-                                           removed_args=[case_data_argname])
+            # generate a fixture name (find an available name if already used)
+            gen_name = "gen_paramfixture__" + fixture_func.__name__ + "__" + 'X'.join(m.param_names)
+            i = 0
+            _param_fixture.__name__ = gen_name
+            while _param_fixture.__name__ in dir(module):
+                i += 1
+                _param_fixture.__name__ = gen_name + '_' + str(i)
 
-        # Finally create the pytest decorator and apply it
-        parametrizer = pytest.fixture(params=_cases, ids=cases_ids, **kwargs)
-        return parametrizer(fixture_func_wrapper)
+            # create the fixture with param name, values and ids, and with same scope than requesting func.
+            param_fixture = pytest.fixture(scope=scope, params=m.param_values, ids=m.param_ids)(_param_fixture)
 
-    return fixture_decorator
+            # Add the fixture dynamically: we have to add it to the function holder module as explained in
+            # https://github.com/pytest-dev/pytest/issues/2424
+            if _param_fixture.__name__ not in dir(module):
+                setattr(module, _param_fixture.__name__, param_fixture)
+            else:
+                raise ValueError("The {} fixture automatically generated by `@pytest_fixture_plus` already exists in "
+                                 "module {}. This should not happen given the automatic name generation"
+                                 "".format(_param_fixture.__name__, module))
+
+            # remember
+            params_map[_param_fixture.__name__] = m.param_names
+
+    # wrap the fixture function so that each of its parameter becomes the associated fixture name
+    new_parameter_names = tuple(params_map.keys())
+    old_parameter_names = tuple(v for l in params_map.values() for v in l)
+
+    # common routine used below. Fills kwargs with the appropriate names and values from fixture_params
+    def _get_arguments(fixture_params, args_and_kwargs):
+        # unpack the underlying function's args/kwargs
+        args = args_and_kwargs.pop('args')
+        kwargs = args_and_kwargs.pop('kwargs')
+        if len(args_and_kwargs) > 0:
+            raise ValueError("Internal error - please file an issue in the github project page")
+
+        # fill the kwargs with additional arguments by using mapping
+        i = 0
+        for new_p_name in new_parameter_names:
+            if len(params_map[new_p_name]) == 1:
+                kwargs[params_map[new_p_name][0]] = fixture_params[i]
+                i += 1
+            else:
+                # unpack several
+                for old_p_name, old_p_value in zip(params_map[new_p_name], fixture_params[i]):
+                    kwargs[old_p_name] = old_p_value
+                    i += 1
+
+        return args, kwargs
+
+    if not isgeneratorfunction(fixture_func):
+        # normal function with return statement
+        def wrapper(f, *fixture_params, **args_and_kwargs):
+            args, kwargs = _get_arguments(fixture_params, args_and_kwargs)
+            return fixture_func(*args, **kwargs)
+
+        wrapped_fixture_func = my_decorate(fixture_func, wrapper,
+                                           additional_args=new_parameter_names, removed_args=old_parameter_names)
+
+        # transform the created wrapper into a fixture
+        fixture_decorator = pytest.fixture(scope=scope, params=params, autouse=autouse, ids=ids, **kwargs)
+        return fixture_decorator(wrapped_fixture_func)
+
+    else:
+        # generator function (with a yield statement)
+        def wrapper(f, *fixture_params, **args_and_kwargs):
+            args, kwargs = _get_arguments(fixture_params, args_and_kwargs)
+            for res in fixture_func(*args, **kwargs):
+                yield res
+
+        wrapped_fixture_func = my_decorate(fixture_func, wrapper,
+                                           additional_args=new_parameter_names, removed_args=old_parameter_names)
+
+        # transform the created wrapper into a fixture
+        fixture_decorator = yield_fixture(scope=scope, params=params, autouse=autouse, ids=ids, **kwargs)
+        return fixture_decorator(wrapped_fixture_func)
 
 
 def cases_data(cases=None,                       # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
