@@ -318,7 +318,7 @@ def decorate_pytest_fixture_plus(fixture_func,
                 return request.param
 
             # generate a fixture name (find an available name if already used)
-            gen_name = "gen_paramfixture__" + fixture_func.__name__ + "__" + 'X'.join(m.param_names)
+            gen_name = fixture_func.__name__ + "__" + 'X'.join(m.param_names)  # + "__gen"
             i = 0
             _param_fixture.__name__ = gen_name
             while _param_fixture.__name__ in dir(module):
