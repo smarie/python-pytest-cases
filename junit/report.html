@@ -3,8 +3,150 @@
   <head>
     <meta charset="utf-8"/>
     <title>Test Report</title>
-    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
-  <body onLoad="init()">
+    <style>body {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	min-width: 1200px;
+	color: #999;
+}
+h2 {
+	font-size: 16px;
+	color: black;
+}
+
+p {
+    color: black;
+}
+
+a {
+	color: #999;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+
+#environment td {
+	padding: 5px;
+	border: 1px solid #E6E6E6;
+}
+
+#environment tr:nth-child(odd) {
+	background-color: #f6f6f6;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed, .passed .col-result {
+	color: green;
+}
+span.skipped, span.xfailed, span.rerun, .skipped .col-result, .xfailed .col-result, .rerun .col-result {
+	color: orange;
+}
+span.error, span.failed, span.xpassed, .error .col-result, .failed .col-result, .xpassed .col-result  {
+	color: red;
+}
+
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+
+#results-table {
+	border: 1px solid #e6e6e6;
+	color: #999;
+	font-size: 12px;
+	width: 100%
+}
+
+#results-table th, #results-table td {
+	padding: 5px;
+	border: 1px solid #E6E6E6;
+	text-align: left
+}
+#results-table th {
+	font-weight: bold
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+
+.log:only-child {
+	height: inherit
+}
+.log {
+	background-color: #e6e6e6;
+	border: 1px solid #e6e6e6;
+	color: black;
+	display: block;
+	font-family: "Courier New", Courier, monospace;
+	height: 230px;
+	overflow-y: scroll;
+	padding: 5px;
+	white-space: pre-wrap
+}
+div.image {
+	border: 1px solid #e6e6e6;
+	float: right;
+	height: 240px;
+	margin-left: 5px;
+	overflow: hidden;
+	width: 320px
+}
+div.image img {
+	width: 320px
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+	cursor: pointer;
+}
+
+.sort-icon {
+	font-size: 0px;
+	float: left;
+	margin-right: 5px;
+	margin-top: 5px;
+	/*triangle*/
+	width: 0;
+	height: 0;
+	border-left: 8px solid transparent;
+	border-right: 8px solid transparent;
+}
+
+.inactive .sort-icon {
+	/*finish triangle*/
+	border-top: 8px solid #E6E6E6;
+}
+
+.asc.active .sort-icon {
+	/*finish triangle*/
+	border-bottom: 8px solid #999;
+}
+
+.desc.active .sort-icon {
+	/*finish triangle*/
+	border-top: 8px solid #999;
+}
+</style></head>
+  <body>
     <script>/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -45,80 +187,36 @@ function sort_column(elem) {
     sort_table(elem, key(colIndex));
 }
 
-function show_all_extras() {
-    find_all('.col-result').forEach(show_extras);
-}
-
-function hide_all_extras() {
-    find_all('.col-result').forEach(hide_extras);
-}
-
-function show_extras(colresult_elem) {
-    var extras = colresult_elem.parentNode.nextElementSibling;
-    var expandcollapse = colresult_elem.firstElementChild;
-    extras.classList.remove("collapsed");
-    expandcollapse.classList.remove("expander");
-    expandcollapse.classList.add("collapser");
-}
-
-function hide_extras(colresult_elem) {
-    var extras = colresult_elem.parentNode.nextElementSibling;
-    var expandcollapse = colresult_elem.firstElementChild;
-    extras.classList.add("collapsed");
-    expandcollapse.classList.remove("collapser");
-    expandcollapse.classList.add("expander");
-}
-
-function show_filters() {
-    var filter_items = document.getElementsByClassName('filter');
-    for (var i = 0; i < filter_items.length; i++)
-        filter_items[i].hidden = false;
-}
-
-function add_collapse() {
-    // Add links for show/hide all
-    var resulttable = find('table#results-table');
-    var showhideall = document.createElement("p");
-    showhideall.innerHTML = '<a href="javascript:show_all_extras()">Show all details</a> / ' +
-                            '<a href="javascript:hide_all_extras()">Hide all details</a>';
-    resulttable.parentElement.insertBefore(showhideall, resulttable);
-
-    // Add show/hide link to each result
-    find_all('.col-result').forEach(function(elem) {
-        var collapsed = get_query_parameter('collapsed') || 'Passed';
-        var extras = elem.parentNode.nextElementSibling;
-        var expandcollapse = document.createElement("span");
-        if (collapsed.includes(elem.innerHTML)) {
-            extras.classList.add("collapsed");
-            expandcollapse.classList.add("expander");
-        } else {
-            expandcollapse.classList.add("collapser");
-        }
-        elem.appendChild(expandcollapse);
-
-        elem.addEventListener("click", function(event) {
-            if (event.currentTarget.parentNode.nextElementSibling.classList.contains("collapsed")) {
-                show_extras(event.currentTarget);
-            } else {
-                hide_extras(event.currentTarget);
-            }
-        });
-    })
-}
-
-function get_query_parameter(name) {
-    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
-    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-}
-
-function init () {
+addEventListener("DOMContentLoaded", function() {
     reset_sort_headers();
 
-    add_collapse();
+    sort_column(find('.initial-sort'));
 
-    show_filters();
+    find_all('.col-links a.image').forEach(function(elem) {
+        elem.addEventListener("click",
+                              function(event) {
+                                  var node = elem;
+                                  while (node && !node.classList.contains('results-table-row')) {
+                                      node = node.parentNode;
+                                  }
+                                  if (node != null) {
+                                      if (node.nextSibling &&
+                                          node.nextSibling.classList.contains("extra")) {
+                                          var href = find('.image img', node.nextSibling).src;
+                                          window.open(href);
+                                      }
+                                  }
+                                  event.preventDefault();
+                              }, false)
+    });
 
-    toggle_sort_states(find('.initial-sort'));
+    find_all('.image a').forEach(function(elem) {
+        elem.addEventListener("click",
+                              function(event) {
+                                  window.open(find('img', elem).getAttribute('src'));
+                                  event.preventDefault();
+                              }, false)
+    });
 
     find_all('.sortable').forEach(function(elem) {
         elem.addEventListener("click",
@@ -127,24 +225,17 @@ function init () {
                               }, false)
     });
 
-};
+});
 
 function sort_table(clicked, key_func) {
     var rows = find_all('.results-table-row');
     var reversed = !clicked.classList.contains('asc');
     var sorted_rows = sort(rows, key_func, reversed);
-    /* Whole table is removed here because browsers acts much slower
-     * when appending existing elements.
-     */
-    var thead = document.getElementById("results-table-head");
-    document.getElementById('results-table').remove();
-    var parent = document.createElement("table");
-    parent.id = "results-table";
-    parent.appendChild(thead);
+
+    var parent = document.getElementById('results-table');
     sorted_rows.forEach(function(elem) {
         parent.appendChild(elem);
     });
-    document.getElementsByTagName("BODY")[0].appendChild(parent);
 }
 
 function sort(items, key_func, reversed) {
@@ -179,8 +270,8 @@ function key_num(col_index) {
 
 function key_result(col_index) {
     return function(elem) {
-        var strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
-                       'Skipped', 'Passed'];
+        var strings = ['Error', 'Failed', 'XFailed', 'XPassed', 'Skipped',
+                       'Passed'];
         return strings.indexOf(elem.childNodes[1].childNodes[col_index].firstChild.data);
     };
 }
@@ -223,109 +314,39 @@ function filter_table(elem) {
     var outcome = elem.getAttribute(outcome_att);
     class_outcome = outcome + " results-table-row";
     var outcome_rows = document.getElementsByClassName(class_outcome);
-
+   
     for(var i = 0; i < outcome_rows.length; i++){
         outcome_rows[i].hidden = !elem.checked;
     }
 
     var rows = find_all('.results-table-row').filter(is_all_rows_hidden);
-    var all_rows_hidden = rows.length == 0 ? true : false;
+    var all_rows_hidden = rows.length == 0 ? true : false;    
     var not_found_message = document.getElementById("not-found-message");
     not_found_message.hidden = !all_rows_hidden;
 }
 </script>
-    <h1>report.html</h1>
-    <p>Report generated on 08-Jan-2019 at 09:54:45 by<a href="https://pypi.python.org/pypi/pytest-html"> pytest-html</a> v1.19.0</p>
+    <p>Report generated on 08-Jan-2019 at 10:15:32</p>
     <h2>Environment</h2>
     <table id="environment">
-      <tr>
-        <td>CI</td>
-        <td>true</td></tr>
-      <tr>
-        <td>JAVA_HOME</td>
-        <td>/usr/lib/jvm/java-8-oracle</td></tr>
-      <tr>
-        <td>Packages</td>
-        <td>{&apos;pluggy&apos;: &apos;0.8.0&apos;, &apos;py&apos;: &apos;1.7.0&apos;, &apos;pytest&apos;: &apos;3.10.1&apos;}</td></tr>
       <tr>
         <td>Platform</td>
         <td>Linux-4.4.0-101-generic-x86_64-with-debian-jessie-sid</td></tr>
       <tr>
-        <td>Plugins</td>
-        <td>{&apos;cov&apos;: &apos;2.6.0&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;, &apos;steps&apos;: &apos;1.5.3&apos;, &apos;html&apos;: &apos;1.19.0&apos;}</td></tr>
-      <tr>
         <td>Python</td>
-        <td>3.5.6</td></tr>
-      <tr>
-        <td>TRAVIS_BRANCH</td>
-        <td>master</td></tr>
-      <tr>
-        <td>TRAVIS_BUILD_ID</td>
-        <td>476739034</td></tr>
-      <tr>
-        <td>TRAVIS_BUILD_NUMBER</td>
-        <td>47</td></tr>
-      <tr>
-        <td>TRAVIS_COMMIT</td>
-        <td>80608afa13735f4eee7655ac9e67c6eebbcbb8bd</td></tr>
-      <tr>
-        <td>TRAVIS_COMMIT_MESSAGE</td>
-        <td>Fixes dependency version error (new pytest-cov requires pytest 3.6)</td></tr>
-      <tr>
-        <td>TRAVIS_COMMIT_RANGE</td>
-        <td>36ed73b1062a...80608afa1373</td></tr>
-      <tr>
-        <td>TRAVIS_EVENT_TYPE</td>
-        <td>push</td></tr>
-      <tr>
-        <td>TRAVIS_JOB_ID</td>
-        <td>476739039</td></tr>
-      <tr>
-        <td>TRAVIS_JOB_NUMBER</td>
-        <td>47.5</td></tr>
-      <tr>
-        <td>TRAVIS_OS_NAME</td>
-        <td>linux</td></tr>
-      <tr>
-        <td>TRAVIS_PULL_REQUEST</td>
-        <td>false</td></tr>
-      <tr>
-        <td>TRAVIS_REPO_SLUG</td>
-        <td>smarie/python-pytest-cases</td></tr>
-      <tr>
-        <td>TRAVIS_SUDO</td>
-        <td>true</td></tr></table>
+        <td>3.5.6</td></tr></table>
     <h2>Summary</h2>
-    <p>104 tests ran in 0.88 seconds. </p>
-    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">104 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">2 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <p>106 tests ran in 0.67 seconds. </p>
+    <p>(Un)check the boxes to filter the results.</p><input checked="true" data-test-result="passed" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">106 passed</span> <input checked="true" data-test-result="skipped" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span> <input checked="true" data-test-result="failed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span> <input checked="true" data-test-result="error" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span> <input checked="true" data-test-result="xfailed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span> <input checked="true" data-test-result="xpassed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span> <input checked="true" data-test-result="rerun" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="rerun">0 rerun</span> 
     <h2>Results</h2>
     <table id="results-table">
       <thead id="results-table-head">
         <tr>
-          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable initial-sort result" col="result">Result</th>
           <th class="sortable" col="name">Test</th>
           <th class="sortable numeric" col="duration">Duration</th>
           <th>Links</th></tr>
         <tr hidden="true" id="not-found-message">
-          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
-      <tbody class="error results-table-row">
-        <tr>
-          <td class="col-result">Error</td>
-          <td class="col-name">pytest_cases/tests/simple/test_stereo_fixtures.py::test_stereo[stereo 1.wav-dict]::setup</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
-            <div class="log">path = &#x27;stereo 1.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/>request = &lt;SubRequest &#x27;stereo_cfg&#x27; for &lt;Function &#x27;test_stereo[stereo 1.wav-dict]&#x27;&gt;&gt;<br/><br/>    @pytest_fixture_plus<br/>    @pytest.mark.parametrize(&quot;path&quot;, STEREO_PATHS)<br/>    @pytest.mark.parametrize(&quot;cfg_factory&quot;, CFG_TYPES)   # not actual params<br/>    def stereo_cfg(path, cfg_factory, request):<br/>        &quot;&quot;&quot;<br/>        A fixture with two parameters<br/>        &quot;&quot;&quot;<br/>        assert isinstance(path, str)<br/>        assert isinstance(cfg_factory, type)<br/>&gt;       a.assert_state_and_move(path=path, cfg_factory=cfg_factory)<br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:47: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pytest_cases.tests.simple.test_stereo_fixtures.StateAsserter object at 0x7fdee5b95780&gt;<br/>path = &#x27;stereo 1.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/><br/>    def assert_state_and_move(self, path, cfg_factory):<br/>&gt;       assert path == STEREO_PATHS[self.current_state % 2]<br/><span class="error">E       AssertionError: assert &#x27;stereo 1.wav&#x27; == &#x27;stereo 2.wav&#x27;</span><br/><span class="error">E         - stereo 1.wav</span><br/><span class="error">E         ?        ^</span><br/><span class="error">E         + stereo 2.wav</span><br/><span class="error">E         ?        ^</span><br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:18: AssertionError<br/></div></td></tr></tbody>
-      <tbody class="error results-table-row">
-        <tr>
-          <td class="col-result">Error</td>
-          <td class="col-name">pytest_cases/tests/simple/test_stereo_fixtures.py::test_stereo[stereo 2.wav-dict]::setup</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
-            <div class="log">path = &#x27;stereo 2.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/>request = &lt;SubRequest &#x27;stereo_cfg&#x27; for &lt;Function &#x27;test_stereo[stereo 2.wav-dict]&#x27;&gt;&gt;<br/><br/>    @pytest_fixture_plus<br/>    @pytest.mark.parametrize(&quot;path&quot;, STEREO_PATHS)<br/>    @pytest.mark.parametrize(&quot;cfg_factory&quot;, CFG_TYPES)   # not actual params<br/>    def stereo_cfg(path, cfg_factory, request):<br/>        &quot;&quot;&quot;<br/>        A fixture with two parameters<br/>        &quot;&quot;&quot;<br/>        assert isinstance(path, str)<br/>        assert isinstance(cfg_factory, type)<br/>&gt;       a.assert_state_and_move(path=path, cfg_factory=cfg_factory)<br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:47: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pytest_cases.tests.simple.test_stereo_fixtures.StateAsserter object at 0x7fdee5b95780&gt;<br/>path = &#x27;stereo 2.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/><br/>    def assert_state_and_move(self, path, cfg_factory):<br/>&gt;       assert path == STEREO_PATHS[self.current_state % 2]<br/><span class="error">E       AssertionError: assert &#x27;stereo 2.wav&#x27; == &#x27;stereo 1.wav&#x27;</span><br/><span class="error">E         - stereo 2.wav</span><br/><span class="error">E         ?        ^</span><br/><span class="error">E         + stereo 1.wav</span><br/><span class="error">E         ?        ^</span><br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:18: AssertionError<br/></div></td></tr></tbody>
+          <th colspan="5">No results found. Try to check the filters</th></tr></thead>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -333,7 +354,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>loading file file1
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -343,7 +364,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>loading file file2
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -353,7 +374,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -362,7 +383,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>loading file file3
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -372,7 +393,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -381,7 +402,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -390,7 +411,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -399,7 +420,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -408,7 +429,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>generating case 0
 0
 </div></td></tr></tbody>
@@ -419,7 +440,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>generating case 1
 1
 </div></td></tr></tbody>
@@ -430,7 +451,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>generating case 2
 2
 </div></td></tr></tbody>
@@ -441,7 +462,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -451,7 +472,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>1
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -461,7 +482,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>2
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -471,7 +492,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -480,7 +501,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -489,7 +510,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 1.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -499,7 +520,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 1.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -509,17 +530,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 1.0.0
-</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[1.0.0-gen case i=0, j=1]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 1.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -529,7 +540,17 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 1.0.0
+</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[1.0.0-gen case i=0, j=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 1.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -539,7 +560,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 1.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -549,7 +570,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 2.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -559,7 +580,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 2.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -569,17 +590,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 2.0.0
-</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[2.0.0-gen case i=0, j=1]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 2.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -589,7 +600,17 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 2.0.0
+</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[2.0.0-gen case i=0, j=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 2.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -599,7 +620,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>using version 2.0.0
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -609,7 +630,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -618,7 +639,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -627,7 +648,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -636,7 +657,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -645,7 +666,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>loading file file1
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -655,7 +676,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>loading file file2
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -665,7 +686,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -674,17 +695,17 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>loading file file3
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/advanced/test_stackoverflow.py::test_c[case_1]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.03</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -693,7 +714,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -702,7 +723,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -711,8 +732,8 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&apos;a&apos;: 1, &apos;b&apos;: 2}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -721,8 +742,8 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&apos;a&apos;: 1, &apos;b&apos;: 2}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -731,8 +752,8 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&apos;a&apos;: -1, &apos;b&apos;: 2}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -741,8 +762,8 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&apos;a&apos;: -1, &apos;b&apos;: 2}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -751,8 +772,8 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&apos;a&apos;: 1, &apos;b&apos;: 2}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -761,8 +782,8 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&apos;a&apos;: 1, &apos;b&apos;: 2}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -771,8 +792,8 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&apos;a&apos;: -1, &apos;b&apos;: 2}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -781,8 +802,8 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&apos;a&apos;: -1, &apos;b&apos;: 2}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -791,7 +812,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -800,7 +821,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -809,7 +830,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -818,7 +839,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -827,7 +848,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -836,7 +857,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -845,7 +866,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -854,7 +875,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -863,7 +884,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -872,7 +893,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -881,7 +902,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -890,7 +911,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -899,7 +920,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -908,7 +929,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -917,7 +938,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -926,7 +947,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -935,7 +956,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -944,7 +965,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -953,7 +974,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -962,7 +983,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -971,7 +992,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -980,7 +1001,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -989,7 +1010,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -998,7 +1019,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1007,7 +1028,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1016,7 +1037,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1025,7 +1046,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1034,7 +1055,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1043,7 +1064,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1052,25 +1073,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=1]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=2]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1079,7 +1082,16 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1088,7 +1100,16 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=2]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1097,7 +1118,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1106,7 +1127,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1115,7 +1136,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1124,7 +1145,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1133,7 +1154,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1142,7 +1163,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1151,7 +1172,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1160,7 +1181,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1169,7 +1190,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1178,7 +1199,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1187,7 +1208,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1196,7 +1217,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1205,25 +1226,43 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/simple/test_stereo_fixtures.py::test_stereo[stereo 1.wav-list]</td>
+          <td class="col-name">pytest_cases/tests/simple/test_stereo_fixtures.py::test_stereo[list-stereo 1.wav]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/simple/test_stereo_fixtures.py::test_stereo[stereo 2.wav-list]</td>
+          <td class="col-name">pytest_cases/tests/simple/test_stereo_fixtures.py::test_stereo[list-stereo 2.wav]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/simple/test_stereo_fixtures.py::test_stereo[dict-stereo 1.wav]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/simple/test_stereo_fixtures.py::test_stereo[dict-stereo 2.wav]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1232,7 +1271,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1241,7 +1280,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1250,7 +1289,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1259,7 +1298,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1268,7 +1307,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1277,7 +1316,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1286,7 +1325,7 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1295,5 +1334,5 @@ function filter_table(elem) {
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
-          <td class="extra" colspan="4">
+          <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody></table></body></html>
