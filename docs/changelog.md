@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.1.1 - Improved generated fixture names for `@pytest_fixture_plus`
+
+When `@pytest_fixture_plus` is used on a function marked as parametrized, some fixtures are generated (one for each parameter). Generated fixture names now follow the pattern `<fixturename>__<paramname>`.
+Fixed [#20](https://github.com/smarie/python-pytest-cases/issues/20).
+
 ### 1.1.0 - New `@pytest_fixture_plus`
 
 New decorator `@pytest_fixture_plus` allows to use several `@pytest.mark.parametrize` on a fixture. Therefore one can use multiple `@cases_data` decorators, too. Fixes [#19](https://github.com/smarie/python-pytest-cases/issues/19).
