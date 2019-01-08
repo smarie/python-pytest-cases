@@ -11,4 +11,7 @@ cleanup() {
 }
 
 trap "cleanup" INT TERM EXIT
+
+# Run tests with "python -m pytest" to use the correct version of pytest
+echo -e "\n\n****** Running tests ******\n\n"
 python -m pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./pytest_cases -v pytest_cases/tests/
