@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.1.0 - New `@pytest_fixture_plus`
+
+New decorator `@pytest_fixture_plus` allows to use several `@pytest.mark.parametrize` on a fixture. Therefore one can use multiple `@cases_data` decorators, too. Fixes [#19](https://github.com/smarie/python-pytest-cases/issues/19).
+*Note: this is a temporary feature, that will be removed if/when [pytest supports it](https://github.com/pytest-dev/pytest/issues/3960).*
+
 ### 1.0.0 - `@cases_fixture` + pytest 2.x support 
 
 Pytest 2.x is now supported. Fixes [#14](https://github.com/smarie/python-pytest-cases/issues/14)
