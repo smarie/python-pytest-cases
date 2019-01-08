@@ -701,15 +701,17 @@
 
 
 <h3 id="d-case-fixtures">d- Case fixtures<a class="headerlink" href="#d-case-fixtures" title="Permanent link">&para;</a></h3>
-<p>You might be concerned that case data is gathered inside test execution. Indeed gathering case data is not part of the test <em>per se</em>. Besides if you use for example <a href="https://smarie.github.io/python-pytest-harvest/">pytest-harvest</a> to benchmark your tests durations, you may want the test duration to be computed without acccounting for the data retrieval time (especially if you decide to add some caching mechanism as explained <a href="https://smarie.github.io/python-pytest-cases/usage/advanced/#caching">here</a>).</p>
-<p>The answer is simple: instead of parametrizing your test function, rather create a parametrized fixture:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_fixture</span>
+<p>You might be concerned that case data is gathered or created <em>during</em> test execution. </p>
+<p>Indeed creating or collecting case data is not part of the test <em>per se</em>. Besides, if you benchmark your tests durations (for example with <a href="https://smarie.github.io/python-pytest-harvest/">pytest-harvest</a>), you may want the test duration to be computed without acccounting for the data retrieval time - especially if you decide to add some caching mechanism as explained <a href="https://smarie.github.io/python-pytest-cases/usage/advanced/#caching">here</a>.</p>
+<p>It might therefore be more interesting for you to parametrize <strong>case fixtures</strong> instead of parametrizing your test function:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">pytest_fixture_plus</span><span class="p">,</span> <span class="n">cases_data</span>
 <span class="kn">from</span> <span class="nn">example</span> <span class="kn">import</span> <span class="n">foo</span>
 
 <span class="c1"># import the module containing the test cases</span>
 <span class="kn">import</span> <span class="nn">test_foo_cases</span>
 
-<span class="nd">@cases_fixture</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">test_foo_cases</span><span class="p">)</span>
+<span class="nd">@pytest_fixture_plus</span>
+<span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">test_foo_cases</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">inputs</span><span class="p">(</span><span class="n">case_data</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Example fixture that is automatically parametrized with @cases_data &quot;&quot;&quot;</span>
     <span class="c1"># retrieve case data</span>
@@ -721,7 +723,12 @@
 </pre></div>
 
 
+<p>In the above example, the <code>test_foo</code> test does not spend time collecting or generating data. When it is executed, it receives the required data directly as <code>inputs</code>. The test case creation instead happens when each <code>inputs</code> fixture instance is created by <code>pytest</code> - this is done in a separate pytest phase (named "setup"), and therefore is not counted in the test duration.</p>
 <p>Note: you can still use <code>request</code> in your fixture's signature if you wish to.</p>
+<div class="admonition note">
+<p class="admonition-title"><code>@pytest_fixture_plus</code> deprecation if/when <code>@pytest.fixture</code> supports <code>@pytest.mark.parametrize</code></p>
+<p>The ability for pytest fixtures to support the <code>@pytest.mark.parametrize</code> annotation is a feature that clearly belongs to <code>pytest</code> scope, and has been <a href="https://github.com/pytest-dev/pytest/issues/3960">requested already</a>. It is therefore expected that <code>@pytest_fixture_plus</code> will be deprecated in favor of <code>@pytest_fixture</code> if/when the <code>pytest</code> team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.</p>
+</div>
 <h2 id="usage-true-test-cases">Usage - 'True' test cases<a class="headerlink" href="#usage-true-test-cases" title="Permanent link">&para;</a></h2>
 <h4 id="a-case-functions-update">a- Case functions update<a class="headerlink" href="#a-case-functions-update" title="Permanent link">&para;</a></h4>
 <p>In the above example the cases were only containing inputs for the function to test. In real-world applications we often need more: we need both inputs <strong>and an expected outcome</strong>. </p>
