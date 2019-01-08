@@ -355,6 +355,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#111-improved-generated-fixture-names-for-pytest_fixture_plus" title="1.1.1 - Improved generated fixture names for @pytest_fixture_plus" class="md-nav__link">
+    1.1.1 - Improved generated fixture names for @pytest_fixture_plus
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#110-new-pytest_fixture_plus" title="1.1.0 - New @pytest_fixture_plus" class="md-nav__link">
     1.1.0 - New @pytest_fixture_plus
   </a>
@@ -477,6 +484,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#111-improved-generated-fixture-names-for-pytest_fixture_plus" title="1.1.1 - Improved generated fixture names for @pytest_fixture_plus" class="md-nav__link">
+    1.1.1 - Improved generated fixture names for @pytest_fixture_plus
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#110-new-pytest_fixture_plus" title="1.1.0 - New @pytest_fixture_plus" class="md-nav__link">
     1.1.0 - New @pytest_fixture_plus
   </a>
@@ -587,6 +601,9 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="111-improved-generated-fixture-names-for-pytest_fixture_plus">1.1.1 - Improved generated fixture names for <code>@pytest_fixture_plus</code><a class="headerlink" href="#111-improved-generated-fixture-names-for-pytest_fixture_plus" title="Permanent link">&para;</a></h3>
+<p>When <code>@pytest_fixture_plus</code> is used on a function marked as parametrized, some fixtures are generated (one for each parameter). Generated fixture names now follow the pattern <code>&lt;fixturename&gt;__&lt;paramname&gt;</code>.
+Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.</p>
 <h3 id="110-new-pytest_fixture_plus">1.1.0 - New <code>@pytest_fixture_plus</code><a class="headerlink" href="#110-new-pytest_fixture_plus" title="Permanent link">&para;</a></h3>
 <p>New decorator <code>@pytest_fixture_plus</code> allows to use several <code>@pytest.mark.parametrize</code> on a fixture. Therefore one can use multiple <code>@cases_data</code> decorators, too. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/19">#19</a>.
 <em>Note: this is a temporary feature, that will be removed if/when <a href="https://github.com/pytest-dev/pytest/issues/3960">pytest supports it</a>.</em></p>
