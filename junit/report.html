@@ -235,7 +235,7 @@ function filter_table(elem) {
 }
 </script>
     <h1>report.html</h1>
-    <p>Report generated on 08-Jan-2019 at 13:00:04 by<a href="https://pypi.python.org/pypi/pytest-html"> pytest-html</a> v1.19.0</p>
+    <p>Report generated on 08-Jan-2019 at 13:03:22 by<a href="https://pypi.python.org/pypi/pytest-html"> pytest-html</a> v1.19.0</p>
     <h2>Environment</h2>
     <table id="environment">
       <tr>
@@ -252,19 +252,19 @@ function filter_table(elem) {
         <td>Linux-4.4.0-101-generic-x86_64-with-debian-jessie-sid</td></tr>
       <tr>
         <td>Plugins</td>
-        <td>{&apos;cov&apos;: &apos;2.6.0&apos;, &apos;html&apos;: &apos;1.19.0&apos;, &apos;steps&apos;: &apos;1.5.4&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;}</td></tr>
+        <td>{&apos;html&apos;: &apos;1.19.0&apos;, &apos;cov&apos;: &apos;2.6.0&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;, &apos;steps&apos;: &apos;1.5.4&apos;}</td></tr>
       <tr>
         <td>Python</td>
         <td>3.5.6</td></tr>
       <tr>
         <td>TRAVIS_BRANCH</td>
-        <td>master</td></tr>
+        <td>1.1.1</td></tr>
       <tr>
         <td>TRAVIS_BUILD_ID</td>
-        <td>476826853</td></tr>
+        <td>476826862</td></tr>
       <tr>
         <td>TRAVIS_BUILD_NUMBER</td>
-        <td>50</td></tr>
+        <td>51</td></tr>
       <tr>
         <td>TRAVIS_COMMIT</td>
         <td>2a5298dbad50ced071f61c7aec8a6b1164f7aa06</td></tr>
@@ -272,17 +272,14 @@ function filter_table(elem) {
         <td>TRAVIS_COMMIT_MESSAGE</td>
         <td>1.1.1 changelog</td></tr>
       <tr>
-        <td>TRAVIS_COMMIT_RANGE</td>
-        <td>716f1398ddaa...2a5298dbad50</td></tr>
-      <tr>
         <td>TRAVIS_EVENT_TYPE</td>
         <td>push</td></tr>
       <tr>
         <td>TRAVIS_JOB_ID</td>
-        <td>476826858</td></tr>
+        <td>476826867</td></tr>
       <tr>
         <td>TRAVIS_JOB_NUMBER</td>
-        <td>50.5</td></tr>
+        <td>51.5</td></tr>
       <tr>
         <td>TRAVIS_OS_NAME</td>
         <td>linux</td></tr>
@@ -294,9 +291,12 @@ function filter_table(elem) {
         <td>smarie/python-pytest-cases</td></tr>
       <tr>
         <td>TRAVIS_SUDO</td>
-        <td>true</td></tr></table>
+        <td>true</td></tr>
+      <tr>
+        <td>TRAVIS_TAG</td>
+        <td>1.1.1</td></tr></table>
     <h2>Summary</h2>
-    <p>104 tests ran in 0.89 seconds. </p>
+    <p>104 tests ran in 0.83 seconds. </p>
     <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">104 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">2 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
     <h2>Results</h2>
     <table id="results-table">
@@ -316,7 +316,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">path = &#x27;stereo 1.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/>request = &lt;SubRequest &#x27;stereo_cfg&#x27; for &lt;Function &#x27;test_stereo[stereo 1.wav-dict]&#x27;&gt;&gt;<br/><br/>    @pytest_fixture_plus<br/>    @pytest.mark.parametrize(&quot;path&quot;, STEREO_PATHS)<br/>    @pytest.mark.parametrize(&quot;cfg_factory&quot;, CFG_TYPES)   # not actual params<br/>    def stereo_cfg(path, cfg_factory, request):<br/>        &quot;&quot;&quot;<br/>        A fixture with two parameters<br/>        &quot;&quot;&quot;<br/>        assert isinstance(path, str)<br/>        assert isinstance(cfg_factory, type)<br/>&gt;       a.assert_state_and_move(path=path, cfg_factory=cfg_factory)<br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:47: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pytest_cases.tests.simple.test_stereo_fixtures.StateAsserter object at 0x7ffbafa0c0f0&gt;<br/>path = &#x27;stereo 1.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/><br/>    def assert_state_and_move(self, path, cfg_factory):<br/>&gt;       assert path == STEREO_PATHS[self.current_state % 2]<br/><span class="error">E       AssertionError: assert &#x27;stereo 1.wav&#x27; == &#x27;stereo 2.wav&#x27;</span><br/><span class="error">E         - stereo 1.wav</span><br/><span class="error">E         ?        ^</span><br/><span class="error">E         + stereo 2.wav</span><br/><span class="error">E         ?        ^</span><br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:18: AssertionError<br/></div></td></tr></tbody>
+            <div class="log">path = &#x27;stereo 1.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/>request = &lt;SubRequest &#x27;stereo_cfg&#x27; for &lt;Function &#x27;test_stereo[stereo 1.wav-dict]&#x27;&gt;&gt;<br/><br/>    @pytest_fixture_plus<br/>    @pytest.mark.parametrize(&quot;path&quot;, STEREO_PATHS)<br/>    @pytest.mark.parametrize(&quot;cfg_factory&quot;, CFG_TYPES)   # not actual params<br/>    def stereo_cfg(path, cfg_factory, request):<br/>        &quot;&quot;&quot;<br/>        A fixture with two parameters<br/>        &quot;&quot;&quot;<br/>        assert isinstance(path, str)<br/>        assert isinstance(cfg_factory, type)<br/>&gt;       a.assert_state_and_move(path=path, cfg_factory=cfg_factory)<br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:47: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pytest_cases.tests.simple.test_stereo_fixtures.StateAsserter object at 0x7fe2a0b3cc18&gt;<br/>path = &#x27;stereo 1.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/><br/>    def assert_state_and_move(self, path, cfg_factory):<br/>&gt;       assert path == STEREO_PATHS[self.current_state % 2]<br/><span class="error">E       AssertionError: assert &#x27;stereo 1.wav&#x27; == &#x27;stereo 2.wav&#x27;</span><br/><span class="error">E         - stereo 1.wav</span><br/><span class="error">E         ?        ^</span><br/><span class="error">E         + stereo 2.wav</span><br/><span class="error">E         ?        ^</span><br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:18: AssertionError<br/></div></td></tr></tbody>
       <tbody class="error results-table-row">
         <tr>
           <td class="col-result">Error</td>
@@ -325,7 +325,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">path = &#x27;stereo 2.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/>request = &lt;SubRequest &#x27;stereo_cfg&#x27; for &lt;Function &#x27;test_stereo[stereo 2.wav-dict]&#x27;&gt;&gt;<br/><br/>    @pytest_fixture_plus<br/>    @pytest.mark.parametrize(&quot;path&quot;, STEREO_PATHS)<br/>    @pytest.mark.parametrize(&quot;cfg_factory&quot;, CFG_TYPES)   # not actual params<br/>    def stereo_cfg(path, cfg_factory, request):<br/>        &quot;&quot;&quot;<br/>        A fixture with two parameters<br/>        &quot;&quot;&quot;<br/>        assert isinstance(path, str)<br/>        assert isinstance(cfg_factory, type)<br/>&gt;       a.assert_state_and_move(path=path, cfg_factory=cfg_factory)<br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:47: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pytest_cases.tests.simple.test_stereo_fixtures.StateAsserter object at 0x7ffbafa0c0f0&gt;<br/>path = &#x27;stereo 2.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/><br/>    def assert_state_and_move(self, path, cfg_factory):<br/>&gt;       assert path == STEREO_PATHS[self.current_state % 2]<br/><span class="error">E       AssertionError: assert &#x27;stereo 2.wav&#x27; == &#x27;stereo 1.wav&#x27;</span><br/><span class="error">E         - stereo 2.wav</span><br/><span class="error">E         ?        ^</span><br/><span class="error">E         + stereo 1.wav</span><br/><span class="error">E         ?        ^</span><br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:18: AssertionError<br/></div></td></tr></tbody>
+            <div class="log">path = &#x27;stereo 2.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/>request = &lt;SubRequest &#x27;stereo_cfg&#x27; for &lt;Function &#x27;test_stereo[stereo 2.wav-dict]&#x27;&gt;&gt;<br/><br/>    @pytest_fixture_plus<br/>    @pytest.mark.parametrize(&quot;path&quot;, STEREO_PATHS)<br/>    @pytest.mark.parametrize(&quot;cfg_factory&quot;, CFG_TYPES)   # not actual params<br/>    def stereo_cfg(path, cfg_factory, request):<br/>        &quot;&quot;&quot;<br/>        A fixture with two parameters<br/>        &quot;&quot;&quot;<br/>        assert isinstance(path, str)<br/>        assert isinstance(cfg_factory, type)<br/>&gt;       a.assert_state_and_move(path=path, cfg_factory=cfg_factory)<br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:47: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ <br/><br/>self = &lt;pytest_cases.tests.simple.test_stereo_fixtures.StateAsserter object at 0x7fe2a0b3cc18&gt;<br/>path = &#x27;stereo 2.wav&#x27;, cfg_factory = &lt;class &#x27;dict&#x27;&gt;<br/><br/>    def assert_state_and_move(self, path, cfg_factory):<br/>&gt;       assert path == STEREO_PATHS[self.current_state % 2]<br/><span class="error">E       AssertionError: assert &#x27;stereo 2.wav&#x27; == &#x27;stereo 1.wav&#x27;</span><br/><span class="error">E         - stereo 2.wav</span><br/><span class="error">E         ?        ^</span><br/><span class="error">E         + stereo 1.wav</span><br/><span class="error">E         ?        ^</span><br/><br/>pytest_cases/tests/simple/test_stereo_fixtures.py:18: AssertionError<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -515,7 +515,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[1.0.0-gen case i=0, j=1]</td>
+          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[1.0.0-gen case i=1, j=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -525,7 +525,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[1.0.0-gen case i=1, j=0]</td>
+          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[1.0.0-gen case i=0, j=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -575,7 +575,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[2.0.0-gen case i=0, j=1]</td>
+          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[2.0.0-gen case i=1, j=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -585,7 +585,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[2.0.0-gen case i=1, j=0]</td>
+          <td class="col-name">pytest_cases/tests/advanced/test_parameters.py::test_with_parameters[2.0.0-gen case i=0, j=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -712,7 +712,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: 1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -722,7 +722,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: 1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -732,7 +732,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: -1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -742,7 +742,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: -1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -752,7 +752,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: 1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -762,7 +762,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: 1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: 1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -772,7 +772,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: -1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -782,7 +782,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;a&#x27;: -1, &#x27;b&#x27;: 2}
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{&#x27;b&#x27;: 2, &#x27;a&#x27;: -1}
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -1057,24 +1057,6 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=1]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=2]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=1, j=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
@@ -1084,7 +1066,25 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=1, j=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=2]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
