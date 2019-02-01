@@ -44,7 +44,7 @@ import pytest
 
 class CaseDataGetter(six.with_metaclass(ABCMeta)):
     """
-    A proxy for a test case. Instances of this class are created by `@cases_data` or `extract_cases_from_module`.
+    A proxy for a test case. Instances of this class are created by `@cases_data` or `get_all_cases`.
 
     It provides a single method: `get(self, *args, **kwargs) -> CaseData`
     This method calls the actual underlying case with arguments propagation, and returns the result.
@@ -59,6 +59,13 @@ class CaseDataGetter(six.with_metaclass(ABCMeta)):
         Retrieves the contents of the test case, with the provided arguments.
         :return:
         """
+
+    def get_marks(self):
+        """
+        Returns the pytest marks on this case, if any
+        :return:
+        """
+        return []
 
     def get_for(self, key):
         # type: (...) -> CaseData
@@ -111,6 +118,16 @@ class CaseDataFromFunction(CaseDataGetter):
 
     def __repr__(self):
         return "Test Case Data generator - [" + str(self) + "] - " + str(self.f)
+
+    def get_marks(self):
+        """
+        Overrides default implementation to return the marks that are on the case function
+        :return:
+        """
+        try:
+            return self.f.pytestmark
+        except AttributeError:
+            return []
 
     def get(self, *args, **kwargs):
         # type: (...) -> Union[CaseData, Any]
@@ -171,7 +188,7 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
 
     ```python
     import pytest
-    from pytest_cases import extract_cases_from_module, CaseData
+    from pytest_cases import get_all_cases, CaseData
 
     # import the module containing the test cases
     import test_foo_cases
@@ -524,6 +541,9 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
             # 'module' object is not iterable: a single module was provided
             m = sys.modules[this_module_object.__module__] if module is THIS_MODULE else module
             _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
+
+    # create the pytest parameters to handle pytest marks
+    _cases = [c if len(c.get_marks()) == 0 else pytest.param(c, marks=c.get_marks()) for c in _cases]
 
     return _cases
 

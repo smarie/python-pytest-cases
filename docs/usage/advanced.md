@@ -396,13 +396,13 @@ The `@cases_data` decorator is just syntactic sugar for the following two-steps 
 
 ```python
 import pytest
-from pytest_cases import extract_cases_from_module, CaseData
+from pytest_cases import get_all_cases, CaseData
 
 # import the module containing the test cases
 import test_foo_cases
 
 # manually list the available cases
-cases = extract_cases_from_module(test_foo_cases)
+cases = get_all_cases(module=test_foo_cases)
 
 # parametrize the test function manually
 @pytest.mark.parametrize('case_data', cases, ids=str)

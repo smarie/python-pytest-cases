@@ -1,7 +1,7 @@
 import pytest
 from pytest_cases.tests.example_code import super_function_i_want_to_test
 
-from pytest_cases import cases_data, CaseDataGetter, unfold_expected_err, extract_cases_from_module
+from pytest_cases import cases_data, CaseDataGetter, unfold_expected_err, get_all_cases
 from pytest_cases.tests.simple import test_main_cases
 
 
@@ -39,7 +39,7 @@ def test_with_cases_decorated(case_data  # type: CaseDataGetter
 
 
 # ----------------- Advanced: Manual way: -------------
-cases = extract_cases_from_module(test_main_cases)
+cases = get_all_cases(module=test_main_cases)
 
 
 @pytest.mark.parametrize('case_data', cases, ids=str)

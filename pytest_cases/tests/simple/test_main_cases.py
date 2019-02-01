@@ -1,3 +1,5 @@
+import pytest
+
 try: # python 3+
     from math import inf
 except ImportError:
@@ -64,3 +66,9 @@ def case_simple_error_callable():
         return type(e) is InfiniteInput and e.args == ('b',)
 
     return ins, None, is_good_error
+
+
+@pytest.mark.skip("skipped on purpose")
+def case_skipped():
+    """ A skipped case """
+    return

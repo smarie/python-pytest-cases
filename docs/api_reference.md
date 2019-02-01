@@ -175,13 +175,13 @@ is equivalent to:
 
 ```python
 import pytest
-from pytest_cases import extract_cases_from_module, CaseData
+from pytest_cases import get_all_cases, CaseData
 
 # import the module containing the test cases
 import test_foo_cases
 
 # manually list the available cases
-cases = extract_cases_from_module(test_foo_cases)
+cases = get_all_cases(module=test_foo_cases)
 
 # parametrize the test function manually
 @pytest.mark.parametrize('case_data', cases, ids=str)
@@ -196,7 +196,7 @@ def test_foo(case_data: CaseData):
 
 ### `CaseDataGetter`
 
-A proxy for a test case. Instances of this class are created by `@cases_data` or `extract_cases_from_module`. It provides a single method:
+A proxy for a test case. Instances of this class are created by `@cases_data` or `get_all_cases`. It provides a single method:
 
 `get(self, *args, **kwargs) -> Union[CaseData, Any]`
 
