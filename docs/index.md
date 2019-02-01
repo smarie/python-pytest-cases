@@ -52,6 +52,10 @@ In these functions, you will typically either parse some test data files, or gen
 Case functions **do not have any particular requirement**, apart from their names starting with `case_`. They can return anything that is considered useful to run the associated test. 
 
 
+!!! note "Support for pytest marks"
+    Pytest marks such as `@pytest.mark.skip` can be used on case functions, the corresponding case will be handled according to the expected behaviour (failed if `@pytest.mark.fail`, skipped under condition if `@pytest.mark.skipif`, etc.)
+
+    
 ### c- Test functions
 
 Then, as usual we write our `pytest` functions starting with `test_`, in a `test_foo.py` file:

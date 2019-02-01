@@ -19,6 +19,10 @@ def case_simple_named() -> CaseData:
     return ins, outs, None
 ```
 
+## Pytest marks
+
+Pytest marks such as `@pytest.mark.skipif` can be applied to case functions, the corresponding case will behave as expected.
+
 ## Case generators
 
 A case function generator is a function that will generate several test cases, once for every combination of its declared input parameters. 
