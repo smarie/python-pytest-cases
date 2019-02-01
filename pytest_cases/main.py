@@ -124,15 +124,7 @@ class CaseDataFromFunction(CaseDataGetter):
         Overrides default implementation to return the marks that are on the case function
         :return:
         """
-        try:
-            return self.f.pytestmark
-        except AttributeError:
-            try:
-                # old pytest < 3: marks are set as fields on the function object
-                # but they do not have a particulat type, their type is 'instance'...
-                return [v for v in self.f.func_dict.values() if str(v).startswith("<MarkInfo '")]
-            except AttributeError:
-                return []
+        return get_pytest_marks_on_case_func(self.f)
 
     def get(self, *args, **kwargs):
         # type: (...) -> Union[CaseData, Any]
@@ -142,6 +134,24 @@ class CaseDataFromFunction(CaseDataGetter):
         """
         kwargs.update(self.function_kwargs)
         return self.f(*args, **kwargs)
+
+
+def get_pytest_marks_on_case_func(f):
+    """
+    Utility to return all pytest marks applied on a case function
+
+    :param f:
+    :return:
+    """
+    try:
+        return f.pytestmark
+    except AttributeError:
+        try:
+            # old pytest < 3: marks are set as fields on the function object
+            # but they do not have a particulat type, their type is 'instance'...
+            return [v for v in vars(f).values() if str(v).startswith("<MarkInfo '")]
+        except AttributeError:
+            return []
 
 
 CASE_PREFIX = 'case_'
@@ -506,11 +516,10 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
 # Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
 try:
     _ = pytest.param
-    def mark_unitary_case(c):
-        return pytest.param(c, marks=c.get_marks())
+    def get_marked_parameter_for_case(c, marks):
+        return pytest.param(c, marks=marks)
 except AttributeError:
-    def mark_unitary_case(c):
-        marks = c.get_marks()
+    def get_marked_parameter_for_case(c, marks):
         if len(marks) > 1:
             raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
         else:
@@ -567,7 +576,7 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
             _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
 
     # create the pytest parameters to handle pytest marks
-    _cases = [c if len(c.get_marks()) == 0 else mark_unitary_case(c) for c in _cases]
+    _cases = [c if len(c.get_marks()) == 0 else get_marked_parameter_for_case(c, marks=c.get_marks()) for c in _cases]
 
     return _cases
 
