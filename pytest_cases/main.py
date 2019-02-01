@@ -127,7 +127,12 @@ class CaseDataFromFunction(CaseDataGetter):
         try:
             return self.f.pytestmark
         except AttributeError:
-            return []
+            try:
+                # old pytest < 3: marks are set as fields on the function object
+                # but they do not have a particulat type, their type is 'instance'...
+                return [v for v in self.f.func_dict.values() if str(v).startswith("<MarkInfo '")]
+            except AttributeError:
+                return []
 
     def get(self, *args, **kwargs):
         # type: (...) -> Union[CaseData, Any]
@@ -498,6 +503,22 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
     return datasets_decorator
 
 
+# Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
+try:
+    _ = pytest.param
+    def mark_unitary_case(c):
+        return pytest.param(c, marks=c.get_marks())
+except AttributeError:
+    def mark_unitary_case(c):
+        marks = c.get_marks()
+        if len(marks) > 1:
+            raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
+        else:
+            markinfo = marks[0]
+            markinfodecorator = getattr(pytest.mark, markinfo.name)
+            return markinfodecorator(*markinfo.args)(c)
+
+
 def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
                   module=None,              # type: Union[ModuleType, Iterable[ModuleType]]
                   this_module_object=None,  # type: Any
@@ -507,6 +528,9 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
     # type: (...) -> List[CaseDataGetter]
     """
     Lists all desired cases from the user inputs. This function may be convenient for debugging purposes.
+
+    Note: at the end of execution this function modifies the list of cases so that the pytest marks are applied
+    correctly for usage of the result as the parameter in a `@pytest.mark.parametrize`.
 
     :param cases: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
     :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
@@ -543,7 +567,7 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
             _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
 
     # create the pytest parameters to handle pytest marks
-    _cases = [c if len(c.get_marks()) == 0 else pytest.param(c, marks=c.get_marks()) for c in _cases]
+    _cases = [c if len(c.get_marks()) == 0 else mark_unitary_case(c) for c in _cases]
 
     return _cases
 
