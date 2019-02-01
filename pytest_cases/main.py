@@ -3,6 +3,7 @@ from __future__ import division
 
 import sys
 from abc import abstractmethod, ABCMeta
+from collections import OrderedDict
 from distutils.version import LooseVersion
 from inspect import getmembers, isgeneratorfunction, getmodule
 
@@ -303,8 +304,9 @@ def decorate_pytest_fixture_plus(fixture_func,
 
     # for each dependency create an associated "param" fixture
     # Note: we could instead have created a huge parameter containing all parameters...
-    # Pros = no additional fixture. Cons: less readable and ids would be difficult to create
-    params_map = dict()
+    # Pros = no additional fixture.
+    # Cons: less readable and ids would be difficult to create
+    params_map = OrderedDict()
     for m in parametrizer_marks:
         # check what the mark specifies in terms of parameters
         if len(m.param_names) < 1:

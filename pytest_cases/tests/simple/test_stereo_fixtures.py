@@ -40,7 +40,10 @@ else:
 @pytest.mark.parametrize("cfg_factory", CFG_TYPES)   # not actual params
 def stereo_cfg(path, cfg_factory, request):
     """
-    A fixture with two parameters
+    A fixture with two parameters.
+
+    As opposed to `stereo_cfg_2`, we use here two @parametrize decorators.
+    We check that the execution order is correct.
     """
     assert isinstance(path, str)
     assert isinstance(cfg_factory, type)
@@ -48,7 +51,7 @@ def stereo_cfg(path, cfg_factory, request):
     return "hello"
 
 
-def test_stereo(stereo_cfg):
+def test_stereo_two_parametrizers(stereo_cfg):
     """
     A test relying on a double-parametrized fixture.
     See https://github.com/pytest-dev/pytest/issues/3960
@@ -82,7 +85,11 @@ def _id(x):
 @pytest.mark.parametrize("cfg_factory,path", product(CFG_TYPES, STEREO_PATHS), ids=_id)
 def stereo_cfg_2(path, request, cfg_factory):
     """
-    A fixture with two parameters
+    A fixture with two parameters.
+
+    As opposed to `stereo_cfg_1`, the order of the parameter is precomputed beforehand in
+    `product(CFG_TYPES, STEREO_PATHS)` and a single call to parametrize is made.
+    We check that the execution order is the same.
     """
     assert isinstance(path, str)
     assert isinstance(cfg_factory, type)
@@ -92,7 +99,7 @@ def stereo_cfg_2(path, request, cfg_factory):
     yield "hello"
 
 
-def test_stereo_2(stereo_cfg_2):
+def test_stereo_one_global_parametrizer(stereo_cfg_2):
     pass
 
 
