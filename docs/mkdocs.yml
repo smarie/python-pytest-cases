@@ -1,6 +1,8 @@
 site_name: pytest_cases
 # site_description: 'A short description of my project'
 repo_url: https://github.com/smarie/python-pytest-cases
+docs_dir: .
+site_dir: ../site
 pages:
     - Home: index.md
     - Usage details:
