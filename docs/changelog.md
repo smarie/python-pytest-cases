@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.2.1 - fixed id of test cases with marks
+
+Id of test cases with marks was appearing as `ParameterSet`. Fixed it.
+
 ### 1.2.0 - @pytest.mark can be used on cases + @pytest_fixture_plus parametrization order bugfix
 
 Pytest marks such as `@pytest.mark.skipif` can now be used on case functions. As a consequence, `get_all_cases` is now the recommended function to use instead of `extract_cases_from_module` to perform manual collection. Indeed `get_all_cases` correctly prepares the resulting parameters list so that pytest sees the marks. Fixed [#21](https://github.com/smarie/python-pytest-cases/issues/21) 

@@ -517,7 +517,7 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
 try:
     _ = pytest.param
     def get_marked_parameter_for_case(c, marks):
-        return pytest.param(c, marks=marks)
+        return pytest.param(c, marks=marks, id=str(c))
 except AttributeError:
     def get_marked_parameter_for_case(c, marks):
         if len(marks) > 1:
