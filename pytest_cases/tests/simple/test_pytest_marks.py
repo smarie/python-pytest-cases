@@ -1,6 +1,7 @@
 import pytest
 
-from pytest_cases.main import get_pytest_marks_on_case_func, get_marked_parameter_for_case
+from pytest_cases.main import get_pytest_marks_on_case_func, get_marked_parameter_for_case, \
+    transform_marks_into_decorators
 
 
 @pytest.mark.skipif(True, reason="why")
@@ -15,7 +16,11 @@ def test_get_pytest_marks():
     """
     # extract the marks from a case function
     marks = get_pytest_marks_on_case_func(case_func)
+    # transform them into decorators
+    marks = transform_marks_into_decorators(marks)
+    # check that the mark is the same than a manually made one
     assert len(marks) == 1
+    assert str(marks[0]) == str(pytest.mark.skipif(True, reason="why"))
 
     # transform a parameter into a marked parameter
     dummy_case = (1, 2, 3)

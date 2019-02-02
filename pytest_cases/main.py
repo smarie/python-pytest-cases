@@ -514,10 +514,13 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
 
 
 # Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
+# see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize
+
 try:
     _ = pytest.param
     def get_marked_parameter_for_case(c, marks):
-        return pytest.param(c, marks=marks, id=str(c))
+        marks_mod = transform_marks_into_decorators(marks)
+        return pytest.param(c, marks=marks_mod, id=str(c))
 except AttributeError:
     def get_marked_parameter_for_case(c, marks):
         if len(marks) > 1:
@@ -526,6 +529,20 @@ except AttributeError:
             markinfo = marks[0]
             markinfodecorator = getattr(pytest.mark, markinfo.name)
             return markinfodecorator(*markinfo.args)(c)
+
+
+def transform_marks_into_decorators(marks):
+    """
+    Transforms the provided marks (MarkInfo) into MarkDecorator
+    :param marks:
+    :return:
+    """
+    marks_mod = []
+    for m in marks:
+        md = pytest.mark.MarkDecorator()
+        md.mark = m
+        marks_mod.append(md)
+    return marks_mod
 
 
 def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
