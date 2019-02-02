@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.2.2 - fixed bug with marks on cases with pytest 3.3
+
+Marks on cases are now also working with pytest 3.3. Fixed [#23](https://github.com/smarie/python-pytest-cases/issues/23)
+
+Ids for marked tests are now better managed. A new function `get_pytest_parametrize_args` is now used to transform the list of cases obtained by `get_all_cases(module)`, into the list of marked cases and ids required by `@pytest.mark.parametrize`. The doc has been updated to explain this for advanced users wishing to perform this step manually.
+
 ### 1.2.1 - fixed id of test cases with marks
 
 Id of test cases with marks was appearing as `ParameterSet`. Fixed it.
