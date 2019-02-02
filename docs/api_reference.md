@@ -127,7 +127,7 @@ is equivalent to:
 
 ```python
 import pytest
-from pytest_cases import get_all_cases
+from pytest_cases import get_all_cases, get_pytest_parametrize_args
 
 # import the module containing the test cases
 import test_foo_cases
@@ -135,8 +135,11 @@ import test_foo_cases
 # manually list the available cases
 cases = get_all_cases(module=test_foo_cases)
 
+# transform into required arguments for pytest (applying the pytest marks if needed)
+marked_cases, cases_ids = get_pytest_parametrize_args(cases)
+
 # parametrize the fixture manually
-@pytest.fixture(params=cases)
+@pytest.fixture(params=marked_cases, ids=cases_ids)
 def foo_fixture(request):
     case_data = request.param  # type: CaseData
     ...
@@ -161,13 +164,13 @@ Using it with a non-None `module` argument is equivalent to
 So
 
 ```python
-from pytest_cases import cases_data, CaseData
+from pytest_cases import cases_data
 
 # import the module containing the test cases
 import test_foo_cases
 
-@cases_data(test_foo_cases)
-def test_foo(case_data: CaseData):
+@cases_data(module=test_foo_cases)
+def test_foo(case_data):
     ...
 ```
  
@@ -175,7 +178,7 @@ is equivalent to:
 
 ```python
 import pytest
-from pytest_cases import get_all_cases, CaseData
+from pytest_cases import get_all_cases, get_pytest_parametrize_args
 
 # import the module containing the test cases
 import test_foo_cases
@@ -183,9 +186,12 @@ import test_foo_cases
 # manually list the available cases
 cases = get_all_cases(module=test_foo_cases)
 
+# transform into required arguments for pytest (applying the pytest marks if needed)
+marked_cases, cases_ids = get_pytest_parametrize_args(cases)
+
 # parametrize the test function manually
-@pytest.mark.parametrize('case_data', cases, ids=str)
-def test_foo(case_data: CaseData):
+@pytest.mark.parametrize('case_data', marked_cases, ids=str)
+def test_foo(case_data):
     ...
 ```
 

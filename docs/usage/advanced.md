@@ -396,7 +396,7 @@ The `@cases_data` decorator is just syntactic sugar for the following two-steps 
 
 ```python
 import pytest
-from pytest_cases import get_all_cases, CaseData
+from pytest_cases import get_all_cases, get_pytest_parametrize_args
 
 # import the module containing the test cases
 import test_foo_cases
@@ -404,8 +404,11 @@ import test_foo_cases
 # manually list the available cases
 cases = get_all_cases(module=test_foo_cases)
 
+# transform into required arguments for pytest (applying the pytest marks if needed)
+marked_cases, cases_ids = get_pytest_parametrize_args(cases)
+
 # parametrize the test function manually
-@pytest.mark.parametrize('case_data', cases, ids=str)
-def test_with_cases_decorated(case_data: CaseData):
+@pytest.mark.parametrize('case_data', marked_cases, ids=cases_ids)
+def test_with_cases_decorated(case_data):
     ...
 ```

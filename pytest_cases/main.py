@@ -501,47 +501,94 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
         # First list all cases according to user preferences
         _cases = get_all_cases(cases, module, test_func, has_tag, filter)
 
-        # old: use id getter function : cases_ids = str
-        # new: hardcode the case ids, safer (?) in case this is mixed with another fixture
-        cases_ids = [str(c) for c in _cases]
+        # Then transform into required arguments for pytest (applying the pytest marks if needed)
+        marked_cases, cases_ids = get_pytest_parametrize_args(_cases)
 
         # Finally create the pytest decorator and apply it
-        parametrizer = pytest.mark.parametrize(case_data_argname, _cases, ids=cases_ids)
+        parametrizer = pytest.mark.parametrize(case_data_argname, marked_cases, ids=cases_ids)
 
         return parametrizer(test_func)
 
     return datasets_decorator
 
 
+def get_pytest_parametrize_args(cases):
+    """
+    Transforms a list of cases into a tuple containing the arguments to use in `@pytest.mark.parametrize`
+    the tuple is (marked_cases, ids) where
+
+     - marked_cases is a list containing either the case or a pytest-marked case (using the pytest marks that were
+     present on the case function)
+     - ids is a list containing the case ids to use as test ids.
+
+    :param cases:
+    :return: (marked_cases, ids)
+    """
+    # hardcode the case ids, as simply passing 'ids=str' would not work when cases are marked cases
+    case_ids = [str(c) for c in cases]
+
+    # create the pytest parameter values with the appropriate pytest marks
+    marked_cases = [c if len(c.get_marks()) == 0 else get_marked_parameter_for_case(c, marks=c.get_marks())
+                    for c in cases]
+
+    return marked_cases, case_ids
+
+
+
 # Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
 # see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize
 
 try:
+    # check if pytest.param exists
     _ = pytest.param
-    def get_marked_parameter_for_case(c, marks):
-        marks_mod = transform_marks_into_decorators(marks)
-        return pytest.param(c, marks=marks_mod, id=str(c))
 except AttributeError:
+    # if not this is how it was done
+    # see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize
     def get_marked_parameter_for_case(c, marks):
         if len(marks) > 1:
             raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
         else:
-            markinfo = marks[0]
-            markinfodecorator = getattr(pytest.mark, markinfo.name)
-            return markinfodecorator(*markinfo.args)(c)
+            # get a decorator for each of the markinfo
+            marks_mod = transform_marks_into_decorators(marks)
+
+            # decorate
+            return marks_mod[0](c)
+else:
+    # Otherise pytest.param exists, it is easier
+    def get_marked_parameter_for_case(c, marks):
+        # get a decorator for each of the markinfo
+        marks_mod = transform_marks_into_decorators(marks)
+
+        # decorate
+        return pytest.param(c, marks=marks_mod)
 
 
 def transform_marks_into_decorators(marks):
     """
-    Transforms the provided marks (MarkInfo) into MarkDecorator
+    Transforms the provided marks (MarkInfo) obtained from marked cases, into MarkDecorator so that they can
+    be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.
+
     :param marks:
     :return:
     """
     marks_mod = []
-    for m in marks:
-        md = pytest.mark.MarkDecorator()
-        md.mark = m
-        marks_mod.append(md)
+    try:
+        for m in marks:
+            md = pytest.mark.MarkDecorator()
+            if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+                 md.mark = m
+            else:
+                md.name = m.name
+                # md.markname = m.name
+                md.args = m.args
+                md.kwargs = m.kwargs
+
+            # markinfodecorator = getattr(pytest.mark, markinfo.name)
+            # markinfodecorator(*markinfo.args)
+
+            marks_mod.append(md)
+    except Exception as e:
+        warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))
     return marks_mod
 
 
@@ -554,9 +601,6 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
     # type: (...) -> List[CaseDataGetter]
     """
     Lists all desired cases from the user inputs. This function may be convenient for debugging purposes.
-
-    Note: at the end of execution this function modifies the list of cases so that the pytest marks are applied
-    correctly for usage of the result as the parameter in a `@pytest.mark.parametrize`.
 
     :param cases: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
     :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
@@ -591,9 +635,6 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
             # 'module' object is not iterable: a single module was provided
             m = sys.modules[this_module_object.__module__] if module is THIS_MODULE else module
             _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
-
-    # create the pytest parameters to handle pytest marks
-    _cases = [c if len(c.get_marks()) == 0 else get_marked_parameter_for_case(c, marks=c.get_marks()) for c in _cases]
 
     return _cases
 
