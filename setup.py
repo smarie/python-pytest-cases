@@ -21,9 +21,7 @@ EXTRAS_REQUIRE = {}
 try:
     from setuptools_scm import get_version
 except Exception as e:
-    raise_from(Exception('Required packages for setup not found. You may wish you execute '
-                         '"pip install -r ci_tools/requirements-setup.txt" to install them or alternatively install '
-                         'them manually using conda or other system. The list is : ' + str(SETUP_REQUIRES)), e)
+    raise_from(Exception('Required packages for setup not found. Please install `setuptools_scm`'), e)
 
 # ************** ID card *****************
 DISTNAME = 'pytest-cases'
