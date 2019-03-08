@@ -23,8 +23,27 @@ def case_simple():
 #         yield ins, outs, None
 
 
-@cases_generator("test with i={i}, j={j}", i=range(2), j=range(3))
+@cases_generator("test with i={i}, j={j} and name template", i=range(2), j=range(3))
 def case_simple_generator(i, j):
+    # type: (...) -> CaseData
+    ins = dict(a=i, b=j)
+    outs = i+1, j+1
+    return ins, outs, None
+
+
+@cases_generator("test with i={i}, j={j} and names callable provider", i=range(2), j=range(3))
+def case_simple_generator_callable_name(i, j):
+    # type: (...) -> CaseData
+    ins = dict(a=i, b=j)
+    outs = i+1, j+1
+    return ins, outs, None
+
+
+names_list = ["test with i={i}, j={j} and explicit names list".format(i=i, j=j) for i in range(2) for j in range(3)]
+
+
+@cases_generator(names_list, i=range(2), j=range(3))
+def case_simple_generator_explicit_name_list(i, j):
     # type: (...) -> CaseData
     ins = dict(a=i, b=j)
     outs = i+1, j+1

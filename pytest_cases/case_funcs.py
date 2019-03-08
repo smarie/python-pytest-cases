@@ -108,7 +108,7 @@ def test_target(target  # type: Any
 test_target.__test__ = False  # disable this function in pytest (otherwise name starts with 'test' > it will appear)
 
 
-def cases_generator(name_template,    # type: str
+def cases_generator(names=None,       # type: Union[str, Callable[[Any], str], Iterable[str]]
                     lru_cache=False,  # type: bool
                     **param_ranges    # type: Iterable[Any]
                     ):
@@ -127,9 +127,11 @@ def cases_generator(name_template,    # type: str
     >>>     outs = i+1, i+2
     >>>     return ins, outs, None
 
-    :param name_template: a name template, that will be transformed into the case name using
-        `name_template.format(**params)` for each case, where params is the dictionary of parameter values for this
-        generated case.
+    :param names: a name template, that will be transformed into the case name using
+        `names.format(**params)` for each case, where `params` is the dictionary of parameter values for this
+        generated case. Alternately a callable returning a string can be provided, in which case
+        `names(**params)` will be used. Finally an explicit list of names can be provided, in which case it should have
+        the correct length (an error will be raised otherwise).
     :param lru_cache: a boolean (default False) indicating if the generated cases should be cached. This is identical
         to decorating the function with an additional `@lru_cache(maxsize=n)` where n is the total number of generated
         cases.
@@ -141,7 +143,7 @@ def cases_generator(name_template,    # type: str
 
     def cases_generator_decorator(test_func):
         kwarg_values = list(product(*param_ranges.values()))
-        setattr(test_func, _GENERATOR_FIELD, (name_template, param_ranges.keys(), kwarg_values))
+        setattr(test_func, _GENERATOR_FIELD, (names, param_ranges.keys(), kwarg_values))
         if lru_cache:
             nb_cases = len(kwarg_values)
             # decorate the function with the appropriate lru cache size

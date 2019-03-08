@@ -727,15 +727,30 @@ def _get_case_getter_s(f,
     if gen:
         already_used_names = []
 
-        name_template, param_ids, all_param_values_combinations = gen
+        names, param_ids, all_param_values_combinations = gen
+
+        if isinstance(names, str):
+            # then this is a string formatter
+            _formatter = names
+            names = lambda **params: _formatter.format(**params)
+
         nb_cases_generated = len(all_param_values_combinations)
+        if not callable(names):
+            if len(names) != nb_cases_generated:
+                raise ValueError("An explicit list of names has been provided but it has not the same length (%s) than"
+                                 " the number of cases to be generated (%s)" % (len(names), nb_cases_generated))
 
         for gen_case_id, case_params_values in enumerate(all_param_values_combinations):
             # build the dictionary of parameters for the case functions
             gen_case_params_dct = dict(zip(param_ids, case_params_values))
 
             # generate the case name by applying the name template
-            gen_case_name = name_template.format(**gen_case_params_dct)
+            if callable(names):
+                gen_case_name = names(**gen_case_params_dct)
+            else:
+                # an explicit list is provided
+                gen_case_name = names[gen_case_id]
+
             if gen_case_name in already_used_names:
                 raise ValueError("Generated function names for generator case function {} are not "
                                  "unique. Please use all parameter names in the string format variables"
