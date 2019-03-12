@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.3.1 - Minor dependency change
+
+Now using `decopatch` to create the decorators.
+
 ### 1.3.0 - More flexible case generators names + Minor dependency change
 
 Cases generators can now support explicit name lists, and name generator callables, in addition to the name template strings. Fixed [#24](https://github.com/smarie/python-pytest-cases/issues/24)
