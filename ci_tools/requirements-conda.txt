@@ -5,7 +5,6 @@ pandoc
 pypandoc
 
 # --- to install
-decorator
 
 # --- to run the tests
 # (pip) pytest$PYTEST_VERSION

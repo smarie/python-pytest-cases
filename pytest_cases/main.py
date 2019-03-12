@@ -7,8 +7,14 @@ from collections import OrderedDict
 from distutils.version import LooseVersion
 from inspect import getmembers, isgeneratorfunction, getmodule
 
+from makefun import with_signature, add_signature_parameters, remove_signature_parameters
+
+try:  # python 3.3+
+    from inspect import signature, Parameter
+except ImportError:
+    from funcsigs import signature, Parameter
+
 from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks
-from pytest_cases.decorator_hack import my_decorate
 
 try:  # type hints, python 3+
     from typing import Callable, Union, Optional, Any, Tuple, List, Dict, Iterable
@@ -379,35 +385,39 @@ def decorate_pytest_fixture_plus(fixture_func,
     old_parameter_names = tuple(v for l in params_map.values() for v in l)
 
     # common routine used below. Fills kwargs with the appropriate names and values from fixture_params
-    def _get_arguments(fixture_params, args_and_kwargs):
-        # unpack the underlying function's args/kwargs
-        args = args_and_kwargs.pop('args')
-        kwargs = args_and_kwargs.pop('kwargs')
-        if len(args_and_kwargs) > 0:
-            raise ValueError("Internal error - please file an issue in the github project page")
-
-        # fill the kwargs with additional arguments by using mapping
+    def _get_arguments(*args, **kwargs):
+        # kwargs contains the generated fixture names so we have to remove them.
+        # For each generated fixture, there are one or several parameters to inject in kwargs
         i = 0
         for new_p_name in new_parameter_names:
+            fixture_param_value = kwargs.pop(new_p_name)
             if len(params_map[new_p_name]) == 1:
-                kwargs[params_map[new_p_name][0]] = fixture_params[i]
+                # a single parameter for that generated ficture (@pytest.mark.parametrize with a single name)
+                kwargs[params_map[new_p_name][0]] = fixture_param_value
                 i += 1
             else:
-                # unpack several
-                for old_p_name, old_p_value in zip(params_map[new_p_name], fixture_params[i]):
+                # several parameters for that generated fixture (@pytest.mark.parametrize with several names)
+                # unpack all of them and inject them in the kwargs
+                for old_p_name, old_p_value in zip(params_map[new_p_name], fixture_param_value):
                     kwargs[old_p_name] = old_p_value
                     i += 1
 
         return args, kwargs
 
+    # create the new signature that we want to expose to pytest
+    old_sig = signature(fixture_func)
+    new_sig = remove_signature_parameters(old_sig, *old_parameter_names)
+    # add them in reversed order so as to match the same test order than in pytest.
+    new_sig = add_signature_parameters(new_sig, first=(Parameter(n, kind=Parameter.POSITIONAL_OR_KEYWORD)
+                                                       for n in reversed(new_parameter_names)))
+
+    # Finally create the fixture function, a wrapper of user-provided fixture with the new signature
     if not isgeneratorfunction(fixture_func):
         # normal function with return statement
-        def wrapper(f, *fixture_params, **args_and_kwargs):
-            args, kwargs = _get_arguments(fixture_params, args_and_kwargs)
+        @with_signature(new_sig)
+        def wrapped_fixture_func(*args, **kwargs):
+            args, kwargs = _get_arguments(*args, **kwargs)
             return fixture_func(*args, **kwargs)
-
-        wrapped_fixture_func = my_decorate(fixture_func, wrapper,
-                                           additional_args=new_parameter_names, removed_args=old_parameter_names)
 
         # transform the created wrapper into a fixture
         fixture_decorator = pytest.fixture(scope=scope, params=params, autouse=autouse, ids=ids, **kwargs)
@@ -415,13 +425,11 @@ def decorate_pytest_fixture_plus(fixture_func,
 
     else:
         # generator function (with a yield statement)
-        def wrapper(f, *fixture_params, **args_and_kwargs):
-            args, kwargs = _get_arguments(fixture_params, args_and_kwargs)
+        @with_signature(new_sig)
+        def wrapped_fixture_func(*args, **kwargs):
+            args, kwargs = _get_arguments(*args, **kwargs)
             for res in fixture_func(*args, **kwargs):
                 yield res
-
-        wrapped_fixture_func = my_decorate(fixture_func, wrapper,
-                                           additional_args=new_parameter_names, removed_args=old_parameter_names)
 
         # transform the created wrapper into a fixture
         fixture_decorator = yield_fixture(scope=scope, params=params, autouse=autouse, ids=ids, **kwargs)
