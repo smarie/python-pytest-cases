@@ -1,5 +1,7 @@
 from __future__ import division
 
+from decopatch import DECORATED, function_decorator, with_parenthesis
+
 try:  # python 3.2+
     from functools import lru_cache as lru
 except ImportError:
@@ -40,7 +42,9 @@ _GENERATOR_FIELD = '__cases_generator__'
 """Internal marker used for cases generators"""
 
 
-def case_name(name  # type: str
+@function_decorator
+def case_name(name,  # type: str
+              test_func=DECORATED
               ):
     """
     Decorator to override the name of a case function. The new name will be used instead of the function name,
@@ -55,16 +59,14 @@ def case_name(name  # type: str
     :param name: the name that will be used in the test case instead of the case function name
     :return:
     """
-    def case_name_decorator(test_func):
-        test_func.__name__ = name
-        return test_func
-
-    return case_name_decorator
+    test_func.__name__ = name
+    return test_func
 
 
 CASE_TAGS_FIELD = '__case_tags__'
 
 
+@function_decorator(custom_disambiguator=with_parenthesis)
 def case_tags(*tags  # type: Any
               ):
     """
@@ -75,17 +77,18 @@ def case_tags(*tags  # type: Any
         functions...)
     :return:
     """
-    def case_tags_decorator(test_func):
-        existing_tags = getattr(test_func, CASE_TAGS_FIELD, None)
+    # we have to use "nested" mode for this decorator because in the decorator signature we have a var-positional
+    def _apply(case_func):
+        existing_tags = getattr(case_func, CASE_TAGS_FIELD, None)
         if existing_tags is None:
             # there are no tags yet. Use the provided
-            setattr(test_func, CASE_TAGS_FIELD, list(tags))
+            setattr(case_func, CASE_TAGS_FIELD, list(tags))
         else:
             # there are some tags already, let's try to add the new to the existing
-            setattr(test_func, CASE_TAGS_FIELD, existing_tags + list(tags))
-        return test_func
+            setattr(case_func, CASE_TAGS_FIELD, existing_tags + list(tags))
+        return case_func
 
-    return case_tags_decorator
+    return _apply
 
 
 def test_target(target  # type: Any
@@ -108,8 +111,10 @@ def test_target(target  # type: Any
 test_target.__test__ = False  # disable this function in pytest (otherwise name starts with 'test' > it will appear)
 
 
+@function_decorator
 def cases_generator(names=None,       # type: Union[str, Callable[[Any], str], Iterable[str]]
-                    lru_cache=False,  # type: bool
+                    lru_cache=False,  # type: bool,
+                    case_func=DECORATED,
                     **param_ranges    # type: Iterable[Any]
                     ):
     """
@@ -140,15 +145,11 @@ def cases_generator(names=None,       # type: Union[str, Callable[[Any], str], I
         function so they should have names the underlying function can handle.
     :return:
     """
+    kwarg_values = list(product(*param_ranges.values()))
+    setattr(case_func, _GENERATOR_FIELD, (names, param_ranges.keys(), kwarg_values))
+    if lru_cache:
+        nb_cases = len(kwarg_values)
+        # decorate the function with the appropriate lru cache size
+        case_func = lru(maxsize=nb_cases)(case_func)
 
-    def cases_generator_decorator(test_func):
-        kwarg_values = list(product(*param_ranges.values()))
-        setattr(test_func, _GENERATOR_FIELD, (names, param_ranges.keys(), kwarg_values))
-        if lru_cache:
-            nb_cases = len(kwarg_values)
-            # decorate the function with the appropriate lru cache size
-            test_func = lru(maxsize=nb_cases)(test_func)
-
-        return test_func
-
-    return cases_generator_decorator
+    return case_func

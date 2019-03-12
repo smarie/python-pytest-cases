@@ -7,6 +7,7 @@ from collections import OrderedDict
 from distutils.version import LooseVersion
 from inspect import getmembers, isgeneratorfunction, getmodule
 
+from decopatch import function_decorator, DECORATED, with_parenthesis
 from makefun import with_signature, add_signature_parameters, remove_signature_parameters
 
 try:  # python 3.3+
@@ -167,11 +168,13 @@ THIS_MODULE = object()
 """Marker that can be used instead of a module name to indicate that the module is the current one"""
 
 
+@function_decorator
 def cases_fixture(cases=None,                       # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
                   module=None,                      # type: Union[ModuleType, Iterable[ModuleType]]
                   case_data_argname='case_data',    # type: str
                   has_tag=None,                     # type: Any
                   filter=None,                      # type: Callable[[List[Any]], bool]
+                  f=DECORATED,
                   **kwargs
                   ):
     """
@@ -239,23 +242,22 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
         `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
-    def _double_decorator(f):
-        # apply @cases_data (that will translate to a @pytest.mark.parametrize)
-        parametrized_f = cases_data(cases=cases, module=module,
-                                    case_data_argname=case_data_argname, has_tag=has_tag, filter=filter)(f)
-        # apply @pytest_fixture_plus
-        return pytest_fixture_plus(**kwargs)(parametrized_f)
-
-    return _double_decorator
+    # apply @cases_data (that will translate to a @pytest.mark.parametrize)
+    parametrized_f = cases_data(cases=cases, module=module,
+                                case_data_argname=case_data_argname, has_tag=has_tag, filter=filter)(f)
+    # apply @pytest_fixture_plus
+    return pytest_fixture_plus(**kwargs)(parametrized_f)
 
 
+@function_decorator
 def pytest_fixture_plus(scope="function",
                         params=None,
                         autouse=False,
                         ids=None,
                         name=None,
+                        fixture_func=DECORATED,
                         **kwargs):
-    """ (return a) decorator to mark a fixture factory function.
+    """ decorator to mark a fixture factory function.
 
     Identical to `@pytest.fixture` decorator, except that it supports multi-parametrization with
     `@pytest.mark.parametrize` as requested in https://github.com/pytest-dev/pytest/issues/3960.
@@ -279,52 +281,6 @@ def pytest_fixture_plus(scope="function",
                 ``fixture_<fixturename>`` and then use
                 ``@pytest.fixture(name='<fixturename>')``.
     :param kwargs: other keyword arguments for `@pytest.fixture`
-    """
-
-    if callable(scope) and params is None and autouse is False:
-        # direct decoration without arguments
-        return decorate_pytest_fixture_plus(scope)
-    else:
-        # arguments have been provided
-        def _decorator(f):
-            return decorate_pytest_fixture_plus(f,
-                                                scope=scope, params=params, autouse=autouse, ids=ids, name=name,
-                                                **kwargs)
-        return _decorator
-
-
-def decorate_pytest_fixture_plus(fixture_func,
-                                 scope="function",
-                                 params=None,
-                                 autouse=False,
-                                 ids=None,
-                                 name=None,
-                                 **kwargs):
-    """
-    Manual decorator equivalent to `@pytest_fixture_plus`
-
-    :param fixture_func: the function to decorate
-
-    :param scope: the scope for which this fixture is shared, one of
-                "function" (default), "class", "module" or "session".
-    :param params: an optional list of parameters which will cause multiple
-                invocations of the fixture function and all of the tests
-                using it.
-    :param autouse: if True, the fixture func is activated for all tests that
-                can see it.  If False (the default) then an explicit
-                reference is needed to activate the fixture.
-    :param ids: list of string ids each corresponding to the params
-                so that they are part of the test id. If no ids are provided
-                they will be generated automatically from the params.
-    :param name: the name of the fixture. This defaults to the name of the
-                decorated function. If a fixture is used in the same module in
-                which it is defined, the function name of the fixture will be
-                shadowed by the function arg that requests the fixture; one way
-                to resolve this is to name the decorated function
-                ``fixture_<fixturename>`` and then use
-                ``@pytest.fixture(name='<fixturename>')``.
-    :param kwargs:
-    :return:
     """
     # Compatibility for the 'name' argument
     if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
@@ -436,11 +392,13 @@ def decorate_pytest_fixture_plus(fixture_func,
         return fixture_decorator(wrapped_fixture_func)
 
 
+@function_decorator(custom_disambiguator=with_parenthesis)
 def cases_data(cases=None,                       # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
                module=None,                      # type: Union[ModuleType, Iterable[ModuleType]]
                case_data_argname='case_data',    # type: str
                has_tag=None,                     # type: Any
-               filter=None                       # type: Callable[[List[Any]], bool]
+               filter=None,                      # type: Callable[[List[Any]], bool]
+               test_func=DECORATED,
                ):
     """
     Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with
@@ -496,28 +454,18 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
         `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
-    def datasets_decorator(test_func):
-        """
-        The generated test function decorator.
+    # equivalent to @mark.parametrize('case_data', cases) where cases is a tuple containing a CaseDataGetter for
 
-        It is equivalent to @mark.parametrize('case_data', cases) where cases is a tuple containing a CaseDataGetter for
-        all case generator functions
+    # First list all cases according to user preferences
+    _cases = get_all_cases(cases, module, test_func, has_tag, filter)
 
-        :param test_func:
-        :return:
-        """
-        # First list all cases according to user preferences
-        _cases = get_all_cases(cases, module, test_func, has_tag, filter)
+    # Then transform into required arguments for pytest (applying the pytest marks if needed)
+    marked_cases, cases_ids = get_pytest_parametrize_args(_cases)
 
-        # Then transform into required arguments for pytest (applying the pytest marks if needed)
-        marked_cases, cases_ids = get_pytest_parametrize_args(_cases)
+    # Finally create the pytest decorator and apply it
+    parametrizer = pytest.mark.parametrize(case_data_argname, marked_cases, ids=cases_ids)
 
-        # Finally create the pytest decorator and apply it
-        parametrizer = pytest.mark.parametrize(case_data_argname, marked_cases, ids=cases_ids)
-
-        return parametrizer(test_func)
-
-    return datasets_decorator
+    return parametrizer(test_func)
 
 
 def get_pytest_parametrize_args(cases):
@@ -540,7 +488,6 @@ def get_pytest_parametrize_args(cases):
                     for c in cases]
 
     return marked_cases, case_ids
-
 
 
 # Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
