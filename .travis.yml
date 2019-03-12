@@ -3,24 +3,33 @@ language: python
 # DO NOT CACHE PIP: we rather use a fresh conda
 # cache: pip
 
-python:
-  - "2.7"
-  - "3.5"
-  - "3.6"
-#  - "3.7"  NOT AVAILABLE ON TRAVIS YET..
-#  - "3.7-dev" # 3.7 development branch
-#  - "nightly" # currently points to 3.7-dev
-# PyPy versions
-#  - "pypy"  # PyPy2 2.5.0
-#  - "pypy3" # Pypy3 2.4.0
-#  - "pypy-5.3.1"
+matrix:
+  fast_finish: true
+  include:
+    - python: 2.7
+      env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
+    - python: 2.7
+      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+    - python: 3.5
+      env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
+    - python: 3.5
+      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+    - python: 3.6
+      env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
+    - python: 3.6
+      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+    - python: 3.7
+      env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
+      dist: xenial
+      sudo: true
+    - python: 3.7
+      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+      dist: xenial
+      sudo: true
 
 env:
   global:
   - GH_REF: git@github.com:smarie/python-pytest-cases.git
-  matrix:
-  - PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
-  - PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
 
 before_install:
   # (a) linux dependencies
@@ -71,7 +80,7 @@ after_success:
 #  - junit2html junit.xml testrun.html  output is really not nice
   - ant -f ci_tools/generate-junit-html.xml  # generates the html for the test results. Actually we dont use it anymore
   - codecov
-  - pylint pytest_cases  # note that at the moment the report is simply lost, we dont transform the result into anything
+  # - pylint pytest_cases  # note that at the moment the report is simply lost, we dont transform the result into anything
 # ***documentation***
   - mkdocs build -f docs/mkdocs.yml
   - mv reports/junit site/
@@ -83,7 +92,7 @@ after_success:
     if [ -s "ci_tools/github_travis_rsa" ]; then
       chmod 600 ci_tools/github_travis_rsa
       eval `ssh-agent -s`  # launch the authentication agent
-      ssh-add ci_tools/github_travis_rsa  # register the key
+      ssh-add ci_tools/github_travis_rsa  # register the decrypted key
       git config user.name "Automatic Publish"
       git config user.email "sylvain.marie@schneider-electric.com"
       git remote add gh-remote "${GH_REF}";
@@ -116,9 +125,6 @@ deploy:
       tags: true
       python: 3.5  #only one of the builds have to be deployed
       condition: $PYTEST_VERSION = "<3"
-
-matrix:
-    fast_finish: true
 
 notifications:
   email:
