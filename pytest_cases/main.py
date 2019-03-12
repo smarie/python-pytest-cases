@@ -738,9 +738,10 @@ def _get_case_getter_s(f,
         names, param_ids, all_param_values_combinations = gen
 
         if isinstance(names, str):
-            # then this is a string formatter
+            # then this is a string formatter creating the names
             _formatter = names
-            names = lambda **params: _formatter.format(**params)
+            def names(**params):
+                return _formatter.format(**params)
 
         nb_cases_generated = len(all_param_values_combinations)
         if not callable(names):
