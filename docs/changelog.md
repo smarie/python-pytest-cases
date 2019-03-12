@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.3.0 - More flexible case generators names + Minor dependency change
+
+Cases generators can now support explicit name lists, and name generator callables, in addition to the name template strings. Fixed [#24](https://github.com/smarie/python-pytest-cases/issues/24)
+
+Dependency to `decorator` has been dropped and replaced with `makefun`. Fixed [#25](https://github.com/smarie/python-pytest-cases/issues/25).
+
 ### 1.2.2 - fixed bug with marks on cases with pytest 3.3
 
 Marks on cases are now also working with pytest 3.3. Fixed [#23](https://github.com/smarie/python-pytest-cases/issues/23)
