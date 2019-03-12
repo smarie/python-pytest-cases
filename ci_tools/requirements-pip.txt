@@ -17,5 +17,5 @@ pytest-steps
 pytest-cov==2.6.0  # after 2.6.1 it requires pytest 3.6
 
 # --- to generate the doc (see .travis)
-mkdocs-material==2.7.3
-mkdocs==0.17.3  # this is to prevent a version non-compliant with mkdocs-material to be installed.
+mkdocs-material  # ==2.7.3
+mkdocs  # ==0.17.3  # this is to prevent a version non-compliant with mkdocs-material to be installed.

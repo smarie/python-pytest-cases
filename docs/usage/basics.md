@@ -1,6 +1,6 @@
 # Usage basics
 
-This page assumes that you have read the [initial example](../index.html#usage).
+This page assumes that you have read the [initial example](../#usage).
 
 ## Customizing case names
 

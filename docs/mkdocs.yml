@@ -3,7 +3,7 @@ site_name: pytest_cases
 repo_url: https://github.com/smarie/python-pytest-cases
 docs_dir: .
 site_dir: ../site
-pages:
+nav:
     - Home: index.md
     - Usage details:
         - Overview: usage.md
