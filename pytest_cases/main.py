@@ -364,8 +364,8 @@ def pytest_fixture_plus(scope="function",
     old_sig = signature(fixture_func)
     new_sig = remove_signature_parameters(old_sig, *old_parameter_names)
     # add them in reversed order so as to match the same test order than in pytest.
-    new_sig = add_signature_parameters(new_sig, first=(Parameter(n, kind=Parameter.POSITIONAL_OR_KEYWORD)
-                                                       for n in reversed(new_parameter_names)))
+    new_sig = add_signature_parameters(new_sig, first=tuple(Parameter(n, kind=Parameter.POSITIONAL_OR_KEYWORD)
+                                                            for n in reversed(new_parameter_names)))
 
     # Finally create the fixture function, a wrapper of user-provided fixture with the new signature
     if not isgeneratorfunction(fixture_func):
