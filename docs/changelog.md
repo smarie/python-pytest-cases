@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.3.2 - parametrized `@pytest_fixture_plus` Bugfix
+
+Fixed bug with `@pytest_fixture_plus` when used in parametrized mode. Fixes [#26](https://github.com/smarie/python-pytest-cases/issues/26). Thanks [Sup3rGeo](https://github.com/Sup3rGeo)!
+
 ### 1.3.1 - Minor dependency change
 
 Now using `decopatch` to create the decorators.
