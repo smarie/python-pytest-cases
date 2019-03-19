@@ -308,13 +308,15 @@ def pytest_fixture_plus(scope="function",
                              "name in a @pytest.mark.parametrize mark")
 
         else:
+            paramnames = [name.strip() for name in m.param_names]
+
             # create a fixture function for this parameter
             def _param_fixture(request):
                 """a dummy fixture that simply returns the parameter"""
                 return request.param
 
             # generate a fixture name (find an available name if already used)
-            gen_name = fixture_func.__name__ + "__" + 'X'.join(m.param_names)  # + "__gen"
+            gen_name = fixture_func.__name__ + "__" + 'X'.join(paramnames)  # + "__gen"
             i = 0
             _param_fixture.__name__ = gen_name
             while _param_fixture.__name__ in dir(module):
@@ -334,7 +336,7 @@ def pytest_fixture_plus(scope="function",
                                  "".format(_param_fixture.__name__, module))
 
             # remember
-            params_map[_param_fixture.__name__] = m.param_names
+            params_map[_param_fixture.__name__] = paramnames
 
     # wrap the fixture function so that each of its parameter becomes the associated fixture name
     new_parameter_names = tuple(params_map.keys())
