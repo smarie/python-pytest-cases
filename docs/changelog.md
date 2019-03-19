@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.3.3 - parametrized `@pytest_fixture_plus` Bugfix
+
+Fixed minor bug with parametrized `@pytest_fixture_plus`: spaces are now correctly removed when multiple parameter names are provided in the same `parametrize` call. Fixes [#27](https://github.com/smarie/python-pytest-cases/issues/27)
+
 ### 1.3.2 - parametrized `@pytest_fixture_plus` Bugfix
 
 Fixed bug with `@pytest_fixture_plus` when used in parametrized mode. Fixes [#26](https://github.com/smarie/python-pytest-cases/issues/26). Thanks [Sup3rGeo](https://github.com/Sup3rGeo)!
