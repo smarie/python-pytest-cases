@@ -1,3 +1,4 @@
+from distutils.version import LooseVersion
 import pytest
 from pytest_cases.tests.simple import test_main_cases
 
@@ -42,12 +43,21 @@ def test_with_cases_decorated_legacy(my_case_fixture_legacy):
             err_checker(err_info.value)
 
 
-@pytest_fixture_plus
-@cases_data(module=test_main_cases)
-@pytest.mark.parametrize('a', [True])
-def my_case_fixture(case_data, a, request):
-    """Getting data will now be executed BEFORE the test (outside of the test duration)"""
-    return case_data.get()
+if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+    @pytest_fixture_plus
+    @cases_data(module=test_main_cases)
+    @pytest.mark.parametrize('a', [True])
+    def my_case_fixture(case_data, a, request):
+        """Getting data will now be executed BEFORE the test (outside of the test duration)"""
+        return case_data.get()
+else:
+    # we cant double-parametrize with pytest 2.x: the ids get messed up
+    @pytest_fixture_plus
+    @cases_data(module=test_main_cases)
+    # @pytest.mark.parametrize('a', [True])
+    def my_case_fixture(case_data, request):
+        """Getting data will now be executed BEFORE the test (outside of the test duration)"""
+        return case_data.get()
 
 
 def test_with_cases_decorated(my_case_fixture):

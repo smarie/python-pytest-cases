@@ -309,9 +309,9 @@ def pytest_fixture_plus(scope="function",
                 try:
                     paramids = tuple(m.param_ids)
                 except TypeError:
-                    paramids = tuple(m.param_ids(v) for v in m.param_values)
+                    paramids = tuple(m.param_ids(v) for v in _pvalues)
             else:
-                paramids = get_test_ids_from_param_values(_pnames, m.param_values)
+                paramids = get_test_ids_from_param_values(_pnames, _pvalues)
             params_ids.append(paramids)
 
     # (3) generate the ids and values, possibly reapplying marks
@@ -335,6 +335,9 @@ def pytest_fixture_plus(scope="function",
             ms = [m for mm in marks if mm is not None for m in mm]
             if len(ms) > 0:
                 final_values[i] = make_marked_parameter_value(final_values[i], marks=ms)
+
+    if len(final_values) != len(final_ids):
+        raise ValueError("Internal error related to fixture parametrization- please report")
 
     # (4) wrap the fixture function so as to remove the parameter names and add 'request' if needed
     all_param_names = tuple(v for l in params_names_or_name_combinations for v in l)

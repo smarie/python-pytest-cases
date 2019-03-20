@@ -7,7 +7,7 @@ from distutils.version import LooseVersion
 from warnings import warn
 
 import pytest
-from _pytest.mark import ParameterSet
+
 
 # Create a symbol that will work to create a fixture containing 'yield', whatever the pytest version
 # Note: if more prevision is needed, use    if LooseVersion(pytest.__version__) < LooseVersion('3.0.0')
@@ -79,9 +79,17 @@ def get_pytest_parametrize_marks(f):
         mark_info = getattr(f, 'parametrize', None)
         if mark_info is not None:
             # mark_info.args contains a list of (name, values)
-            return tuple(_ParametrizationMark(_LegacyMark(mark_info.args[2*i], mark_info.args[2*i + 1],
-                                                          **mark_info.kwargs))
-                         for i in range(len(mark_info.args) // 2))
+            if len(mark_info.args) % 2 != 0:
+                raise ValueError("internal pytest compatibility error - please report")
+            nb_parameters = len(mark_info.args) // 2
+            if nb_parameters > 1 and len(mark_info.kwargs) > 0:
+                raise ValueError("Unfortunately with this old pytest version it is not possible to have several "
+                                 "parametrization decorators")
+            res = []
+            for i in range(nb_parameters):
+                param_name, param_values = mark_info.args[2*i:2*(i+1)]
+                res.append(_ParametrizationMark(_LegacyMark(param_name, param_values, **mark_info.kwargs)))
+            return tuple(res)
         else:
             return ()
 
@@ -126,16 +134,28 @@ def get_test_ids_from_param_values(param_names,
 
 
 # ---- ParameterSet api ---
-def is_marked_parameter_value(v):
-    return isinstance(v, ParameterSet)
+try:  # pytest 3.x+
+    from _pytest.mark import ParameterSet
+    def is_marked_parameter_value(v):
+        return isinstance(v, ParameterSet)
 
+    def get_marked_parameter_marks(v):
+        return v.marks
 
-def get_marked_parameter_marks(v):
-    return v.marks
+    def get_marked_parameter_values(v):
+        return v.values
 
+except ImportError:  # pytest 2.x
+    from _pytest.mark import MarkDecorator
 
-def get_marked_parameter_values(v):
-    return v.values
+    def is_marked_parameter_value(v):
+        return isinstance(v, MarkDecorator)
+
+    def get_marked_parameter_marks(v):
+        return [v]
+
+    def get_marked_parameter_values(v):
+        return v.args[1:]
 
 
 # ---- tools to reapply marks on test parameter values, whatever the pytest version ----
@@ -180,18 +200,22 @@ def transform_marks_into_decorators(marks):
     try:
         for m in marks:
             md = pytest.mark.MarkDecorator()
-            if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-                 md.mark = m
+            if isinstance(m, type(md)):
+                # already a decorator, we can use it
+                marks_mod.append(m)
             else:
-                md.name = m.name
-                # md.markname = m.name
-                md.args = m.args
-                md.kwargs = m.kwargs
+                if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+                     md.mark = m
+                else:
+                    md.name = m.name
+                    # md.markname = m.name
+                    md.args = m.args
+                    md.kwargs = m.kwargs
 
-            # markinfodecorator = getattr(pytest.mark, markinfo.name)
-            # markinfodecorator(*markinfo.args)
+                # markinfodecorator = getattr(pytest.mark, markinfo.name)
+                # markinfodecorator(*markinfo.args)
 
-            marks_mod.append(md)
+                marks_mod.append(md)
     except Exception as e:
         warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))
     return marks_mod
