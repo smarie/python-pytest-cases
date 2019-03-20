@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.4.0 - `@pytest_fixture_plus` major improvement
+
+ * Major improvement of `@pytest_fixture_plus`: instead of generating fixtures, it now correctly parametrizes the fixture. Skip/fail Marks are correctly copied too. Fixes [#28](https://github.com/smarie/python-pytest-cases/issues/28)
+
+ * `pytest_fixture_plus` does not accept the `params` and `ids` arguments any more, it only relies on parametrization marks.
+
 ### 1.3.3 - parametrized `@pytest_fixture_plus` Bugfix
 
 Fixed minor bug with parametrized `@pytest_fixture_plus`: spaces are now correctly removed when multiple parameter names are provided in the same `parametrize` call. Fixes [#27](https://github.com/smarie/python-pytest-cases/issues/27)
