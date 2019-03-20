@@ -13,6 +13,7 @@ xunitparser
 pytest$PYTEST_VERSION
 pytest-logging  # ==2015.11.4
 pytest-steps
+pytest-harvest
 
 # --- to generate the reports (see scripts in ci_tools, called by .travis)
 pytest-cov==2.6.0  # after 2.6.1 it requires pytest 3.6

@@ -3,19 +3,27 @@ from __future__ import division
 
 import sys
 from abc import abstractmethod, ABCMeta
-from collections import OrderedDict
 from distutils.version import LooseVersion
-from inspect import getmembers, isgeneratorfunction, getmodule
+from inspect import getmembers, isgeneratorfunction
+from itertools import product
+from warnings import warn
 
 from decopatch import function_decorator, DECORATED, with_parenthesis
 from makefun import with_signature, add_signature_parameters, remove_signature_parameters
+
+import six
+import pytest
 
 try:  # python 3.3+
     from inspect import signature, Parameter
 except ImportError:
     from funcsigs import signature, Parameter
 
-from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks
+try:
+    from typing import Type
+except ImportError:
+    # on old versions of typing module the above does not work. Since our code below has all Type hints quoted it's ok
+    pass
 
 try:  # type hints, python 3+
     from typing import Callable, Union, Optional, Any, Tuple, List, Dict, Iterable
@@ -29,24 +37,13 @@ try:  # type hints, python 3+
 
     # Type hint for generator functions
     GeneratedCaseFunc = Callable[[Any], CaseData]
-
 except ImportError:
     pass
-
-# noinspection PyBroadException
-from warnings import warn
-
-import six
 
 from pytest_cases.case_funcs import _GENERATOR_FIELD, CASE_TAGS_FIELD
-
-try:
-    from typing import Type
-except ImportError:
-    # on old versions of typing module the above does not work. Since our code below has all Type hints quoted it's ok
-    pass
-
-import pytest
+from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get_test_ids_from_param_values, \
+    is_marked_parameter_value, get_marked_parameter_marks, get_marked_parameter_values, make_marked_parameter_value, \
+    get_pytest_marks_on_function
 
 
 class CaseDataGetter(six.with_metaclass(ABCMeta)):
@@ -131,7 +128,7 @@ class CaseDataFromFunction(CaseDataGetter):
         Overrides default implementation to return the marks that are on the case function
         :return:
         """
-        return get_pytest_marks_on_case_func(self.f)
+        return get_pytest_marks_on_function(self.f)
 
     def get(self, *args, **kwargs):
         # type: (...) -> Union[CaseData, Any]
@@ -141,24 +138,6 @@ class CaseDataFromFunction(CaseDataGetter):
         """
         kwargs.update(self.function_kwargs)
         return self.f(*args, **kwargs)
-
-
-def get_pytest_marks_on_case_func(f):
-    """
-    Utility to return all pytest marks applied on a case function
-
-    :param f:
-    :return:
-    """
-    try:
-        return f.pytestmark
-    except AttributeError:
-        try:
-            # old pytest < 3: marks are set as fields on the function object
-            # but they do not have a particulat type, their type is 'instance'...
-            return [v for v in vars(f).values() if str(v).startswith("<MarkInfo '")]
-        except AttributeError:
-            return []
 
 
 CASE_PREFIX = 'case_'
@@ -251,9 +230,7 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
 
 @function_decorator
 def pytest_fixture_plus(scope="function",
-                        params=None,
                         autouse=False,
-                        ids=None,
                         name=None,
                         fixture_func=DECORATED,
                         **kwargs):
@@ -262,17 +239,13 @@ def pytest_fixture_plus(scope="function",
     Identical to `@pytest.fixture` decorator, except that it supports multi-parametrization with
     `@pytest.mark.parametrize` as requested in https://github.com/pytest-dev/pytest/issues/3960.
 
+    As a consequence it does not support the `params` and `ids` arguments anymore.
+
     :param scope: the scope for which this fixture is shared, one of
                 "function" (default), "class", "module" or "session".
-    :param params: an optional list of parameters which will cause multiple
-                invocations of the fixture function and all of the tests
-                using it.
     :param autouse: if True, the fixture func is activated for all tests that
                 can see it.  If False (the default) then an explicit
                 reference is needed to activate the fixture.
-    :param ids: list of string ids each corresponding to the params
-                so that they are part of the test id. If no ids are provided
-                they will be generated automatically from the params.
     :param name: the name of the fixture. This defaults to the name of the
                 decorated function. If a fixture is used in the same module in
                 which it is defined, the function name of the fixture will be
@@ -290,17 +263,20 @@ def pytest_fixture_plus(scope="function",
         # 'name' argument is not supported in this old version, use the __name__ trick.
         fixture_func.__name__ = name
 
-    # Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
+    # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
     parametrizer_marks = get_pytest_parametrize_marks(fixture_func)
+    if len(parametrizer_marks) < 1:
+        # -- no parametrization: shortcut
+        fix_creator = pytest.fixture if not isgeneratorfunction(fixture_func) else yield_fixture
+        return fix_creator(scope=scope, autouse=autouse, **kwargs)(fixture_func)
 
-    # the module will be used to add fixtures dynamically
-    module = getmodule(fixture_func)
-
-    # for each dependency create an associated "param" fixture
-    # Note: we could instead have created a huge parameter containing all parameters...
-    # Pros = no additional fixture.
-    # Cons: less readable and ids would be difficult to create
-    params_map = OrderedDict()
+    # (2) create the huge "param" containing all params combined
+    # --loop
+    params_names_or_name_combinations = []
+    params_values = []
+    params_ids = []
+    params_marks = []
+    # -- use same order to get it right
     for m in parametrizer_marks:
         # check what the mark specifies in terms of parameters
         if len(m.param_names) < 1:
@@ -308,68 +284,97 @@ def pytest_fixture_plus(scope="function",
                              "name in a @pytest.mark.parametrize mark")
 
         else:
-            paramnames = [name.strip() for name in m.param_names]
-
-            # create a fixture function for this parameter
-            def _param_fixture(request):
-                """a dummy fixture that simply returns the parameter"""
-                return request.param
-
-            # generate a fixture name (find an available name if already used)
-            gen_name = fixture_func.__name__ + "__" + 'X'.join(paramnames)  # + "__gen"
-            i = 0
-            _param_fixture.__name__ = gen_name
-            while _param_fixture.__name__ in dir(module):
-                i += 1
-                _param_fixture.__name__ = gen_name + '_' + str(i)
-
-            # create the fixture with param name, values and ids, and with same scope than requesting func.
-            param_fixture = pytest.fixture(scope=scope, params=m.param_values, ids=m.param_ids)(_param_fixture)
-
-            # Add the fixture dynamically: we have to add it to the function holder module as explained in
-            # https://github.com/pytest-dev/pytest/issues/2424
-            if _param_fixture.__name__ not in dir(module):
-                setattr(module, _param_fixture.__name__, param_fixture)
-            else:
-                raise ValueError("The {} fixture automatically generated by `@pytest_fixture_plus` already exists in "
-                                 "module {}. This should not happen given the automatic name generation"
-                                 "".format(_param_fixture.__name__, module))
+            # fix bug: pytest does not strip the param names when they come from a coma-separated "arg1, arg2"
+            _pnames = tuple(name.strip() for name in m.param_names)
 
             # remember
-            params_map[_param_fixture.__name__] = paramnames
+            params_names_or_name_combinations.append(_pnames)
+            _pvalues = []
+            _pmarks = []
+            for v in m.param_values:
+                if is_marked_parameter_value(v):
+                    marks = get_marked_parameter_marks(v)
+                    vals = get_marked_parameter_values(v)
+                    if len(vals) != 1:
+                        raise ValueError("Internal error - unsupported pytest parametrization+mark combination. Please "
+                                         "report this issue")
+                    _pmarks.append(marks)  # there might be several
+                    _pvalues.append(vals[0])
+                else:
+                    _pmarks.append(None)
+                    _pvalues.append(v)
+            params_values.append(tuple(_pvalues))
+            params_marks.append(tuple(_pmarks))
+            if m.param_ids is not None:
+                try:
+                    paramids = tuple(m.param_ids)
+                except TypeError:
+                    paramids = tuple(m.param_ids(v) for v in m.param_values)
+            else:
+                paramids = get_test_ids_from_param_values(_pnames, m.param_values)
+            params_ids.append(paramids)
 
-    # wrap the fixture function so that each of its parameter becomes the associated fixture name
-    new_parameter_names = tuple(params_map.keys())
-    old_parameter_names = tuple(v for l in params_map.values() for v in l)
+    # (3) generate the ids and values, possibly reapplying marks
+    if len(params_names_or_name_combinations) == 1:
+        # we can simplify - that will be more readable
+        final_values = list(params_values[0])
+        final_ids = params_ids[0]
+        final_marks = params_marks[0]
 
-    # common routine used below. Fills kwargs with the appropriate names and values from fixture_params
+        # reapply the marks
+        for i, marks in enumerate(final_marks):
+            if marks is not None:
+                final_values[i] = make_marked_parameter_value(final_values[i], marks=marks)
+    else:
+        final_values = list(product(*params_values))
+        final_ids = get_test_ids_from_param_values(params_names_or_name_combinations, product(*params_ids))
+        final_marks = tuple(product(*params_marks))
+
+        # reapply the marks
+        for i, marks in enumerate(final_marks):
+            ms = [m for mm in marks if mm is not None for m in mm]
+            if len(ms) > 0:
+                final_values[i] = make_marked_parameter_value(final_values[i], marks=ms)
+
+    # (4) wrap the fixture function so as to remove the parameter names and add 'request' if needed
+    all_param_names = tuple(v for l in params_names_or_name_combinations for v in l)
+
+    # --create the new signature that we want to expose to pytest
+    old_sig = signature(fixture_func)
+    for p in all_param_names:
+        if p not in old_sig.parameters:
+            raise ValueError("parameter '%s' not found in fixture signature '%s%s'"
+                             "" % (p, fixture_func.__name__, old_sig))
+    new_sig = remove_signature_parameters(old_sig, *all_param_names)
+    # add request if needed
+    func_needs_request = 'request' in old_sig.parameters
+    if not func_needs_request:
+        new_sig = add_signature_parameters(new_sig, first=Parameter('request', kind=Parameter.POSITIONAL_OR_KEYWORD))
+    else:
+        new_sig = new_sig
+
+    # --common routine used below. Fills kwargs with the appropriate names and values from fixture_params
     def _get_arguments(*args, **kwargs):
-        # kwargs contains the generated fixture names so we have to remove them.
-        # For each generated fixture, there are one or several parameters to inject in kwargs
-        i = 0
-        for new_p_name in new_parameter_names:
-            fixture_param_value = kwargs.pop(new_p_name)
-            if len(params_map[new_p_name]) == 1:
-                # a single parameter for that generated ficture (@pytest.mark.parametrize with a single name)
-                kwargs[params_map[new_p_name][0]] = fixture_param_value
-                i += 1
+        # kwargs contains request
+        request = kwargs['request'] if func_needs_request else kwargs.pop('request')
+
+        # populate the parameters
+        if len(params_names_or_name_combinations) == 1:
+            # remove the simplification
+            request.param = [request.param]
+        for p_names, fixture_param_value in zip(params_names_or_name_combinations, request.param):
+            if len(p_names) == 1:
+                # a single parameter for that generated fixture (@pytest.mark.parametrize with a single name)
+                kwargs[p_names[0]] = fixture_param_value
             else:
                 # several parameters for that generated fixture (@pytest.mark.parametrize with several names)
                 # unpack all of them and inject them in the kwargs
-                for old_p_name, old_p_value in zip(params_map[new_p_name], fixture_param_value):
+                for old_p_name, old_p_value in zip(p_names, fixture_param_value):
                     kwargs[old_p_name] = old_p_value
-                    i += 1
 
         return args, kwargs
 
-    # create the new signature that we want to expose to pytest
-    old_sig = signature(fixture_func)
-    new_sig = remove_signature_parameters(old_sig, *old_parameter_names)
-    # add them in reversed order so as to match the same test order than in pytest.
-    new_sig = add_signature_parameters(new_sig, first=tuple(Parameter(n, kind=Parameter.POSITIONAL_OR_KEYWORD)
-                                                            for n in reversed(new_parameter_names)))
-
-    # Finally create the fixture function, a wrapper of user-provided fixture with the new signature
+    # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
     if not isgeneratorfunction(fixture_func):
         # normal function with return statement
         @with_signature(new_sig)
@@ -378,7 +383,7 @@ def pytest_fixture_plus(scope="function",
             return fixture_func(*args, **kwargs)
 
         # transform the created wrapper into a fixture
-        fixture_decorator = pytest.fixture(scope=scope, params=params, autouse=autouse, ids=ids, **kwargs)
+        fixture_decorator = pytest.fixture(scope=scope, params=final_values, autouse=autouse, ids=final_ids, **kwargs)
         return fixture_decorator(wrapped_fixture_func)
 
     else:
@@ -390,7 +395,7 @@ def pytest_fixture_plus(scope="function",
                 yield res
 
         # transform the created wrapper into a fixture
-        fixture_decorator = yield_fixture(scope=scope, params=params, autouse=autouse, ids=ids, **kwargs)
+        fixture_decorator = yield_fixture(scope=scope, params=final_values, autouse=autouse, ids=final_ids, **kwargs)
         return fixture_decorator(wrapped_fixture_func)
 
 
@@ -486,67 +491,10 @@ def get_pytest_parametrize_args(cases):
     case_ids = [str(c) for c in cases]
 
     # create the pytest parameter values with the appropriate pytest marks
-    marked_cases = [c if len(c.get_marks()) == 0 else get_marked_parameter_for_case(c, marks=c.get_marks())
+    marked_cases = [c if len(c.get_marks()) == 0 else make_marked_parameter_value(c, marks=c.get_marks())
                     for c in cases]
 
     return marked_cases, case_ids
-
-
-# Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
-# see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize
-
-try:
-    # check if pytest.param exists
-    _ = pytest.param
-except AttributeError:
-    # if not this is how it was done
-    # see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize
-    def get_marked_parameter_for_case(c, marks):
-        if len(marks) > 1:
-            raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
-        else:
-            # get a decorator for each of the markinfo
-            marks_mod = transform_marks_into_decorators(marks)
-
-            # decorate
-            return marks_mod[0](c)
-else:
-    # Otherise pytest.param exists, it is easier
-    def get_marked_parameter_for_case(c, marks):
-        # get a decorator for each of the markinfo
-        marks_mod = transform_marks_into_decorators(marks)
-
-        # decorate
-        return pytest.param(c, marks=marks_mod)
-
-
-def transform_marks_into_decorators(marks):
-    """
-    Transforms the provided marks (MarkInfo) obtained from marked cases, into MarkDecorator so that they can
-    be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.
-
-    :param marks:
-    :return:
-    """
-    marks_mod = []
-    try:
-        for m in marks:
-            md = pytest.mark.MarkDecorator()
-            if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-                 md.mark = m
-            else:
-                md.name = m.name
-                # md.markname = m.name
-                md.args = m.args
-                md.kwargs = m.kwargs
-
-            # markinfodecorator = getattr(pytest.mark, markinfo.name)
-            # markinfodecorator(*markinfo.args)
-
-            marks_mod.append(md)
-    except Exception as e:
-        warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))
-    return marks_mod
 
 
 def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]

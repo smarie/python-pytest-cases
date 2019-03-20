@@ -3,8 +3,11 @@ try:  # python 3.3+
 except ImportError:
     from funcsigs import signature
 
-import pytest
+from distutils.version import LooseVersion
+from warnings import warn
 
+import pytest
+from _pytest.mark import ParameterSet
 
 # Create a symbol that will work to create a fixture containing 'yield', whatever the pytest version
 # Note: if more prevision is needed, use    if LooseVersion(pytest.__version__) < LooseVersion('3.0.0')
@@ -14,17 +17,10 @@ else:
     yield_fixture = pytest.fixture
 
 
-class _LegacyMark:
-    __slots__ = "args", "kwargs"
-
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-
-
+# ------------ container for the mark information that we grab from the fixtures (`@pytest_fixture_plus`)
 class _ParametrizationMark:
     """
-    Represents the information required by `decorate_pytest_fixture_plus` to work.
+    Represents the information required by `@pytest_fixture_plus` to work.
     """
     __slots__ = "param_names", "param_values", "param_ids"
 
@@ -40,9 +36,36 @@ class _ParametrizationMark:
             self.param_ids = bound.arguments.get('ids', None)
 
 
+# -------- tools to get the parametrization mark whatever the pytest version
+class _LegacyMark:
+    __slots__ = "args", "kwargs"
+
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+
+def get_pytest_marks_on_function(f):
+    """
+    Utility to return *ALL* pytest marks (not only parametrization) applied on a function
+
+    :param f:
+    :return:
+    """
+    try:
+        return f.pytestmark
+    except AttributeError:
+        try:
+            # old pytest < 3: marks are set as fields on the function object
+            # but they do not have a particulat type, their type is 'instance'...
+            return [v for v in vars(f).values() if str(v).startswith("<MarkInfo '")]
+        except AttributeError:
+            return []
+
+
 def get_pytest_parametrize_marks(f):
     """
-    Returns the @pytest.mark.parametrize marks associated with a function
+    Returns the @pytest.mark.parametrize marks associated with a function (and only those)
 
     :param f:
     :return: a tuple containing all 'parametrize' marks
@@ -74,3 +97,101 @@ def get_parametrize_signature():
     :return: a reference signature representing
     """
     return signature(_pytest_mark_parametrize)
+
+
+# ---------- test ids utils ---------
+def get_test_ids_from_param_values(param_names,
+                                   param_values,
+                                   ):
+    """
+    Replicates pytest behaviour to generate the ids when there are several parameters in a single `parametrize`
+
+    :param param_names:
+    :param param_values:
+    :return:
+    """
+    nb_params = len(param_names)
+    if nb_params == 0:
+        raise ValueError("empty list provided")
+    elif nb_params == 1:
+        paramids = tuple(str(v) for v in param_values)
+    else:
+        paramids = []
+        for vv in param_values:
+            if len(vv) != nb_params:
+                raise ValueError("Inconsistent lenghts for parameter names and values: '%s' and '%s'"
+                                 "" % (param_names, vv))
+            paramids.append('-'.join([str(v) for v in vv]))
+    return paramids
+
+
+# ---- ParameterSet api ---
+def is_marked_parameter_value(v):
+    return isinstance(v, ParameterSet)
+
+
+def get_marked_parameter_marks(v):
+    return v.marks
+
+
+def get_marked_parameter_values(v):
+    return v.values
+
+
+# ---- tools to reapply marks on test parameter values, whatever the pytest version ----
+
+# Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
+# see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize
+
+try:
+    # check if pytest.param exists
+    _ = pytest.param
+except AttributeError:
+    # if not this is how it was done
+    # see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize
+    def make_marked_parameter_value(c, marks):
+        if len(marks) > 1:
+            raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
+        else:
+            # get a decorator for each of the markinfo
+            marks_mod = transform_marks_into_decorators(marks)
+
+            # decorate
+            return marks_mod[0](c)
+else:
+    # Otherwise pytest.param exists, it is easier
+    def make_marked_parameter_value(c, marks):
+        # get a decorator for each of the markinfo
+        marks_mod = transform_marks_into_decorators(marks)
+
+        # decorate
+        return pytest.param(c, marks=marks_mod)
+
+
+def transform_marks_into_decorators(marks):
+    """
+    Transforms the provided marks (MarkInfo) obtained from marked cases, into MarkDecorator so that they can
+    be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.
+
+    :param marks:
+    :return:
+    """
+    marks_mod = []
+    try:
+        for m in marks:
+            md = pytest.mark.MarkDecorator()
+            if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+                 md.mark = m
+            else:
+                md.name = m.name
+                # md.markname = m.name
+                md.args = m.args
+                md.kwargs = m.kwargs
+
+            # markinfodecorator = getattr(pytest.mark, markinfo.name)
+            # markinfodecorator(*markinfo.args)
+
+            marks_mod.append(md)
+    except Exception as e:
+        warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))
+    return marks_mod

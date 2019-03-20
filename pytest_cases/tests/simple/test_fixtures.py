@@ -44,7 +44,8 @@ def test_with_cases_decorated_legacy(my_case_fixture_legacy):
 
 @pytest_fixture_plus
 @cases_data(module=test_main_cases)
-def my_case_fixture(case_data, request):
+@pytest.mark.parametrize('a', [True])
+def my_case_fixture(case_data, a, request):
     """Getting data will now be executed BEFORE the test (outside of the test duration)"""
     return case_data.get()
 
