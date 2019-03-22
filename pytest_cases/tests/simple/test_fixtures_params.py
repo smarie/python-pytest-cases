@@ -1,5 +1,14 @@
+from distutils.version import LooseVersion
+
 from pytest_cases import pytest_fixture_plus
 import pytest
+
+# pytest.param - not available in all versions
+if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+    pytest_param = pytest.param
+else:
+    def pytest_param(*args):
+        return args
 
 
 @pytest_fixture_plus(scope="module")
@@ -18,7 +27,7 @@ def test_one(myfix):
 @pytest_fixture_plus
 @pytest.mark.parametrize("arg1, arg2", [
     (1, 2),
-    (3, 4),
+    pytest_param(3, 4),
 ])
 def myfix2(arg1, arg2):
     return arg1, arg2

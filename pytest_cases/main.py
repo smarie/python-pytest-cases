@@ -295,11 +295,14 @@ def pytest_fixture_plus(scope="function",
                 if is_marked_parameter_value(v):
                     marks = get_marked_parameter_marks(v)
                     vals = get_marked_parameter_values(v)
-                    if len(vals) != 1:
+                    if len(vals) != len(_pnames):
                         raise ValueError("Internal error - unsupported pytest parametrization+mark combination. Please "
                                          "report this issue")
                     _pmarks.append(marks)  # there might be several
-                    _pvalues.append(vals[0])
+                    if len(vals) == 1:
+                        _pvalues.append(vals[0])
+                    else:
+                        _pvalues.append(vals)
                 else:
                     _pmarks.append(None)
                     _pvalues.append(v)
