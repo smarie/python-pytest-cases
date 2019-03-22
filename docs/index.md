@@ -6,7 +6,7 @@
 
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 
-!!! success "New `@cases_fixture` decorator is there, [check it out](#d-case-fixtures) !"
+!!! success "New `@pytest_fixture_plus` decorator is there, [check it out](#d-case-fixtures) !"
 
 Did you ever thought that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
