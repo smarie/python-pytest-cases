@@ -107,7 +107,7 @@ You might be concerned that case data is gathered or created *during* test execu
 
 Indeed creating or collecting case data is not part of the test *per se*. Besides, if you benchmark your tests durations (for example with [pytest-harvest](https://smarie.github.io/python-pytest-harvest/)), you may want the test duration to be computed without acccounting for the data retrieval time - especially if you decide to add some caching mechanism as explained [here](https://smarie.github.io/python-pytest-cases/usage/advanced/#caching).
 
-It might therefore be more interesting for you to parametrize **case fixtures** instead of parametrizing your test function:
+It might therefore be more interesting for you to parametrize **case fixtures** instead of parametrizing your test function. Thanks to our new [`@pytest_fixture_plus`](#pytest_fixture_plus) decorator, this works exactly the same way than for test functions:
 
 ```python
 from pytest_cases import pytest_fixture_plus, cases_data
@@ -131,9 +131,6 @@ def test_foo(inputs):
 In the above example, the `test_foo` test does not spend time collecting or generating data. When it is executed, it receives the required data directly as `inputs`. The test case creation instead happens when each `inputs` fixture instance is created by `pytest` - this is done in a separate pytest phase (named "setup"), and therefore is not counted in the test duration.
 
 Note: you can still use `request` in your fixture's signature if you wish to.
-
-!!! note "`@pytest_fixture_plus` deprecation if/when `@pytest.fixture` supports `@pytest.mark.parametrize`"
-    The ability for pytest fixtures to support the `@pytest.mark.parametrize` annotation is a feature that clearly belongs to `pytest` scope, and has been [requested already](https://github.com/pytest-dev/pytest/issues/3960). It is therefore expected that `@pytest_fixture_plus` will be deprecated in favor of `@pytest_fixture` if/when the `pytest` team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.
 
 ## Usage - 'True' test cases
 
@@ -191,6 +188,48 @@ def test_foo(case_data: CaseDataGetter):
 ```
 
 See [Usage](./usage) for complete examples with custom case names, case generators, exceptions handling, and more.
+
+
+## `pytest` Goodies
+
+### `@pytest_fixture_plus`
+
+`@pytest_fixture_plus` is similar to `pytest.fixture` but without its `param` and `ids` arguments. Instead, it is able to pick the parametrization from `@pytest.mark.parametrize` marks applied on fixtures. This makes it very intuitive for users to parametrize both their tests and fixtures. As a bonus, its `name` argument works even in old versions of pytest (which is not the case for `fixture`).
+
+!!! note "`@pytest_fixture_plus` deprecation if/when `@pytest.fixture` supports `@pytest.mark.parametrize`"
+    The ability for pytest fixtures to support the `@pytest.mark.parametrize` annotation is a feature that clearly belongs to `pytest` scope, and has been [requested already](https://github.com/pytest-dev/pytest/issues/3960). It is therefore expected that `@pytest_fixture_plus` will be deprecated in favor of `@pytest_fixture` if/when the `pytest` team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.
+
+### `param_fixture[s]`
+
+If you wish to share some parameters across several fixtures and tests, it might be convenient to have a fixture representing this parameter. This is relatively easy for single parameters, but a bit harder for parameter tuples.
+
+The two utilities functions `param_fixture` (for a single parameter name) and `param_fixtures` (for a tuple of parameter names) handle the difficulty for you:
+
+```python
+import pytest
+from pytest_cases import param_fixtures, param_fixture
+
+# create a single parameter fixture
+my_parameter = param_fixture("my_parameter", [1, 2, 3, 4])
+
+@pytest.fixture
+def fixture_uses_param(my_parameter):
+    ...
+
+def test_uses_param(my_parameter, fixture_uses_param):
+    ...
+
+# -----
+# create a 2-tuple parameter fixture
+arg1, arg2 = param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
+
+@pytest.fixture
+def fixture_uses_param2(arg2):
+    ...
+
+def test_uses_param2(arg1, arg2, fixture_uses_param2):
+    ...
+```
 
 
 ## Main features / benefits
