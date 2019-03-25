@@ -4,7 +4,7 @@ from __future__ import division
 import sys
 from abc import abstractmethod, ABCMeta
 from distutils.version import LooseVersion
-from inspect import getmembers, isgeneratorfunction
+from inspect import getmembers, isgeneratorfunction, getmodule, currentframe
 from itertools import product
 from warnings import warn
 
@@ -146,6 +146,92 @@ THIS_MODULE = object()
 """Marker that can be used instead of a module name to indicate that the module is the current one"""
 
 
+def param_fixture(argname, argvalues, ids=None, scope="function"):
+    """
+    Identical to `param_fixtures` but for a single parameter name.
+
+    :param argname:
+    :param argvalues:
+    :param ids:
+    :param scope: the scope of created fixtures
+    :return:
+    """
+    if "," in argname:
+        raise ValueError("`param_fixture` is an alias for `param_fixtures` that can only be used for a single "
+                         "parameter name. Use `param_fixtures` instead - but note that it creates several fixtures.")
+
+    # create the fixture
+    def _param_fixture(request):
+        return request.param
+    _param_fixture.__name__ = argname
+
+    return pytest.fixture(scope=scope, params=argvalues, ids=ids)(_param_fixture)
+
+
+def param_fixtures(argnames, argvalues, ids=None):
+    """
+    Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`.
+
+    Note that the (argnames, argvalues, ids) signature is similar to `@pytest.mark.parametrize` for consistency,
+    see https://docs.pytest.org/en/latest/reference.html?highlight=pytest.param#pytest-mark-parametrize
+
+    :param argnames:
+    :param argvalues:
+    :param ids:
+    :return:
+    """
+    created_fixtures = []
+    argnames_lst = argnames.replace(' ', '').split(',')
+
+    # create the root fixture that will contain all parameter values
+    root_fixture_name = "param_fixtures_root__%s" % ('_'.join(argnames_lst))
+
+    # Add the fixture dynamically: we have to add it to the corresponding module as explained in
+    # https://github.com/pytest-dev/pytest/issues/2424
+    # grab context from the caller frame
+    frame = _get_callerframe()
+    module = getmodule(frame)
+
+    # find a non-used fixture name
+    if root_fixture_name in dir(module):
+        root_fixture_name += '_1'
+    i = 1
+    while root_fixture_name in dir(module):
+        i += 1
+        root_fixture_name[-1] += str(i)
+
+    @pytest_fixture_plus(name=root_fixture_name)
+    @pytest.mark.parametrize(argnames, argvalues, ids=ids)
+    @with_signature("(%s)" % argnames)
+    def _root_fixture(**kwargs):
+        return tuple(kwargs[k] for k in argnames_lst)
+
+    setattr(module, root_fixture_name, _root_fixture)
+
+    # finally create the sub-fixtures
+    for param_idx, argname in enumerate(argnames_lst):
+        # create the fixture
+        @pytest_fixture_plus(name=argname)
+        @with_signature("(%s)" % root_fixture_name)
+        def _param_fixture(**kwargs):
+            params = kwargs.pop(root_fixture_name)
+            return params[param_idx] if len(argnames_lst) > 1 else params
+
+        created_fixtures.append(_param_fixture)
+
+    return created_fixtures
+
+
+def _get_callerframe(offset=0):
+    # inspect.stack is extremely slow, the fastest is sys._getframe or inspect.currentframe().
+    # See https://gist.github.com/JettJones/c236494013f22723c1822126df944b12
+    # frame = sys._getframe(2 + offset)
+    frame = currentframe()
+    for _ in range(2 + offset):
+        frame = frame.f_back
+    return frame
+
+
 @function_decorator
 def cases_fixture(cases=None,                       # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
                   module=None,                      # type: Union[ModuleType, Iterable[ModuleType]]
@@ -246,7 +332,7 @@ def pytest_fixture_plus(scope="function",
                 can see it.  If False (the default) then an explicit
                 reference is needed to activate the fixture.
     :param name: the name of the fixture. This defaults to the name of the
-                decorated function. If a fixture is used in the same module in
+                decorated function. Note: If a fixture is used in the same module in
                 which it is defined, the function name of the fixture will be
                 shadowed by the function arg that requests the fixture; one way
                 to resolve this is to name the decorated function
