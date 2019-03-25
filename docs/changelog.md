@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.5.0 - new helpers `param_fixture` and `param_fixtures`
+
+Following [Sup3rGeo](https://github.com/Sup3rGeo)'s proposal, introduced two helper methods to create simple "parameter fixtures". Fixes [#31](https://github.com/smarie/python-pytest-cases/issues/31)
+
 ### 1.4.2 - parametrized `@pytest_fixture_plus` minor bug fix
 
 `@pytest_fixture_plus` now correctly honors parameter id and marks overriden at single parameter level using `pytest.param`. Fixed [#30](https://github.com/smarie/python-pytest-cases/issues/30)
