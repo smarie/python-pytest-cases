@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.4.2 - parametrized `@pytest_fixture_plus` minor bug fix
+
+`@pytest_fixture_plus` now correctly honors parameter id and marks overriden at single parameter level using `pytest.param`. Fixed [#30](https://github.com/smarie/python-pytest-cases/issues/30)
+
 ### 1.4.1 - parametrized `@pytest_fixture_plus` minor bug fix
 
 Fixed `@pytest_fixture_plus` in case it is used with `parametrize` and one parameter is itself customized using `pytest.param`. Fixed [#29](https://github.com/smarie/python-pytest-cases/issues/29).
