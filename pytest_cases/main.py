@@ -42,8 +42,7 @@ except ImportError:
 
 from pytest_cases.case_funcs import _GENERATOR_FIELD, CASE_TAGS_FIELD
 from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get_test_ids_from_param_values, \
-    is_marked_parameter_value, get_marked_parameter_marks, get_marked_parameter_values, make_marked_parameter_value, \
-    get_pytest_marks_on_function
+    make_marked_parameter_value, get_pytest_marks_on_function, extract_parameterset_info
 
 
 class CaseDataGetter(six.with_metaclass(ABCMeta)):
@@ -271,58 +270,49 @@ def pytest_fixture_plus(scope="function",
         return fix_creator(scope=scope, autouse=autouse, **kwargs)(fixture_func)
 
     # (2) create the huge "param" containing all params combined
-    # --loop
+    # --loop (use the same order to get it right)
     params_names_or_name_combinations = []
     params_values = []
     params_ids = []
     params_marks = []
-    # -- use same order to get it right
-    for m in parametrizer_marks:
-        # check what the mark specifies in terms of parameters
-        if len(m.param_names) < 1:
+    for pmark in parametrizer_marks:
+        # check number of parameter names in this parameterset
+        if len(pmark.param_names) < 1:
             raise ValueError("Fixture function '%s' decorated with '@pytest_fixture_plus' has an empty parameter "
                              "name in a @pytest.mark.parametrize mark")
 
-        else:
-            # fix bug: pytest does not strip the param names when they come from a coma-separated "arg1, arg2"
-            _pnames = tuple(name.strip() for name in m.param_names)
+        # remember
+        params_names_or_name_combinations.append(pmark.param_names)
 
-            # remember
-            params_names_or_name_combinations.append(_pnames)
-            _pvalues = []
-            _pmarks = []
-            for v in m.param_values:
-                if is_marked_parameter_value(v):
-                    marks = get_marked_parameter_marks(v)
-                    vals = get_marked_parameter_values(v)
-                    if len(vals) != len(_pnames):
-                        raise ValueError("Internal error - unsupported pytest parametrization+mark combination. Please "
-                                         "report this issue")
-                    _pmarks.append(marks)  # there might be several
-                    if len(vals) == 1:
-                        _pvalues.append(vals[0])
-                    else:
-                        _pvalues.append(vals)
-                else:
-                    _pmarks.append(None)
-                    _pvalues.append(v)
-            params_values.append(tuple(_pvalues))
-            params_marks.append(tuple(_pmarks))
-            if m.param_ids is not None:
-                try:
-                    paramids = tuple(m.param_ids)
-                except TypeError:
-                    paramids = tuple(m.param_ids(v) for v in _pvalues)
-            else:
-                paramids = get_test_ids_from_param_values(_pnames, _pvalues)
-            params_ids.append(paramids)
+        # extract all parameters that have a specific configuration (pytest.param())
+        _pids, _pmarks, _pvalues = extract_parameterset_info(pmark.param_names, pmark)
+
+        # Create the proper id for each test
+        if pmark.param_ids is not None:
+            # overridden at global pytest.mark.parametrize level - this takes precedence.
+            try:  # an explicit list of ids ?
+                paramids = list(pmark.param_ids)
+            except TypeError:  # a callable to apply on the values
+                paramids = list(pmark.param_ids(v) for v in _pvalues)
+        else:
+            # default: values-based...
+            paramids = get_test_ids_from_param_values(pmark.param_names, _pvalues)
+            # ...but local pytest.param takes precedence
+            for i, _id in enumerate(_pids):
+                if _id is not None:
+                    paramids[i] = _id
+
+        # Finally store the ids, marks, and values for this parameterset
+        params_ids.append(paramids)
+        params_marks.append(tuple(_pmarks))
+        params_values.append(tuple(_pvalues))
 
     # (3) generate the ids and values, possibly reapplying marks
     if len(params_names_or_name_combinations) == 1:
         # we can simplify - that will be more readable
-        final_values = list(params_values[0])
         final_ids = params_ids[0]
         final_marks = params_marks[0]
+        final_values = list(params_values[0])
 
         # reapply the marks
         for i, marks in enumerate(final_marks):

@@ -26,7 +26,7 @@ class _ParametrizationMark:
 
     def __init__(self, mark):
         bound = get_parametrize_signature().bind(*mark.args, **mark.kwargs)
-        self.param_names = bound.arguments['argnames'].split(',')
+        self.param_names = bound.arguments['argnames'].replace(' ', '').split(',')
         self.param_values = bound.arguments['argvalues']
         try:
             bound.apply_defaults()
@@ -116,13 +116,13 @@ def get_test_ids_from_param_values(param_names,
 
     :param param_names:
     :param param_values:
-    :return:
+    :return: a list of param ids
     """
     nb_params = len(param_names)
     if nb_params == 0:
         raise ValueError("empty list provided")
     elif nb_params == 1:
-        paramids = tuple(str(v) for v in param_values)
+        paramids = list(str(v) for v in param_values)
     else:
         paramids = []
         for vv in param_values:
@@ -134,6 +134,41 @@ def get_test_ids_from_param_values(param_names,
 
 
 # ---- ParameterSet api ---
+def extract_parameterset_info(pnames, pmark):
+    """
+
+    :param pnames: the names in this parameterset
+    :param pmark: the parametrization mark (a _ParametrizationMark)
+    :return:
+    """
+    _pids = []
+    _pmarks = []
+    _pvalues = []
+    for v in pmark.param_values:
+        if is_marked_parameter_value(v):
+            # --id
+            id = get_marked_parameter_id(v)
+            _pids.append(id)
+            # --marks
+            marks = get_marked_parameter_marks(v)
+            _pmarks.append(marks)  # note: there might be several
+            # --value(a tuple if this is a tuple parameter)
+            vals = get_marked_parameter_values(v)
+            if len(vals) != len(pnames):
+                raise ValueError("Internal error - unsupported pytest parametrization+mark combination. Please "
+                                 "report this issue")
+            if len(vals) == 1:
+                _pvalues.append(vals[0])
+            else:
+                _pvalues.append(vals)
+        else:
+            _pids.append(None)
+            _pmarks.append(None)
+            _pvalues.append(v)
+
+    return _pids, _pmarks, _pvalues
+
+
 try:  # pytest 3.x+
     from _pytest.mark import ParameterSet
     def is_marked_parameter_value(v):
@@ -144,6 +179,9 @@ try:  # pytest 3.x+
 
     def get_marked_parameter_values(v):
         return v.values
+
+    def get_marked_parameter_id(v):
+        return v.id
 
 except ImportError:  # pytest 2.x
     from _pytest.mark import MarkDecorator
@@ -156,6 +194,9 @@ except ImportError:  # pytest 2.x
 
     def get_marked_parameter_values(v):
         return v.args[1:]
+
+    def get_marked_parameter_id(v):
+        return v.kwargs.get('id', None)
 
 
 # ---- tools to reapply marks on test parameter values, whatever the pytest version ----
