@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.5.1 - `param_fixtures` bugfix
+
+Fixed `param_fixtures` issue: all parameter values were identical to the last parameter of the tuple. Fixes [#32](https://github.com/smarie/python-pytest-cases/issues/32).
+
 ### 1.5.0 - new helpers `param_fixture` and `param_fixtures`
 
 Following [Sup3rGeo](https://github.com/Sup3rGeo)'s proposal, introduced two helper methods to create simple "parameter fixtures". Fixes [#31](https://github.com/smarie/python-pytest-cases/issues/31)
