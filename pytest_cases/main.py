@@ -211,13 +211,17 @@ def param_fixtures(argnames, argvalues, ids=None):
     # finally create the sub-fixtures
     for param_idx, argname in enumerate(argnames_lst):
         # create the fixture
-        @pytest_fixture_plus(name=argname)
-        @with_signature("(%s)" % root_fixture_name)
-        def _param_fixture(**kwargs):
-            params = kwargs.pop(root_fixture_name)
-            return params[param_idx] if len(argnames_lst) > 1 else params
+        # To fix late binding issue with `param_idx` we add an extra layer of scope
+        # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
+        def _create_fixture(param_idx):
+            @pytest_fixture_plus(name=argname)
+            @with_signature("(%s)" % root_fixture_name)
+            def _param_fixture(**kwargs):
+                params = kwargs.pop(root_fixture_name)
+                return params[param_idx] if len(argnames_lst) > 1 else params
+            return _param_fixture
 
-        created_fixtures.append(_param_fixture)
+        created_fixtures.append(_create_fixture(param_idx))
 
     return created_fixtures
 
