@@ -13,7 +13,7 @@ else:
 
 
 # create a single parameter fixture
-my_parameter = param_fixture("my_parameter", [1, 2, 3, 4])
+param_fixture("my_parameter", [1, 2, 3, 4])
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def test_uses_param(my_parameter, fixture_uses_param):
 
 # -----
 # create a 2-tuple parameter fixture
-arg1, arg2 = param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
+param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
 
 
 @pytest.fixture
@@ -44,7 +44,7 @@ def test_uses_param2(arg1, arg2, fixture_uses_param2):
 
 # -----------
 
-parg1, parg2 = param_fixtures("parg1, parg2", [("a", "b"), ("c", "d")])
+param_fixtures("parg1, parg2", [("a", "b"), ("c", "d")])
 """Two parameter fixtures"""
 
 
