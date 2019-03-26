@@ -187,7 +187,6 @@ def param_fixtures(argnames, argvalues, ids=None):
     :param ids:
     :return:
     """
-    created_fixtures = []
     argnames_lst = argnames.replace(' ', '').split(',')
 
     # create the root fixture that will contain all parameter values
