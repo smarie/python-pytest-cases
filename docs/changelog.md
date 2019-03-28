@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.6.0 in progress - New `fixture_union` and `@pytest_parametrize_plus` decorator
+
+TODO
+
 ### 1.5.1 - `param_fixtures` bugfix
 
 Fixed `param_fixtures` issue: all parameter values were identical to the last parameter of the tuple. Fixes [#32](https://github.com/smarie/python-pytest-cases/issues/32).

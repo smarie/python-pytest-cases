@@ -378,3 +378,55 @@ def pytest_fixture_plus(scope="function",
         # transform the created wrapper into a fixture
         fixture_decorator = yield_fixture(scope=scope, params=final_values, autouse=autouse, ids=final_ids, **kwargs)
         return fixture_decorator(wrapped_fixture_func)
+
+
+class UnionAttrParam:
+    def __init__(self, fixtures):
+        self.fixtures = fixtures
+
+
+def fixture_union(name, *fixtures):
+    """
+    Creates a fixture that will take all values of the provided fixtures in order.
+
+    :param name:
+    :param fixtures:
+    :return:
+    """
+    f_names = [f.func_name if not isinstance(f, str) else f for f in fixtures]
+
+    @with_signature("(%s, request)" % ', '.join(f_names))
+    def _new_fixture(request, **kwargs):
+        var_to_use = request.param
+        return kwargs[var_to_use]
+
+    _new_fixture.__name__ = name
+    # TODO scope ?
+    return pytest.fixture(params=[UnionAttrParam(f_names)])(_new_fixture)
+
+
+def pytest_parametrize_plus(argnames, argvalues=None, fixtures=None, indirect=False, ids=None, scope=None,
+                            **kwargs):
+    """
+    This is equivalent to `@pytest.mark.parametrize` when `from_fixtures` is not set.
+
+    In addition it offers the possibility to source the list of parameter values from a list of fixtures, in other
+    words this creates a "fixture union".
+
+    :param argnames:
+    :param argvalues:
+    :param fixtures:
+    :param indirect:
+    :param ids:
+    :param scope:
+    :param kwargs:
+    :return:
+    """
+    if fixtures is None:
+        return pytest.mark.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+    else:
+        if argvalues is not None:
+            raise ValueError("If you provide a non-None `from_fixtures` then no `argvalues` should be provided.")
+
+        # TODO
+        raise NotImplementedError()
