@@ -1,7 +1,7 @@
 import pytest
 
 from pytest_cases.common import transform_marks_into_decorators
-from pytest_cases.main import get_pytest_marks_on_function, make_marked_parameter_value
+from pytest_cases.main_params import get_pytest_marks_on_function, make_marked_parameter_value
 
 
 @pytest.mark.skipif(True, reason="why")
