@@ -3,7 +3,7 @@ from functools import partial
 import pytest
 from _pytest.python import CallSpec2
 
-from pytest_cases.main_fixtures import UnionAttrParam
+from pytest_cases.main_fixtures import UnionFixtureConfig
 from _pytest.fixtures import scope2index
 
 try:  # python 3.3+
@@ -116,11 +116,26 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
         # already exists - grab it
         union_calls = metafunc._calls
 
-    # artificially forget about previous parametrization, so as to have a list of calls "just for this axis"
-    metafunc._calls = []
-    metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
-    # now add these calls to our object
-    union_calls.add_calls(metafunc._calls)
+    # detect union fixtures
+    if len(argvalues) == 1 and isinstance(argvalues[0], UnionFixtureConfig):
+        if ',' in argnames or not isinstance(argnames, str):
+            raise ValueError("Union fixtures can not be parametrized")
+        union_fixture_name = argnames
+        union_fixture_cfg = argvalues[0]
+        if indirect is False or ids is not None or len(kwargs) > 0:
+            raise ValueError("indirect or ids cannot be set on a union fixture")
+
+        # add the union
+        union_calls.add_union(union_fixture_name, union_fixture_cfg, scope=scope, **kwargs)
+    else:
+        # parametrize all unions
+        union_calls.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+
+    # # artificially forget about previous parametrization, so as to have a list of calls "just for this axis"
+    # metafunc._calls = []
+    # metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+    # # now add these calls to our object
+    # union_calls.add_calls(metafunc._calls)
 
     # put our object back in place
     metafunc._calls = union_calls
@@ -129,26 +144,167 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
 NOT_USED = object()
 
 
+class Node:
+    __slots__ = ('parent', )
+
+    def __init__(self, parent):
+        self.parent = parent
+
+    def parametrize(self, metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
+        raise NotImplementedError()
+
+    def to_list(self):
+        raise NotImplementedError()
+
+
+class SplitNode(Node):
+    __slots__ = ('children_nodes', )
+
+    def __init__(self, children_nodes, parent=None):
+        Node.__init__(self, parent=parent)
+        self.children_nodes = children_nodes
+
+    def to_list(self):
+        return [c for child in self.children_nodes for c in child.to_list()]
+
+    def add_union(self, metafunc, union_fixture_name, cfg):
+        for i in range(len(self.children_nodes)):
+            c = self.children_nodes[i]
+            if isinstance(c, SplitNode):
+                # propagate
+                c.add_union(metafunc, union_fixture_name, cfg)
+            elif isinstance(c, LeafNode):
+                # replace this child with a split
+                self.children_nodes[i] = SplitNode.create(metafunc, union_fixture_name, replaced_node=c, cfg=cfg,
+                                                          parent=self)
+            else:
+                raise TypeError("Unsupported Node type: %s" % type(c))
+
+    def parametrize(self, metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
+        """
+        Parametrizes each of the partitions independently
+        :return:
+        """
+        for child in self.children_nodes:
+            child.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+
+    @staticmethod
+    def create(metafunc,
+               union_fixture_name,  # type: str
+               cfg,                 # type: UnionFixtureConfig
+               replaced_node=None,  # type: LeafNode
+               parent=None          # type: Node
+               ):
+        """
+
+        :param metafunc:
+        :param union_fixture_name:
+        :param cfg:
+        :param replaced_node:
+        :param parent:
+        :return:
+        """
+        split_node = SplitNode([], parent=parent)
+        split_node.children_nodes = [PendingNode(metafunc, union_fixture_name, sub_fix, replaced_node,
+                                                 parent=split_node)
+                                     for sub_fix in cfg.fixtures]
+        return split_node
+
+
+class LeafNode(Node):
+    __slots__ = ('calls', )
+
+    def __init__(self, calls, parent=None):
+        Node.__init__(self, parent=parent)
+        self.calls = calls
+
+    def to_list(self):
+        return self.calls
+
+    @staticmethod
+    def create_from(metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
+        new = LeafNode([])
+        new.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+        return new
+
+    def parametrize(self, metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
+        """
+        Do the cartesian product of the parameters with what we already have
+        :return:
+        """
+        metafunc._calls = self.calls
+        metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+        self.calls = metafunc._calls
+
+
+class PendingNode(LeafNode):
+    __slots__ = ('union_fixture_name', 'fixture_name', )
+
+    def __init__(self,
+                 metafunc,            #
+                 union_fixture_name,  # type: str
+                 fixture_name,        # type: str
+                 replaced_node,       # type: LeafNode
+                 parent=None):
+
+        self.union_fixture_name = union_fixture_name
+        self.fixture_name = fixture_name
+
+        # create the node with existing calls
+        LeafNode.__init__(self, replaced_node.calls if replaced_node is not None else [], parent=parent)
+
+        self.parametrize(metafunc, union_fixture_name, [fixture_name], indirect=True,
+                         ids=['%s=%s' % (union_fixture_name, fixture_name)], scope=None)
+
+
 class UnionCalls:
     """
     This object replaces the list of calls that was in `metafunc._calls`.
     It behaves like a list, but it actually builds that list dynamically based on all parametrizations collected
     from the custom `metafunc.parametrize` above. When it is built once it is then stored in a cache
     """
-    __slots__ = 'metafunc', 'parametrizations', '_inner'
+    __slots__ = 'metafunc', 'names_required', 'tree', '_inner'
 
     def __init__(self, metafunc):
         self.metafunc = metafunc
-        self.parametrizations = []
+        self.names_required = list(signature(metafunc.function).parameters)
         self._inner = None
+        self.tree = None
 
-    def add_calls(self, added):
+    def add_union(self, union_fixture_name, union_fixture_cfg, scope=None, **kwargs):
         """
-        Used by our metafunc.parametrize to store another axis of parametrization
-        :param added:
+
         :return:
         """
-        self.parametrizations.append(added)
+        if self.tree is None:
+            # root node will be a split node
+            self.tree = SplitNode.create(self.metafunc, union_fixture_name, cfg=union_fixture_cfg)
+        elif isinstance(self.tree, LeafNode):
+            # replace the whole tree
+            self.tree = SplitNode.create(self.metafunc, union_fixture_name, replaced_node=self.tree,
+                                         cfg=union_fixture_cfg)
+        elif isinstance(self.tree, SplitNode):
+            self.tree.add_union(self.metafunc, union_fixture_name, cfg=union_fixture_cfg)
+        else:
+            raise TypeError("This should not happen")
+
+    def parametrize(self, argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
+        """
+
+        """
+        if self.tree is None:
+            # root node will be a leaf node
+            self.tree = LeafNode.create_from(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids,
+                                             scope=scope, **kwargs)
+        else:
+            if argnames in self.names_required:
+                # this is a fixture that is required by the function.
+                # TODO so we have to parametrize everywhere INCLUDING where it was set to None because of UNION ?
+                self.tree.parametrize(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+            else:
+                # TODO this is a fixture that is not required by the function. ?
+                # So we have to dispatch it ONLY where it is set to None?
+                raise NotImplementedError()
 
     @property
     def calls_list(self):
@@ -158,10 +314,10 @@ class UnionCalls:
         """
         if self._inner is None:
             # create the definitive list
-            self._inner = create_callspecs_list(self.metafunc, self.parametrizations)
+            self._inner = self.tree.to_list()
 
             # forget about all parametrizations now - this wont happen again
-            self.parametrizations = None
+            self.tree = None
 
         return self._inner
 
@@ -203,7 +359,7 @@ def create_callspecs_list(metafunc, parametrizations):
             if hasattr(param_list[0], 'params'):
                 if len(param_list[0].params) == 1:  # and that value has a single param name
                     p, v = next(iter(param_list[0].params.items()))
-                    if isinstance(v, UnionAttrParam):  # and the param value is the dummy mark
+                    if isinstance(v, UnionFixtureConfig):  # and the param value is the dummy mark
                         union_fixtures[p] = v
                         # del self.param_lists[i]
                         is_union = True

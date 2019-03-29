@@ -380,7 +380,7 @@ def pytest_fixture_plus(scope="function",
         return fixture_decorator(wrapped_fixture_func)
 
 
-class UnionAttrParam:
+class UnionFixtureConfig:
     def __init__(self, fixtures):
         self.fixtures = fixtures
 
@@ -402,7 +402,7 @@ def fixture_union(name, *fixtures):
 
     _new_fixture.__name__ = name
     # TODO scope ?
-    return pytest.fixture(params=[UnionAttrParam(f_names)])(_new_fixture)
+    return pytest.fixture(params=[UnionFixtureConfig(f_names)])(_new_fixture)
 
 
 def pytest_parametrize_plus(argnames, argvalues=None, fixtures=None, indirect=False, ids=None, scope=None,
