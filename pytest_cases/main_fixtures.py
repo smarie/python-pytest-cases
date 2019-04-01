@@ -60,7 +60,15 @@ def param_fixture(argname, argvalues, ids=None, scope="function"):
         return request.param
     _param_fixture.__name__ = argname
 
-    return pytest.fixture(scope=scope, params=argvalues, ids=ids)(_param_fixture)
+    # Add the fixture dynamically: we have to add it to the corresponding module as explained in
+    # https://github.com/pytest-dev/pytest/issues/2424
+    # grab context from the caller frame
+    frame = _get_callerframe()
+    module = getmodule(frame)
+
+    fix = pytest.fixture(scope=scope, params=argvalues, ids=ids)(_param_fixture)
+    setattr(module, argname, fix)
+    return fix
 
 
 def param_fixtures(argnames, argvalues, ids=None):
@@ -113,10 +121,12 @@ def param_fixtures(argnames, argvalues, ids=None):
             @with_signature("(%s)" % root_fixture_name)
             def _param_fixture(**kwargs):
                 params = kwargs.pop(root_fixture_name)
-                return params[param_idx] if len(argnames_lst) > 1 else params
+                return params[param_idx]
             return _param_fixture
 
-        created_fixtures.append(_create_fixture(param_idx))
+        fix = _create_fixture(param_idx)
+        created_fixtures.append(fix)
+        setattr(module, argname, fix)
 
     return created_fixtures
 
