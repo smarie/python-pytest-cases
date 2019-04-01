@@ -150,7 +150,7 @@ class Node:
     def __init__(self, parent):
         self.parent = parent
 
-    def parametrize(self, metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
+    def parametrize(self, metafunc, force, argnames, argvalues, indirect, ids, scope, **kwargs):
         raise NotImplementedError()
 
     def to_list(self):
@@ -180,13 +180,13 @@ class SplitNode(Node):
             else:
                 raise TypeError("Unsupported Node type: %s" % type(c))
 
-    def parametrize(self, metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
+    def parametrize(self, metafunc, force, argnames, argvalues, indirect, ids, scope, **kwargs):
         """
         Parametrizes each of the partitions independently
         :return:
         """
         for child in self.children_nodes:
-            child.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+            child.parametrize(metafunc, force, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
 
     @staticmethod
     def create(metafunc,
@@ -205,9 +205,12 @@ class SplitNode(Node):
         :return:
         """
         split_node = SplitNode([], parent=parent)
-        split_node.children_nodes = [PendingNode(metafunc, union_fixture_name, sub_fix, replaced_node,
-                                                 parent=split_node)
-                                     for sub_fix in cfg.fixtures]
+        split_node.children_nodes = []
+        for i, sub_fix in enumerate(cfg.fixtures):
+            new_node = FilteredLeafNode(metafunc, union_fixture_name, sub_fix,
+                                        cfg.fixtures[0:i] + cfg.fixtures[(i + 1):], replaced_node, parent=split_node)
+            split_node.children_nodes.append(new_node)
+
         return split_node
 
 
@@ -224,37 +227,70 @@ class LeafNode(Node):
     @staticmethod
     def create_from(metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
         new = LeafNode([])
-        new.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+        new.parametrize(metafunc, True, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
         return new
 
-    def parametrize(self, metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
+    def should_be_discarded(self, argname):
+        return False
+
+    def parametrize(self, metafunc, force, argnames, argvalues, indirect, ids, scope, **kwargs):
         """
-        Do the cartesian product of the parameters with what we already have
+        Do the cartesian product of the parameters with what we already have.
+
+        If force is set to True, parametrization will always happen. Otherwise, it will happen only if the argname is
+        allowed.
         :return:
         """
-        metafunc._calls = self.calls
-        metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
-        self.calls = metafunc._calls
+        if force or not self.should_be_discarded(argnames):
+            metafunc._calls = self.calls
+            metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope,
+                                           **kwargs)
+            self.calls = metafunc._calls
 
 
-class PendingNode(LeafNode):
-    __slots__ = ('union_fixture_name', 'fixture_name', )
+class FilteredLeafNode(LeafNode):
+    __slots__ = ('discarded_fixture_names', 'metafunc')
 
     def __init__(self,
                  metafunc,            #
                  union_fixture_name,  # type: str
                  fixture_name,        # type: str
+                 discarded_fixture_names,  # type: List[str]
                  replaced_node,       # type: LeafNode
                  parent=None):
-
-        self.union_fixture_name = union_fixture_name
-        self.fixture_name = fixture_name
 
         # create the node with existing calls
         LeafNode.__init__(self, replaced_node.calls if replaced_node is not None else [], parent=parent)
 
-        self.parametrize(metafunc, union_fixture_name, [fixture_name], indirect=True,
+        self.metafunc = metafunc
+
+        # save the fixture names that are discarded
+        if isinstance(replaced_node, FilteredLeafNode):
+            discarded_fixture_names = replaced_node.discarded_fixture_names + discarded_fixture_names
+        self.discarded_fixture_names = discarded_fixture_names
+
+        # parametrize with the union node
+        self.parametrize(metafunc, False, union_fixture_name, [fixture_name], indirect=True,
                          ids=['%s=%s' % (union_fixture_name, fixture_name)], scope=None)
+
+    def to_list(self):
+        # last minute parametrization: we have to make sure the union calls is set back in palce after that.
+        bak_calls = self.metafunc._calls
+        for missing in self.discarded_fixture_names:
+            if missing not in self.calls[0].params:
+                # parametrize with value None
+                self.parametrize(self.metafunc, True, missing, [None], indirect=True,
+                                 ids=['_'], scope=None)
+                # remove the dummy id
+                for callspec in self.metafunc._calls:
+                    callspec._idlist.pop(-1)
+
+        self.metafunc._calls = bak_calls
+
+        return self.calls
+
+    def should_be_discarded(self, argname):
+        return argname in self.discarded_fixture_names
 
 
 class UnionCalls:
@@ -297,14 +333,13 @@ class UnionCalls:
             self.tree = LeafNode.create_from(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids,
                                              scope=scope, **kwargs)
         else:
-            if argnames in self.names_required:
-                # this is a fixture that is required by the function.
-                # TODO so we have to parametrize everywhere INCLUDING where it was set to None because of UNION ?
-                self.tree.parametrize(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
-            else:
-                # TODO this is a fixture that is not required by the function. ?
-                # So we have to dispatch it ONLY where it is set to None?
-                raise NotImplementedError()
+            # this is a fixture that is required by the function, force the parametrization.
+            # otherwise, parametrize only the places where it is not already set
+            force = argnames in self.names_required
+
+            self.tree.parametrize(self.metafunc, force, argnames, argvalues, indirect=indirect, ids=ids, scope=scope,
+                                  **kwargs)
+
 
     @property
     def calls_list(self):
