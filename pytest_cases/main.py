@@ -173,6 +173,7 @@ def param_fixture(argname, argvalues, ids=None, scope="function"):
 
     fix = pytest.fixture(scope=scope, params=argvalues, ids=ids)(_param_fixture)
     setattr(module, argname, fix)
+    return fix
 
 
 def param_fixtures(argnames, argvalues, ids=None):
@@ -187,6 +188,7 @@ def param_fixtures(argnames, argvalues, ids=None):
     :param ids:
     :return:
     """
+    created_fixtures = []
     argnames_lst = argnames.replace(' ', '').split(',')
 
     # create the root fixture that will contain all parameter values
@@ -224,10 +226,14 @@ def param_fixtures(argnames, argvalues, ids=None):
             @with_signature("(%s)" % root_fixture_name)
             def _param_fixture(**kwargs):
                 params = kwargs.pop(root_fixture_name)
-                return params[param_idx] if len(argnames_lst) > 1 else params
+                return params[param_idx]
             return _param_fixture
 
-        setattr(module, argname, _create_fixture(param_idx))
+        fix = _create_fixture(param_idx)
+        created_fixtures.append(fix)
+        setattr(module, argname, fix)
+
+    return created_fixtures
 
 
 def _get_callerframe(offset=0):
