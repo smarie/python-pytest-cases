@@ -10,20 +10,30 @@ matrix:
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
     - python: 2.7
       env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+    - python: 2.7
+      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION=""
     - python: 3.5
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
     - python: 3.5
       env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+    - python: 3.5
+      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION=""
     - python: 3.6
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
     - python: 3.6
       env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+    - python: 3.6
+      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION=""
     - python: 3.7
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
       dist: xenial
       sudo: true
     - python: 3.7
       env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+      dist: xenial
+      sudo: true
+    - python: 3.7
+      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION=""
       dist: xenial
       sudo: true
 
