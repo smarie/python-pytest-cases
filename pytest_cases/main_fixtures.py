@@ -365,9 +365,10 @@ def pytest_fixture_plus(scope="function",
 
         # populate the parameters
         if len(params_names_or_name_combinations) == 1:
-            # remove the simplification
-            request.param = [request.param]
-        for p_names, fixture_param_value in zip(params_names_or_name_combinations, request.param):
+            _params = [request.param]  # remove the simplification
+        else:
+            _params = request.param
+        for p_names, fixture_param_value in zip(params_names_or_name_combinations, _params):
             if len(p_names) == 1:
                 # a single parameter for that generated fixture (@pytest.mark.parametrize with a single name)
                 kwargs[p_names[0]] = fixture_param_value
