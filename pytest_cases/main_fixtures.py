@@ -436,7 +436,18 @@ def fixture_union(name, fixtures, scope="function", ids=None, autouse=False, **k
 
     # finally create the fixture per se
     f_decorator = pytest.fixture(scope=scope, params=[UnionFixtureConfig(f_names)], autouse=autouse, ids=ids, **kwargs)
-    return f_decorator(_new_fixture)
+    fix = f_decorator(_new_fixture)
+
+    # Add the fixture dynamically: we have to add it to the corresponding module as explained in
+    # https://github.com/pytest-dev/pytest/issues/2424
+    # grab context from the caller frame
+    frame = _get_callerframe()
+    module = getmodule(frame)
+    if name in dir(module):
+        warn("`param_fixture` Overriding symbol %s in module %s" % (name, module))
+    setattr(module, name, fix)
+
+    return fix
 
 
 # class fixture_ref:
