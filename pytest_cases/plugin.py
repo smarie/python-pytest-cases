@@ -2,8 +2,6 @@ from functools import partial
 from wrapt import ObjectProxy
 
 import pytest
-# from _pytest.python import CallSpec2
-# from _pytest.fixtures import scope2index
 
 from pytest_cases.main_fixtures import UnionFixtureConfig
 
@@ -18,125 +16,6 @@ try:  # python 3.3+ type hints
     from _pytest.python import CallSpec2
 except ImportError:
     pass
-
-
-# def pytest_sessionstart(session): fixture manager does not yet exist
-#
-#
-# @pytest.hookimpl(tryfirst=True)
-# def pytest_collectstart(collector):
-#     # save the fixture manager for later use in pytest_generate_tests
-#     fm = collector.session._fixturemanager
-#     wrapper = FMWrapper(fm)
-#     # fm.getfixtureinfo = partial(getfixtureinfo, fm)
-#     # fm.getfixtureclosure = partial(getfixtureclosure, fm)
-#     fm.pytest_generate_tests = wrapper.pytest_generate_tests
-#
-#
-# class FMWrapper(ObjectProxy):
-#     def pytest_generate_tests(self, metafunc):
-#         return self.__wrapped__.pytest_generate_tests(metafunc)
-#
-#
-# class MyFixtureInfo:
-#     def __init__(self, fi):
-#         self.fi = fi
-#
-#     def __getattr__(self, item):
-#         return getattr(self.fi, item)
-#
-#
-# def getfixtureinfo(self, node, func, cls, funcargs=True, *args, **kwargs):
-#     fixture_info = self.__class__.getfixtureinfo(self, node, func, cls, funcargs=funcargs, *args, **kwargs)
-#     return MyFixtureInfo(fixture_info)
-#
-#
-# def getfixtureclosure(self, fixturenames, parentnode, *args, **kwargs):
-#     parentid = parentnode.nodeid
-#     return self.__class__.getfixtureclosure(self, fixturenames, parentnode, *args, **kwargs)
-#
-#
-# @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-# def pytest_generate_tests(metafunc):
-#     """
-#     Unfortunately there is no hook between pytest_collectstart (where the fixtures have not yet been collected)
-#     and pytest_generate_tests (that is called once per test function). So we use this hook only once, to get a chance
-#     to replace some fixture definitions in the fixture manager.
-#
-#     We use it to set the scopes of the union fixtures, that need to be computed based on the scopes of their dependent
-#     fixtures
-#
-#     :param metafunc:
-#     :return:
-#     """
-#     try:
-#         fxdefs = pytest_generate_tests.fm._arg2fixturedefs
-#         del pytest_generate_tests.fm
-#     except AttributeError:
-#         pass
-#     else:
-#         for defname in fxdefs:
-#             fixturedefs = fxdefs[defname]
-#             for fd_idx in range(len(fixturedefs)):
-#                 fixturedef = fixturedefs[fd_idx]
-#                 # if hasattr(fixturedef.func, UNION_ATTR):
-#                 #     fixturedefs[fd_idx] = finalize_union_fixture(fm, fixturedef)
-#
-#     # continue as usual
-#     _ = yield
-
-
-# def finalize_union_fixture(fm, fixturedef):
-#     """
-#
-#     :param fxdefs:
-#     :return:
-#     """
-#     # (1) grab all fixtures it depends upon
-#     depends_fixtures = getattr(fixturedef.func, UNION_ATTR)
-#     f_defs = []
-#     for f in depends_fixtures:
-#         if not isinstance(f, str):
-#             f = f.func_name
-#
-#         # a fixture name - use the fixture manager
-#         all_defs = request.session._fixturemanager.getfixturedefs(f, request.node.nodeid)
-#         if len(all_defs) != 1:
-#             raise ValueError("Fixture name used in `fixture_union` does not seem to be known: %s" % f)
-#         f_defs.append(all_defs[0])
-#
-#     # get a reference list of scopes ordered from 0: session to n: function
-#     f_scope_idx = scopes.index("function")
-#     if f_scope_idx == 0:
-#         scopes_ = reversed(scopes)
-#     elif f_scope_idx == len(scopes) - 1:
-#         scopes_ = scopes
-#     else:
-#         raise ValueError("Internal error - pytest seems to have changed its internal scopes definition")
-#
-#     # (2) find the smallest scope and create a union of the parameters lists
-#     final_scope_idx = 0
-#     fix_and_param = []
-#     for f_def in f_defs:
-#         f_scope_idx = scopes.index(f_def.scope)
-#         if f_scope_idx > final_scope_idx:
-#             final_scope_idx = f_scope_idx
-#
-#         if f_def.params is None:
-#             fix_and_param.append((f_def.func, None))
-#         else:
-#             fix_and_param += [(f_def.func, p) for p in f_def.params]
-#
-#     # (3) finally create the function
-#     fixturedef.scope = scopes[final_scope_idx]
-#     fixturedef.params = fix_and_param
-#     def _union_fixture_impl(request):
-#         return request.param
-#     fixturedef.func = _union_fixture_impl
-#     fixturedef.argnames = ['request']
-#
-#     return fixturedef
-
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

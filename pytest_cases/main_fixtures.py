@@ -385,29 +385,34 @@ class UnionFixtureConfig:
         self.fixtures = fixtures
 
 
-def fixture_union(name, *fixtures):
+def fixture_union(name, *fixtures, scope="function", ids=None, autouse=False, **kwargs):
     """
     Creates a fixture that will take all values of the provided fixtures in order.
 
     :param name:
     :param fixtures:
+    :param scope: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the
+        smallest scope of fictures referenced.
     :return:
     """
+    # first get all required fixture names
     f_names = []
     for f in fixtures:
         # possibly get the fixture name if the fixture symbol was provided
         f_names.append(get_fixture_name(f) if not isinstance(f, str) else f)
 
+    # then generate the body of our union fixture. It will require all of its dependent fixtures and receive as
+    # a parameter the name of the fixture to use
     @with_signature("(%s, request)" % ', '.join(f_names))
-    def _new_fixture(request, **kwargs):
-        var_to_use = request.param
-        return kwargs[var_to_use]
+    def _new_fixture(request, **all_fixtures):
+        fixture_to_use = request.param
+        return all_fixtures[fixture_to_use]
 
     _new_fixture.__name__ = name
 
-    # Note: we cannot set the scope here because we would need access to the fixture manager.
-    # we will set it in the plugin hook.
-    return pytest.fixture(params=[UnionFixtureConfig(f_names)])(_new_fixture)
+    # finally create the fixture per se
+    f_decorator = pytest.fixture(scope=scope, params=[UnionFixtureConfig(f_names)], autouse=autouse, ids=ids, **kwargs)
+    return f_decorator(_new_fixture)
 
 
 def pytest_parametrize_plus(argnames, argvalues=None, fixtures=None, indirect=False, ids=None, scope=None,
