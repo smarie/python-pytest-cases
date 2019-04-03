@@ -352,6 +352,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fixture_union" title="fixture_union" class="md-nav__link">
+    fixture_union
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -615,6 +622,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fixture_union" title="fixture_union" class="md-nav__link">
+    fixture_union
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -866,6 +880,44 @@
 </pre></div>
 
 
+<h3 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h3>
+<p>As of <code>pytest</code> 4, it is not possible to create a "union" fixture, i.e. a parametrized fixture that will first take all the possible values of fixture A, then all possible values of fixture B, etc. </p>
+<p>The topic has been largely discussed in <a href="https://github.com/pytest-dev/pytest/issues/349">pytest-dev</a> and a <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">request for proposal</a> has been finally made.</p>
+<p><code>fixture_union</code> is an implementation of this proposal.</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture_union</span>
+
+<span class="nd">@pytest.fixture</span>
+<span class="k">def</span> <span class="nf">first</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;hello&#39;</span>
+
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">second</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>
+
+<span class="c1"># c will first take all the values of &#39;first&#39;, then all of &#39;second&#39;</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">fixture_union</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">test_basic_union</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</pre></div>
+
+
+<p>yields</p>
+<div class="codehilite"><pre><span></span>&lt;...&gt;::test_basic_union[first] hello
+PASSED
+&lt;...&gt;::test_basic_union[second-a] a
+PASSED
+&lt;...&gt;::test_basic_union[second-b] b
+PASSED
+</pre></div>
+
+
+<p>This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues</a> page !</p>
+<div class="admonition note">
+<p class="admonition-title">fixture unions vs. cases</p>
+<p>If you're familiar with <code>pytest-cases</code> already, you might note <code>@cases_data</code> is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by <code>pytest</code>, we will probably refactor this lib to align all the concepts.</p>
+</div>
 <h2 id="main-features-benefits">Main features / benefits<a class="headerlink" href="#main-features-benefits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
