@@ -273,7 +273,7 @@ This feature has been tested in very complex cases (several union fixtures, fixt
 
 
 !!! note "fixture unions vs. cases" 
-    If you're familiar with `pytest-cases` already, you might note `@cases_data` is not so different than a fixture union: we do a union of all case functions. If in the future union fixtures are directly supported by `pytest`, we would probably refactor this lib to align all the concepts.
+    If you're familiar with `pytest-cases` already, you might note `@cases_data` is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by `pytest`, we will probably refactor this lib to align all the concepts.
 
 ## Main features / benefits
 
