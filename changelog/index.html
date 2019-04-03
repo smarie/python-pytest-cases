@@ -352,8 +352,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#160-in-progress-new-fixture_union-and-pytest_parametrize_plus-decorator" title="1.6.0 in progress - New fixture_union and @pytest_parametrize_plus decorator" class="md-nav__link">
-    1.6.0 in progress - New fixture_union and @pytest_parametrize_plus decorator
+  <a href="#160-fixture_union-and-param_fixtures-bugfix" title="1.6.0 - fixture_union and param_fixture[s] bugfix" class="md-nav__link">
+    1.6.0 - fixture_union and param_fixture[s] bugfix
   </a>
   
 </li>
@@ -572,8 +572,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#160-in-progress-new-fixture_union-and-pytest_parametrize_plus-decorator" title="1.6.0 in progress - New fixture_union and @pytest_parametrize_plus decorator" class="md-nav__link">
-    1.6.0 in progress - New fixture_union and @pytest_parametrize_plus decorator
+  <a href="#160-fixture_union-and-param_fixtures-bugfix" title="1.6.0 - fixture_union and param_fixture[s] bugfix" class="md-nav__link">
+    1.6.0 - fixture_union and param_fixture[s] bugfix
   </a>
   
 </li>
@@ -780,8 +780,10 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="160-in-progress-new-fixture_union-and-pytest_parametrize_plus-decorator">1.6.0 in progress - New <code>fixture_union</code> and <code>@pytest_parametrize_plus</code> decorator<a class="headerlink" href="#160-in-progress-new-fixture_union-and-pytest_parametrize_plus-decorator" title="Permanent link">&para;</a></h3>
-<p>TODO</p>
+<h3 id="160-fixture_union-and-param_fixtures-bugfix">1.6.0 - <code>fixture_union</code> and <code>param_fixture[s]</code> bugfix<a class="headerlink" href="#160-fixture_union-and-param_fixtures-bugfix" title="Permanent link">&para;</a></h3>
+<p>New <code>fixture_union</code> method to create a fixture that is the union/combination of other fixtures. This is an attempt to solve <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">this pytest proposal</a>.</p>
+<p>Also, <code>param_fixture</code> and <code>param_fixtures</code> can now be used without necessarily storing the return value into a variable: they will automatically register the created fixtures in the calling module.  </p>
+<p>Finally, fixed a bug with <code>param_fixtures</code> when called to create a fixture for a single parameter.</p>
 <h3 id="151-param_fixtures-bugfix">1.5.1 - <code>param_fixtures</code> bugfix<a class="headerlink" href="#151-param_fixtures-bugfix" title="Permanent link">&para;</a></h3>
 <p>Fixed <code>param_fixtures</code> issue: all parameter values were identical to the last parameter of the tuple. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/32">#32</a>.</p>
 <h3 id="150-new-helpers-param_fixture-and-param_fixtures">1.5.0 - new helpers <code>param_fixture</code> and <code>param_fixtures</code><a class="headerlink" href="#150-new-helpers-param_fixture-and-param_fixtures" title="Permanent link">&para;</a></h3>
