@@ -3,7 +3,7 @@ from pytest_cases import param_fixture, fixture_union
 
 a = param_fixture('a', ['x', 'y'])
 b = param_fixture('b', [1, 2])
-c = fixture_union('c', a, b)
+c = fixture_union('c', [a, b])
 
 
 def test_fixture_union(c, a):

@@ -2,8 +2,8 @@ from pytest_cases import param_fixture, fixture_union
 
 a = param_fixture('a', ['x', 'y'])
 b = param_fixture('b', [1, 2])
-c = fixture_union('c', a, b)
-d = fixture_union('d', b, a)
+c = fixture_union('c', [a, b])
+d = fixture_union('d', [b, a])
 
 
 def test_fixture_union_harder(c, a, d):

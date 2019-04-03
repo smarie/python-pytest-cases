@@ -385,7 +385,7 @@ class UnionFixtureConfig:
         self.fixtures = fixtures
 
 
-def fixture_union(name, *fixtures, scope="function", ids=None, autouse=False, **kwargs):
+def fixture_union(name, fixtures, scope="function", ids=None, autouse=False, **kwargs):
     """
     Creates a fixture that will take all values of the provided fixtures in order.
 
@@ -415,16 +415,16 @@ def fixture_union(name, *fixtures, scope="function", ids=None, autouse=False, **
     return f_decorator(_new_fixture)
 
 
-class fixture_ref:
-    """
-    A reference to a fixture, to be used in `pytest_parametrize_plus`
-    """
-    __slots__ = 'fixture',
-
-    def __init__(self, fixture):
-        self.fixture = fixture
-
-
+# class fixture_ref:
+#     """
+#     A reference to a fixture, to be used in `pytest_parametrize_plus`
+#     """
+#     __slots__ = 'fixture',
+#
+#     def __init__(self, fixture):
+#         self.fixture = fixture
+#
+#
 # def pytest_parametrize_plus(argnames, argvalues=None, indirect=False, ids=None, scope=None, **kwargs):
 #     """
 #     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can use fixtures.

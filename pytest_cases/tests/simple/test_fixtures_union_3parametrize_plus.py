@@ -12,7 +12,7 @@ def b():
     return 'b321'
 
 
-f_union = fixture_union("f_union", a, "b")
+f_union = fixture_union("f_union", [a, "b"])
 
 
 def test_fixture_union(f_union):
