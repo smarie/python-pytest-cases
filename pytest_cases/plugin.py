@@ -109,6 +109,7 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
     """
     # create our special container object if needed
     if not isinstance(metafunc._calls, CallsReactor):
+        # first call: should be an empty list
         if len(metafunc._calls) > 0:
             raise ValueError("This should not happen - please file an issue")
         metafunc._calls = CallsReactor(metafunc)
@@ -133,6 +134,158 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
 
     # put our object back in place - not needed anymore
     # metafunc._calls = calls_reactor
+
+
+class CallsReactor:
+    """
+    This object replaces the list of calls that was in `metafunc._calls`.
+    It behaves like a list, but it actually builds that list dynamically based on all parametrizations collected
+    from the custom `metafunc.parametrize` above.
+
+    There are therefore three steps:
+
+     - when `metafunc.parametrize` is called, this object gets called on `add_union` or `add_param`. A parametrization
+     order gets stored in `self._pending`
+     - when this object is first read as a list, all parametrization orders in `self._pending` are transformed into a
+     tree in `self._tree`, and `self._pending` is discarded. This is done in `create_tree_from_pending_parametrization`.
+     - finally, the list is built from the tree using `self._tree.to_list()`. This will also be the case in subsequent
+     usages of this object.
+
+    """
+    __slots__ = 'metafunc', '_pending', '_tree'
+
+    def __init__(self, metafunc):
+        self.metafunc = metafunc
+        self._tree = None
+        self._pending = []
+
+    # -- methods to provising parametrization orders without executing them --
+
+    def add_union(self, union_fixture_name, union_fixture_cfg, scope=None, **kwargs):
+        """ Adds a union to the pending operations """
+        self._pending.append((SplitNode, union_fixture_name, union_fixture_cfg, scope, kwargs))
+
+    def add_param(self, argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
+        """ Adds a parameter to the pending operations """
+        self._pending.append((LeafNode, argnames, argvalues, indirect, ids, scope, kwargs))
+
+    # -- list facade --
+
+    def __iter__(self):
+        return iter(self.calls_list)
+
+    def __getitem__(self, item):
+        return self.calls_list[item]
+
+    @property
+    def calls_list(self):
+        """
+        Returns the list of calls. This field is lazily created on first access, based on `self.parametrizations`
+        :return:
+        """
+        if self._tree is None:
+            # create the definitive tree.
+            self.create_tree_from_pending_parametrizations()
+
+        return self._tree.to_list()
+
+    # --- tree creation (executed once the first time this object is used as a list)
+
+    def create_tree_from_pending_parametrizations(self):
+        """
+        Takes all parametrization operations that are pending in `self._pending`,
+        and creates a parametrization tree out of them.
+
+        self._pending is set to None afterwards
+        :return:
+        """
+        bak_calls = self.metafunc._calls
+
+        # create the tree containing all the `CallSpec2` instances
+        names_required = list(signature(self.metafunc.function).parameters)
+        for i in range(len(self._pending)):
+            self.parametrize_tree(names_required, self._pending[i], self._pending[i + 1:])
+        # finalize the parametrization (all fixtures should have a value in all calls to union fixtures)
+        self._tree.finalize_parametrization()
+
+        self.metafunc._calls = bak_calls
+
+        # forget about all parametrizations now - this wont happen again
+        self._pending = None
+
+    def parametrize_tree(self, names_required, single_pmz, remaining_pmzs, node=None, force=None):
+        """
+
+        :param names_required:
+        :param single_pmz:
+        :param remaining_pmzs:
+        :return:
+        """
+        work_node = self._tree if node is None else node
+
+        print("parametrizing node %s (with current ids %s) with %s"
+              "" % (work_node, work_node.all_ids() if work_node is not None else None, single_pmz))
+
+        if single_pmz[0] is SplitNode:
+            # (A) a 'union' fixture
+            union_fixtr_name, union_fixtr_cfg, scope, kwargs = single_pmz[1:]
+            if work_node is None or isinstance(work_node, LeafNode):
+                # root node will be a split node
+                if work_node is not None:
+                    parent = work_node.parent
+                    i = parent.children_nodes.index(work_node)
+                else:
+                    parent, i = None, None
+                work_node = SplitNode.create_for_leaf_replacement(self.metafunc, union_fixtr_name,
+                                                                  replaced_node=work_node, cfg=union_fixtr_cfg,
+                                                                  scope=scope, **kwargs)
+                if parent is not None:
+                    parent.children_nodes[i] = work_node
+
+                leaves = work_node.children_nodes
+            elif isinstance(work_node, SplitNode):
+                leaves = work_node.add_union(self.metafunc, union_fixtr_name, cfg=union_fixtr_cfg, scope=scope,
+                                             **kwargs)
+            else:
+                raise TypeError("This should not happen")
+
+            # for each newly created leaf, parametrize it with the fixture it is supposed to use
+            force = force or (union_fixtr_name in names_required)
+            for leaf in leaves:
+                i = CallsReactor.find_pending_param_for_fixture_name(leaf.last_selected,
+                                                                     remaining_pmzs)
+                if i is not None:
+                    self.parametrize_tree(names_required, remaining_pmzs[i], remaining_pmzs[i + 1:], node=leaf,
+                                          force=force)
+                else:
+                    # that can happen when two unions rely on the same fixture.
+                    pass
+
+        else:
+            # (B) a normal parameter fixture
+            argnames, argvalues, indirect, ids, scope, kwargs = single_pmz[1:]
+            if work_node is None:
+                # root node will be a leaf node
+                work_node = LeafNode.create_parametrized(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids,
+                                                         scope=scope, **kwargs)
+            else:
+                # this is a fixture that is required by the function, force the parametrization.
+                # otherwise, parametrize only the places where it is not already set
+                force = force or (argnames in names_required)
+                work_node.parametrize(self.metafunc, force, argnames, argvalues, indirect=indirect, ids=ids,
+                                      scope=scope, **kwargs)
+
+        print("> node %s parametrized. Current ids %s" % (work_node, work_node.all_ids()))
+
+        # set back the field if needed
+        if node is None:
+            self._tree = work_node
+
+    @staticmethod
+    def find_pending_param_for_fixture_name(f_name, remaining_pmzs):
+        for i, p in enumerate(remaining_pmzs):
+            if p[1] == f_name:
+                return i
 
 
 class Node:
@@ -364,7 +517,7 @@ class FilteredLeafNode(LeafNode):
 
     def finalize_parametrization(self):
         """
-
+        If there are fixture names that were discarded, we have to give them a value even if they are not used.
         :return:
         """
         for missing in self.discarded_fixture_names:
@@ -389,172 +542,6 @@ class FilteredLeafNode(LeafNode):
         elif force or (argnames not in self.discarded_fixture_names):
             LeafNode.parametrize(self, metafunc, force, argnames, argvalues, indirect=indirect, ids=ids, scope=scope,
                                  **kwargs)
-
-
-# class UnionLeafNode(Node):
-#
-#     __slots__ = ('children', )
-#
-#     def __init__(self, children, parent=None):
-#         self.children = children
-#         Node.__init__(parent=parent)
-#
-#     @staticmethod
-#     def create(metafunc,
-#                union_fixture_name,  # type: str
-#                cfg,  # type: UnionFixtureConfig
-#                scope,  # type: Optional[str]
-#                replaced_node=None,  # type: Optional[LeafNode]
-#                parent=None,  # type: Node
-#                **kwargs
-#                ):
-#         children = []
-#         new = UnionLeafNode(children)
-#
-#         for call in replaced_node.calls:
-#             splt = SplitNode.create(metafunc, union_fixture_name, replaced_node=c, cfg=cfg,
-#                                     parent=new, scope=scope, **kwargs)
-#
-#         return new
-
-
-class CallsReactor:
-    """
-    This object replaces the list of calls that was in `metafunc._calls`.
-    It behaves like a list, but it actually builds that list dynamically based on all parametrizations collected
-    from the custom `metafunc.parametrize` above. When it is built once it is then stored in a cache
-    """
-    __slots__ = 'metafunc', '_pending', '_tree'
-
-    def __init__(self, metafunc):
-        self.metafunc = metafunc
-        self._tree = None
-        self._pending = []
-
-    def add_union(self, union_fixture_name, union_fixture_cfg, scope=None, **kwargs):
-        """ Adds a union to the pending operations """
-        self._pending.append((SplitNode, union_fixture_name, union_fixture_cfg, scope, kwargs))
-
-    def add_param(self, argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
-        """ Adds a parameter to the pending operations """
-        self._pending.append((LeafNode, argnames, argvalues, indirect, ids, scope, kwargs))
-
-    # -- list facade --
-
-    def __iter__(self):
-        return iter(self.calls_list)
-
-    def __getitem__(self, item):
-        return self.calls_list[item]
-
-    @property
-    def calls_list(self):
-        """
-        Returns the list of calls. This field is lazily created on first access, based on `self.parametrizations`
-        :return:
-        """
-        if self._tree is None:
-            # create the definitive tree.
-            self.create_tree_from_pending_parametrizations()
-
-        return self._tree.to_list()
-
-    # ---
-
-    def create_tree_from_pending_parametrizations(self):
-        """
-        Takes all parametrization operations that are pending in `self._pending`,
-        and creates a parametrization tree out of them.
-
-        self._pending is set to None afterwards
-        :return:
-        """
-        bak_calls = self.metafunc._calls
-
-        # parameterize the tree
-        names_required = list(signature(self.metafunc.function).parameters)
-        for i in range(len(self._pending)):
-            self.advanced_parametrize(names_required, self._pending[i], self._pending[i+1:])
-        self._tree.finalize_parametrization()
-
-        self.metafunc._calls = bak_calls
-
-        # forget about all parametrizations now - this wont happen again
-        self._pending = None
-
-    def advanced_parametrize(self, names_required, single_pmz, remaining_pmzs, node=None, force=None):
-        """
-
-        :param names_required:
-        :param single_pmz:
-        :param remaining_pmzs:
-        :return:
-        """
-        work_node = self._tree if node is None else node
-
-        print("parametrizing node %s (with current ids %s) with %s"
-              "" % (work_node, work_node.all_ids() if work_node is not None else None, single_pmz))
-
-        if single_pmz[0] is SplitNode:
-            # (A) a 'union' fixture
-            union_fixtr_name, union_fixtr_cfg, scope, kwargs = single_pmz[1:]
-            if work_node is None or isinstance(work_node, LeafNode):
-                # root node will be a split node
-                if work_node is not None:
-                    parent = work_node.parent
-                    i = parent.children_nodes.index(work_node)
-                else:
-                    parent, i = None, None
-                work_node = SplitNode.create_for_leaf_replacement(self.metafunc, union_fixtr_name,
-                                                                  replaced_node=work_node, cfg=union_fixtr_cfg,
-                                                                  scope=scope, **kwargs)
-                if parent is not None:
-                    parent.children_nodes[i] = work_node
-
-                leaves = work_node.children_nodes
-            elif isinstance(work_node, SplitNode):
-                leaves = work_node.add_union(self.metafunc, union_fixtr_name, cfg=union_fixtr_cfg, scope=scope,
-                                             **kwargs)
-            else:
-                raise TypeError("This should not happen")
-
-            # for each newly created leaf, parametrize it with the fixture it is supposed to use
-            force = force or (union_fixtr_name in names_required)
-            for leaf in leaves:
-                i = CallsReactor.find_pending_param_for_fixture_name(leaf.last_selected,
-                                                                     remaining_pmzs)
-                if i is not None:
-                    self.advanced_parametrize(names_required, remaining_pmzs[i], remaining_pmzs[i+1:], node=leaf,
-                                              force=force)
-                else:
-                    # that can happen when two unions rely on the same fixture.
-                    pass
-
-        else:
-            # (B) a normal parameter fixture
-            argnames, argvalues, indirect, ids, scope, kwargs = single_pmz[1:]
-            if work_node is None:
-                # root node will be a leaf node
-                work_node = LeafNode.create_parametrized(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids,
-                                                         scope=scope, **kwargs)
-            else:
-                # this is a fixture that is required by the function, force the parametrization.
-                # otherwise, parametrize only the places where it is not already set
-                force = force or (argnames in names_required)
-                work_node.parametrize(self.metafunc, force, argnames, argvalues, indirect=indirect, ids=ids,
-                                      scope=scope, **kwargs)
-
-        print("> node %s parametrized. Current ids %s" % (work_node, work_node.all_ids()))
-
-        # set back the field if needed
-        if node is None:
-            self._tree = work_node
-
-    @staticmethod
-    def find_pending_param_for_fixture_name(f_name, remaining_pmzs):
-        for i, p in enumerate(remaining_pmzs):
-            if p[1] == f_name:
-                return i
 
 
 # NOT_USED = object()
