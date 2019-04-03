@@ -12,6 +12,7 @@ else:
         return args
 
 
+# ---------- (1)
 # create a single parameter fixture with and without explicit symbol creation
 param_fixture("my_parameter", [1, 2])
 my_parameter2 = param_fixture("my_parameter2", [3, 4])  # Returning value
@@ -27,7 +28,7 @@ def test_uses_param(my_parameter, my_parameter2, fixture_uses_param):
     assert my_parameter, my_parameter2 == fixture_uses_param
 
 
-# -----
+# ---------- (2)
 # create a 2-tuple parameter fixture without symbol creation
 param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
 
@@ -47,8 +48,7 @@ def test_uses_param2(arg1, arg2, parg3, fixture_uses_param2):
     assert parg3 in [5, 6]
 
 
-# -----------
-
+# ---------- (3)
 param_fixtures("parg1, parg2", [("a", "b"), ("c", "d")])
 """Two parameter fixtures"""
 
@@ -67,7 +67,7 @@ def myfix(arg1, arg2, parg1):
     pytest_param(10, 20, id="t_a"),
     pytest_param(30, 40, id="t_b")
 ])
-def test_one(myfix, arg3, arg4, parg1, parg2, request):
+def test_custom_parameters(myfix, arg3, arg4, parg1, parg2, request):
     """"""
     assert myfix[2] == parg1
     paramvalues = request.node.nodeid.split('[')[1][:-1]
@@ -85,24 +85,20 @@ def test_one(myfix, arg3, arg4, parg1, parg2, request):
 def test_synthesis(module_results_dct):
     """Use pytest-harvest to check that the list of executed tests is correct """
 
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-        end_list = ['test_one[f_a-a-b-t_a]',
-                    'test_one[f_a-a-b-t_b]',
-                    'test_one[f_a-c-d-t_a]',
-                    'test_one[f_a-c-d-t_b]',
-                    'test_one[f_b-a-b-t_a]',
-                    'test_one[f_b-a-b-t_b]',
-                    'test_one[f_b-c-d-t_a]',
-                    'test_one[f_b-c-d-t_b]']
-    else:
-        end_list = [ 'test_one[1-2-a-b-10-20]',
-                     'test_one[1-2-a-b-30-40]',
-                     'test_one[1-2-c-d-10-20]',
-                     'test_one[1-2-c-d-30-40]',
-                     'test_one[3-4-a-b-10-20]',
-                     'test_one[3-4-a-b-30-40]',
-                     'test_one[3-4-c-d-10-20]',
-                     'test_one[3-4-c-d-30-40]']
+    end_list = ['test_custom_parameters[f_a-a-b-t_a]',
+                'test_custom_parameters[f_a-a-b-t_b]',
+                'test_custom_parameters[f_a-c-d-t_a]',
+                'test_custom_parameters[f_a-c-d-t_b]',
+                'test_custom_parameters[f_b-a-b-t_a]',
+                'test_custom_parameters[f_b-a-b-t_b]',
+                'test_custom_parameters[f_b-c-d-t_a]',
+                'test_custom_parameters[f_b-c-d-t_b]']
+
+    if LooseVersion(pytest.__version__) < LooseVersion('3.0.0'):
+        end_list = [s.replace('t_a', '10-20')
+                        .replace('t_b', '30-40')
+                        .replace('f_a', '1-2')
+                        .replace('f_b', '3-4') for s in end_list]
 
     assert list(module_results_dct) == ['test_uses_param[1-3]',
                                         'test_uses_param[1-4]',
