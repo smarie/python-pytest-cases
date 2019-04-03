@@ -12,23 +12,27 @@ else:
         return args
 
 
-# create a single parameter fixture
-my_parameter = param_fixture("my_parameter", [1, 2, 3, 4])
+# create a single parameter fixture with and without explicit symbol creation
+param_fixture("my_parameter", [1, 2])
+my_parameter2 = param_fixture("my_parameter2", [3, 4])  # Returning value
 
 
 @pytest.fixture
-def fixture_uses_param(my_parameter):
-    return my_parameter
+def fixture_uses_param(my_parameter, my_parameter2):
+    return my_parameter, my_parameter2
 
 
-def test_uses_param(my_parameter, fixture_uses_param):
+def test_uses_param(my_parameter, my_parameter2, fixture_uses_param):
     # check that the parameter injected in both is the same
-    assert my_parameter == fixture_uses_param
+    assert my_parameter, my_parameter2 == fixture_uses_param
 
 
 # -----
-# create a 2-tuple parameter fixture
-arg1, arg2 = param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
+# create a 2-tuple parameter fixture without symbol creation
+param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
+
+# Testing param_fixtures with single arg
+parg3 = param_fixtures("parg3", [5, 6])
 
 
 @pytest.fixture
@@ -36,15 +40,16 @@ def fixture_uses_param2(arg2):
     return arg2
 
 
-def test_uses_param2(arg1, arg2, fixture_uses_param2):
+def test_uses_param2(arg1, arg2, parg3, fixture_uses_param2):
     # check that the parameter injected in both is the same
     assert arg2 == fixture_uses_param2
     assert arg1, arg2 in [(1, 2), (3, 4)]
+    assert parg3 in [5, 6]
 
 
 # -----------
 
-parg1, parg2 = param_fixtures("parg1, parg2", [("a", "b"), ("c", "d")])
+param_fixtures("parg1, parg2", [("a", "b"), ("c", "d")])
 """Two parameter fixtures"""
 
 
@@ -99,10 +104,12 @@ def test_synthesis(module_results_dct):
                      'test_one[3-4-c-d-10-20]',
                      'test_one[3-4-c-d-30-40]']
 
-    assert list(module_results_dct) == ['test_uses_param[1]',
-                                        'test_uses_param[2]',
-                                        'test_uses_param[3]',
-                                        'test_uses_param[4]',
-                                        'test_uses_param2[1-2]',
-                                        'test_uses_param2[3-4]',
+    assert list(module_results_dct) == ['test_uses_param[1-3]',
+                                        'test_uses_param[1-4]',
+                                        'test_uses_param[2-3]',
+                                        'test_uses_param[2-4]',
+                                        'test_uses_param2[1-2-5]',
+                                        'test_uses_param2[1-2-6]',
+                                        'test_uses_param2[3-4-5]',
+                                        'test_uses_param2[3-4-6]',
                                         ] + end_list
