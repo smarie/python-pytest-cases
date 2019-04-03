@@ -352,6 +352,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#161-pytest_fixture_plus-improvement-to-handle-not_used-cases" title="1.6.1 - @pytest_fixture_plus improvement to handle NOT_USED cases" class="md-nav__link">
+    1.6.1 - @pytest_fixture_plus improvement to handle NOT_USED cases
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#160-fixture_union-and-param_fixtures-bugfix" title="1.6.0 - fixture_union and param_fixture[s] bugfix" class="md-nav__link">
     1.6.0 - fixture_union and param_fixture[s] bugfix
   </a>
@@ -572,6 +579,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#161-pytest_fixture_plus-improvement-to-handle-not_used-cases" title="1.6.1 - @pytest_fixture_plus improvement to handle NOT_USED cases" class="md-nav__link">
+    1.6.1 - @pytest_fixture_plus improvement to handle NOT_USED cases
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#160-fixture_union-and-param_fixtures-bugfix" title="1.6.0 - fixture_union and param_fixture[s] bugfix" class="md-nav__link">
     1.6.0 - fixture_union and param_fixture[s] bugfix
   </a>
@@ -780,6 +794,8 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="161-pytest_fixture_plus-improvement-to-handle-not_used-cases">1.6.1 - <code>@pytest_fixture_plus</code> improvement to handle <code>NOT_USED</code> cases<a class="headerlink" href="#161-pytest_fixture_plus-improvement-to-handle-not_used-cases" title="Permanent link">&para;</a></h3>
+<p>Fixed issue where fixtures get called with <code>NOT_USED</code> as a parameter when using a <code>fixture_union</code>. This issue is actually only fixed in <code>@pytest_fixture_plus</code>, if you use <code>@pytest.fixture</code> you have to handle it manually. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/37">#37</a></p>
 <h3 id="160-fixture_union-and-param_fixtures-bugfix">1.6.0 - <code>fixture_union</code> and <code>param_fixture[s]</code> bugfix<a class="headerlink" href="#160-fixture_union-and-param_fixtures-bugfix" title="Permanent link">&para;</a></h3>
 <p>New <code>fixture_union</code> method to create a fixture that is the union/combination of other fixtures. This is an attempt to solve <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">this pytest proposal</a>.</p>
 <p>Also, <code>param_fixture</code> and <code>param_fixtures</code> can now be used without necessarily storing the return value into a variable: they will automatically register the created fixtures in the calling module.  </p>
