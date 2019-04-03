@@ -8,7 +8,7 @@ from pytest_cases.main_params import cases_data, CaseDataGetter, unfold_expected
 
 __all__ = [
     # the submodules
-    'case_funcs', 'common', 'main_fixtures', 'main_params', 'utils_fixtures',
+    'case_funcs', 'common', 'main_fixtures', 'main_params',
     # all symbols imported above
     # --cases_funcs
     'case_name',  'test_target', 'case_tags', 'cases_generator',

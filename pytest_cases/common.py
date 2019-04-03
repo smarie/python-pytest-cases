@@ -17,6 +17,35 @@ else:
     yield_fixture = pytest.fixture
 
 
+def get_fixture_name(fixture_fun):
+    """
+    Internal utility to retrieve the fixture name corresponding to the given fixture function .
+    Indeed there is currently no pytest API to do this.
+
+    :param fixture_fun:
+    :return:
+    """
+    try:  # pytest 3
+        custom_fixture_name = fixture_fun._pytestfixturefunction.name
+    except AttributeError:
+        try:  # pytest 2
+            custom_fixture_name = fixture_fun.func_name
+        except AttributeError:
+            custom_fixture_name = None
+
+    if custom_fixture_name is not None:
+        # there is a custom fixture name
+        return custom_fixture_name
+    else:
+        obj__name = getattr(fixture_fun, '__name__', None)
+        if obj__name is not None:
+            # a function, probably
+            return obj__name
+        else:
+            # a callable object probably
+            return str(fixture_fun)
+
+
 # ------------ container for the mark information that we grab from the fixtures (`@pytest_fixture_plus`)
 class _ParametrizationMark:
     """

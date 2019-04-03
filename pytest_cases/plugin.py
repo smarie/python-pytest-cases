@@ -1,10 +1,11 @@
+from collections import OrderedDict
 from functools import partial
 
 import pytest
-from _pytest.python import CallSpec2
+# from _pytest.python import CallSpec2
 
 from pytest_cases.main_fixtures import UnionFixtureConfig
-from _pytest.fixtures import scope2index
+# from _pytest.fixtures import scope2index
 
 try:  # python 3.3+
     from inspect import signature
@@ -100,21 +101,20 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
 
     Instead, it offers an alternate list of calls takinginto account all union fixtures.
 
-    For this, it replaces the `metafunc._calls` attribute with a `UnionCalls` instance, and feeds it with all parameters
+    For this, it replaces the `metafunc._calls` attribute with a `CallsReactor` instance, and feeds it with all parameters
     and parametrized fixtures independently (not doing any cross-product).
 
-    The resulting `UnionCalls` instance is then able to dynamically behave like the correct list of calls, lazy-creating
+    The resulting `CallsReactor` instance is then able to dynamically behave like the correct list of calls, lazy-creating
     that list when it is used.
     """
-    # create or grab our special container object
-    if not isinstance(metafunc._calls, UnionCalls):
+    # create our special container object if needed
+    if not isinstance(metafunc._calls, CallsReactor):
         if len(metafunc._calls) > 0:
             raise ValueError("This should not happen - please file an issue")
-        # create a new one
-        union_calls = UnionCalls(metafunc)
-    else:
-        # already exists - grab it
-        union_calls = metafunc._calls
+        metafunc._calls = CallsReactor(metafunc)
+
+    # grab it
+    calls_reactor = metafunc._calls
 
     # detect union fixtures
     if len(argvalues) == 1 and isinstance(argvalues[0], UnionFixtureConfig):
@@ -125,23 +125,14 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
         if indirect is False or ids is not None or len(kwargs) > 0:
             raise ValueError("indirect or ids cannot be set on a union fixture")
 
-        # add the union
-        union_calls.add_union(union_fixture_name, union_fixture_cfg, scope=scope, **kwargs)
+        # add a union parametrization (but do not apply it)
+        calls_reactor.add_union(union_fixture_name, union_fixture_cfg, scope=scope, **kwargs)
     else:
-        # parametrize all unions
-        union_calls.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+        # add a normal parametrization (but do not apply it)
+        calls_reactor.add_param(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
 
-    # # artificially forget about previous parametrization, so as to have a list of calls "just for this axis"
-    # metafunc._calls = []
-    # metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
-    # # now add these calls to our object
-    # union_calls.add_calls(metafunc._calls)
-
-    # put our object back in place
-    metafunc._calls = union_calls
-
-
-NOT_USED = object()
+    # put our object back in place - not needed anymore
+    # metafunc._calls = calls_reactor
 
 
 class Node:
@@ -153,8 +144,14 @@ class Node:
     def parametrize(self, metafunc, force, argnames, argvalues, indirect, ids, scope, **kwargs):
         raise NotImplementedError()
 
+    def finalize_parametrization(self):
+        raise NotImplementedError()
+
     def to_list(self):
         raise NotImplementedError()
+
+    def all_ids(self):
+        return [c.id for c in self.to_list()]
 
 
 class SplitNode(Node):
@@ -164,21 +161,35 @@ class SplitNode(Node):
         Node.__init__(self, parent=parent)
         self.children_nodes = children_nodes
 
+    def __repr__(self):
+        return "|".join(["[%s]" % n for n in self.children_nodes])
+
+    def finalize_parametrization(self):
+        for child in self.children_nodes:
+            child.finalize_parametrization()
+
     def to_list(self):
         return [c for child in self.children_nodes for c in child.to_list()]
 
-    def add_union(self, metafunc, union_fixture_name, cfg):
+    def add_union(self, metafunc, union_fixture_name, cfg, scope, **kwargs):
+        """
+        Returns a list of newly created leaves
+        """
+        created_nodes = []
         for i in range(len(self.children_nodes)):
             c = self.children_nodes[i]
             if isinstance(c, SplitNode):
                 # propagate
-                c.add_union(metafunc, union_fixture_name, cfg)
+                created_nodes += c.add_union(metafunc, union_fixture_name, cfg, scope, **kwargs)
             elif isinstance(c, LeafNode):
-                # replace this child with a split
-                self.children_nodes[i] = SplitNode.create(metafunc, union_fixture_name, replaced_node=c, cfg=cfg,
-                                                          parent=self)
+                # replace this child with a split node
+                self.children_nodes[i] = SplitNode.create_for_leaf_replacement(metafunc, union_fixture_name, cfg=cfg,
+                                                                               replaced_node=c, scope=scope, **kwargs)
+                created_nodes += self.children_nodes[i].children_nodes
             else:
                 raise TypeError("Unsupported Node type: %s" % type(c))
+
+        return created_nodes
 
     def parametrize(self, metafunc, force, argnames, argvalues, indirect, ids, scope, **kwargs):
         """
@@ -189,12 +200,13 @@ class SplitNode(Node):
             child.parametrize(metafunc, force, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
 
     @staticmethod
-    def create(metafunc,
-               union_fixture_name,  # type: str
-               cfg,                 # type: UnionFixtureConfig
-               replaced_node=None,  # type: LeafNode
-               parent=None          # type: Node
-               ):
+    def create_for_leaf_replacement(metafunc,
+                                    union_fixture_name,  # type: str
+                                    cfg,  # type: UnionFixtureConfig
+                                    scope,  # type: Optional[str]
+                                    replaced_node=None,  # type: Optional[LeafNode]
+                                    **kwargs
+                                    ):
         """
 
         :param metafunc:
@@ -204,14 +216,38 @@ class SplitNode(Node):
         :param parent:
         :return:
         """
-        split_node = SplitNode([], parent=parent)
-        split_node.children_nodes = []
-        for i, sub_fix in enumerate(cfg.fixtures):
-            new_node = FilteredLeafNode(metafunc, union_fixture_name, sub_fix,
-                                        cfg.fixtures[0:i] + cfg.fixtures[(i + 1):], replaced_node, parent=split_node)
-            split_node.children_nodes.append(new_node)
+        if replaced_node is not None:
+            parent = replaced_node.parent
+            if isinstance(replaced_node, LeafNode):
+                # break down the list of calls in sublists of one element.
+                init_calls_list = [[c] for c in replaced_node.calls]
+            else:
+                raise ValueError("this should not happen")
 
-        return split_node
+            if isinstance(replaced_node, FilteredLeafNode):
+                i_sel = replaced_node._selections
+                i_dis = replaced_node._discarded_fixture_names
+            else:
+                i_sel = None
+                i_dis = None
+
+        else:
+            parent = None
+            init_calls_list = [[]]
+            i_sel = None
+            i_dis = None
+
+        # new node
+        new_node = SplitNode([], parent=parent)
+        for init_calls in init_calls_list:
+            for i, sub_fix in enumerate(cfg.fixtures):
+                new_leaf = FilteredLeafNode(metafunc, union_fixture_name, sub_fix,
+                                            cfg.fixtures[0:i] + cfg.fixtures[(i + 1):], initial_calls=init_calls,
+                                            initial_selections=i_sel, initial_discarded_names=i_dis,
+                                            scope=scope, parent=new_node, **kwargs)
+                new_node.children_nodes.append(new_leaf)
+
+        return new_node
 
 
 class LeafNode(Node):
@@ -221,140 +257,189 @@ class LeafNode(Node):
         Node.__init__(self, parent=parent)
         self.calls = calls
 
+    def finalize_parametrization(self):
+        pass
+
     def to_list(self):
         return self.calls
 
     @staticmethod
-    def create_from(metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
+    def create_parametrized(metafunc, argnames, argvalues, indirect, ids, scope, **kwargs):
         new = LeafNode([])
         new.parametrize(metafunc, True, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
         return new
-
-    def should_be_discarded(self, argname):
-        return False
 
     def parametrize(self, metafunc, force, argnames, argvalues, indirect, ids, scope, **kwargs):
         """
         Do the cartesian product of the parameters with what we already have.
 
-        If force is set to True, parametrization will always happen. Otherwise, it will happen only if the argname is
-        allowed.
+        'force' is a keyword for the subclass.
         :return:
         """
-        if force or not self.should_be_discarded(argnames):
-            metafunc._calls = self.calls
-            metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope,
-                                           **kwargs)
-            self.calls = metafunc._calls
+        bak = metafunc._calls
+        metafunc._calls = self.calls
+        metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope,
+                                       **kwargs)
+        self.calls = metafunc._calls
+        metafunc._calls = bak
+
+    def discard_last_id(self):
+        """remove the last id in all callspecs"""
+        for callspec in self.calls:
+            callspec._idlist.pop(-1)
 
 
 class FilteredLeafNode(LeafNode):
-    __slots__ = ('discarded_fixture_names', 'metafunc')
+    __slots__ = ('metafunc', 'union_fixture_name', '_selections', '_discarded_fixture_names',)
 
     def __init__(self,
-                 metafunc,            #
-                 union_fixture_name,  # type: str
-                 fixture_name,        # type: str
+                 metafunc,  #
+                 union_fixture_name,       # type: str
+                 selected_fixture_name,    # type: str
                  discarded_fixture_names,  # type: List[str]
-                 replaced_node,       # type: LeafNode
-                 parent=None):
+                 initial_calls=None,       # type: Optional[Node]
+                 initial_selections=None,
+                 initial_discarded_names=None,
+                 parent=None,              # type: Optional[Node]
+                 scope=None,
+                 **kwargs):
 
         # create the node with existing calls
-        LeafNode.__init__(self, replaced_node.calls if replaced_node is not None else [], parent=parent)
+        LeafNode.__init__(self, initial_calls, parent=parent)
 
         self.metafunc = metafunc
+        self.union_fixture_name = union_fixture_name
 
-        # save the fixture names that are discarded
-        if isinstance(replaced_node, FilteredLeafNode):
-            discarded_fixture_names = replaced_node.discarded_fixture_names + discarded_fixture_names
-        self.discarded_fixture_names = discarded_fixture_names
+        # save the fixture names that are selected/discarded
+        self._selections = [(union_fixture_name, selected_fixture_name)]
+        self._discarded_fixture_names = discarded_fixture_names
+        if initial_selections is not None:
+            self._selections = initial_selections + self._selections
+        if initial_discarded_names is not None:
+            self._discarded_fixture_names = initial_discarded_names + self._discarded_fixture_names
 
         # parametrize with the union node
-        self.parametrize(metafunc, False, union_fixture_name, [fixture_name], indirect=True,
-                         ids=['%s=%s' % (union_fixture_name, fixture_name)], scope=None)
+        # _id = '%s=%s' % (union_fixture_name, selected_fixture_name)
+        _id = '%s' % selected_fixture_name
+        self.parametrize(metafunc, False, union_fixture_name, [selected_fixture_name], indirect=True,
+                         ids=[_id], scope=scope, **kwargs)
 
-    def to_list(self):
-        # last minute parametrization: we have to make sure the union calls is set back in palce after that.
-        bak_calls = self.metafunc._calls
+        # remove the dummy id
+        # self.discard_last_id()
+
+    @property
+    def selections(self):
+        selections = OrderedDict()
+        parent = self.parent
+        while parent is not None:
+            if isinstance(parent, FilteredLeafNode):
+                # we have to pile up with the ones from the parents
+                selections.update(parent.selections)
+                break
+            parent = parent.parent
+
+        for s in self._selections:
+            selections[s[0]] = s[1]
+        return selections
+
+    @property
+    def discarded_fixture_names(self):
+        discarded_fixture_names = []
+        parent = self.parent
+        while parent is not None:
+            if isinstance(parent, FilteredLeafNode):
+                # we have to pile up with the ones from the parents
+                discarded_fixture_names = parent.discarded_fixture_names
+                break
+            parent = parent.parent
+
+        return discarded_fixture_names + self._discarded_fixture_names
+
+    def __repr__(self):
+        return '&'.join(['%s=%s' % (k, v) for k, v in self.selections.items()])
+
+    @property
+    def last_selected(self):
+        return next(iter(reversed(self.selections.values())))
+
+    def finalize_parametrization(self):
+        """
+
+        :return:
+        """
         for missing in self.discarded_fixture_names:
             if missing not in self.calls[0].params:
                 # parametrize with value None
                 self.parametrize(self.metafunc, True, missing, [None], indirect=True,
                                  ids=['_'], scope=None)
                 # remove the dummy id
-                for callspec in self.metafunc._calls:
-                    callspec._idlist.pop(-1)
+                self.discard_last_id()
 
-        self.metafunc._calls = bak_calls
+    def parametrize(self, metafunc, force, argnames, argvalues, indirect, ids, scope, **kwargs):
+        """
+        Same than
 
-        return self.calls
+        If force is set to True, parametrization will always happen. Otherwise, it will happen only if the argname is
+        allowed.
+        :return:
+        """
+        if len(self.calls) > 0 and argnames in self.calls[0].params:
+            # already set.
+            return
+        elif force or (argnames not in self.discarded_fixture_names):
+            LeafNode.parametrize(self, metafunc, force, argnames, argvalues, indirect=indirect, ids=ids, scope=scope,
+                                 **kwargs)
 
-    def should_be_discarded(self, argname):
-        return argname in self.discarded_fixture_names
+
+# class UnionLeafNode(Node):
+#
+#     __slots__ = ('children', )
+#
+#     def __init__(self, children, parent=None):
+#         self.children = children
+#         Node.__init__(parent=parent)
+#
+#     @staticmethod
+#     def create(metafunc,
+#                union_fixture_name,  # type: str
+#                cfg,  # type: UnionFixtureConfig
+#                scope,  # type: Optional[str]
+#                replaced_node=None,  # type: Optional[LeafNode]
+#                parent=None,  # type: Node
+#                **kwargs
+#                ):
+#         children = []
+#         new = UnionLeafNode(children)
+#
+#         for call in replaced_node.calls:
+#             splt = SplitNode.create(metafunc, union_fixture_name, replaced_node=c, cfg=cfg,
+#                                     parent=new, scope=scope, **kwargs)
+#
+#         return new
 
 
-class UnionCalls:
+class CallsReactor:
     """
     This object replaces the list of calls that was in `metafunc._calls`.
     It behaves like a list, but it actually builds that list dynamically based on all parametrizations collected
     from the custom `metafunc.parametrize` above. When it is built once it is then stored in a cache
     """
-    __slots__ = 'metafunc', 'names_required', 'tree', '_inner'
+    __slots__ = 'metafunc', '_pending', '_tree'
 
     def __init__(self, metafunc):
         self.metafunc = metafunc
-        self.names_required = list(signature(metafunc.function).parameters)
-        self._inner = None
-        self.tree = None
+        self._tree = None
+        self._pending = []
 
     def add_union(self, union_fixture_name, union_fixture_cfg, scope=None, **kwargs):
-        """
+        """ Adds a union to the pending operations """
+        self._pending.append((SplitNode, union_fixture_name, union_fixture_cfg, scope, kwargs))
 
-        :return:
-        """
-        if self.tree is None:
-            # root node will be a split node
-            self.tree = SplitNode.create(self.metafunc, union_fixture_name, cfg=union_fixture_cfg)
-        elif isinstance(self.tree, LeafNode):
-            # replace the whole tree
-            self.tree = SplitNode.create(self.metafunc, union_fixture_name, replaced_node=self.tree,
-                                         cfg=union_fixture_cfg)
-        elif isinstance(self.tree, SplitNode):
-            self.tree.add_union(self.metafunc, union_fixture_name, cfg=union_fixture_cfg)
-        else:
-            raise TypeError("This should not happen")
+    def add_param(self, argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
+        """ Adds a parameter to the pending operations """
+        self._pending.append((LeafNode, argnames, argvalues, indirect, ids, scope, kwargs))
 
-    def parametrize(self, argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
-        """
-
-        """
-        if self.tree is None:
-            # root node will be a leaf node
-            self.tree = LeafNode.create_from(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids,
-                                             scope=scope, **kwargs)
-        else:
-            # this is a fixture that is required by the function, force the parametrization.
-            # otherwise, parametrize only the places where it is not already set
-            force = argnames in self.names_required
-
-            self.tree.parametrize(self.metafunc, force, argnames, argvalues, indirect=indirect, ids=ids, scope=scope,
-                                  **kwargs)
-
-
-    @property
-    def calls_list(self):
-        """
-        Returns the list of calls. This field is lazily created on first access, based on `self.parametrizations`
-        :return:
-        """
-        if self._inner is None:
-            # create the definitive list
-            self._inner = self.tree.to_list()
-
-            # forget about all parametrizations now - this wont happen again
-            self.tree = None
-
-        return self._inner
+    # -- list facade --
 
     def __iter__(self):
         return iter(self.calls_list)
@@ -362,152 +447,264 @@ class UnionCalls:
     def __getitem__(self, item):
         return self.calls_list[item]
 
+    @property
+    def calls_list(self):
+        """
+        Returns the list of calls. This field is lazily created on first access, based on `self.parametrizations`
+        :return:
+        """
+        if self._tree is None:
+            # create the definitive tree.
+            self.create_tree_from_pending_parametrizations()
 
-def create_callspecs_list(metafunc, parametrizations):
-    """
-    Creates the list of CallSpec for metafunc, based on independent lists in `parametrizations`.
+        return self._tree.to_list()
 
-    :param metafunc:
-    :param parametrizations:
-    :return:
-    """
+    # ---
 
+    def create_tree_from_pending_parametrizations(self):
+        """
+        Takes all parametrization operations that are pending in `self._pending`,
+        and creates a parametrization tree out of them.
 
-    # at this stage, self.parametrizations is a list of the same lenght than the number of fixtures
-    # required (directly or indirectly) by this function.
+        self._pending is set to None afterwards
+        :return:
+        """
+        bak_calls = self.metafunc._calls
 
-    # what happens usually in metafunc.parametrize is multiplexing:
-    # newcallspec = callspec.copy(self)
-    # newcallspec.setmulti2(valtypes, argnames, param.values, a_id,
-    #                       param.marks, scopenum, param_index)
-    # newcalls.append(newcallspec)
+        # parameterize the tree
+        names_required = list(signature(self.metafunc.function).parameters)
+        for i in range(len(self._pending)):
+            self.advanced_parametrize(names_required, self._pending[i], self._pending[i+1:])
+        self._tree.finalize_parametrization()
 
-    # what we want to do is
-    # (1) construct a partition of fixtures
-    union_fixtures = dict()
-    normal_fixtures = dict()
-    # param_lists = copy(self.param_lists)  # create a copy because we'll be deleting some in the middle
-    for i in range(len(parametrizations)):
-        param_list = parametrizations[i]
-        is_union = False
-        if len(param_list) == 1:  # if there is only one value in this parameter ...
-            if hasattr(param_list[0], 'params'):
-                if len(param_list[0].params) == 1:  # and that value has a single param name
-                    p, v = next(iter(param_list[0].params.items()))
-                    if isinstance(v, UnionFixtureConfig):  # and the param value is the dummy mark
-                        union_fixtures[p] = v
-                        # del self.param_lists[i]
-                        is_union = True
-        if not is_union:
-            n_fix_name = list(param_list[0].params.keys())
-            if len(n_fix_name) != 1:
-                raise ValueError("Unsupported internal error....")
-            normal_fixtures[n_fix_name[0]] = param_list
+        self.metafunc._calls = bak_calls
 
-    # (2) for each partition, do the multiplexing
-    names_required = list(signature(metafunc.function).parameters)
+        # forget about all parametrizations now - this wont happen again
+        self._pending = None
 
-    def add_slicers(_calls, union_fixture_name, selected_sub_fixture, param_index, scope):
-        newcalls = []
-        for callspec in _calls or [CallSpec2(metafunc)]:
-            if union_fixture_name in callspec.params:
-                raise ValueError("this should not happen: union fixture should be unique")
+    def advanced_parametrize(self, names_required, single_pmz, remaining_pmzs, node=None, force=None):
+        """
 
-            # add the parameter to this callspec
-            newcallspec = callspec.copy(metafunc)
-            scopenum = scope2index(scope, descr='call to {0}'.format('hack'))
-            newcallspec.setmulti2({union_fixture_name: "params"}, [union_fixture_name], [selected_sub_fixture],
-                                  'dummy', [], scopenum, param_index)
-            # remove the dummy id
-            newcallspec._idlist.pop(-1)
-            callspec.params[union_fixture_name] = selected_sub_fixture
-            newcalls.append(newcallspec)
+        :param names_required:
+        :param single_pmz:
+        :param remaining_pmzs:
+        :return:
+        """
+        work_node = self._tree if node is None else node
 
-        return newcalls
+        print("parametrizing node %s (with current ids %s) with %s"
+              "" % (work_node, work_node.all_ids() if work_node is not None else None, single_pmz))
 
-    def get_calls(all_the_calls, name):
-        if name in union_fixtures:
-            separate_calls = []
-            for i, sub_fixture in enumerate(union_fixtures[name].fixtures):
-                # take the calls that we have listed so far,
-                scope = 'function'  # TODO understand what to do
-                _calls_with_slicer = add_slicers(all_the_calls, name, sub_fixture, i, scope)
-
-                # add all the others as dummy values if they are not there already
-                # all_unused_fixtures = set(union_fixtures[name].fixtures) - {sub_fixture}
-                # _calls_with_slicer2 = []
-                # for callspec in _calls_with_slicer:
-                #     missing_names = all_unused_fixtures - set(callspec.params)
-                #     already_there_names = set(callspec.params).intersection(all_unused_fixtures)
-                #     if len(already_there_names) > 0:
-                #         # TODO what if they are there already ?
-                #         raise ValueError("We dont know yet what to do")
-                #     newcallspec = callspec.copy(self.metafunc)
-                #     vartypes = {argname: 'params' for argname in missing_names}
-                #     paramvalues = [NOT_USED for argname in missing_names]
-                #     scope = 'function'  # TODO understand what to do
-                #     scopenum = scope2index(scope, descr='call to {0}'.format('hack'))
-                #     param_index = -1
-                #     newcallspec.setmulti2(vartypes, missing_names, paramvalues, 'dummy',
-                #                           (), scopenum, param_index)
-                #     # remove the dummy id
-                #     newcallspec._idlist.pop(-1)
-                #     _calls_with_slicer2.append(newcallspec)
-                #
-                # separate_calls += get_calls(_calls_with_slicer2, sub_fixture)
-                separate_calls += get_calls(_calls_with_slicer, sub_fixture)
-            return separate_calls
-        else:
-            # normal fixture. do an intelligent product (= only for callspecs that do not have this fixture)
-            newcalls = []
-            for callspec in all_the_calls or [CallSpec2(metafunc)]:
-                # only do the product if the name is not already there
-                if name not in callspec.params:
-                    for _callspec_to_add in normal_fixtures[name]:
-                        newcallspec = callspec.copy(metafunc)
-                        if len(_callspec_to_add._idlist) != 1:
-                            raise ValueError("each such callspec is supposed to represent a single fixture")
-                        # there is a single id, a single arg, a single param
-                        a_id = _callspec_to_add._idlist[0]
-                        argname, paramvalue = next(iter(_callspec_to_add.params.items()))
-                        scopenum = _callspec_to_add._arg2scopenum[argname]
-                        param_index = _callspec_to_add.indices[argname]
-                        newcallspec.setmulti2({argname: "params"}, [argname], [paramvalue], a_id,
-                                              _callspec_to_add.marks, scopenum, param_index)
-
-                        newcalls.append(newcallspec)
+        if single_pmz[0] is SplitNode:
+            # (A) a 'union' fixture
+            union_fixtr_name, union_fixtr_cfg, scope, kwargs = single_pmz[1:]
+            if work_node is None or isinstance(work_node, LeafNode):
+                # root node will be a split node
+                if work_node is not None:
+                    parent = work_node.parent
+                    i = parent.children_nodes.index(work_node)
                 else:
-                    newcalls.append(callspec)
-            return newcalls
+                    parent, i = None, None
+                work_node = SplitNode.create_for_leaf_replacement(self.metafunc, union_fixtr_name,
+                                                                  replaced_node=work_node, cfg=union_fixtr_cfg,
+                                                                  scope=scope, **kwargs)
+                if parent is not None:
+                    parent.children_nodes[i] = work_node
 
-    # trigger building the list
-    all_the_calls = []
-    for name in names_required:
-        all_the_calls = get_calls(all_the_calls, name)
+                leaves = work_node.children_nodes
+            elif isinstance(work_node, SplitNode):
+                leaves = work_node.add_union(self.metafunc, union_fixtr_name, cfg=union_fixtr_cfg, scope=scope,
+                                             **kwargs)
+            else:
+                raise TypeError("This should not happen")
 
-    # finally add missing param values in each callspec
-    risky_names = {name for union_fix_defs in union_fixtures.values() for name in union_fix_defs.fixtures}
-    if len(risky_names) == 0:
-        return all_the_calls
-    else:
-        final_calls = []
-        for callspec in all_the_calls:
-            missing_names = set(risky_names) - set(callspec.params)
-            newcallspec = callspec.copy(metafunc)
-            vartypes = {argname: 'params' for argname in missing_names}
-            paramvalues = [None for argname in missing_names]
-            scope = 'function'  # TODO understand what to do
-            scopenum = scope2index(scope, descr='call to {0}'.format('hack'))
-            param_index = -1
-            newcallspec.setmulti2(vartypes, missing_names, paramvalues, 'dummy',
-                                  (), scopenum, param_index)
-            # remove the dummy id
-            newcallspec._idlist.pop(-1)
-            final_calls.append(newcallspec)
+            # for each newly created leaf, parametrize it with the fixture it is supposed to use
+            force = force or (union_fixtr_name in names_required)
+            for leaf in leaves:
+                i = CallsReactor.find_pending_param_for_fixture_name(leaf.last_selected,
+                                                                     remaining_pmzs)
+                if i is not None:
+                    self.advanced_parametrize(names_required, remaining_pmzs[i], remaining_pmzs[i+1:], node=leaf,
+                                              force=force)
+                else:
+                    # that can happen when two unions rely on the same fixture.
+                    pass
 
-        return final_calls
+        else:
+            # (B) a normal parameter fixture
+            argnames, argvalues, indirect, ids, scope, kwargs = single_pmz[1:]
+            if work_node is None:
+                # root node will be a leaf node
+                work_node = LeafNode.create_parametrized(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids,
+                                                         scope=scope, **kwargs)
+            else:
+                # this is a fixture that is required by the function, force the parametrization.
+                # otherwise, parametrize only the places where it is not already set
+                force = force or (argnames in names_required)
+                work_node.parametrize(self.metafunc, force, argnames, argvalues, indirect=indirect, ids=ids,
+                                      scope=scope, **kwargs)
+
+        print("> node %s parametrized. Current ids %s" % (work_node, work_node.all_ids()))
+
+        # set back the field if needed
+        if node is None:
+            self._tree = work_node
+
+    @staticmethod
+    def find_pending_param_for_fixture_name(f_name, remaining_pmzs):
+        for i, p in enumerate(remaining_pmzs):
+            if p[1] == f_name:
+                return i
 
 
+# NOT_USED = object()
+#
+#
+# def create_callspecs_list(metafunc, parametrizations):
+#     """
+#     Creates the list of CallSpec for metafunc, based on independent lists in `parametrizations`.
+#
+#     :param metafunc:
+#     :param parametrizations:
+#     :return:
+#     """
+#
+#
+#     # at this stage, self.parametrizations is a list of the same lenght than the number of fixtures
+#     # required (directly or indirectly) by this function.
+#
+#     # what happens usually in metafunc.parametrize is multiplexing:
+#     # newcallspec = callspec.copy(self)
+#     # newcallspec.setmulti2(valtypes, argnames, param.values, a_id,
+#     #                       param.marks, scopenum, param_index)
+#     # newcalls.append(newcallspec)
+#
+#     # what we want to do is
+#     # (1) construct a partition of fixtures
+#     union_fixtures = dict()
+#     normal_fixtures = dict()
+#     # param_lists = copy(self.param_lists)  # create a copy because we'll be deleting some in the middle
+#     for i in range(len(parametrizations)):
+#         param_list = parametrizations[i]
+#         is_union = False
+#         if len(param_list) == 1:  # if there is only one value in this parameter ...
+#             if hasattr(param_list[0], 'params'):
+#                 if len(param_list[0].params) == 1:  # and that value has a single param name
+#                     p, v = next(iter(param_list[0].params.items()))
+#                     if isinstance(v, UnionFixtureConfig):  # and the param value is the dummy mark
+#                         union_fixtures[p] = v
+#                         # del self.param_lists[i]
+#                         is_union = True
+#         if not is_union:
+#             n_fix_name = list(param_list[0].params.keys())
+#             if len(n_fix_name) != 1:
+#                 raise ValueError("Unsupported internal error....")
+#             normal_fixtures[n_fix_name[0]] = param_list
+#
+#     # (2) for each partition, do the multiplexing
+#     names_required = list(signature(metafunc.function).parameters)
+#
+#     def add_slicers(_calls, union_fixture_name, selected_sub_fixture, param_index, scope):
+#         newcalls = []
+#         for callspec in _calls or [CallSpec2(metafunc)]:
+#             if union_fixture_name in callspec.params:
+#                 raise ValueError("this should not happen: union fixture should be unique")
+#
+#             # add the parameter to this callspec
+#             newcallspec = callspec.copy(metafunc)
+#             scopenum = scope2index(scope, descr='call to {0}'.format('hack'))
+#             newcallspec.setmulti2({union_fixture_name: "params"}, [union_fixture_name], [selected_sub_fixture],
+#                                   'dummy', [], scopenum, param_index)
+#             # remove the dummy id
+#             newcallspec._idlist.pop(-1)
+#             callspec.params[union_fixture_name] = selected_sub_fixture
+#             newcalls.append(newcallspec)
+#
+#         return newcalls
+#
+#     def get_calls(all_the_calls, name):
+#         if name in union_fixtures:
+#             separate_calls = []
+#             for i, sub_fixture in enumerate(union_fixtures[name].fixtures):
+#                 # take the calls that we have listed so far,
+#                 scope = 'function'  # TODO understand what to do
+#                 _calls_with_slicer = add_slicers(all_the_calls, name, sub_fixture, i, scope)
+#
+#                 # add all the others as dummy values if they are not there already
+#                 # all_unused_fixtures = set(union_fixtures[name].fixtures) - {sub_fixture}
+#                 # _calls_with_slicer2 = []
+#                 # for callspec in _calls_with_slicer:
+#                 #     missing_names = all_unused_fixtures - set(callspec.params)
+#                 #     already_there_names = set(callspec.params).intersection(all_unused_fixtures)
+#                 #     if len(already_there_names) > 0:
+#                 #         # TODO what if they are there already ?
+#                 #         raise ValueError("We dont know yet what to do")
+#                 #     newcallspec = callspec.copy(self.metafunc)
+#                 #     vartypes = {argname: 'params' for argname in missing_names}
+#                 #     paramvalues = [NOT_USED for argname in missing_names]
+#                 #     scope = 'function'  # TODO understand what to do
+#                 #     scopenum = scope2index(scope, descr='call to {0}'.format('hack'))
+#                 #     param_index = -1
+#                 #     newcallspec.setmulti2(vartypes, missing_names, paramvalues, 'dummy',
+#                 #                           (), scopenum, param_index)
+#                 #     # remove the dummy id
+#                 #     newcallspec._idlist.pop(-1)
+#                 #     _calls_with_slicer2.append(newcallspec)
+#                 #
+#                 # separate_calls += get_calls(_calls_with_slicer2, sub_fixture)
+#                 separate_calls += get_calls(_calls_with_slicer, sub_fixture)
+#             return separate_calls
+#         else:
+#             # normal fixture. do an intelligent product (= only for callspecs that do not have this fixture)
+#             newcalls = []
+#             for callspec in all_the_calls or [CallSpec2(metafunc)]:
+#                 # only do the product if the name is not already there
+#                 if name not in callspec.params:
+#                     for _callspec_to_add in normal_fixtures[name]:
+#                         newcallspec = callspec.copy(metafunc)
+#                         if len(_callspec_to_add._idlist) != 1:
+#                             raise ValueError("each such callspec is supposed to represent a single fixture")
+#                         # there is a single id, a single arg, a single param
+#                         a_id = _callspec_to_add._idlist[0]
+#                         argname, paramvalue = next(iter(_callspec_to_add.params.items()))
+#                         scopenum = _callspec_to_add._arg2scopenum[argname]
+#                         param_index = _callspec_to_add.indices[argname]
+#                         newcallspec.setmulti2({argname: "params"}, [argname], [paramvalue], a_id,
+#                                               _callspec_to_add.marks, scopenum, param_index)
+#
+#                         newcalls.append(newcallspec)
+#                 else:
+#                     newcalls.append(callspec)
+#             return newcalls
+#
+#     # trigger building the list
+#     all_the_calls = []
+#     for name in names_required:
+#         all_the_calls = get_calls(all_the_calls, name)
+#
+#     # finally add missing param values in each callspec
+#     risky_names = {name for union_fix_defs in union_fixtures.values() for name in union_fix_defs.fixtures}
+#     if len(risky_names) == 0:
+#         return all_the_calls
+#     else:
+#         final_calls = []
+#         for callspec in all_the_calls:
+#             missing_names = set(risky_names) - set(callspec.params)
+#             newcallspec = callspec.copy(metafunc)
+#             vartypes = {argname: 'params' for argname in missing_names}
+#             paramvalues = [None for argname in missing_names]
+#             scope = 'function'  # TODO understand what to do
+#             scopenum = scope2index(scope, descr='call to {0}'.format('hack'))
+#             param_index = -1
+#             newcallspec.setmulti2(vartypes, missing_names, paramvalues, 'dummy',
+#                                   (), scopenum, param_index)
+#             # remove the dummy id
+#             newcallspec._idlist.pop(-1)
+#             final_calls.append(newcallspec)
+#
+#         return final_calls
+#
+#
 # def finalize_union_fixture(fm, fixturedef):
 #     """
 #

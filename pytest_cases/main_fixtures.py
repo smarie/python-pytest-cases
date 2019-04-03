@@ -37,7 +37,7 @@ except ImportError:
     pass
 
 from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get_test_ids_from_param_values, \
-    make_marked_parameter_value, extract_parameterset_info
+    make_marked_parameter_value, extract_parameterset_info, get_fixture_name
 from pytest_cases.main_params import cases_data
 
 
@@ -393,7 +393,10 @@ def fixture_union(name, *fixtures):
     :param fixtures:
     :return:
     """
-    f_names = [f.func_name if not isinstance(f, str) else f for f in fixtures]
+    f_names = []
+    for f in fixtures:
+        # possibly get the fixture name if the fixture symbol was provided
+        f_names.append(get_fixture_name(f) if not isinstance(f, str) else f)
 
     @with_signature("(%s, request)" % ', '.join(f_names))
     def _new_fixture(request, **kwargs):
@@ -401,7 +404,9 @@ def fixture_union(name, *fixtures):
         return kwargs[var_to_use]
 
     _new_fixture.__name__ = name
-    # TODO scope ?
+
+    # Note: we cannot set the scope here because we would need access to the fixture manager.
+    # we will set it in the plugin hook.
     return pytest.fixture(params=[UnionFixtureConfig(f_names)])(_new_fixture)
 
 
