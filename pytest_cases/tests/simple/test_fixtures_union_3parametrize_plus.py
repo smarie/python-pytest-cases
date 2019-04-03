@@ -1,5 +1,5 @@
 import pytest
-from pytest_cases import pytest_parametrize_plus, fixture_union
+from pytest_cases import fixture_union
 
 
 @pytest.fixture(params=[2, 3])

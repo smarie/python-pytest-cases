@@ -415,28 +415,55 @@ def fixture_union(name, *fixtures, scope="function", ids=None, autouse=False, **
     return f_decorator(_new_fixture)
 
 
-def pytest_parametrize_plus(argnames, argvalues=None, fixtures=None, indirect=False, ids=None, scope=None,
-                            **kwargs):
+class fixture_ref:
     """
-    This is equivalent to `@pytest.mark.parametrize` when `from_fixtures` is not set.
-
-    In addition it offers the possibility to source the list of parameter values from a list of fixtures, in other
-    words this creates a "fixture union".
-
-    :param argnames:
-    :param argvalues:
-    :param fixtures:
-    :param indirect:
-    :param ids:
-    :param scope:
-    :param kwargs:
-    :return:
+    A reference to a fixture, to be used in `pytest_parametrize_plus`
     """
-    if fixtures is None:
-        return pytest.mark.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
-    else:
-        if argvalues is not None:
-            raise ValueError("If you provide a non-None `from_fixtures` then no `argvalues` should be provided.")
+    __slots__ = 'fixture',
 
-        # TODO
-        raise NotImplementedError()
+    def __init__(self, fixture):
+        self.fixture = fixture
+
+
+# def pytest_parametrize_plus(argnames, argvalues=None, indirect=False, ids=None, scope=None, **kwargs):
+#     """
+#     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can use fixtures.
+#
+#      - either directly
+#      - or indirectly using a `fixture_ref(<fixture_name>)`
+#
+#     When a fixture is detected in the argvalues,
+#
+#     In addition it offers the possibility to source the list of parameter values from a list of fixtures, in other
+#     words this creates a "fixture union". For this you have to set `fixtures` to a list of fixtures or fixture names.
+#     Note that the `argvalues`
+#
+#     :param argnames:
+#     :param argvalues:
+#     :param indirect:
+#     :param ids:
+#     :param scope:
+#     :param kwargs:
+#     :return:
+#     """
+#     # make sure that we do not destroy the argvalues if it is provided as an iterator
+#     argvalues = list(argvalues)
+#
+#     subsets = []
+#     prev_i = -1
+#     for i, v in enumerate(argvalues):
+#         if is_fixture(v):
+#             parameters = argvalues[(prev_i + 1):i]
+#             if len(parameters) > 0:
+#                 subsets.append(param_fixtures(argnames, argvalues, ids))
+#             prev_i = i
+#
+#
+#     if fixtures is None:
+#         return pytest.mark.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+#     else:
+#         if argvalues is not None:
+#             raise ValueError("If you provide a non-None `from_fixtures` then no `argvalues` should be provided.")
+#
+#         # TODO
+#         raise NotImplementedError()
