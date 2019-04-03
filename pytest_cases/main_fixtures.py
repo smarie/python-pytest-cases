@@ -37,7 +37,7 @@ except ImportError:
     pass
 
 from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get_test_ids_from_param_values, \
-    make_marked_parameter_value, extract_parameterset_info
+    make_marked_parameter_value, extract_parameterset_info, get_fixture_name
 from pytest_cases.main_params import cases_data
 
 
@@ -378,3 +378,92 @@ def pytest_fixture_plus(scope="function",
         # transform the created wrapper into a fixture
         fixture_decorator = yield_fixture(scope=scope, params=final_values, autouse=autouse, ids=final_ids, **kwargs)
         return fixture_decorator(wrapped_fixture_func)
+
+
+class UnionFixtureConfig:
+    def __init__(self, fixtures):
+        self.fixtures = fixtures
+
+
+def fixture_union(name, fixtures, scope="function", ids=None, autouse=False, **kwargs):
+    """
+    Creates a fixture that will take all values of the provided fixtures in order.
+
+    :param name:
+    :param fixtures:
+    :param scope: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the
+        smallest scope of fictures referenced.
+    :return:
+    """
+    # first get all required fixture names
+    f_names = []
+    for f in fixtures:
+        # possibly get the fixture name if the fixture symbol was provided
+        f_names.append(get_fixture_name(f) if not isinstance(f, str) else f)
+
+    # then generate the body of our union fixture. It will require all of its dependent fixtures and receive as
+    # a parameter the name of the fixture to use
+    @with_signature("(%s, request)" % ', '.join(f_names))
+    def _new_fixture(request, **all_fixtures):
+        fixture_to_use = request.param
+        return all_fixtures[fixture_to_use]
+
+    _new_fixture.__name__ = name
+
+    # finally create the fixture per se
+    f_decorator = pytest.fixture(scope=scope, params=[UnionFixtureConfig(f_names)], autouse=autouse, ids=ids, **kwargs)
+    return f_decorator(_new_fixture)
+
+
+# class fixture_ref:
+#     """
+#     A reference to a fixture, to be used in `pytest_parametrize_plus`
+#     """
+#     __slots__ = 'fixture',
+#
+#     def __init__(self, fixture):
+#         self.fixture = fixture
+#
+#
+# def pytest_parametrize_plus(argnames, argvalues=None, indirect=False, ids=None, scope=None, **kwargs):
+#     """
+#     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can use fixtures.
+#
+#      - either directly
+#      - or indirectly using a `fixture_ref(<fixture_name>)`
+#
+#     When a fixture is detected in the argvalues,
+#
+#     In addition it offers the possibility to source the list of parameter values from a list of fixtures, in other
+#     words this creates a "fixture union". For this you have to set `fixtures` to a list of fixtures or fixture names.
+#     Note that the `argvalues`
+#
+#     :param argnames:
+#     :param argvalues:
+#     :param indirect:
+#     :param ids:
+#     :param scope:
+#     :param kwargs:
+#     :return:
+#     """
+#     # make sure that we do not destroy the argvalues if it is provided as an iterator
+#     argvalues = list(argvalues)
+#
+#     subsets = []
+#     prev_i = -1
+#     for i, v in enumerate(argvalues):
+#         if is_fixture(v):
+#             parameters = argvalues[(prev_i + 1):i]
+#             if len(parameters) > 0:
+#                 subsets.append(param_fixtures(argnames, argvalues, ids))
+#             prev_i = i
+#
+#
+#     if fixtures is None:
+#         return pytest.mark.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+#     else:
+#         if argvalues is not None:
+#             raise ValueError("If you provide a non-None `from_fixtures` then no `argvalues` should be provided.")
+#
+#         # TODO
+#         raise NotImplementedError()
