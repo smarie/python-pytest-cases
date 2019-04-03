@@ -231,6 +231,49 @@ def test_uses_param2(arg1, arg2, fixture_uses_param2):
     ...
 ```
 
+### `fixture_union`
+
+As of `pytest` 4, it is not possible to create a "union" fixture, i.e. a parametrized fixture that will first take all the possible values of fixture A, then all possible values of fixture B, etc. 
+
+The topic has been largely discussed in [pytest-dev](https://github.com/pytest-dev/pytest/issues/349) and a [request for proposal](https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html) has been finally made.
+
+`fixture_union` is an implementation of this proposal.
+
+```python
+import pytest
+from pytest_cases import fixture_union
+
+@pytest.fixture
+def first():
+    return 'hello'
+
+@pytest.fixture(params=['a', 'b'])
+def second(request):
+    return request.param
+
+# c will first take all the values of 'first', then all of 'second'
+c = fixture_union('c', [first, second])
+
+def test_basic_union(c):
+    print(c)
+```
+
+yields
+
+```
+<...>::test_basic_union[first] hello
+PASSED
+<...>::test_basic_union[second-a] a
+PASSED
+<...>::test_basic_union[second-b] b
+PASSED
+```
+
+This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the [issues](https://github.com/smarie/python-pytest-cases/issues) page !
+
+
+!!! note "fixture unions vs. cases" 
+    If you're familiar with `pytest-cases` already, you might note `@cases_data` is not so different than a fixture union: we do a union of all case functions. If in the future union fixtures are directly supported by `pytest`, we would probably refactor this lib to align all the concepts.
 
 ## Main features / benefits
 
