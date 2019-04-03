@@ -7,7 +7,7 @@ from itertools import product
 from warnings import warn
 
 from decopatch import function_decorator, DECORATED
-from makefun import with_signature, add_signature_parameters, remove_signature_parameters
+from makefun import with_signature, add_signature_parameters, remove_signature_parameters, wraps
 
 import pytest
 
@@ -274,9 +274,12 @@ def pytest_fixture_plus(scope="function",
     # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
     parametrizer_marks = get_pytest_parametrize_marks(fixture_func)
     if len(parametrizer_marks) < 1:
-        # -- no parametrization: shortcut
-        fix_creator = pytest.fixture if not isgeneratorfunction(fixture_func) else yield_fixture
-        return fix_creator(scope=scope, autouse=autouse, **kwargs)(fixture_func)
+        return _create_fixture_without_marks(fixture_func, scope, autouse, kwargs)
+    else:
+        if 'params' in kwargs:
+            raise ValueError(
+                "With `pytest_fixture_plus` you cannot mix usage of the keyword argument `params` and of "
+                "the pytest.mark.parametrize marks")
 
     # (2) create the huge "param" containing all params combined
     # --loop (use the same order to get it right)
@@ -355,14 +358,12 @@ def pytest_fixture_plus(scope="function",
     func_needs_request = 'request' in old_sig.parameters
     if not func_needs_request:
         new_sig = add_signature_parameters(new_sig, first=Parameter('request', kind=Parameter.POSITIONAL_OR_KEYWORD))
-    else:
-        new_sig = new_sig
 
     # --common routine used below. Fills kwargs with the appropriate names and values from fixture_params
     def _get_arguments(*args, **kwargs):
-        # kwargs contains request
         request = kwargs['request'] if func_needs_request else kwargs.pop('request')
-
+        if request.param is NOT_USED:
+            return NOT_USED
         # populate the parameters
         if len(params_names_or_name_combinations) == 1:
             _params = [request.param]  # remove the simplification
@@ -383,10 +384,12 @@ def pytest_fixture_plus(scope="function",
     # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
     if not isgeneratorfunction(fixture_func):
         # normal function with return statement
-        @with_signature(new_sig)
+        @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
-            args, kwargs = _get_arguments(*args, **kwargs)
-            return fixture_func(*args, **kwargs)
+            out = _get_arguments(*args, **kwargs)
+            if out is not NOT_USED:
+                args, kwargs = out
+                return fixture_func(*args, **kwargs)
 
         # transform the created wrapper into a fixture
         fixture_decorator = pytest.fixture(scope=scope, params=final_values, autouse=autouse, ids=final_ids, **kwargs)
@@ -394,15 +397,78 @@ def pytest_fixture_plus(scope="function",
 
     else:
         # generator function (with a yield statement)
-        @with_signature(new_sig)
+        @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
-            args, kwargs = _get_arguments(*args, **kwargs)
-            for res in fixture_func(*args, **kwargs):
-                yield res
+            out = _get_arguments(*args, **kwargs)
+            if out is not NOT_USED:
+                args, kwargs = out
+                for res in fixture_func(*args, **kwargs):
+                    yield res
 
         # transform the created wrapper into a fixture
         fixture_decorator = yield_fixture(scope=scope, params=final_values, autouse=autouse, ids=final_ids, **kwargs)
         return fixture_decorator(wrapped_fixture_func)
+
+
+def _create_fixture_without_marks(fixture_func, scope, autouse, kwargs):
+    """
+    creates a fixture for decorated fixture function `fixture_func`.
+
+    :param fixture_func:
+    :param scope:
+    :param autouse:
+    :param kwargs:
+    :return:
+    """
+    if 'params' not in kwargs:
+        # -- no parametrization: shortcut
+        fix_creator = pytest.fixture if not isgeneratorfunction(fixture_func) else yield_fixture
+        return fix_creator(scope=scope, autouse=autouse, **kwargs)(fixture_func)
+    else:
+        # --create a wrapper where we will be able to auto-detect
+        # TODO we could put this in a dedicated wrapper 'ignore_unsused'..
+
+        old_sig = signature(fixture_func)
+        # add request if needed
+        func_needs_request = 'request' in old_sig.parameters
+        if not func_needs_request:
+            new_sig = add_signature_parameters(old_sig,
+                                               first=Parameter('request', kind=Parameter.POSITIONAL_OR_KEYWORD))
+        else:
+            new_sig = old_sig
+        if not isgeneratorfunction(fixture_func):
+            # normal function with return statement
+            @wraps(fixture_func, new_sig=new_sig)
+            def wrapped_fixture_func(*args, **kwargs):
+                request = kwargs['request'] if func_needs_request else kwargs.pop('request')
+                if request.param is not NOT_USED:
+                    return fixture_func(*args, **kwargs)
+
+            # transform the created wrapper into a fixture
+            fixture_decorator = pytest.fixture(scope=scope, autouse=autouse, **kwargs)
+            return fixture_decorator(wrapped_fixture_func)
+
+        else:
+            # generator function (with a yield statement)
+            @wraps(fixture_func, new_sig=new_sig)
+            def wrapped_fixture_func(*args, **kwargs):
+                request = kwargs['request'] if func_needs_request else kwargs.pop('request')
+                if request.param is not NOT_USED:
+                    for res in fixture_func(*args, **kwargs):
+                        yield res
+
+            # transform the created wrapper into a fixture
+            fixture_decorator = yield_fixture(scope=scope, autouse=autouse, **kwargs)
+            return fixture_decorator(wrapped_fixture_func)
+
+
+class _NotUsed:
+    def __repr__(self):
+        return "<not_used>"
+
+
+NOT_USED = _NotUsed()
+"""Object representing a fixture value when the fixture is not used"""
 
 
 class UnionFixtureConfig:

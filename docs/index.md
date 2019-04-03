@@ -240,14 +240,13 @@ The topic has been largely discussed in [pytest-dev](https://github.com/pytest-d
 `fixture_union` is an implementation of this proposal.
 
 ```python
-import pytest
-from pytest_cases import fixture_union
+from pytest_cases import pytest_fixture_plus, fixture_union
 
-@pytest.fixture
+@pytest_fixture_plus
 def first():
     return 'hello'
 
-@pytest.fixture(params=['a', 'b'])
+@pytest_fixture_plus(params=['a', 'b'])
 def second(request):
     return request.param
 
@@ -271,6 +270,7 @@ PASSED
 
 This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the [issues](https://github.com/smarie/python-pytest-cases/issues) page !
 
+**IMPORTANT** if you do not use `@pytest_fixture_plus` but only `@pytest.fixture`, then you will see that your fixtures are called even when they are not used, with a parameter `NOT_USED`. This symbol is automatically ignored if you use `@pytest_fixture_plus`, otherwise you have to handle it.
 
 !!! note "fixture unions vs. cases" 
     If you're familiar with `pytest-cases` already, you might note `@cases_data` is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by `pytest`, we will probably refactor this lib to align all the concepts.

@@ -3,7 +3,7 @@ from wrapt import ObjectProxy
 
 import pytest
 
-from pytest_cases.main_fixtures import UnionFixtureConfig
+from pytest_cases.main_fixtures import UnionFixtureConfig, NOT_USED
 
 try:  # python 3.3+
     from inspect import signature
@@ -471,15 +471,6 @@ class LeafNode(Node):
         """Remove the last id in all callspecs in this node"""
         for callspec in self.calls:
             callspec._idlist.pop(-1)
-
-
-class _NotUsed:
-    def __repr__(self):
-        return "<not_used>"
-
-
-NOT_USED = _NotUsed()
-"""Object representing a fixture value when the fixture is not used"""
 
 
 class FilteredLeafNode(LeafNode):
