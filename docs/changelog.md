@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.6.1 - `@pytest_fixture_plus` improvement to handle `NOT_USED` cases
+
+Fixed issue where fixtures get called with `NOT_USED` as a parameter when using a `fixture_union`. This issue is actually only fixed in `@pytest_fixture_plus`, if you use `@pytest.fixture` you have to handle it manually. Fixes [#37](https://github.com/smarie/python-pytest-cases/issues/37)
+
 ### 1.6.0 - `fixture_union` and `param_fixture[s]` bugfix
 
 New `fixture_union` method to create a fixture that is the union/combination of other fixtures. This is an attempt to solve [this pytest proposal](https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html).
