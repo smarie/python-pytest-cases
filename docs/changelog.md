@@ -1,8 +1,12 @@
 # Changelog
 
-### 1.6.0 in progress - New `fixture_union` and `@pytest_parametrize_plus` decorator
+### 1.6.0 - `fixture_union` and `param_fixture[s]` bugfix
 
-TODO
+New `fixture_union` method to create a fixture that is the union/combination of other fixtures. This is an attempt to solve [this pytest proposal](https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html).
+
+Also, `param_fixture` and `param_fixtures` can now be used without necessarily storing the return value into a variable: they will automatically register the created fixtures in the calling module.  
+
+Finally, fixed a bug with `param_fixtures` when called to create a fixture for a single parameter.
 
 ### 1.5.1 - `param_fixtures` bugfix
 
