@@ -33,7 +33,7 @@ def test_uses_param(my_parameter, my_parameter2, fixture_uses_param):
 param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
 
 # Testing param_fixtures with single arg
-parg3 = param_fixtures("parg3", [5, 6])
+arg3 = param_fixture("arg3", [5, 6])
 
 
 @pytest.fixture
@@ -41,11 +41,11 @@ def fixture_uses_param2(arg2):
     return arg2
 
 
-def test_uses_param2(arg1, arg2, parg3, fixture_uses_param2):
+def test_uses_param2(arg1, arg2, arg3, fixture_uses_param2):
     # check that the parameter injected in both is the same
     assert arg2 == fixture_uses_param2
     assert arg1, arg2 in [(1, 2), (3, 4)]
-    assert parg3 in [5, 6]
+    assert arg3 in [5, 6]
 
 
 # ---------- (3)
@@ -104,8 +104,13 @@ def test_synthesis(module_results_dct):
                                         'test_uses_param[1-4]',
                                         'test_uses_param[2-3]',
                                         'test_uses_param[2-4]',
-                                        'test_uses_param2[1-2-5]',
-                                        'test_uses_param2[1-2-6]',
-                                        'test_uses_param2[3-4-5]',
-                                        'test_uses_param2[3-4-6]',
+                                        # see https://github.com/pytest-dev/pytest/issues/5054
+                                        # 'test_uses_param2[1-2-5]',
+                                        # 'test_uses_param2[1-2-6]',
+                                        # 'test_uses_param2[3-4-5]',
+                                        # 'test_uses_param2[3-4-6]',
+                                        'test_uses_param2[5-1-2]',
+                                        'test_uses_param2[5-3-4]',
+                                        'test_uses_param2[6-1-2]',
+                                        'test_uses_param2[6-3-4]',
                                         ] + end_list

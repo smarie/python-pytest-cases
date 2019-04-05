@@ -42,31 +42,40 @@ from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get
 from pytest_cases.main_params import cases_data
 
 
-def param_fixture(argname, argvalues, ids=None, scope="function"):
+def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs):
     """
     Identical to `param_fixtures` but for a single parameter name.
 
-    :param argname:
-    :param argvalues:
-    :param ids:
-    :param scope: the scope of created fixtures
+    :param argname: see fixture `name`
+    :param argvalues: see fixture `params`
+    :param autouse: see fixture `autouse`
+    :param ids: see fixture `ids`
+    :param scope: see fixture `scope`
+    :param kwargs: any other argument for 'fixture'
     :return:
     """
     if "," in argname:
         raise ValueError("`param_fixture` is an alias for `param_fixtures` that can only be used for a single "
                          "parameter name. Use `param_fixtures` instead - but note that it creates several fixtures.")
+    elif len(argname.replace(' ', '')) == 0:
+        raise ValueError("empty argname")
+    return _param_fixture(argname, argvalues, autouse=autouse, ids=ids, scope=scope, **kwargs)
+
+
+def _param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs):
+    """ Internal method shared with param_fixture and param_fixtures """
 
     # create the fixture
-    def _param_fixture(request):
+    def __param_fixture(request):
         return request.param
-    _param_fixture.__name__ = argname
 
-    fix = pytest.fixture(scope=scope, params=argvalues, ids=ids)(_param_fixture)
+    fix = pytest_fixture_plus(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
+                              **kwargs)(__param_fixture)
 
     # Add the fixture dynamically: we have to add it to the corresponding module as explained in
     # https://github.com/pytest-dev/pytest/issues/2424
     # grab context from the caller frame
-    frame = _get_callerframe()
+    frame = _get_callerframe(offset=1)
     module = getmodule(frame)
     if argname in dir(module):
         warn("`param_fixture` Overriding symbol %s in module %s" % (argname, module))
@@ -75,23 +84,30 @@ def param_fixture(argname, argvalues, ids=None, scope="function"):
     return fix
 
 
-def param_fixtures(argnames, argvalues, ids=None):
+def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs):
     """
     Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`.
 
     Note that the (argnames, argvalues, ids) signature is similar to `@pytest.mark.parametrize` for consistency,
     see https://docs.pytest.org/en/latest/reference.html?highlight=pytest.param#pytest-mark-parametrize
 
-    :param argnames:
-    :param argvalues:
-    :param ids:
+    :param argnames: same as `@pytest.mark.parametrize` `argnames`.
+    :param argvalues: same as `@pytest.mark.parametrize` `argvalues`.
+    :param autouse: see fixture `autouse`
+    :param ids: same as `@pytest.mark.parametrize` `ids`
+    :param scope: see fixture `scope`
+    :param kwargs: any other argument for the created 'fixtures'
     :return:
     """
     created_fixtures = []
     argnames_lst = argnames.replace(' ', '').split(',')
 
+    if len(argnames_lst) < 2:
+        return _param_fixture(argnames, argvalues, autouse=autouse, ids=ids, scope=scope, **kwargs)
+
     # create the root fixture that will contain all parameter values
-    root_fixture_name = "param_fixtures_root__%s" % ('_'.join(argnames_lst))
+    # note: we sort the list so that the first in alphabetical order appears first. Indeed pytest uses this order.
+    root_fixture_name = "%s__param_fixtures_root" % ('_'.join(sorted(argnames_lst)))
 
     # Add the fixture dynamically: we have to add it to the corresponding module as explained in
     # https://github.com/pytest-dev/pytest/issues/2424
@@ -107,7 +123,7 @@ def param_fixtures(argnames, argvalues, ids=None):
         i += 1
         root_fixture_name[-1] += str(i)
 
-    @pytest_fixture_plus(name=root_fixture_name)
+    @pytest_fixture_plus(name=root_fixture_name, autouse=autouse, scope=scope, **kwargs)
     @pytest.mark.parametrize(argnames, argvalues, ids=ids)
     @with_signature("(%s)" % argnames)
     def _root_fixture(**kwargs):
@@ -121,7 +137,7 @@ def param_fixtures(argnames, argvalues, ids=None):
         # To fix late binding issue with `param_idx` we add an extra layer of scope
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(param_idx):
-            @pytest_fixture_plus(name=argname)
+            @pytest_fixture_plus(name=argname, scope=scope, autouse=autouse, **kwargs)
             @with_signature("(%s)" % root_fixture_name)
             def _param_fixture(**kwargs):
                 params = kwargs.pop(root_fixture_name)
@@ -139,10 +155,7 @@ def param_fixtures(argnames, argvalues, ids=None):
         # collect to return the whole list eventually
         created_fixtures.append(fix)
 
-    if len(argnames_lst) > 1:
-        return created_fixtures
-    else:
-        return created_fixtures[0]
+    return created_fixtures
 
 
 def _get_callerframe(offset=0):
@@ -274,7 +287,7 @@ def pytest_fixture_plus(scope="function",
     # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
     parametrizer_marks = get_pytest_parametrize_marks(fixture_func)
     if len(parametrizer_marks) < 1:
-        return _create_fixture_without_marks(fixture_func, scope, autouse, kwargs)
+        return _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs)
     else:
         if 'params' in kwargs:
             raise ValueError(
@@ -410,7 +423,7 @@ def pytest_fixture_plus(scope="function",
         return fixture_decorator(wrapped_fixture_func)
 
 
-def _create_fixture_without_marks(fixture_func, scope, autouse, kwargs):
+def _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs):
     """
     creates a fixture for decorated fixture function `fixture_func`.
 
