@@ -477,7 +477,7 @@ def _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs):
 
 class _NotUsed:
     def __repr__(self):
-        return "<not_used>"
+        return "pytest_cases.NOT_USED"
 
 
 NOT_USED = _NotUsed()
