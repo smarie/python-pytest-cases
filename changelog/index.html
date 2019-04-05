@@ -352,6 +352,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#162-bug-fixes" title="1.6.2 - bug fixes" class="md-nav__link">
+    1.6.2 - bug fixes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#161-pytest_fixture_plus-improvement-to-handle-not_used-cases" title="1.6.1 - @pytest_fixture_plus improvement to handle NOT_USED cases" class="md-nav__link">
     1.6.1 - @pytest_fixture_plus improvement to handle NOT_USED cases
   </a>
@@ -579,6 +586,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#162-bug-fixes" title="1.6.2 - bug fixes" class="md-nav__link">
+    1.6.2 - bug fixes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#161-pytest_fixture_plus-improvement-to-handle-not_used-cases" title="1.6.1 - @pytest_fixture_plus improvement to handle NOT_USED cases" class="md-nav__link">
     1.6.1 - @pytest_fixture_plus improvement to handle NOT_USED cases
   </a>
@@ -794,8 +808,27 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="162-bug-fixes">1.6.2 - bug fixes<a class="headerlink" href="#162-bug-fixes" title="Permanent link">&para;</a></h3>
+<p><code>fixture_union</code>:</p>
+<ul>
+<li>
+<p>Changed the repr of <code>NOT_USED</code> to <code>pytest_cases.NOT_USED</code>.</p>
+</li>
+<li>
+<p><code>@pytest_fixture_plus</code> now correctly handles the <code>NOT_USED</code> when fixtures in the union do not contain any parameter. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/38">#38</a>.</p>
+</li>
+</ul>
+<p><code>param_fixtures</code>:</p>
+<ul>
+<li>
+<p><code>param_fixtures</code> now delegates to <code>param_fixture</code> when a single parameter name is provided. This is more consistent. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/36">#36</a>.</p>
+</li>
+<li>
+<p><code>param_fixture[s]</code> now support all arguments from <code>fixture</code> (<code>scope</code> and <code>autouse</code> in particular).</p>
+</li>
+</ul>
 <h3 id="161-pytest_fixture_plus-improvement-to-handle-not_used-cases">1.6.1 - <code>@pytest_fixture_plus</code> improvement to handle <code>NOT_USED</code> cases<a class="headerlink" href="#161-pytest_fixture_plus-improvement-to-handle-not_used-cases" title="Permanent link">&para;</a></h3>
-<p>Fixed issue where fixtures get called with <code>NOT_USED</code> as a parameter when using a <code>fixture_union</code>. This issue is actually only fixed in <code>@pytest_fixture_plus</code>, if you use <code>@pytest.fixture</code> you have to handle it manually. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/37">#37</a></p>
+<p>Fixed issue where fixtures get called with <code>NOT_USED</code> as a parameter when using a <code>fixture_union</code>. This issue is actually only fixed in <code>@pytest_fixture_plus</code>, if you use <code>@pytest.fixture</code> you have to handle it manually. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/37">#37</a>.</p>
 <h3 id="160-fixture_union-and-param_fixtures-bugfix">1.6.0 - <code>fixture_union</code> and <code>param_fixture[s]</code> bugfix<a class="headerlink" href="#160-fixture_union-and-param_fixtures-bugfix" title="Permanent link">&para;</a></h3>
 <p>New <code>fixture_union</code> method to create a fixture that is the union/combination of other fixtures. This is an attempt to solve <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">this pytest proposal</a>.</p>
 <p>Also, <code>param_fixture</code> and <code>param_fixtures</code> can now be used without necessarily storing the return value into a variable: they will automatically register the created fixtures in the calling module.  </p>
@@ -803,36 +836,36 @@
 <h3 id="151-param_fixtures-bugfix">1.5.1 - <code>param_fixtures</code> bugfix<a class="headerlink" href="#151-param_fixtures-bugfix" title="Permanent link">&para;</a></h3>
 <p>Fixed <code>param_fixtures</code> issue: all parameter values were identical to the last parameter of the tuple. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/32">#32</a>.</p>
 <h3 id="150-new-helpers-param_fixture-and-param_fixtures">1.5.0 - new helpers <code>param_fixture</code> and <code>param_fixtures</code><a class="headerlink" href="#150-new-helpers-param_fixture-and-param_fixtures" title="Permanent link">&para;</a></h3>
-<p>Following <a href="https://github.com/Sup3rGeo">Sup3rGeo</a>'s proposal, introduced two helper methods to create simple "parameter fixtures". Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/31">#31</a></p>
+<p>Following <a href="https://github.com/Sup3rGeo">Sup3rGeo</a>'s proposal, introduced two helper methods to create simple "parameter fixtures". Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/31">#31</a>.</p>
 <h3 id="142-parametrized-pytest_fixture_plus-minor-bug-fix">1.4.2 - parametrized <code>@pytest_fixture_plus</code> minor bug fix<a class="headerlink" href="#142-parametrized-pytest_fixture_plus-minor-bug-fix" title="Permanent link">&para;</a></h3>
-<p><code>@pytest_fixture_plus</code> now correctly honors parameter id and marks overriden at single parameter level using <code>pytest.param</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/30">#30</a></p>
+<p><code>@pytest_fixture_plus</code> now correctly honors parameter id and marks overriden at single parameter level using <code>pytest.param</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/30">#30</a>.</p>
 <h3 id="141-parametrized-pytest_fixture_plus-minor-bug-fix">1.4.1 - parametrized <code>@pytest_fixture_plus</code> minor bug fix<a class="headerlink" href="#141-parametrized-pytest_fixture_plus-minor-bug-fix" title="Permanent link">&para;</a></h3>
 <p>Fixed <code>@pytest_fixture_plus</code> in case it is used with <code>parametrize</code> and one parameter is itself customized using <code>pytest.param</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/29">#29</a>.</p>
 <h3 id="140-pytest_fixture_plus-major-improvement">1.4.0 - <code>@pytest_fixture_plus</code> major improvement<a class="headerlink" href="#140-pytest_fixture_plus-major-improvement" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>Major improvement of <code>@pytest_fixture_plus</code>: instead of generating fixtures, it now correctly parametrizes the fixture. Skip/fail Marks are correctly copied too. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/28">#28</a></p>
+<p>Major improvement of <code>@pytest_fixture_plus</code>: instead of generating fixtures, it now correctly parametrizes the fixture. Skip/fail Marks are correctly copied too. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/28">#28</a>.</p>
 </li>
 <li>
 <p><code>pytest_fixture_plus</code> does not accept the <code>params</code> and <code>ids</code> arguments any more, it only relies on parametrization marks.</p>
 </li>
 </ul>
 <h3 id="133-parametrized-pytest_fixture_plus-bugfix">1.3.3 - parametrized <code>@pytest_fixture_plus</code> Bugfix<a class="headerlink" href="#133-parametrized-pytest_fixture_plus-bugfix" title="Permanent link">&para;</a></h3>
-<p>Fixed minor bug with parametrized <code>@pytest_fixture_plus</code>: spaces are now correctly removed when multiple parameter names are provided in the same <code>parametrize</code> call. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/27">#27</a></p>
+<p>Fixed minor bug with parametrized <code>@pytest_fixture_plus</code>: spaces are now correctly removed when multiple parameter names are provided in the same <code>parametrize</code> call. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/27">#27</a>.</p>
 <h3 id="132-parametrized-pytest_fixture_plus-bugfix">1.3.2 - parametrized <code>@pytest_fixture_plus</code> Bugfix<a class="headerlink" href="#132-parametrized-pytest_fixture_plus-bugfix" title="Permanent link">&para;</a></h3>
 <p>Fixed bug with <code>@pytest_fixture_plus</code> when used in parametrized mode. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/26">#26</a>. Thanks <a href="https://github.com/Sup3rGeo">Sup3rGeo</a>!</p>
 <h3 id="131-minor-dependency-change">1.3.1 - Minor dependency change<a class="headerlink" href="#131-minor-dependency-change" title="Permanent link">&para;</a></h3>
 <p>Now using <code>decopatch</code> to create the decorators.</p>
 <h3 id="130-more-flexible-case-generators-names-minor-dependency-change">1.3.0 - More flexible case generators names + Minor dependency change<a class="headerlink" href="#130-more-flexible-case-generators-names-minor-dependency-change" title="Permanent link">&para;</a></h3>
-<p>Cases generators can now support explicit name lists, and name generator callables, in addition to the name template strings. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/24">#24</a></p>
+<p>Cases generators can now support explicit name lists, and name generator callables, in addition to the name template strings. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/24">#24</a>.</p>
 <p>Dependency to <code>decorator</code> has been dropped and replaced with <code>makefun</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/25">#25</a>.</p>
 <h3 id="122-fixed-bug-with-marks-on-cases-with-pytest-33">1.2.2 - fixed bug with marks on cases with pytest 3.3<a class="headerlink" href="#122-fixed-bug-with-marks-on-cases-with-pytest-33" title="Permanent link">&para;</a></h3>
-<p>Marks on cases are now also working with pytest 3.3. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/23">#23</a></p>
+<p>Marks on cases are now also working with pytest 3.3. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/23">#23</a>.</p>
 <p>Ids for marked tests are now better managed. A new function <code>get_pytest_parametrize_args</code> is now used to transform the list of cases obtained by <code>get_all_cases(module)</code>, into the list of marked cases and ids required by <code>@pytest.mark.parametrize</code>. The doc has been updated to explain this for advanced users wishing to perform this step manually.</p>
 <h3 id="121-fixed-id-of-test-cases-with-marks">1.2.1 - fixed id of test cases with marks<a class="headerlink" href="#121-fixed-id-of-test-cases-with-marks" title="Permanent link">&para;</a></h3>
 <p>Id of test cases with marks was appearing as <code>ParameterSet</code>. Fixed it.</p>
 <h3 id="120-pytestmark-can-be-used-on-cases-pytest_fixture_plus-parametrization-order-bugfix">1.2.0 - @pytest.mark can be used on cases + @pytest_fixture_plus parametrization order bugfix<a class="headerlink" href="#120-pytestmark-can-be-used-on-cases-pytest_fixture_plus-parametrization-order-bugfix" title="Permanent link">&para;</a></h3>
-<p>Pytest marks such as <code>@pytest.mark.skipif</code> can now be used on case functions. As a consequence, <code>get_all_cases</code> is now the recommended function to use instead of <code>extract_cases_from_module</code> to perform manual collection. Indeed <code>get_all_cases</code> correctly prepares the resulting parameters list so that pytest sees the marks. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/21">#21</a> </p>
+<p>Pytest marks such as <code>@pytest.mark.skipif</code> can now be used on case functions. As a consequence, <code>get_all_cases</code> is now the recommended function to use instead of <code>extract_cases_from_module</code> to perform manual collection. Indeed <code>get_all_cases</code> correctly prepares the resulting parameters list so that pytest sees the marks. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/21">#21</a>. </p>
 <p>Fixed parametrization order when <code>@pytest_fixture_plus</code> is used with several <code>@pytest.mark.parametrize</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/22">#22</a>.</p>
 <h3 id="111-improved-generated-fixture-names-for-pytest_fixture_plus">1.1.1 - Improved generated fixture names for <code>@pytest_fixture_plus</code><a class="headerlink" href="#111-improved-generated-fixture-names-for-pytest_fixture_plus" title="Permanent link">&para;</a></h3>
 <p>When <code>@pytest_fixture_plus</code> is used on a function marked as parametrized, some fixtures are generated (one for each parameter). Generated fixture names now follow the pattern <code>&lt;fixturename&gt;__&lt;paramname&gt;</code>.
@@ -841,11 +874,11 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
 <p>New decorator <code>@pytest_fixture_plus</code> allows to use several <code>@pytest.mark.parametrize</code> on a fixture. Therefore one can use multiple <code>@cases_data</code> decorators, too. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/19">#19</a>.
 <em>Note: this is a temporary feature, that will be removed if/when <a href="https://github.com/pytest-dev/pytest/issues/3960">pytest supports it</a>.</em></p>
 <h3 id="100-cases_fixture-pytest-2x-support">1.0.0 - <code>@cases_fixture</code> + pytest 2.x support<a class="headerlink" href="#100-cases_fixture-pytest-2x-support" title="Permanent link">&para;</a></h3>
-<p>Pytest 2.x is now supported. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/14">#14</a></p>
-<p><strong>New feature:</strong> <code>@cases_fixture</code> ! Now you can put your cases data retrieval in a fixture so that its duration does not enter into the test duration. This is particularly interesting if you use <a href="https://smarie.github.io/python-pytest-harvest/">pytest-harvest</a> to create benchmarks: you probably do not want the case data retrieval/parsing to be counted in the test duration, especially if you use caching on the case function to accelerate subsequent retrievals. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/15">#15</a></p>
+<p>Pytest 2.x is now supported. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/14">#14</a>.</p>
+<p><strong>New feature:</strong> <code>@cases_fixture</code> ! Now you can put your cases data retrieval in a fixture so that its duration does not enter into the test duration. This is particularly interesting if you use <a href="https://smarie.github.io/python-pytest-harvest/">pytest-harvest</a> to create benchmarks: you probably do not want the case data retrieval/parsing to be counted in the test duration, especially if you use caching on the case function to accelerate subsequent retrievals. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/15">#15</a>.</p>
 <h3 id="0101-minor-encoding-issue-in-setuppy">0.10.1 - minor encoding issue in setup.py<a class="headerlink" href="#0101-minor-encoding-issue-in-setuppy" title="Permanent link">&para;</a></h3>
 <h3 id="0100-support-for-python-2">0.10.0 - support for python 2<a class="headerlink" href="#0100-support-for-python-2" title="Permanent link">&para;</a></h3>
-<p>Python 2 is now supported. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/3">#3</a> </p>
+<p>Python 2 is now supported. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/3">#3</a>. </p>
 <ul>
 <li>Note: <code>CaseData</code>, <code>Given</code>, <code>ExpectedNormal</code>, <code>ExpectedError</code>, and <code>MultipleStepsCaseData</code> type hints is not created in python 2 and python&lt;3.5</li>
 </ul>
@@ -857,7 +890,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
 </ul>
 <h3 id="080-filtering-can-now-be-done-using-a-callable">0.8.0 - Filtering can now be done using a callable.<a class="headerlink" href="#080-filtering-can-now-be-done-using-a-callable" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>@cases_data</code>: the <code>filter</code> argument now contains a filtering function. WARNING: the previous behaviour is still available but has been renamed <code>has_tag</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/8">#8</a></li>
+<li><code>@cases_data</code>: the <code>filter</code> argument now contains a filtering function. WARNING: the previous behaviour is still available but has been renamed <code>has_tag</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/8">#8</a>.</li>
 </ul>
 <h3 id="070-hardcoded-cases-selection-and-multi-module-selection">0.7.0 - Hardcoded cases selection, and multi-module selection<a class="headerlink" href="#070-hardcoded-cases-selection-and-multi-module-selection" title="Permanent link">&para;</a></h3>
 <ul>
@@ -867,25 +900,25 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
 <ul>
 <li><code>get_for</code> is deprecated: it was too specific to a given case data format.</li>
 <li><code>MultipleStepsCaseData</code> was fixed to also support multiple inputs.</li>
-<li>Case functions can now have parameters (even case generators). This is particularly useful for test suites. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/9">#9</a></li>
+<li>Case functions can now have parameters (even case generators). This is particularly useful for test suites. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/9">#9</a>.</li>
 </ul>
 <h3 id="050-support-for-test-suites">0.5.0 - support for test suites<a class="headerlink" href="#050-support-for-test-suites" title="Permanent link">&para;</a></h3>
 <ul>
-<li>test functions can now be decorated with <code>@test_steps</code> to easily define a test suite with several steps. This fixes <a href="https://github.com/smarie/python-pytest-cases/issues/7">#7</a></li>
+<li>test functions can now be decorated with <code>@test_steps</code> to easily define a test suite with several steps. This fixes <a href="https://github.com/smarie/python-pytest-cases/issues/7">#7</a>.</li>
 </ul>
 <h3 id="040-support-for-data-caching-with-lru_cache">0.4.0 - support for data caching with lru_cache<a class="headerlink" href="#040-support-for-data-caching-with-lru_cache" title="Permanent link">&para;</a></h3>
 <ul>
-<li>cases can now be decorated with <code>@lru_cache</code>. <code>@cases_generator</code> also provides a <code>lru_cache</code> parameter to enable caching. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/6">#6</a></li>
+<li>cases can now be decorated with <code>@lru_cache</code>. <code>@cases_generator</code> also provides a <code>lru_cache</code> parameter to enable caching. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/6">#6</a>.</li>
 </ul>
 <h3 id="030-case-generators">0.3.0 - case generators<a class="headerlink" href="#030-case-generators" title="Permanent link">&para;</a></h3>
 <ul>
-<li>New decorator <code>@cases_generator</code> to define case generators. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/1">#1</a></li>
+<li>New decorator <code>@cases_generator</code> to define case generators. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/1">#1</a>.</li>
 <li>Also, removed unused functions <code>is_expected_error_instance</code> and <code>assert_exception_equal</code></li>
 </ul>
 <h3 id="020-this_module-constant-taggingfiltering-doc">0.2.0 - THIS_MODULE constant + Tagging/Filtering + doc<a class="headerlink" href="#020-this_module-constant-taggingfiltering-doc" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>New constant <code>THIS_MODULE</code> so that cases and test functions can coexist in the same file. This fixes <a href="https://github.com/smarie/python-pytest-cases/issues/5">#5</a></p>
+<p>New constant <code>THIS_MODULE</code> so that cases and test functions can coexist in the same file. This fixes <a href="https://github.com/smarie/python-pytest-cases/issues/5">#5</a>.</p>
 </li>
 <li>
 <p>Added <code>@test_target</code> and <code>@case_tags</code> decorators for case functions, and added <code>filter</code> parameter in <code>@cases_data</code>. This allows users to :</p>
@@ -895,7 +928,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
 </ul>
 </li>
 </ul>
-<p>This fixes <a href="https://github.com/smarie/python-pytest-cases/issues/4">#4</a></p>
+<p>This fixes <a href="https://github.com/smarie/python-pytest-cases/issues/4">#4</a>.</p>
 <ul>
 <li>Improved documentation</li>
 </ul>
