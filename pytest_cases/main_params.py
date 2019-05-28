@@ -279,7 +279,11 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
             for m in module:
                 m = sys.modules[this_module_object.__module__] if m is THIS_MODULE else m
                 _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter)
+            success = True
         except TypeError:
+            success = False
+
+        if not success:
             # 'module' object is not iterable: a single module was provided
             m = sys.modules[this_module_object.__module__] if module is THIS_MODULE else module
             _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
@@ -349,6 +353,21 @@ def extract_cases_from_module(module,        # type: ModuleType
     return cases
 
 
+class InvalidNamesTemplateException(Exception):
+    """
+    Raised when a `@cases_generator` is used with an improper name template and formatting fails.
+    """
+    def __init__(self, cases_func, names_template, params):
+        self.cases_func = cases_func
+        self.names_template = names_template
+        self.params = params
+        super(InvalidNamesTemplateException, self).__init__()
+
+    def __str__(self):
+        return "Error creating the case name for case generator <%s> using name template '%s' with parameter values " \
+               "%s. Please check the name template." % (self.cases_func.__name__, self.names_template, self.params)
+
+
 def _get_case_getter_s(f,
                        f_code=None,
                        cases_dct=None):
@@ -381,7 +400,10 @@ def _get_case_getter_s(f,
             # then this is a string formatter creating the names
             _formatter = names
             def names(**params):
-                return _formatter.format(**params)
+                try:
+                    return _formatter.format(**params)
+                except Exception:
+                    raise InvalidNamesTemplateException(f, _formatter, params)
 
         nb_cases_generated = len(all_param_values_combinations)
         if not callable(names):
