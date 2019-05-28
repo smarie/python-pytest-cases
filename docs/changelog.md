@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.6.3 - Minor exception enhancement
+
+Improved the error message when the name template is wrong in `@cases_generator`. Fixes [#39](https://github.com/smarie/python-pytest-cases/issues/39).
+
 ### 1.6.2 - bug fixes
 
 `fixture_union`:
