@@ -293,3 +293,10 @@ def transform_marks_into_decorators(marks):
     except Exception as e:
         warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))
     return marks_mod
+
+
+def get_pytest_nodeid(metafunc):
+    try:
+        return metafunc.definition.nodeid
+    except AttributeError:
+        return "unknown"

@@ -10,6 +10,7 @@ from decopatch import function_decorator, DECORATED
 from makefun import with_signature, add_signature_parameters, remove_signature_parameters, wraps
 
 import pytest
+from wrapt import ObjectProxy
 
 try:  # python 3.3+
     from inspect import signature, Parameter
@@ -59,10 +60,13 @@ def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function",
                          "parameter name. Use `param_fixtures` instead - but note that it creates several fixtures.")
     elif len(argname.replace(' ', '')) == 0:
         raise ValueError("empty argname")
-    return _param_fixture(argname, argvalues, autouse=autouse, ids=ids, scope=scope, **kwargs)
+
+    caller_module = get_caller_module()
+
+    return _param_fixture(caller_module, argname, argvalues, autouse=autouse, ids=ids, scope=scope, **kwargs)
 
 
-def _param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs):
+def _param_fixture(caller_module, argname, argvalues, autouse=False, ids=None, scope="function", **kwargs):
     """ Internal method shared with param_fixture and param_fixtures """
 
     # create the fixture
@@ -72,16 +76,75 @@ def _param_fixture(argname, argvalues, autouse=False, ids=None, scope="function"
     fix = pytest_fixture_plus(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
                               **kwargs)(__param_fixture)
 
-    # Add the fixture dynamically: we have to add it to the corresponding module as explained in
-    # https://github.com/pytest-dev/pytest/issues/2424
-    # grab context from the caller frame
-    frame = _get_callerframe(offset=1)
-    module = getmodule(frame)
-    if argname in dir(module):
-        warn("`param_fixture` Overriding symbol %s in module %s" % (argname, module))
-    setattr(module, argname, fix)
+    # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
+    check_name_available(caller_module, argname, if_name_exists=WARN, caller=param_fixture)
+    setattr(caller_module, argname, fix)
 
     return fix
+
+
+def get_caller_module(frame_offset=1):
+    # grab context from the caller frame
+    frame = _get_callerframe(offset=frame_offset)
+    return getmodule(frame)
+
+
+class ExistingFixtureNameError(ValueError):
+    """
+    Raised by `add_fixture_to_callers_module` when a fixture already exists in a module
+    """
+    def __init__(self, module, name, caller):
+        self.module = module
+        self.name = name
+        self.caller = caller
+
+    def __str__(self):
+        return "Symbol `%s` already exists in module %s and therefore a corresponding fixture can not be created by " \
+               "`%s`" % (self.name, self.module, self.caller)
+
+
+RAISE = 0
+WARN = 1
+CHANGE = 2
+
+
+def check_name_available(module,
+                         name,                  # type: str
+                         if_name_exists=RAISE,  # type: int
+                         caller=None,           # type: Callable[[Any], Any]
+                         ):
+    """
+    Routine to
+
+    :param module:
+    :param name:
+    :param if_name_exists:
+    :param caller:
+    :return: a name that might be different if policy was CHANGE
+    """
+    if name in dir(module):
+        if caller is None:
+            caller = ''
+
+        # Name already exists: act according to policy
+        if if_name_exists is RAISE:
+            raise ExistingFixtureNameError(module, name, caller)
+
+        elif if_name_exists is WARN:
+            warn("%s Overriding symbol %s in module %s" % (caller, name, module))
+
+        elif if_name_exists is CHANGE:
+            # find a non-used name in that module
+            i = 1
+            name2 = name + '_%s' % i
+            while name2 in dir(module):
+                i += 1
+                name2 = name + '_%s' % i
+            name = name2
+        else:
+            raise ValueError("invalid value for `if_name_exists`: %s" % if_name_exists)
+
+    return name
 
 
 def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs):
@@ -102,26 +165,17 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
     created_fixtures = []
     argnames_lst = argnames.replace(' ', '').split(',')
 
+    caller_module = get_caller_module()
+
     if len(argnames_lst) < 2:
-        return _param_fixture(argnames, argvalues, autouse=autouse, ids=ids, scope=scope, **kwargs)
+        return _param_fixture(caller_module, argnames, argvalues, autouse=autouse, ids=ids, scope=scope, **kwargs)
 
     # create the root fixture that will contain all parameter values
     # note: we sort the list so that the first in alphabetical order appears first. Indeed pytest uses this order.
     root_fixture_name = "%s__param_fixtures_root" % ('_'.join(sorted(argnames_lst)))
 
-    # Add the fixture dynamically: we have to add it to the corresponding module as explained in
-    # https://github.com/pytest-dev/pytest/issues/2424
-    # grab context from the caller frame
-    frame = _get_callerframe()
-    module = getmodule(frame)
-
-    # find a non-used fixture name
-    if root_fixture_name in dir(module):
-        root_fixture_name += '_1'
-    i = 1
-    while root_fixture_name in dir(module):
-        i += 1
-        root_fixture_name[-1] += str(i)
+    # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
+    root_fixture_name = check_name_available(caller_module, root_fixture_name, if_name_exists=CHANGE, caller=param_fixtures)
 
     @pytest_fixture_plus(name=root_fixture_name, autouse=autouse, scope=scope, **kwargs)
     @pytest.mark.parametrize(argnames, argvalues, ids=ids)
@@ -129,7 +183,8 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
     def _root_fixture(**kwargs):
         return tuple(kwargs[k] for k in argnames_lst)
 
-    setattr(module, root_fixture_name, _root_fixture)
+    # Override once again the symbol with the correct contents
+    setattr(caller_module, root_fixture_name, _root_fixture)
 
     # finally create the sub-fixtures
     for param_idx, argname in enumerate(argnames_lst):
@@ -148,9 +203,8 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
         fix = _create_fixture(param_idx)
 
         # add to module
-        if argname in dir(module):
-            warn("`param_fixtures` Overriding symbol %s in module %s" % (argname, module))
-        setattr(module, argname, fix)
+        check_name_available(caller_module, argname, if_name_exists=WARN, caller=param_fixtures)
+        setattr(caller_module, argname, fix)
 
         # collect to return the whole list eventually
         created_fixtures.append(fix)
@@ -375,8 +429,7 @@ def pytest_fixture_plus(scope="function",
     # --common routine used below. Fills kwargs with the appropriate names and values from fixture_params
     def _get_arguments(*args, **kwargs):
         request = kwargs['request'] if func_needs_request else kwargs.pop('request')
-        if request.param is NOT_USED:
-            return NOT_USED
+
         # populate the parameters
         if len(params_names_or_name_combinations) == 1:
             _params = [request.param]  # remove the simplification
@@ -399,9 +452,10 @@ def pytest_fixture_plus(scope="function",
         # normal function with return statement
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
-            out = _get_arguments(*args, **kwargs)
-            if out is not NOT_USED:
-                args, kwargs = out
+            if not is_used_request(kwargs['request']):
+                return NOT_USED
+            else:
+                args, kwargs = _get_arguments(*args, **kwargs)
                 return fixture_func(*args, **kwargs)
 
         # transform the created wrapper into a fixture
@@ -412,9 +466,10 @@ def pytest_fixture_plus(scope="function",
         # generator function (with a yield statement)
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
-            out = _get_arguments(*args, **kwargs)
-            if out is not NOT_USED:
-                args, kwargs = out
+            if not is_used_request(kwargs['request']):
+                yield NOT_USED
+            else:
+                args, kwargs = _get_arguments(*args, **kwargs)
                 for res in fixture_func(*args, **kwargs):
                     yield res
 
@@ -454,8 +509,10 @@ def _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs):
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
             request = kwargs['request'] if func_needs_request else kwargs.pop('request')
-            if getattr(request, 'param', None) is not NOT_USED:
+            if is_used_request(request):
                 return fixture_func(*args, **kwargs)
+            else:
+                return NOT_USED
 
         # transform the created wrapper into a fixture
         fixture_decorator = pytest.fixture(scope=scope, autouse=autouse, **kwargs)
@@ -466,12 +523,11 @@ def _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs):
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
             request = kwargs['request'] if func_needs_request else kwargs.pop('request')
-            if getattr(request, 'param', None) is not NOT_USED:
+            if is_used_request(request):
                 for res in fixture_func(*args, **kwargs):
                     yield res
             else:
-                # pytest expects a yield
-                yield
+                yield NOT_USED
 
         # transform the created wrapper into a fixture
         fixture_decorator = yield_fixture(scope=scope, autouse=autouse, **kwargs)
@@ -487,9 +543,39 @@ NOT_USED = _NotUsed()
 """Object representing a fixture value when the fixture is not used"""
 
 
-class UnionFixtureConfig:
-    def __init__(self, fixtures):
-        self.fixtures = fixtures
+class UnionFixtureAlternative(ObjectProxy):
+    """A special class that should be used to wrap a fixture name"""
+
+    def __init__(self, fixture_name):
+        super(UnionFixtureAlternative, self).__init__(fixture_name)
+
+    def __str__(self):
+        return str(self.__wrapped__)
+
+    def __repr__(self):
+        return "UnionFixtureAlternative<%s>" % str(self)
+
+
+def is_fixture_union_params(params):
+    """
+    Internal helper to quickly check if a bunch of parameters correspond to a union fixture.
+    :param params:
+    :return:
+    """
+    return len(params) >= 1 and isinstance(params[0], UnionFixtureAlternative)
+
+
+def is_used_request(request):
+    """
+    Internal helper to check if a given request for fixture is active or not. Inactive fixtures
+    happen when a fixture is not used in the current branch of a UNION fixture.
+
+    This helper is used in all fixtures created in this module.
+
+    :param request:
+    :return:
+    """
+    return getattr(request, 'param', None) is not NOT_USED
 
 
 def fixture_union(name, fixtures, scope="function", ids=None, autouse=False, **kwargs):
@@ -497,9 +583,26 @@ def fixture_union(name, fixtures, scope="function", ids=None, autouse=False, **k
     Creates a fixture that will take all values of the provided fixtures in order.
 
     :param name:
-    :param fixtures:
+    :param fixtures: an array-like containing fixture names and/or fixture symbols
     :param scope: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the
         smallest scope of fictures referenced.
+    :return:
+    """
+    caller_module = get_caller_module()
+    return _fixture_union(caller_module, name, fixtures, scope=scope, ids=ids, autouse=autouse, **kwargs)
+
+
+def _fixture_union(caller_module, name, fixtures, scope="function", ids=None, autouse=False, **kwargs):
+    """
+    Internal implementation for fixture_union
+
+    :param caller_module:
+    :param name:
+    :param fixtures:
+    :param scope:
+    :param ids:
+    :param autouse:
+    :param kwargs:
     :return:
     """
     # first get all required fixture names
@@ -508,80 +611,183 @@ def fixture_union(name, fixtures, scope="function", ids=None, autouse=False, **k
         # possibly get the fixture name if the fixture symbol was provided
         f_names.append(get_fixture_name(f) if not isinstance(f, str) else f)
 
+    if len(f_names) < 1:
+        raise ValueError("Empty fixture unions are not permitted")
+
     # then generate the body of our union fixture. It will require all of its dependent fixtures and receive as
     # a parameter the name of the fixture to use
     @with_signature("(%s, request)" % ', '.join(f_names))
     def _new_fixture(request, **all_fixtures):
-        fixture_to_use = request.param
-        return all_fixtures[fixture_to_use]
+        if not is_used_request(request):
+            return NOT_USED
+        else:
+            fixture_to_use = request.param
+            return all_fixtures[fixture_to_use]
 
     _new_fixture.__name__ = name
 
-    # finally create the fixture per se
-    f_decorator = pytest.fixture(scope=scope, params=[UnionFixtureConfig(f_names)], autouse=autouse, ids=ids, **kwargs)
+    # finally create the fixture per se.
+    # WARNING we do not use pytest.fixture but pytest_fixture_plus so that NOT_USED is discarded
+    f_decorator = pytest_fixture_plus(scope=scope, params=[UnionFixtureAlternative(name) for name in f_names], autouse=autouse,
+                                      ids=ids, **kwargs)
     fix = f_decorator(_new_fixture)
 
-    # Add the fixture dynamically: we have to add it to the corresponding module as explained in
-    # https://github.com/pytest-dev/pytest/issues/2424
-    # grab context from the caller frame
-    frame = _get_callerframe()
-    module = getmodule(frame)
-    if name in dir(module):
-        warn("`param_fixture` Overriding symbol %s in module %s" % (name, module))
-    setattr(module, name, fix)
+    # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
+    check_name_available(caller_module, name, if_name_exists=WARN, caller=param_fixture)
+    setattr(caller_module, name, fix)
 
     return fix
 
 
-# class fixture_ref:
-#     """
-#     A reference to a fixture, to be used in `pytest_parametrize_plus`
-#     """
-#     __slots__ = 'fixture',
-#
-#     def __init__(self, fixture):
-#         self.fixture = fixture
-#
-#
-# def pytest_parametrize_plus(argnames, argvalues=None, indirect=False, ids=None, scope=None, **kwargs):
-#     """
-#     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can use fixtures.
-#
-#      - either directly
-#      - or indirectly using a `fixture_ref(<fixture_name>)`
-#
-#     When a fixture is detected in the argvalues,
-#
-#     In addition it offers the possibility to source the list of parameter values from a list of fixtures, in other
-#     words this creates a "fixture union". For this you have to set `fixtures` to a list of fixtures or fixture names.
-#     Note that the `argvalues`
-#
-#     :param argnames:
-#     :param argvalues:
-#     :param indirect:
-#     :param ids:
-#     :param scope:
-#     :param kwargs:
-#     :return:
-#     """
-#     # make sure that we do not destroy the argvalues if it is provided as an iterator
-#     argvalues = list(argvalues)
-#
-#     subsets = []
-#     prev_i = -1
-#     for i, v in enumerate(argvalues):
-#         if is_fixture(v):
-#             parameters = argvalues[(prev_i + 1):i]
-#             if len(parameters) > 0:
-#                 subsets.append(param_fixtures(argnames, argvalues, ids))
-#             prev_i = i
-#
-#
-#     if fixtures is None:
-#         return pytest.mark.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
-#     else:
-#         if argvalues is not None:
-#             raise ValueError("If you provide a non-None `from_fixtures` then no `argvalues` should be provided.")
-#
-#         # TODO
-#         raise NotImplementedError()
+class fixture_ref:
+    """
+    A reference to a fixture, to be used in `pytest_parametrize_plus`
+    """
+    __slots__ = 'fixture',
+
+    def __init__(self, fixture):
+        self.fixture = fixture
+
+
+def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
+    """
+    Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to
+    fixtures with `fixture_ref(<fixture_name>)`.
+
+    When such a fixture reference is detected in the argvalues, a new function-scope fixture will be created with a
+    unique name, and the test function will be wrapped so as to be injected .
+
+    :param argnames:
+    :param argvalues:
+    :param indirect:
+    :param ids:
+    :param scope:
+    :param kwargs:
+    :return:
+    """
+    # make sure that we do not destroy the argvalues if it is provided as an iterator
+    argvalues = list(argvalues)
+
+    # find if there are fixture references in the values provided
+    fixture_indices = []
+    for i, v in enumerate(argvalues):
+        if isinstance(v, fixture_ref):
+            fixture_indices.append(i)
+
+    if len(fixture_indices) == 0:
+        # no fixture reference: do as usual
+        return pytest.mark.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+    else:
+        # there are fixture references: we have to create a specific decorator
+        caller_module = get_caller_module()
+        all_param_names = argnames.replace(' ', '').split(',')
+
+        def create_param_fixture(from_i, to_i, p_fix_name):
+            """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
+            selected_argvalues = argvalues[from_i:to_i]
+            try:
+                # an explicit list of ids
+                selected_ids = ids[from_i:to_i]
+            except TypeError:
+                # a callable to create the ids
+                selected_ids = ids
+
+            if to_i == from_i + 1:
+                p_fix_name = "%s__%s" % (p_fix_name, from_i)
+            else:
+                p_fix_name = "%s__%s_to_%s" % (p_fix_name, from_i, to_i - 1)
+            p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE, caller=pytest_parametrize_plus)
+            param_fix = _param_fixture(caller_module, p_fix_name, selected_argvalues, selected_ids)
+            return param_fix
+
+        # then create the decorator
+        def parametrize_plus_decorate(test_func):
+            """
+            A decorator that wraps the test function so that instead of receiving the parameter names, it receives the
+            new fixture. All other decorations are unchanged.
+
+            :param test_func:
+            :return:
+            """
+            # first check if the test function has the parameters as arguments
+            old_sig = signature(test_func)
+            for p in all_param_names:
+                if p not in old_sig.parameters:
+                    raise ValueError("parameter '%s' not found in test function signature '%s%s'"
+                                     "" % (p, test_func.__name__, old_sig))
+
+            # The base name for all fixtures that will be created below
+            base_name = test_func.__name__ + '_param__' + argnames.replace(' ', '').replace(',', '_')
+            base_name = check_name_available(caller_module, base_name, if_name_exists=CHANGE, caller=pytest_parametrize_plus)
+
+            # Retrieve (if ref) or create (for normal argvalues) the fixtures that we will union
+            # TODO important note: we could either wish to create one fixture for parameter value or to create one for
+            #  each consecutive group as shown below. This should not lead to different results but perf might differ.
+            #  maybe add a parameter in the signature so that users can test it ?
+            fixtures_to_union = []
+            prev_i = -1
+            for i in fixture_indices:
+                if i > prev_i + 1:
+                    param_fix = create_param_fixture(prev_i + 1, i, base_name)
+                    fixtures_to_union.append(param_fix)
+                fixtures_to_union.append(argvalues[i].fixture)
+                prev_i = i
+
+            # last bit if any
+            i = len(argvalues)
+            if i > prev_i + 1:
+                param_fix = create_param_fixture(prev_i + 1, i, base_name)
+                fixtures_to_union.append(param_fix)
+
+            # Finally create a "main" fixture with a unique name for this test function
+            # note: the function automatically registers it in the module
+            big_param_fixture = _fixture_union(caller_module, base_name, fixtures_to_union)
+
+            # --create the new test function's signature that we want to expose to pytest
+            # it is the same than existing, except that we want to replace all parameters with the new fixture
+
+            new_sig = remove_signature_parameters(old_sig, *all_param_names)
+            new_sig = add_signature_parameters(new_sig, Parameter(base_name, kind=Parameter.POSITIONAL_OR_KEYWORD))
+
+            # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
+            def replace_paramfixture_with_values(kwargs):
+                # remove the created fixture value
+                encompassing_fixture = kwargs.pop(base_name)
+                # and add instead the parameter values
+                if len(all_param_names) > 1:
+                    for i, p in enumerate(all_param_names):
+                        kwargs[p] = encompassing_fixture[i]
+                else:
+                    kwargs[all_param_names[0]] = encompassing_fixture
+                # return
+                return kwargs
+
+            if not isgeneratorfunction(test_func):
+                # normal test function with return statement
+                @wraps(test_func, new_sig=new_sig)
+                def wrapped_test_func(*args, **kwargs):
+                    if kwargs.get(base_name, None) is NOT_USED:
+                        return NOT_USED
+                    else:
+                        replace_paramfixture_with_values(kwargs)
+                        return test_func(*args, **kwargs)
+
+            else:
+                # generator test function (with one or several yield statement)
+                @wraps(test_func, new_sig=new_sig)
+                def wrapped_test_func(*args, **kwargs):
+                    if kwargs.get(base_name, None) is NOT_USED:
+                        yield NOT_USED
+                    else:
+                        replace_paramfixture_with_values(kwargs)
+                        for res in test_func(*args, **kwargs):
+                            yield res
+
+            # move all pytest marks from the test function to the wrapper
+            # not needed because the __dict__ is automatically copied when we use @wraps
+            #   move_all_pytest_marks(test_func, wrapped_test_func)
+
+            # return the new test function
+            return wrapped_test_func
+
+        return parametrize_plus_decorate
