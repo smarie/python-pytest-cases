@@ -1,5 +1,17 @@
 # Changelog
 
+### 1.7.0 - New `@pytest_parametrize_plus` allowing fixture references to be used in parameter values
+
+New decorator `@pytest_parametrize_plus` able to handle the case where a `fixture_ref(<fixture_name>)` is present in the parameter values list. This decorator can be applied both on test functions and fixtures (if they are decorated with `@pytest_fixture_plus`). Fixes [#40](https://github.com/smarie/python-pytest-cases/issues/40)
+
+Major refactoring of the "union fixtures" mechanism.
+
+ - The `NOT_USED` status is now correctly propagated between dependent fixtures. This should fix a few cases where user fixtures were setup/teardown while not used in the current test node.
+ - Empty fixture unions are not permitted anymore.
+ - The way unions are handled in test parametrization was redesigned. The new design is based on a two-steps approach: first build the fixture closure for each node as a tree (and not a list as in `pytest`), and then apply parametrization intelligently based on this tree structure. This fixes several unintuitive behaviours that were happening with unions.
+
+Note: interestingly this also fixes [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054).
+
 ### 1.6.3 - Minor exception enhancement
 
 Improved the error message when the name template is wrong in `@cases_generator`. Fixes [#39](https://github.com/smarie/python-pytest-cases/issues/39).
