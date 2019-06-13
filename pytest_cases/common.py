@@ -92,6 +92,27 @@ def get_pytest_marks_on_function(f):
             return []
 
 
+def is_function_node(node):
+    try:
+        node.function
+        return True
+    except AttributeError:
+        return False
+
+
+def get_parametrization_markers(node):
+    """
+    Returns the parametrization marks on a function node.
+    Not sure how different this one is from the ones below, probably the input is different
+    :param node:
+    :return:
+    """
+    if LooseVersion(pytest.__version__) >= LooseVersion('3.4.0'):
+        return list(node.iter_markers(name="parametrize"))
+    else:
+        return list(node.parametrize)
+
+
 def get_pytest_parametrize_marks(f):
     """
     Returns the @pytest.mark.parametrize marks associated with a function (and only those)
@@ -300,3 +321,20 @@ def get_pytest_nodeid(metafunc):
         return metafunc.definition.nodeid
     except AttributeError:
         return "unknown"
+
+
+def get_pytest_scopes():
+    """
+    Returns the list of scopes in order as defined in pytest.
+    :return:
+    """
+    try:
+        from _pytest.fixtures import scopes as pt_scopes
+    except ImportError:
+        # pytest 2
+        from _pytest.python import scopes as pt_scopes
+    return pt_scopes
+
+
+def get_pytest_function_scopenum():
+    return get_pytest_scopes().index("function")

@@ -66,6 +66,8 @@ def test_stereo_two_parametrizers(stereo_cfg):
 b = StateAsserter()
 
 
+@pytest.mark.skipif(LooseVersion(pytest.__version__) < LooseVersion('3.4.0'),
+                    reason="with old versions of pytest pytest-cases cannot fix the parametrization order.")
 @pytest.mark.parametrize("path", STEREO_PATHS)
 @pytest.mark.parametrize("cfg_factory", CFG_TYPES)   # not actual params
 def test_reference_test(path, cfg_factory, request):

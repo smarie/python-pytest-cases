@@ -628,8 +628,8 @@ def _fixture_union(caller_module, name, fixtures, scope="function", ids=None, au
 
     # finally create the fixture per se.
     # WARNING we do not use pytest.fixture but pytest_fixture_plus so that NOT_USED is discarded
-    f_decorator = pytest_fixture_plus(scope=scope, params=[UnionFixtureAlternative(name) for name in f_names], autouse=autouse,
-                                      ids=ids, **kwargs)
+    f_decorator = pytest_fixture_plus(scope=scope, params=[UnionFixtureAlternative(_name) for _name in f_names],
+                                      autouse=autouse, ids=ids, **kwargs)
     fix = f_decorator(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424

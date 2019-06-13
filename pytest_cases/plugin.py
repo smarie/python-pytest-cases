@@ -1,12 +1,14 @@
 from collections import OrderedDict, namedtuple
+from copy import copy
 from distutils.version import LooseVersion
-from functools import partial
+from warnings import warn
 
-from _pytest.fixtures import scopes as pt_scopes
+from functools import partial
 
 import pytest
 
-from pytest_cases.common import get_pytest_nodeid
+from pytest_cases.common import get_pytest_nodeid, get_parametrization_markers, get_pytest_function_scopenum, \
+    is_function_node
 from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params
 
 try:  # python 3.3+
@@ -22,7 +24,7 @@ except ImportError:
     pass
 
 
-_DEBUG = True
+_DEBUG = False
 
 
 # @hookspec(firstresult=True)
@@ -114,6 +116,14 @@ class FixtureClosureNode(object):
     def __getitem__(self, item):
         return self.to_list()[item]
 
+    def __setitem__(self, key, value):
+        # This is called in Pytest 4+. TODO how should we behave ?
+        warn("WARNING the new order is not taken into account !!")
+        pass
+
+    def index(self, *args):
+        return self.to_list().index(*args)
+
     def to_list(self):
         """
         Converts self to a list to get all fixture names, and caches the result.
@@ -135,7 +145,7 @@ class FixtureClosureNode(object):
                     try:
                         fixturedefs = self.get_all_fixture_defs()[arg_name]
                     except KeyError:
-                        return pt_scopes.index("function")
+                        return get_pytest_function_scopenum()
                     else:
                         return fixturedefs[-1].scopenum
                 fixturenames_closure.sort(key=sort_by_scope)
@@ -319,7 +329,7 @@ class FixtureClosureNode(object):
 
                 # perform the propagation:
                 # create a copy of the pending fixtures list and prepend the fixture used
-                pending_for_child = pending_fixtures_list.copy()
+                pending_for_child = copy(pending_fixtures_list)
                 # (a) first propagate all child's dependencies
                 new_c._build_closure(fixture_defs_mgr, [f])
                 # (b) then the ones required by parent
@@ -383,6 +393,12 @@ class FixtureClosureNode(object):
 
 
 def merge(new_items, into_list):
+    """
+    Appends items from `new_items` into `into_list`, only if they are not already there.
+    :param new_items:
+    :param into_list:
+    :return:
+    """
     at_least_one_added = False
     for l in new_items:
         if l not in into_list:
@@ -395,7 +411,7 @@ def getfixtureclosure(fm, fixturenames, parentnode):
 
     # first retrieve the normal pytest output for comparison
     outputs = fm.__class__.getfixtureclosure(fm, fixturenames, parentnode)
-    if LooseVersion(pytest.__version__) >= LooseVersion('4.0.0'):
+    if LooseVersion(pytest.__version__) >= LooseVersion('3.10.0'):
         initial_names, ref_fixturenames, ref_arg2fixturedefs = outputs
     else:
         ref_fixturenames, ref_arg2fixturedefs = outputs
@@ -409,18 +425,23 @@ def getfixtureclosure(fm, fixturenames, parentnode):
 
     # -- required fixtures/params.
     # ********* fix the order of initial fixtures: indeed this order may not be the right one ************
-    p_markers = list(parentnode.iter_markers(name="parametrize"))
-    cur_indices = []
-    for paramz_mark in p_markers:
-        param_names = paramz_mark.args[0].replace(' ', '').split(',')
-        for pname in param_names:
-            cur_indices.append(fixturenames.index(pname))
-    target_indices = sorted(cur_indices)
-    sorted_fixturenames = list(fixturenames)
-    for old_i, new_i in zip(cur_indices, target_indices):
-        sorted_fixturenames[new_i] = fixturenames[old_i]
-    # **********
-    merge(sorted_fixturenames, _init_fixnames)
+    # this only works when pytest version is > 3.4, otherwise the parent node is a Module
+    if is_function_node(parentnode):
+        p_markers = get_parametrization_markers(parentnode)
+        cur_indices = []
+        for paramz_mark in p_markers:
+            param_names = paramz_mark.args[0].replace(' ', '').split(',')
+            for pname in param_names:
+                cur_indices.append(fixturenames.index(pname))
+        target_indices = sorted(cur_indices)
+        sorted_fixturenames = list(fixturenames)
+        for old_i, new_i in zip(cur_indices, target_indices):
+            sorted_fixturenames[new_i] = fixturenames[old_i]
+        # **********
+        merge(sorted_fixturenames, _init_fixnames)
+    else:
+        # we cannot sort yet
+        merge(fixturenames, _init_fixnames)
 
     # Finally create the closure tree
     fixture_defs_mger = FixtureDefsCache(fm, parentid)
@@ -453,8 +474,9 @@ def getfixtureclosure(fm, fixturenames, parentnode):
     # store_union_closure_in_node(fixturenames_closure_node, parentnode)
 
     # return ref_fixturenames, ref_arg2fixturedefs
-    if LooseVersion(pytest.__version__) >= LooseVersion('4.0.0'):
-        return initial_names, fixturenames_closure_node, ref_arg2fixturedefs
+    if LooseVersion(pytest.__version__) >= LooseVersion('3.10.0'):
+        our_initial_names = sorted_fixturenames  # initial_names
+        return our_initial_names, fixturenames_closure_node, ref_arg2fixturedefs
     else:
         return fixturenames_closure_node, ref_arg2fixturedefs
 
@@ -638,11 +660,39 @@ class CallsReactor:
 
         calls, nodes = self._process_node(fix_closure_tree, pending.copy(), [])
 
+        self._cleanup_calls_list(calls, nodes, pending)
+
+        if _DEBUG:
+            print("\n".join(["%s[%s]: funcargs=%s, params=%s" % (get_pytest_nodeid(self.metafunc),
+                                                                 c.id, c.funcargs, c.params)
+                             for c in calls]))
+            print()
+
+        self._call_list = calls
+
+        # put back self as the _calls facade
+        self.metafunc._calls = bak_calls
+
+        # forget about all parametrizations now - this wont happen again
+        self._pending = None
+
+    def _cleanup_calls_list(self, calls, nodes, pending):
+        """
+        Cleans the calls list so that all calls contain a value for all parameters. This is basically
+        about adding "NOT_USED" parametrization everywhere relevant.
+
+        :param calls:
+        :param nodes:
+        :param pending:
+        :return:
+        """
+
         nb_calls = len(calls)
         if nb_calls != len(nodes):
             raise ValueError("This should not happen !")
 
-        # Cleanup:
+        function_scope_num = get_pytest_function_scopenum()
+
         for i in range(nb_calls):
             c, n = calls[i], nodes[i]
 
@@ -678,20 +728,8 @@ class CallsReactor:
                 if fixture not in c.params and fixture not in c.funcargs:
                     # explicitly add it as discarded by creating a parameter value for it.
                     c.params[fixture] = NOT_USED
-
-        if _DEBUG:
-            print("\n".join(["%s[%s]: funcargs=%s, params=%s" % (get_pytest_nodeid(self.metafunc),
-                                                                 c.id, c.funcargs, c.params)
-                             for c in calls]))
-            print()
-
-        self._call_list = calls
-
-        # put back self as the _calls facade
-        self.metafunc._calls = bak_calls
-
-        # forget about all parametrizations now - this wont happen again
-        self._pending = None
+                    c.indices[fixture] = 0
+                    c._arg2scopenum[fixture] = function_scope_num
 
     def _parametrize_calls(self, init_calls, argnames, argvalues, discard_id=False, indirect=False, ids=None,
                            scope=None, **kwargs):
