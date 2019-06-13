@@ -7,8 +7,8 @@ from functools import partial
 
 import pytest
 
-from pytest_cases.common import get_pytest_nodeid, get_parametrization_markers, get_pytest_function_scopenum, \
-    is_function_node
+from pytest_cases.common import get_pytest_nodeid, get_pytest_function_scopenum, \
+    is_function_node, get_param_names
 from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params
 
 try:  # python 3.3+
@@ -407,14 +407,21 @@ def merge(new_items, into_list):
     return at_least_one_added
 
 
-def getfixtureclosure(fm, fixturenames, parentnode):
+def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
 
     # first retrieve the normal pytest output for comparison
-    outputs = fm.__class__.getfixtureclosure(fm, fixturenames, parentnode)
+    kwargs = dict()
+    if LooseVersion(pytest.__version__) >= LooseVersion('4.6.0'):
+        # new argument "ignore_args" in 4.6+
+        kwargs['ignore_args'] = ignore_args
+
     if LooseVersion(pytest.__version__) >= LooseVersion('3.10.0'):
-        initial_names, ref_fixturenames, ref_arg2fixturedefs = outputs
+        # three outputs
+        initial_names, ref_fixturenames, ref_arg2fixturedefs = \
+            fm.__class__.getfixtureclosure(fm, fixturenames, parentnode, **kwargs)
     else:
-        ref_fixturenames, ref_arg2fixturedefs = outputs
+        # two outputs
+        ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, fixturenames, parentnode)
 
     # now let's do it by ourselves.
     parentid = parentnode.nodeid
@@ -427,16 +434,11 @@ def getfixtureclosure(fm, fixturenames, parentnode):
     # ********* fix the order of initial fixtures: indeed this order may not be the right one ************
     # this only works when pytest version is > 3.4, otherwise the parent node is a Module
     if is_function_node(parentnode):
-        p_markers = get_parametrization_markers(parentnode)
-        cur_indices = []
-        for paramz_mark in p_markers:
-            param_names = paramz_mark.args[0].replace(' ', '').split(',')
-            for pname in param_names:
-                cur_indices.append(fixturenames.index(pname))
-        target_indices = sorted(cur_indices)
-        sorted_fixturenames = list(fixturenames)
-        for old_i, new_i in zip(cur_indices, target_indices):
-            sorted_fixturenames[new_i] = fixturenames[old_i]
+        # grab all the parametrization on that node and fix the order.
+        # Note: on pytest >= 4 the list of param_names is probably the same than the `ignore_args` input
+        param_names = get_param_names(parentnode)
+
+        sorted_fixturenames = sort_according_to_ref_list(fixturenames, param_names)
         # **********
         merge(sorted_fixturenames, _init_fixnames)
     else:
@@ -456,24 +458,24 @@ def getfixtureclosure(fm, fixturenames, parentnode):
     fixturenames_closure_node.to_list()
 
     # FINALLY compare with the previous behaviour TODO remove when in 'production' ?
-    assert fixturenames_closure_node.get_all_fixture_defs() == ref_arg2fixturedefs
-    # if fixturenames_closure_node.has_split():
-    #     # order might be changed
-    #     assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
-    # else:
-    #     # same order
-    #     if len(p_markers) < 2:
-    #         assert list(fixturenames_closure_node) == ref_fixturenames
-    #     else:
-    # NOW different order happens all the time because of the "prepend" strategy in the closure building
-    # which makes much more sense/intuition.
-    assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
+    if len(ignore_args) == 0:
+        assert fixturenames_closure_node.get_all_fixture_defs() == ref_arg2fixturedefs
+        # if fixturenames_closure_node.has_split():
+        #     # order might be changed
+        #     assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
+        # else:
+        #     # same order
+        #     if len(p_markers) < 2:
+        #         assert list(fixturenames_closure_node) == ref_fixturenames
+        #     else:
+        # NOW different order happens all the time because of the "prepend" strategy in the closure building
+        # which makes much more sense/intuition.
+        assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
 
     # and store our closure in the node
     # note as an alternative we could return a custom object in place of the ref_fixturenames
     # store_union_closure_in_node(fixturenames_closure_node, parentnode)
 
-    # return ref_fixturenames, ref_arg2fixturedefs
     if LooseVersion(pytest.__version__) >= LooseVersion('3.10.0'):
         our_initial_names = sorted_fixturenames  # initial_names
         return our_initial_names, fixturenames_closure_node, ref_arg2fixturedefs
@@ -872,3 +874,23 @@ def _make_unique(lst):
 
 def flatten_list(lst):
     return [v for nested_list in lst for v in nested_list]
+
+
+def sort_according_to_ref_list(fixturenames, param_names):
+    """
+    Sorts items in the first list, according to their position in the second.
+    Items that are not in the second list stay in the same position, the others are just swapped.
+    A new list is returned.
+
+    :param fixturenames:
+    :param param_names:
+    :return:
+    """
+    cur_indices = []
+    for pname in param_names:
+        cur_indices.append(fixturenames.index(pname))
+    target_indices = sorted(cur_indices)
+    sorted_fixturenames = list(fixturenames)
+    for old_i, new_i in zip(cur_indices, target_indices):
+        sorted_fixturenames[new_i] = fixturenames[old_i]
+    return sorted_fixturenames

@@ -74,6 +74,44 @@ class _LegacyMark:
         self.kwargs = kwargs
 
 
+# ---------------- working on pytest nodes (e.g. Function)
+
+def is_function_node(node):
+    try:
+        node.function
+        return True
+    except AttributeError:
+        return False
+
+
+def get_parametrization_markers(fnode):
+    """
+    Returns the parametrization marks on a pytest Function node.
+    :param fnode:
+    :return:
+    """
+    if LooseVersion(pytest.__version__) >= LooseVersion('3.4.0'):
+        return list(fnode.iter_markers(name="parametrize"))
+    else:
+        return list(fnode.parametrize)
+
+
+def get_param_names(fnode):
+    """
+    Returns a list of parameter names for the given pytest Function node.
+    parameterization marks containing several names are split
+
+    :param parentnode:
+    :return:
+    """
+    p_markers = get_parametrization_markers(fnode)
+    param_names = []
+    for paramz_mark in p_markers:
+        param_names += paramz_mark.args[0].replace(' ', '').split(',')
+    return param_names
+
+
+# ---------------- working on functions
 def get_pytest_marks_on_function(f):
     """
     Utility to return *ALL* pytest marks (not only parametrization) applied on a function
@@ -90,27 +128,6 @@ def get_pytest_marks_on_function(f):
             return [v for v in vars(f).values() if str(v).startswith("<MarkInfo '")]
         except AttributeError:
             return []
-
-
-def is_function_node(node):
-    try:
-        node.function
-        return True
-    except AttributeError:
-        return False
-
-
-def get_parametrization_markers(node):
-    """
-    Returns the parametrization marks on a function node.
-    Not sure how different this one is from the ones below, probably the input is different
-    :param node:
-    :return:
-    """
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.4.0'):
-        return list(node.iter_markers(name="parametrize"))
-    else:
-        return list(node.parametrize)
 
 
 def get_pytest_parametrize_marks(f):
