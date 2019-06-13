@@ -105,12 +105,13 @@ def test_synthesis(module_results_dct):
                                         'test_uses_param[2-3]',
                                         'test_uses_param[2-4]',
                                         # see https://github.com/pytest-dev/pytest/issues/5054
-                                        # 'test_uses_param2[1-2-5]',
-                                        # 'test_uses_param2[1-2-6]',
-                                        # 'test_uses_param2[3-4-5]',
-                                        # 'test_uses_param2[3-4-6]',
-                                        'test_uses_param2[5-1-2]',
-                                        'test_uses_param2[5-3-4]',
-                                        'test_uses_param2[6-1-2]',
-                                        'test_uses_param2[6-3-4]',
+                                        # -> fixed by latest pytest-cases
+                                        'test_uses_param2[1-2-5]',
+                                        'test_uses_param2[1-2-6]',
+                                        'test_uses_param2[3-4-5]',
+                                        'test_uses_param2[3-4-6]',
+                                        # 'test_uses_param2[5-1-2]',
+                                        # 'test_uses_param2[5-3-4]',
+                                        # 'test_uses_param2[6-1-2]',
+                                        # 'test_uses_param2[6-3-4]',
                                         ] + end_list
