@@ -6,7 +6,7 @@
 
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 
-!!! success "New `@pytest_fixture_plus` decorator is there, [check it out](#d-case-fixtures) !"
+!!! success "New `fixture_union` and `@pytest_parametrize_plus` are there, [check them out](#fixture_union) !"
 
 Did you ever thought that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
@@ -274,6 +274,50 @@ This feature has been tested in very complex cases (several union fixtures, fixt
 
 !!! note "fixture unions vs. cases" 
     If you're familiar with `pytest-cases` already, you might note `@cases_data` is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by `pytest`, we will probably refactor this lib to align all the concepts.
+
+### `@pytest_parametrize_plus`
+
+`@pytest_parametrize_plus` is a replacement for `@pytest.mark.parametrize` that allows you to include references to fixtures in the parameter values. Simply use `fixture_ref(<fixture>)` in the parameter values, where `<fixture>` can be the fixture name or fixture function.
+
+For example:
+
+```python
+import pytest
+from pytest_cases import pytest_parametrize_plus, pytest_fixture_plus, fixture_ref
+
+@pytest.fixture
+def world_str():
+    return 'world'
+
+@pytest_fixture_plus
+@pytest_parametrize_plus('who', [fixture_ref(world_str), 
+                                 'you'])
+def greetings(who):
+    return 'hello ' + who
+
+@pytest_parametrize_plus('main_msg', ['nothing', 
+                                      fixture_ref(world_str), 
+                                      fixture_ref(greetings)])
+@pytest.mark.parametrize('ending', ['?', '!'])
+def test_prints(main_msg, ending):
+    print(main_msg + ending)
+```
+
+yields the following
+
+```bash
+> pytest -s -v
+nothing?
+nothing!
+world?
+world!
+hello world?
+hello world!
+hello you?
+hello you!
+```
+
+Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order with standard 'mark' parameters will get impacted. You may solve this by replacing your mark parameters with `param_fixture`s (see [above](#param_fixtures).)
 
 ## Main features / benefits
 
