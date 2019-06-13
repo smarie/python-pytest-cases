@@ -787,6 +787,9 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             # not needed because the __dict__ is automatically copied when we use @wraps
             #   move_all_pytest_marks(test_func, wrapped_test_func)
 
+            # With this hack we will be ordered correctly by pytest https://github.com/pytest-dev/pytest/issues/4429
+            wrapped_test_func.place_as = test_func
+
             # return the new test function
             return wrapped_test_func
 
