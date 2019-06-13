@@ -641,7 +641,8 @@ def _fixture_union(caller_module, name, fixtures, scope="function", ids=None, au
 
 class fixture_ref:
     """
-    A reference to a fixture, to be used in `pytest_parametrize_plus`
+    A reference to a fixture, to be used in `pytest_parametrize_plus`.
+    You can create it from a fixture name or a fixture object (function).
     """
     __slots__ = 'fixture',
 
@@ -652,7 +653,7 @@ class fixture_ref:
 def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
     """
     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to
-    fixtures with `fixture_ref(<fixture_name>)`.
+    fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
 
     When such a fixture reference is detected in the argvalues, a new function-scope fixture will be created with a
     unique name, and the test function will be wrapped so as to be injected .
