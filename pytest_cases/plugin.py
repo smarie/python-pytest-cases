@@ -582,9 +582,6 @@ class CallsReactor:
         # ---- create all the `CallSpec2` instances
         # for each parameter to apply, apply it on all partitions if relevant
         calls_list = [None] * len(filters_list)
-        already_applied = [None] * len(filters_list)
-        for i in range(len(already_applied)):
-            already_applied[i] = []
 
         def _parametrize_calls(init_calls, argnames, argvalues, discard_id, indirect=False, ids=None, scope=None,
                                **kwargs):
