@@ -15,7 +15,9 @@ class StateAsserter:
         self.current_state = 0
 
     def assert_state_and_move(self, path, cfg_factory):
+        # path should be the second parameter, changin every two
         assert path == STEREO_PATHS[self.current_state % 2]
+        # types should be the first, changing every 4
         assert cfg_factory == CFG_TYPES[(self.current_state // 2)]
         self.current_state += 1
 

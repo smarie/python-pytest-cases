@@ -20,9 +20,9 @@ def b(second_letter):
                                  fixture_ref(a),
                                  fixture_ref(b),
                                  'o'])
-@pytest.mark.parametrize('foo', ['foo'])
-def test_foo(arg, foo):
-    assert foo == 'foo'
+@pytest.mark.parametrize('bar', ['bar'])
+def test_foo(arg, bar):
+    assert bar == 'bar'
     assert arg in ['z',
                    'a',
                    'ba',
@@ -31,8 +31,8 @@ def test_foo(arg, foo):
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == ['test_foo[test_foo_param__arg__0-z-foo]',
-                                        'test_foo[a-foo]',
-                                        'test_foo[b-a-foo]',
-                                        'test_foo[b-b_param__second_letter__1-o-foo]',
-                                        'test_foo[test_foo_param__arg__3-o-foo]']
+    assert list(module_results_dct) == ['test_foo[test_foo_param__arg__0-z-bar]',
+                                        'test_foo[a-bar]',
+                                        'test_foo[b-a-bar]',
+                                        'test_foo[b-b_param__second_letter__1-o-bar]',
+                                        'test_foo[test_foo_param__arg__3-o-bar]']

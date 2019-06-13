@@ -1,7 +1,10 @@
 from pytest_cases import param_fixture, fixture_union
 
+# basic parametrized fixtures
 a = param_fixture('a', ['x', 'y'])
 b = param_fixture('b', [1, 2])
+
+# union fixtures
 c = fixture_union('c', [a, b])
 d = fixture_union('d', [b, a])
 
