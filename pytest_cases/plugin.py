@@ -718,8 +718,7 @@ class CallsReactor:
                         else:
                             _vals = [NOT_USED]
                         c_with_dummy = self._parametrize_calls([c], p_to_apply.argnames, _vals,
-                                                               indirect=p_to_apply.indirect, ids=p_to_apply.ids,
-                                                               discard_id=True,
+                                                               indirect=p_to_apply.indirect, discard_id=True,
                                                                scope=p_to_apply.scope, **p_to_apply.kwargs)
                     assert len(c_with_dummy) == 1
                     calls[i] = c_with_dummy[0]
