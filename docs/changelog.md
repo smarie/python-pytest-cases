@@ -1,5 +1,15 @@
 # Changelog
 
+### 1.8.0 - Better ids for fixture unions
+
+New:
+
+ - `fixture_union` now accept a non-`None` value for `ids`. It also has a new `idstyle` argument allowing users to change the style of ids used. Finally `pytest_parametrize_plus` relies on this `ids` argument to set a more readable list of ids for the created union. Fixes [#41](https://github.com/smarie/python-pytest-cases/issues/41).
+
+Misc:
+
+ - Added non-regression test for fixture order. It passes already for all recent pytest versions (after 3.3). Fixes [#42](https://github.com/smarie/python-pytest-cases/issues/42)
+
 ### 1.7.0 - New `@pytest_parametrize_plus` allowing fixture references to be used in parameter values
 
 New decorator `@pytest_parametrize_plus` able to handle the case where a `fixture_ref(<fixture_name>)` is present in the parameter values list. This decorator can be applied both on test functions and fixtures (if they are decorated with `@pytest_fixture_plus`). Fixes [#40](https://github.com/smarie/python-pytest-cases/issues/40)
