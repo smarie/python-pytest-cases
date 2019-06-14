@@ -5,6 +5,10 @@
 <div class="admonition success">
 <p class="admonition-title">New <code>fixture_union</code> and <code>@pytest_parametrize_plus</code> are there, <a href="#fixture_union">check them out</a> !</p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Test execution order</p>
+<p>Installing pytest-cases now has effects on the order of <code>pytest</code> tests execution, even if you do not use its features. One positive side effect is that it fixed <a href="https://github.com/pytest-dev/pytest/issues/5054">pytest#5054</a>. But if you see less desirable ordering please <a href="https://github.com/smarie/python-pytest-cases/issues">report it</a>.</p>
+</div>
 <p>Did you ever thought that most of your test functions were actually <em>the same test code</em>, but with <em>different data inputs</em> and expected results/exceptions ?</p>
 <p><code>pytest-cases</code> leverages <code>pytest</code> and its great <code>@pytest.mark.parametrize</code> decorator, so that you can <strong>separate your test cases from your test functions</strong>. For example with <code>pytest-cases</code> you can now write your tests with the following pattern:</p>
 <ul>
@@ -193,7 +197,7 @@
 
 <h3 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h3>
 <p>As of <code>pytest</code> 4, it is not possible to create a "union" fixture, i.e. a parametrized fixture that will first take all the possible values of fixture A, then all possible values of fixture B, etc. </p>
-<p>The topic has been largely discussed in <a href="https://github.com/pytest-dev/pytest/issues/349">pytest-dev</a> and a <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">request for proposal</a> has been finally made.</p>
+<p>The topic has been largely discussed in <a href="https://github.com/pytest-dev/pytest/issues/349">pytest-dev#349</a> and a <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">request for proposal</a> has been finally made.</p>
 <p><code>fixture_union</code> is an implementation of this proposal.</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">pytest_fixture_plus</span><span class="p">,</span> <span class="n">fixture_union</span>
 
@@ -214,15 +218,13 @@
 
 
 <p>yields</p>
-<div class="codehilite"><pre><span></span>&lt;...&gt;::test_basic_union[first] hello
-PASSED
-&lt;...&gt;::test_basic_union[second-a] a
-PASSED
-&lt;...&gt;::test_basic_union[second-b] b
-PASSED
+<div class="codehilite"><pre><span></span>&lt;...&gt;::test_basic_union[c_is_first] hello   PASSED
+&lt;...&gt;::test_basic_union[c_is_second-a] a    PASSED
+&lt;...&gt;::test_basic_union[c_is_second-b] b    PASSED
 </pre></div>
 
 
+<p>As you can see the ids of union fixtures are slightly different from standard ids, so that you can easily understand what is going on. You can change this feature with <code>ìdstyle</code>, see <a href="api_reference/#fixture_union">API documentation</a> for details.</p>
 <p>This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues</a> page !</p>
 <p><strong>IMPORTANT</strong> if you do not use <code>@pytest_fixture_plus</code> but only <code>@pytest.fixture</code>, then you will see that your fixtures are called even when they are not used, with a parameter <code>NOT_USED</code>. This symbol is automatically ignored if you use <code>@pytest_fixture_plus</code>, otherwise you have to handle it.</p>
 <div class="admonition note">
@@ -256,18 +258,20 @@ PASSED
 
 <p>yields the following</p>
 <div class="codehilite"><pre><span></span>&gt; pytest -s -v
-nothing?
-nothing!
-world?
-world!
-hello world?
-hello world!
-hello you?
-hello you!
+collected <span class="m">9</span> items
+test_prints<span class="o">[</span>test_prints_main_msg_is_0-nothing-?<span class="o">]</span> nothing?                                 PASSED
+test_prints<span class="o">[</span>test_prints_main_msg_is_0-nothing-!<span class="o">]</span> nothing!                                 PASSED
+test_prints<span class="o">[</span>test_prints_main_msg_is_world_str-?<span class="o">]</span> world?                                   PASSED
+test_prints<span class="o">[</span>test_prints_main_msg_is_world_str-!<span class="o">]</span> world!                                   PASSED
+test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_who_is_world_str-?<span class="o">]</span> hello world?  PASSED
+test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_who_is_world_str-!<span class="o">]</span> hello world!  PASSED
+test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_who_is_1-you-?<span class="o">]</span> hello you?        PASSED
+test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_who_is_1-you-!<span class="o">]</span> hello you!        PASSED
 </pre></div>
 
 
-<p>Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order with standard 'mark' parameters will get impacted. You may solve this by replacing your mark parameters with <code>param_fixture</code>s (see <a href="#param_fixtures">above</a>.)</p>
+<p>As you can see, the ids are a bit more explicit than usual. As opposed to <code>fixture_union</code>, the style of these ids is not configurable for now but feel free to propose alternatives in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues page</a>.</p>
+<p>Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your mark parameters with <code>param_fixture</code>s (see <a href="#param_fixtures">above</a>.)</p>
 <h2 id="main-features-benefits">Main features / benefits<a class="headerlink" href="#main-features-benefits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
