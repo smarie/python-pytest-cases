@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.8.1 - BugFixes
+
+Ids should not be used when setting a NOT_USED parametrization. Fixes [#43](https://github.com/smarie/python-pytest-cases/issues/43)
+
+Fixed issue with ordering and setup/teardown for higher-level scope fixtures (session and module scopes) when using union fixtures. Fixes [#44](https://github.com/smarie/python-pytest-cases/issues/44)
+
 ### 1.8.0 - Better ids for fixture unions
 
 New:
