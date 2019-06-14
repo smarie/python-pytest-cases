@@ -239,3 +239,65 @@ Lists all desired cases for a given user query. This function may be convenient 
  - `this_module_object`: any variable defined in the module of interest, for example a function. It is used to find "this module", when `module` contains `THIS_MODULE`. 
  - `has_tag`: an optional tag used to filter the cases in the `module`. Only cases with the given tag will be selected.
  - `filter`: an optional filtering function taking as an input a list of tags associated with a case, and returning a boolean indicating if the case should be selected. It will be used to filter the cases in the `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
+
+
+## 3 - Pytest goodies
+
+### `@pytest_fixture_plus`
+
+`pytest_fixture_plus(scope="function", autouse=False, name=None, **kwargs)`
+
+Identical to `@pytest.fixture` decorator, except that it supports multi-parametrization with `@pytest.mark.parametrize` as requested in [pytest#3960](https://github.com/pytest-dev/pytest/issues/3960).
+
+As a consequence it does not support the `params` and `ids` arguments anymore.
+
+### `fixture_union`
+
+`fixture_union(name, fixtures, scope="function", idstyle='explicit',
+               ids=fixture_alternative_to_str, autouse=False, **kwargs)
+               -> <Fixture>`
+
+Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically registered into the callers' module, but you may wish to assign it to a variable for convenience. In that case make sure that you use the same name, e.g. `a = fixture_union('a', ['b', 'c'])`
+
+The style of test ids corresponding to the union alternatives can be changed with `idstyle`. Three values are allowed:
+
+ - `'explicit'` (default) favors readability,
+ - `'compact'` adds a small mark so that at least one sees which parameters are union parameters and which others are normal parameters,
+ - `None` does not change the ids.    
+
+**Parameters:**
+
+ - `name`: the name of the fixture to create
+ - `fixtures`: an array-like containing fixture names and/or fixture symbols
+ - `scope`: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the smallest scope of fixtures referenced.
+ - `idstyle`: The style of test ids corresponding to the union alternatives. One of `'explicit'` (default), `'compact'`, or `None`.
+ - `ids`: as in pytest. The default value returns the correct fixture
+ - `autouse`: as in pytest
+ - `kwargs`: other pytest fixture options. They might not be supported correctly.
+
+**Outputs:** the new fixture. Note: you do not need to capture that output in a symbol, since the fixture is automatically registered in your module. However if you decide to do so make sure that you use the same name.
+
+### `param_fixtures`
+
+`param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs)`
+
+Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`. The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. `p, q = param_fixtures('p,q', [(0, 1), (2, 3)])`.
+
+
+Note that the `(argnames, argvalues, ids)` signature is similar to `@pytest.mark.parametrize` for consistency, see https://docs.pytest.org/en/latest/reference.html?highlight=pytest.param#pytest-mark-parametrize
+
+
+### `param_fixture`
+
+`param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs)`
+
+Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single variable.
+
+
+### `@pytest_parametrize_plus`
+
+`pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs)`
+
+Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
+
+When such a fixture reference is detected in the argvalues, a new function-scope fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters. Special test ids will be created to illustrate the switching between normal parameters and fixtures.

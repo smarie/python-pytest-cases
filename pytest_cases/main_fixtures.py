@@ -45,7 +45,8 @@ from pytest_cases.main_params import cases_data
 
 def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs):
     """
-    Identical to `param_fixtures` but for a single parameter name.
+    Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single
+    variable.
 
     :param argname: see fixture `name`
     :param argvalues: see fixture `params`
@@ -149,7 +150,10 @@ def check_name_available(module,
 
 def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs):
     """
-    Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`.
+    Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`. The
+    created fixtures are automatically registered into the callers' module, but you may wish to assign them to
+    variables for convenience. In that case make sure that you use the same names, e.g.
+    `p, q = param_fixtures('p,q', [(0, 1), (2, 3)])`.
 
     Note that the (argnames, argvalues, ids) signature is similar to `@pytest.mark.parametrize` for consistency,
     see https://docs.pytest.org/en/latest/reference.html?highlight=pytest.param#pytest-mark-parametrize

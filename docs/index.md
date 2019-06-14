@@ -8,6 +8,10 @@
 
 !!! success "New `fixture_union` and `@pytest_parametrize_plus` are there, [check them out](#fixture_union) !"
 
+!!! warning "Test execution order"
+    Installing pytest-cases now has effects on the order of `pytest` tests execution, even if you do not use its features. One positive side effect is that it fixed [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054). But if you see less desirable ordering please [report it](https://github.com/smarie/python-pytest-cases/issues).
+
+
 Did you ever thought that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
 `pytest-cases` leverages `pytest` and its great `@pytest.mark.parametrize` decorator, so that you can **separate your test cases from your test functions**. For example with `pytest-cases` you can now write your tests with the following pattern:
@@ -235,7 +239,7 @@ def test_uses_param2(arg1, arg2, fixture_uses_param2):
 
 As of `pytest` 4, it is not possible to create a "union" fixture, i.e. a parametrized fixture that will first take all the possible values of fixture A, then all possible values of fixture B, etc. 
 
-The topic has been largely discussed in [pytest-dev](https://github.com/pytest-dev/pytest/issues/349) and a [request for proposal](https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html) has been finally made.
+The topic has been largely discussed in [pytest-dev#349](https://github.com/pytest-dev/pytest/issues/349) and a [request for proposal](https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html) has been finally made.
 
 `fixture_union` is an implementation of this proposal.
 
@@ -260,13 +264,12 @@ def test_basic_union(c):
 yields
 
 ```
-<...>::test_basic_union[first] hello
-PASSED
-<...>::test_basic_union[second-a] a
-PASSED
-<...>::test_basic_union[second-b] b
-PASSED
+<...>::test_basic_union[c_is_first] hello   PASSED
+<...>::test_basic_union[c_is_second-a] a    PASSED
+<...>::test_basic_union[c_is_second-b] b    PASSED
 ```
+
+As you can see the ids of union fixtures are slightly different from standard ids, so that you can easily understand what is going on. You can change this feature with `ìdstyle`, see [API documentation](./api_reference.md#fixture_union) for details.
 
 This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the [issues](https://github.com/smarie/python-pytest-cases/issues) page !
 
@@ -307,17 +310,20 @@ yields the following
 
 ```bash
 > pytest -s -v
-nothing?
-nothing!
-world?
-world!
-hello world?
-hello world!
-hello you?
-hello you!
+collected 9 items
+test_prints[test_prints_main_msg_is_0-nothing-?] nothing?                                 PASSED
+test_prints[test_prints_main_msg_is_0-nothing-!] nothing!                                 PASSED
+test_prints[test_prints_main_msg_is_world_str-?] world?                                   PASSED
+test_prints[test_prints_main_msg_is_world_str-!] world!                                   PASSED
+test_prints[test_prints_main_msg_is_greetings-greetings_who_is_world_str-?] hello world?  PASSED
+test_prints[test_prints_main_msg_is_greetings-greetings_who_is_world_str-!] hello world!  PASSED
+test_prints[test_prints_main_msg_is_greetings-greetings_who_is_1-you-?] hello you?        PASSED
+test_prints[test_prints_main_msg_is_greetings-greetings_who_is_1-you-!] hello you!        PASSED
 ```
 
-Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order with standard 'mark' parameters will get impacted. You may solve this by replacing your mark parameters with `param_fixture`s (see [above](#param_fixtures).)
+As you can see, the ids are a bit more explicit than usual. As opposed to `fixture_union`, the style of these ids is not configurable for now but feel free to propose alternatives in the [issues page](https://github.com/smarie/python-pytest-cases/issues).
+
+Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard `pytest.mark.parametrize` parameters that you would place on the same function, will get impacted. You may solve this by replacing your mark parameters with `param_fixture`s (see [above](#param_fixtures).)
 
 ## Main features / benefits
 
