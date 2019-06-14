@@ -340,18 +340,16 @@ def get_pytest_nodeid(metafunc):
         return "unknown"
 
 
-def get_pytest_scopes():
-    """
-    Returns the list of scopes in order as defined in pytest.
-    :return:
-    """
-    try:
-        from _pytest.fixtures import scopes as pt_scopes
-    except ImportError:
-        # pytest 2
-        from _pytest.python import scopes as pt_scopes
-    return pt_scopes
+try:
+    from _pytest.fixtures import scopes as pt_scopes
+except ImportError:
+    # pytest 2
+    from _pytest.python import scopes as pt_scopes
+
+
+def get_pytest_scopenum(scope_str):
+    return pt_scopes.index(scope_str)
 
 
 def get_pytest_function_scopenum():
-    return get_pytest_scopes().index("function")
+    return pt_scopes.index("function")

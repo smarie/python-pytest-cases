@@ -8,7 +8,7 @@ from functools import partial
 import pytest
 
 from pytest_cases.common import get_pytest_nodeid, get_pytest_function_scopenum, \
-    is_function_node, get_param_names
+    is_function_node, get_param_names, get_pytest_scopenum
 from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params, UnionFixtureAlternative, apply_id_style
 
 try:  # python 3.3+
@@ -28,6 +28,7 @@ _DEBUG = False
 
 
 # @hookspec(firstresult=True)
+# @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_collection(session):
     # override the fixture manager's method
     session._fixturemanager.getfixtureclosure = partial(getfixtureclosure, session._fixturemanager)
@@ -340,13 +341,41 @@ class FixtureClosureNode(object):
     def has_split(self):
         return self.split_fixture_name is not None
 
+    def gather_all_required(self, include_children=True, include_parents=True):
+        """
+        Returns a list of all fixtures required by the subtree at this node
+        :param include_children:
+        :return:
+        """
+        # first the fixtures required by this node
+        required = list(self.fixture_defs.keys())
+
+        # then the ones required by the parents
+        if include_parents and self.parent is not None:
+            required = required + self.parent.gather_all_required(include_children=False)
+
+        # then the ones from all the children
+        if include_children:
+            for child in self.children.values():
+                required = required + child.gather_all_required(include_parents=False)
+
+        return required
+
+    def requires(self, fixturename):
+        """
+        Returns True if the fixture with this name is required by the subtree at this node
+        :param fixturename:
+        :return:
+        """
+        return fixturename in self.gather_all_required()
+
     def gather_all_discarded(self):
         """
         Returns a list of all fixture names discarded during splits from the parent node down to this node.
         Note: this does not include the split done at this node if any, nor all of its subtree.
         :return:
         """
-        discarded = self.split_fixture_discarded_names
+        discarded = list(self.split_fixture_discarded_names)
         if self.parent is not None:
             discarded = discarded + self.parent.gather_all_discarded()
 
@@ -730,12 +759,18 @@ class CallsReactor:
             # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
             # in the `request`. TODO is there a better way?
             # for fixture in list(fix_closure_tree):
-            for fixture in n.gather_all_discarded():
-                if fixture not in c.params and fixture not in c.funcargs:
-                    # explicitly add it as discarded by creating a parameter value for it.
-                    c.params[fixture] = NOT_USED
-                    c.indices[fixture] = 0
-                    c._arg2scopenum[fixture] = function_scope_num
+            for fixture_name, fixdef in self.metafunc._arg2fixturedefs.items():
+                if fixture_name not in c.params and fixture_name not in c.funcargs:
+                    if not n.requires(fixture_name):
+                        # explicitly add it as discarded by creating a parameter value for it.
+                        c.params[fixture_name] = NOT_USED
+                        c.indices[fixture_name] = 0
+                        c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)
+                    else:
+                        # explicitly add it as active
+                        c.params[fixture_name] = 'used'
+                        c.indices[fixture_name] = 1
+                        c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)
 
     def _parametrize_calls(self, init_calls, argnames, argvalues, discard_id=False, indirect=False, ids=None,
                            scope=None, **kwargs):
@@ -905,3 +940,27 @@ def sort_according_to_ref_list(fixturenames, param_names):
     for old_i, new_i in zip(cur_indices, target_indices):
         sorted_fixturenames[new_i] = fixturenames[old_i]
     return sorted_fixturenames
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_collection_modifyitems(session, config, items):
+    """
+    An alternative to the `reorder_items` function in fixtures.py
+    (https://github.com/pytest-dev/pytest/blob/master/src/_pytest/fixtures.py#L209)
+
+    We basically set back the previous order once the pytest ordering routine has completed.
+
+    TODO we should set back an optimal ordering, but current PR https://github.com/pytest-dev/pytest/pull/3551
+     will probably not be relevant to handle our "union" fixtures > need to integrate the NOT_USED markers in the method
+
+    :param session:
+    :param config:
+    :param items:
+    :return:
+    """
+
+    # remember initial order
+    initial_order = copy(items)
+    yield
+    # put back the initial order
+    items[:] = initial_order
