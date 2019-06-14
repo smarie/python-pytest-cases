@@ -30,8 +30,8 @@ def test_all(all):
 def test_synthesis(module_results_dct):
     """Use pytest-harvest to check that the list of executed tests is correct """
 
-    assert list(module_results_dct) == ['test_all[lower-1]',
-                                        'test_all[lower-2]',
-                                        'test_all[lower-3]',
-                                        'test_all[upper-1]',
-                                        'test_all[upper-2]']
+    assert list(module_results_dct) == ['test_all[all_is_lower-1]',
+                                        'test_all[all_is_lower-2]',
+                                        'test_all[all_is_lower-3]',
+                                        'test_all[all_is_upper-1]',
+                                        'test_all[all_is_upper-2]']

@@ -18,9 +18,9 @@ def test_fixture_union(c, a):
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == ["test_fixture_union[a-x]",
-                                        "test_fixture_union[a-y]",
-                                        "test_fixture_union[b-1-x]",
-                                        "test_fixture_union[b-1-y]",
-                                        "test_fixture_union[b-2-x]",
-                                        "test_fixture_union[b-2-y]"]
+    assert list(module_results_dct) == ["test_fixture_union[c_is_a-x]",
+                                        "test_fixture_union[c_is_a-y]",
+                                        "test_fixture_union[c_is_b-1-x]",
+                                        "test_fixture_union[c_is_b-1-y]",
+                                        "test_fixture_union[c_is_b-2-x]",
+                                        "test_fixture_union[c_is_b-2-y]"]

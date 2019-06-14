@@ -2,6 +2,7 @@
 from __future__ import division
 
 from distutils.version import LooseVersion
+from enum import Enum
 from inspect import isgeneratorfunction, getmodule, currentframe
 from itertools import product
 from warnings import warn
@@ -10,7 +11,6 @@ from decopatch import function_decorator, DECORATED
 from makefun import with_signature, add_signature_parameters, remove_signature_parameters, wraps
 
 import pytest
-from wrapt import ObjectProxy
 
 try:  # python 3.3+
     from inspect import signature, Parameter
@@ -543,17 +543,56 @@ NOT_USED = _NotUsed()
 """Object representing a fixture value when the fixture is not used"""
 
 
-class UnionFixtureAlternative(ObjectProxy):
+class UnionFixtureAlternative(object):
     """A special class that should be used to wrap a fixture name"""
 
-    def __init__(self, fixture_name):
-        super(UnionFixtureAlternative, self).__init__(fixture_name)
+    def __init__(self,
+                 fixture_name,
+                 idstyle  # type: IdStyle
+                 ):
+        self.fixture_name = fixture_name
+        self.idstyle = idstyle
 
-    def __str__(self):
-        return str(self.__wrapped__)
+    # def __str__(self):
+    #     that is maybe too dangerous...
+    #     return self.fixture_name
 
     def __repr__(self):
-        return "UnionFixtureAlternative<%s>" % str(self)
+        return "UnionAlternative<%s, idstyle=%s>" % (self.fixture_name, self.idstyle)
+
+    @staticmethod
+    def to_list_of_fixture_names(alternatives_lst  # type: List[UnionFixtureAlternative]
+                                 ):
+        return [f.fixture_name for f in alternatives_lst]
+
+
+class IdStyle(Enum):
+    """
+    The enum defining all possible id styles.
+    """
+    none = None
+    explicit = 'explicit'
+    compact = 'compact'
+
+
+def apply_id_style(id, union_fixture_name, idstyle):
+    """
+    Applies the id style defined in `idstyle` to the given id.
+    See https://github.com/smarie/python-pytest-cases/issues/41
+
+    :param id:
+    :param union_fixture_name:
+    :param idstyle:
+    :return:
+    """
+    if idstyle is IdStyle.none:
+        return id
+    elif idstyle is IdStyle.explicit:
+        return "%s_is_%s" % (union_fixture_name, id)
+    elif idstyle is IdStyle.compact:
+        return "U%s" % id
+    else:
+        raise ValueError("Invalid id style")
 
 
 def is_fixture_union_params(params):
@@ -578,33 +617,65 @@ def is_used_request(request):
     return getattr(request, 'param', None) is not NOT_USED
 
 
-def fixture_union(name, fixtures, scope="function", ids=None, autouse=False, **kwargs):
-    """
-    Creates a fixture that will take all values of the provided fixtures in order.
+def fixture_alternative_to_str(fixture_alternative,  # type: UnionFixtureAlternative
+                               ):
+    return fixture_alternative.fixture_name
 
-    :param name:
+
+def fixture_union(name, fixtures, scope="function", idstyle='explicit',
+                  ids=fixture_alternative_to_str, autouse=False, **kwargs):
+    """
+    Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically
+    registered into the callers' module, but you may wish to assign it to a variable for convenience. In that case
+    make sure that you use the same name, e.g. `a = fixture_union('a', ['b', 'c'])`
+
+    The style of test ids corresponding to the union alternatives can be changed with `idstyle`. Three values are
+    allowed:
+
+     - `'explicit'` (default) favors readability,
+     - `'compact'` adds a small mark so that at least one sees which parameters are union parameters and which others
+       are normal parameters,
+     - `None` does not change the ids.
+
+    :param name: the name of the fixture to create
     :param fixtures: an array-like containing fixture names and/or fixture symbols
     :param scope: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the
-        smallest scope of fictures referenced.
-    :return:
+        smallest scope of fixtures referenced.
+    :param idstyle: The style of test ids corresponding to the union alternatives. One of `'explicit'` (default),
+        `'compact'`, or `None`.
+    :param ids: as in pytest. The default value returns the correct fixture
+    :param autouse: as in pytest
+    :param kwargs: other pytest fixture options. They might not be supported correctly.
+    :return: the new fixture. Note: you do not need to capture that output in a symbol, since the fixture is
+        automatically registered in your module. However if you decide to do so make sure that you use the same name.
     """
     caller_module = get_caller_module()
-    return _fixture_union(caller_module, name, fixtures, scope=scope, ids=ids, autouse=autouse, **kwargs)
+    return _fixture_union(caller_module, name, fixtures, scope=scope, idstyle=idstyle, ids=ids, autouse=autouse,
+                          **kwargs)
 
 
-def _fixture_union(caller_module, name, fixtures, scope="function", ids=None, autouse=False, **kwargs):
+def _fixture_union(caller_module, name, fixtures, idstyle, scope="function", ids=fixture_alternative_to_str,
+                   autouse=False, **kwargs):
     """
     Internal implementation for fixture_union
 
     :param caller_module:
     :param name:
     :param fixtures:
+    :param idstyle:
     :param scope:
     :param ids:
     :param autouse:
     :param kwargs:
     :return:
     """
+    # test the `fixtures` argument to avoid common mistakes
+    if not isinstance(fixtures, (tuple, set, list)):
+        raise TypeError("fixture_union: the `fixtures` argument should be a tuple, set or list")
+
+    # validate the idstyle
+    idstyle = IdStyle(idstyle)
+
     # first get all required fixture names
     f_names = []
     for f in fixtures:
@@ -621,14 +692,20 @@ def _fixture_union(caller_module, name, fixtures, scope="function", ids=None, au
         if not is_used_request(request):
             return NOT_USED
         else:
-            fixture_to_use = request.param
-            return all_fixtures[fixture_to_use]
+            alternative = request.param
+            if isinstance(alternative, UnionFixtureAlternative):
+                fixture_to_use = alternative.fixture_name
+                return all_fixtures[fixture_to_use]
+            else:
+                raise TypeError("Union Fixture %s received invalid parameter type: %s. Please report this issue."
+                                "" % (name, alternative.__class__))
 
     _new_fixture.__name__ = name
 
     # finally create the fixture per se.
     # WARNING we do not use pytest.fixture but pytest_fixture_plus so that NOT_USED is discarded
-    f_decorator = pytest_fixture_plus(scope=scope, params=[UnionFixtureAlternative(_name) for _name in f_names],
+    f_decorator = pytest_fixture_plus(scope=scope,
+                                      params=[UnionFixtureAlternative(_name, idstyle) for _name in f_names],
                                       autouse=autouse, ids=ids, **kwargs)
     fix = f_decorator(_new_fixture)
 
@@ -656,7 +733,8 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
     fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
 
     When such a fixture reference is detected in the argvalues, a new function-scope fixture will be created with a
-    unique name, and the test function will be wrapped so as to be injected .
+    unique name, and the test function will be wrapped so as to be injected with the correct parameters. Special test
+    ids will be created to illustrate the switching between normal parameters and fixtures.
 
     :param argnames:
     :param argvalues:
@@ -694,9 +772,9 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                 selected_ids = ids
 
             if to_i == from_i + 1:
-                p_fix_name = "%s__%s" % (p_fix_name, from_i)
+                p_fix_name = "%s_is_%s" % (p_fix_name, from_i)
             else:
-                p_fix_name = "%s__%s_to_%s" % (p_fix_name, from_i, to_i - 1)
+                p_fix_name = "%s_is_%sto%s" % (p_fix_name, from_i, to_i - 1)
             p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE, caller=pytest_parametrize_plus)
             param_fix = _param_fixture(caller_module, p_fix_name, selected_argvalues, selected_ids)
             return param_fix
@@ -718,7 +796,9 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                                      "" % (p, test_func.__name__, old_sig))
 
             # The base name for all fixtures that will be created below
-            base_name = test_func.__name__ + '_param__' + argnames.replace(' ', '').replace(',', '_')
+            # style_template = "%s_param__%s"
+            style_template = "%s_%s"
+            base_name = style_template % (test_func.__name__, argnames.replace(' ', '').replace(',', '_'))
             base_name = check_name_available(caller_module, base_name, if_name_exists=CHANGE, caller=pytest_parametrize_plus)
 
             # Retrieve (if ref) or create (for normal argvalues) the fixtures that we will union
@@ -726,12 +806,17 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             #  each consecutive group as shown below. This should not lead to different results but perf might differ.
             #  maybe add a parameter in the signature so that users can test it ?
             fixtures_to_union = []
+            fixtures_to_union_names_for_ids = []
             prev_i = -1
             for i in fixture_indices:
                 if i > prev_i + 1:
                     param_fix = create_param_fixture(prev_i + 1, i, base_name)
                     fixtures_to_union.append(param_fix)
+                    fixtures_to_union_names_for_ids.append(get_fixture_name(param_fix))
+
                 fixtures_to_union.append(argvalues[i].fixture)
+                id_for_fixture = apply_id_style(get_fixture_name(argvalues[i].fixture), base_name, IdStyle.explicit)
+                fixtures_to_union_names_for_ids.append(id_for_fixture)
                 prev_i = i
 
             # last bit if any
@@ -739,10 +824,13 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             if i > prev_i + 1:
                 param_fix = create_param_fixture(prev_i + 1, i, base_name)
                 fixtures_to_union.append(param_fix)
+                fixtures_to_union_names_for_ids.append(get_fixture_name(param_fix))
 
             # Finally create a "main" fixture with a unique name for this test function
             # note: the function automatically registers it in the module
-            big_param_fixture = _fixture_union(caller_module, base_name, fixtures_to_union)
+            # note 2: idstyle is set to None because we provide an explicit enough list of ids
+            big_param_fixture = _fixture_union(caller_module, base_name, fixtures_to_union, idstyle=None,
+                                               ids=fixtures_to_union_names_for_ids)
 
             # --create the new test function's signature that we want to expose to pytest
             # it is the same than existing, except that we want to replace all parameters with the new fixture

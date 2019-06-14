@@ -20,11 +20,11 @@ def test_prints(main_msg, ending):
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == ['test_prints[test_prints_param__main_msg__0-nothing-?]',
-                                        'test_prints[test_prints_param__main_msg__0-nothing-!]',
-                                        'test_prints[world_str-?]',
-                                        'test_prints[world_str-!]',
-                                        'test_prints[greetings-world_str-?]',
-                                        'test_prints[greetings-world_str-!]',
-                                        'test_prints[greetings-greetings_param__who__1-you-?]',
-                                        'test_prints[greetings-greetings_param__who__1-you-!]']
+    assert list(module_results_dct) == ['test_prints[test_prints_main_msg_is_0-nothing-?]',
+                                        'test_prints[test_prints_main_msg_is_0-nothing-!]',
+                                        'test_prints[test_prints_main_msg_is_world_str-?]',
+                                        'test_prints[test_prints_main_msg_is_world_str-!]',
+                                        'test_prints[test_prints_main_msg_is_greetings-greetings_who_is_world_str-?]',
+                                        'test_prints[test_prints_main_msg_is_greetings-greetings_who_is_world_str-!]',
+                                        'test_prints[test_prints_main_msg_is_greetings-greetings_who_is_1-you-?]',
+                                        'test_prints[test_prints_main_msg_is_greetings-greetings_who_is_1-you-!]']

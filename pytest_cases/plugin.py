@@ -9,7 +9,7 @@ import pytest
 
 from pytest_cases.common import get_pytest_nodeid, get_pytest_function_scopenum, \
     is_function_node, get_param_names
-from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params
+from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params, UnionFixtureAlternative, apply_id_style
 
 try:  # python 3.3+
     from inspect import signature
@@ -258,15 +258,17 @@ class FixtureClosureNode(object):
 
                 if _params is not None and is_fixture_union_params(_params):
                     # create an UNION fixture
-                    if _fixdef.ids is not None:
-                        raise ValueError("ids cannot be set on a union fixture")
+
+                    # transform the _params into a list of names
+                    alternative_f_names = UnionFixtureAlternative.to_list_of_fixture_names(_params)
 
                     # if there are direct dependencies that are not the union members, add them to pending
-                    non_member_dependencies = [f for f in _fixdef.argnames if f not in _params]
+                    non_member_dependencies = [f for f in _fixdef.argnames if f not in alternative_f_names]
                     pending_fixture_names += non_member_dependencies
 
                     # propagate WITH the pending
-                    self.split_and_build(fixture_defs_mgr, fixname, fixturedefs, _params, pending_fixture_names)
+                    self.split_and_build(fixture_defs_mgr, fixname, fixturedefs, alternative_f_names,
+                                         pending_fixture_names)
 
                     # empty the pending
                     pending_fixture_names = []
@@ -301,7 +303,7 @@ class FixtureClosureNode(object):
                         fixture_defs_mgr,           # type: FixtureDefsCache
                         split_fixture_name,         # type: str
                         split_fixture_defs,         # type: Tuple[FixtureDefinition]
-                        alternative_fixture_names,  #
+                        alternative_fixture_names,  # type: List[str]
                         pending_fixtures_list       #
                         ):
         """ Declares that this node contains a union with alternatives (child nodes=subtrees) """
@@ -446,12 +448,15 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
         merge(fixturenames, _init_fixnames)
 
     # Finally create the closure tree
+    if _DEBUG:
+        print("Creating closure for %s:" % parentid)
+
     fixture_defs_mger = FixtureDefsCache(fm, parentid)
     fixturenames_closure_node = FixtureClosureNode()
     fixturenames_closure_node.build_closure(fixture_defs_mger, _init_fixnames)
 
     if _DEBUG:
-        print("Closure for %s:" % parentid)
+        print("Closure for %s completed:" % parentid)
         print(fixturenames_closure_node)
 
     # sort the fixture names (note: only in recent pytest)
@@ -510,15 +515,15 @@ def pytest_generate_tests(metafunc):
     _ = yield
 
 
-class UnionParamz(namedtuple('UnionParamz', ['union_fixture_name', 'alternative_names', 'scope', 'kwargs'])):
+class UnionParamz(namedtuple('UnionParamz', ['union_fixture_name', 'alternative_names', 'ids', 'scope', 'kwargs'])):
     """ Represents some parametrization to be applied, for a union fixture """
 
     __slots__ = ()
 
     def __str__(self):
-        return "[UNION] %s=[%s], scope=%s, kwargs=%s" \
+        return "[UNION] %s=[%s], ids=%s, scope=%s, kwargs=%s" \
                "" % (self.union_fixture_name, ','.join([str(a) for a in self.alternative_names]),
-                     self.scope, self.kwargs)
+                     self.ids, self.scope, self.kwargs)
 
 
 class NormalParamz(namedtuple('NormalParamz', ['argnames', 'argvalues', 'indirect', 'ids', 'scope', 'kwargs'])):
@@ -560,11 +565,11 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
             raise ValueError("Union fixtures can not be parametrized")
         union_fixture_name = argnames
         union_fixture_alternatives = argvalues
-        if indirect is False or ids is not None or len(kwargs) > 0:
-            raise ValueError("indirect or ids cannot be set on a union fixture")
+        if indirect is False or len(kwargs) > 0:
+            raise ValueError("indirect cannot be set on a union fixture, as well as unknown kwargs")
 
         # add a union parametrization in the queue (but do not apply it now)
-        calls_reactor.append(UnionParamz(union_fixture_name, union_fixture_alternatives, scope, kwargs))
+        calls_reactor.append(UnionParamz(union_fixture_name, union_fixture_alternatives, ids, scope, kwargs))
     else:
         # add a normal parametrization in the queue (but do not apply it now)
         calls_reactor.append(NormalParamz(argnames, argvalues, indirect, ids, scope, kwargs))
@@ -834,13 +839,20 @@ class CallsReactor:
                     # always use 'indirect' since that's a fixture.
                     calls = self._parametrize_calls(calls, p_to_apply.union_fixture_name,
                                                     p_to_apply.alternative_names, indirect=True,
+                                                    ids=p_to_apply.ids,
                                                     scope=p_to_apply.scope, **p_to_apply.kwargs)
+
+                    # Change the ids
+                    for callspec in calls:
+                        callspec._idlist[-1] = apply_id_style(callspec._idlist[-1],
+                                                              p_to_apply.union_fixture_name,
+                                                              p_to_apply.alternative_names[0].idstyle)
 
                     # now move to the children
                     nodes_children = [None] * len(calls)
                     for i in range(len(calls)):
                         active_alternative = calls[i].params[p_to_apply.union_fixture_name]
-                        child_node = current_node.children[active_alternative]
+                        child_node = current_node.children[active_alternative.fixture_name]
                         child_pending = pending.copy()
 
                         # place the childs parameter in the first position if it is in the list
