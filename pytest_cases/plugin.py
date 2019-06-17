@@ -942,6 +942,36 @@ def sort_according_to_ref_list(fixturenames, param_names):
     return sorted_fixturenames
 
 
+_OPTION_NAME = 'with_reorder'
+_SKIP = 'skip'
+_NORMAL = 'normal'
+_OPTIONS = {
+    _NORMAL: """(default) the usual reordering done by pytest to optimize setup/teardown of session- / module- 
+/ class- fixtures, as well as all the modifications made by other plugins (e.g. pytest-reorder)""",
+    _SKIP: """skips *all* reordering, even the one done by pytest itself or installed plugins 
+(e.g. pytest-reorder)"""
+}
+
+# @hookspec(historic=True)
+def pytest_addoption(parser):
+    group = parser.getgroup('pytest-cases ordering', 'pytest-cases reordering options', after='general')
+    help_str = """String specifying one of the reordering alternatives to use. Should be one of :
+ - %s""" % ("\n - ".join(["%s: %s" % (k, v) for k, v in _OPTIONS.items()]))
+    group.addoption(
+        '--%s' % _OPTION_NAME.replace('_', '-'), type=str, default='normal', help=help_str
+    )
+
+
+# @hookspec(historic=True)
+def pytest_configure(config):
+    # validate the config
+    allowed_values = ('normal', 'skip')
+    reordering_choice = config.getoption(_OPTION_NAME)
+    if reordering_choice not in allowed_values:
+        raise ValueError("[pytest-cases] Wrong --%s option: %s. Allowed values: %s"
+                         "" % (_OPTION_NAME, reordering_choice, allowed_values))
+
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_collection_modifyitems(session, config, items):
     """
@@ -958,9 +988,15 @@ def pytest_collection_modifyitems(session, config, items):
     :param items:
     :return:
     """
+    ordering_choice = config.getoption(_OPTION_NAME)
 
-    # remember initial order
-    initial_order = copy(items)
-    yield
-    # put back the initial order
-    items[:] = initial_order
+    if ordering_choice == _SKIP:
+        # remember initial order
+        initial_order = copy(items)
+        yield
+        # put back the initial order
+        items[:] = initial_order
+
+    else:
+        # do nothing
+        yield
