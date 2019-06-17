@@ -764,12 +764,12 @@ class CallsReactor:
                     if not n.requires(fixture_name):
                         # explicitly add it as discarded by creating a parameter value for it.
                         c.params[fixture_name] = NOT_USED
-                        c.indices[fixture_name] = 0
+                        c.indices[fixture_name] = 1
                         c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)
                     else:
                         # explicitly add it as active
                         c.params[fixture_name] = 'used'
-                        c.indices[fixture_name] = 1
+                        c.indices[fixture_name] = 0
                         c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)
 
     def _parametrize_calls(self, init_calls, argnames, argvalues, discard_id=False, indirect=False, ids=None,
