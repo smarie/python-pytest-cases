@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.9.0 - New `--with-reorder` commandline option
+
+New commandline option '--with-reorder' to change the reordering startegy currently in application. Fixes [#45](https://github.com/smarie/python-pytest-cases/issues/45).
+
+The `--with-reorder` "skip" mode was not working correctly in presence of marks, fixed it. Fixed [#46](https://github.com/smarie/python-pytest-cases/issues/46).
+
 ### 1.8.1 - BugFixes
 
 Ids should not be used when setting a NOT_USED parametrization. Fixes [#43](https://github.com/smarie/python-pytest-cases/issues/43)
