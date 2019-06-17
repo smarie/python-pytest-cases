@@ -26,7 +26,8 @@ def test2(reprovision):
     pass
 
 
-@pytest.mark.skipif(LooseVersion('3.6.0') < LooseVersion(pytest.__version__) < LooseVersion('3.7.0'),
+@pytest.mark.skipif(LooseVersion(pytest.__version__) < LooseVersion('3.0.0') or
+                    LooseVersion('3.6.0') < LooseVersion(pytest.__version__) < LooseVersion('3.7.0'),
                     reason="This 'optimal order' was changed in some versions of pytest")
 def test_synthesis(module_results_dct):
     assert list(module_results_dct) == ['test_config',
