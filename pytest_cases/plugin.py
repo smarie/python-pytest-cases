@@ -75,6 +75,12 @@ class FixtureClosureNode(object):
         self._as_list = None
         self.all_fixture_defs = None
 
+    # ------ tree
+    def get_leaves(self):
+        if self.has_split():
+            return [n for c in self.children.values() for n in c.get_leaves()]
+        else:
+            return [self]
     # ------
 
     def to_str(self, indent_nb=0, with_children=True, with_discarded=True):
@@ -340,6 +346,25 @@ class FixtureClosureNode(object):
 
     def has_split(self):
         return self.split_fixture_name is not None
+
+    def get_not_always_used(self):
+        """Returns the list of fixtures used by this subtree, that are not always used"""
+        results_list = []
+
+        # initial list is made of fixtures that are in the children
+        initial_list = self.gather_all_required(include_parents=False)
+
+        for c in self.get_leaves():
+            j = 0
+            for i in range(len(initial_list)):
+                fixture_name = initial_list[j]
+                if fixture_name not in c.gather_all_required():
+                    del initial_list[j]
+                    results_list.append(fixture_name)
+                else:
+                    j += 1
+
+        return results_list
 
     def gather_all_required(self, include_children=True, include_parents=True):
         """
@@ -696,7 +721,7 @@ class CallsReactor:
 
         calls, nodes = self._process_node(fix_closure_tree, pending.copy(), [])
 
-        self._cleanup_calls_list(calls, nodes, pending)
+        self._cleanup_calls_list(fix_closure_tree, calls, nodes, pending)
 
         if _DEBUG:
             print("\n".join(["%s[%s]: funcargs=%s, params=%s" % (get_pytest_nodeid(self.metafunc),
@@ -712,7 +737,7 @@ class CallsReactor:
         # forget about all parametrizations now - this wont happen again
         self._pending = None
 
-    def _cleanup_calls_list(self, calls, nodes, pending):
+    def _cleanup_calls_list(self, fix_closure_tree, calls, nodes, pending):
         """
         Cleans the calls list so that all calls contain a value for all parameters. This is basically
         about adding "NOT_USED" parametrization everywhere relevant.
@@ -727,7 +752,7 @@ class CallsReactor:
         if nb_calls != len(nodes):
             raise ValueError("This should not happen !")
 
-        function_scope_num = get_pytest_function_scopenum()
+        # function_scope_num = get_pytest_function_scopenum()
 
         for i in range(nb_calls):
             c, n = calls[i], nodes[i]
@@ -759,7 +784,9 @@ class CallsReactor:
             # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
             # in the `request`. TODO is there a better way?
             # for fixture in list(fix_closure_tree):
-            for fixture_name, fixdef in self.metafunc._arg2fixturedefs.items():
+            # for fixture_name, fixdef in self.metafunc._arg2fixturedefs.items():
+            for fixture_name in fix_closure_tree.get_not_always_used():
+                fixdef = self.metafunc._arg2fixturedefs[fixture_name]
                 if fixture_name not in c.params and fixture_name not in c.funcargs:
                     if not n.requires(fixture_name):
                         # explicitly add it as discarded by creating a parameter value for it.
