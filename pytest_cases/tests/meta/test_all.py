@@ -85,15 +85,9 @@ def test_run_all_tests(test_to_run, testdir):
         # protect against pycharm fiddling with the config
         from _pytest import config
         jb_prepareconfig = config._prepareconfig
-
-        _real_prepare_config = get_pytest_prepare_config()
-
-        def real_prepare_config(args=None, plugins=None):
-            cfg_to_use = _real_prepare_config(args, plugins)
-            jb_config_results = jb_prepareconfig(None, None)
-            return cfg_to_use
-
-        config._prepareconfig = real_prepare_config
+        if jb_prepareconfig.__module__ != config.get_config.__module__:
+            # we are in pycharm ! Fix that
+            config._prepareconfig = get_pytest_prepare_config()
 
         # run
         # first = testdir.runpytest("--collect-only", "-p", "no:cacheprovider")  # ("-q")
