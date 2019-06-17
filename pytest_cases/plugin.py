@@ -994,8 +994,15 @@ def pytest_collection_modifyitems(session, config, items):
         # remember initial order
         initial_order = copy(items)
         yield
-        # put back the initial order
-        items[:] = initial_order
+        # put back the initial order but keep the filter
+        to_return = [None] * len(items)
+        i=0
+        for item in initial_order:
+            if item in items:
+                to_return[i] = item
+                i += 1
+        assert i == len(items)
+        items[:] = to_return
 
     else:
         # do nothing
