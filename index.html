@@ -1,4 +1,706 @@
-<!doctype html><html lang="en" class="no-js"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="x-ua-compatible" content="ie=edge"><meta name="lang:clipboard.copy" content="Copy to clipboard"><meta name="lang:clipboard.copied" content="Copied to clipboard"><meta name="lang:search.language" content="en"><meta name="lang:search.pipeline.stopwords" content="True"><meta name="lang:search.pipeline.trimmer" content="True"><meta name="lang:search.result.none" content="No matching documents"><meta name="lang:search.result.one" content="1 matching document"><meta name="lang:search.result.other" content="# matching documents"><meta name="lang:search.tokenizer" content="[\s\-]+"><link rel="shortcut icon" href="assets/images/favicon.png"><meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.3.1"><title>pytest_cases</title><link rel="stylesheet" href="assets/stylesheets/application.4031d38b.css"><script src="assets/javascripts/modernizr.74668098.js"></script><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=swap"><style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style><link rel="stylesheet" href="assets/fonts/material-icons.css"></head><body dir="ltr"><svg class="md-svg"><defs><svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg></defs></svg> <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off"> <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off"> <label class="md-overlay" data-md-component="overlay" for="__drawer"></label><a href="#pytest-cases" tabindex="1" class="md-skip">Skip to content </a><header class="md-header" data-md-component="header"><nav class="md-header-nav md-grid"><div class="md-flex"><div class="md-flex__cell md-flex__cell--shrink"><a href="." title="pytest_cases" class="md-header-nav__button md-logo"><i class="md-icon"></i></a></div><div class="md-flex__cell md-flex__cell--shrink"><label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label></div><div class="md-flex__cell md-flex__cell--stretch"><div class="md-flex__ellipsis md-header-nav__title" data-md-component="title"><span class="md-header-nav__topic">pytest_cases</span><span class="md-header-nav__topic">Home</span></div></div><div class="md-flex__cell md-flex__cell--shrink"><label class="md-icon md-icon--search md-header-nav__button" for="__search"></label><div class="md-search" data-md-component="search" role="dialog"><label class="md-search__overlay" for="__search"></label><div class="md-search__inner" role="search"><form class="md-search__form" name="search"><input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active"> <label class="md-icon md-search__icon" for="__search"></label> <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">&#xE5CD;</button></form><div class="md-search__output"><div class="md-search__scrollwrap" data-md-scrollfix><div class="md-search-result" data-md-component="result"><div class="md-search-result__meta">Type to start searching</div><ol class="md-search-result__list"></ol></div></div></div></div></div></div><div class="md-flex__cell md-flex__cell--shrink"><div class="md-header-nav__source"><a href="https://github.com/smarie/python-pytest-cases/" title="Go to repository" class="md-source" data-md-source="github"><div class="md-source__icon"><svg viewBox="0 0 24 24" width="24" height="24"><use xlink:href="#__github" width="24" height="24"></use></svg></div><div class="md-source__repository">GitHub</div></a></div></div></div></nav></header><div class="md-container"><main class="md-main"><div class="md-main__inner md-grid" data-md-component="container"><div class="md-sidebar md-sidebar--primary" data-md-component="navigation"><div class="md-sidebar__scrollwrap"><div class="md-sidebar__inner"><nav class="md-nav md-nav--primary" data-md-level="0"><label class="md-nav__title md-nav__title--site" for="__drawer"><a href="." title="pytest_cases" class="md-nav__button md-logo"><i class="md-icon"></i></a>pytest_cases</label><div class="md-nav__source"><a href="https://github.com/smarie/python-pytest-cases/" title="Go to repository" class="md-source" data-md-source="github"><div class="md-source__icon"><svg viewBox="0 0 24 24" width="24" height="24"><use xlink:href="#__github" width="24" height="24"></use></svg></div><div class="md-source__repository">GitHub</div></a></div><ul class="md-nav__list" data-md-scrollfix><li class="md-nav__item md-nav__item--active"><input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc"><label class="md-nav__link md-nav__link--active" for="__toc">Home</label><a href="." title="Home" class="md-nav__link md-nav__link--active">Home</a><nav class="md-nav md-nav--secondary"><label class="md-nav__title" for="__toc">Table of contents</label><ul class="md-nav__list" data-md-scrollfix><li class="md-nav__item"><a href="#installing" title="Installing" class="md-nav__link">Installing</a></li><li class="md-nav__item"><a href="#usage-data-cases" title="Usage - 'Data' cases" class="md-nav__link">Usage - 'Data' cases</a><nav class="md-nav"><ul class="md-nav__list"><li class="md-nav__item"><a href="#a-some-code-to-test" title="a- Some code to test" class="md-nav__link">a- Some code to test</a></li><li class="md-nav__item"><a href="#b-case-functions" title="b- Case functions" class="md-nav__link">b- Case functions</a></li><li class="md-nav__item"><a href="#c-test-functions" title="c- Test functions" class="md-nav__link">c- Test functions</a></li><li class="md-nav__item"><a href="#d-case-fixtures" title="d- Case fixtures" class="md-nav__link">d- Case fixtures</a></li></ul></nav></li><li class="md-nav__item"><a href="#usage-true-test-cases" title="Usage - 'True' test cases" class="md-nav__link">Usage - 'True' test cases</a><nav class="md-nav"><ul class="md-nav__list"><li class="md-nav__item"><a href="#a-case-functions-update" title="a- Case functions update" class="md-nav__link">a- Case functions update</a></li><li class="md-nav__item"><a href="#b-test-body-update" title="b- Test body update" class="md-nav__link">b- Test body update</a></li></ul></nav></li><li class="md-nav__item"><a href="#pytest-goodies" title="pytest Goodies" class="md-nav__link">pytest Goodies</a><nav class="md-nav"><ul class="md-nav__list"><li class="md-nav__item"><a href="#pytest_fixture_plus" title="@pytest_fixture_plus" class="md-nav__link">@pytest_fixture_plus</a></li><li class="md-nav__item"><a href="#param_fixtures" title="param_fixture[s]" class="md-nav__link">param_fixture[s]</a></li><li class="md-nav__item"><a href="#fixture_union" title="fixture_union" class="md-nav__link">fixture_union</a></li><li class="md-nav__item"><a href="#pytest_parametrize_plus" title="@pytest_parametrize_plus" class="md-nav__link">@pytest_parametrize_plus</a></li></ul></nav></li><li class="md-nav__item"><a href="#main-features-benefits" title="Main features / benefits" class="md-nav__link">Main features / benefits</a></li><li class="md-nav__item"><a href="#see-also" title="See Also" class="md-nav__link">See Also</a><nav class="md-nav"><ul class="md-nav__list"><li class="md-nav__item"><a href="#others" title="Others" class="md-nav__link">Others</a></li></ul></nav></li><li class="md-nav__item"><a href="#want-to-contribute" title="Want to contribute ?" class="md-nav__link">Want to contribute ?</a></li></ul></nav></li><li class="md-nav__item md-nav__item--nested"><input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2"><label class="md-nav__link" for="nav-2">Usage details</label><nav class="md-nav" data-md-component="collapsible" data-md-level="1"><label class="md-nav__title" for="nav-2">Usage details</label><ul class="md-nav__list" data-md-scrollfix><li class="md-nav__item"><a href="usage/" title="Overview" class="md-nav__link">Overview</a></li><li class="md-nav__item"><a href="usage/basics/" title="Basics" class="md-nav__link">Basics</a></li><li class="md-nav__item"><a href="usage/intermediate/" title="Intermediate" class="md-nav__link">Intermediate</a></li><li class="md-nav__item"><a href="usage/advanced/" title="Advanced" class="md-nav__link">Advanced</a></li></ul></nav></li><li class="md-nav__item"><a href="api_reference/" title="API reference" class="md-nav__link">API reference</a></li><li class="md-nav__item"><a href="changelog/" title="Changelog" class="md-nav__link">Changelog</a></li></ul></nav></div></div></div><div class="md-sidebar md-sidebar--secondary" data-md-component="toc"><div class="md-sidebar__scrollwrap"><div class="md-sidebar__inner"><nav class="md-nav md-nav--secondary"><label class="md-nav__title" for="__toc">Table of contents</label><ul class="md-nav__list" data-md-scrollfix><li class="md-nav__item"><a href="#installing" title="Installing" class="md-nav__link">Installing</a></li><li class="md-nav__item"><a href="#usage-data-cases" title="Usage - 'Data' cases" class="md-nav__link">Usage - 'Data' cases</a><nav class="md-nav"><ul class="md-nav__list"><li class="md-nav__item"><a href="#a-some-code-to-test" title="a- Some code to test" class="md-nav__link">a- Some code to test</a></li><li class="md-nav__item"><a href="#b-case-functions" title="b- Case functions" class="md-nav__link">b- Case functions</a></li><li class="md-nav__item"><a href="#c-test-functions" title="c- Test functions" class="md-nav__link">c- Test functions</a></li><li class="md-nav__item"><a href="#d-case-fixtures" title="d- Case fixtures" class="md-nav__link">d- Case fixtures</a></li></ul></nav></li><li class="md-nav__item"><a href="#usage-true-test-cases" title="Usage - 'True' test cases" class="md-nav__link">Usage - 'True' test cases</a><nav class="md-nav"><ul class="md-nav__list"><li class="md-nav__item"><a href="#a-case-functions-update" title="a- Case functions update" class="md-nav__link">a- Case functions update</a></li><li class="md-nav__item"><a href="#b-test-body-update" title="b- Test body update" class="md-nav__link">b- Test body update</a></li></ul></nav></li><li class="md-nav__item"><a href="#pytest-goodies" title="pytest Goodies" class="md-nav__link">pytest Goodies</a><nav class="md-nav"><ul class="md-nav__list"><li class="md-nav__item"><a href="#pytest_fixture_plus" title="@pytest_fixture_plus" class="md-nav__link">@pytest_fixture_plus</a></li><li class="md-nav__item"><a href="#param_fixtures" title="param_fixture[s]" class="md-nav__link">param_fixture[s]</a></li><li class="md-nav__item"><a href="#fixture_union" title="fixture_union" class="md-nav__link">fixture_union</a></li><li class="md-nav__item"><a href="#pytest_parametrize_plus" title="@pytest_parametrize_plus" class="md-nav__link">@pytest_parametrize_plus</a></li></ul></nav></li><li class="md-nav__item"><a href="#main-features-benefits" title="Main features / benefits" class="md-nav__link">Main features / benefits</a></li><li class="md-nav__item"><a href="#see-also" title="See Also" class="md-nav__link">See Also</a><nav class="md-nav"><ul class="md-nav__list"><li class="md-nav__item"><a href="#others" title="Others" class="md-nav__link">Others</a></li></ul></nav></li><li class="md-nav__item"><a href="#want-to-contribute" title="Want to contribute ?" class="md-nav__link">Want to contribute ?</a></li></ul></nav></div></div></div><div class="md-content"><article class="md-content__inner md-typeset"><a href="https://github.com/smarie/python-pytest-cases/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a><h1 id="pytest-cases">pytest-cases<a class="headerlink" href="#pytest-cases" title="Permanent link">&para;</a></h1>
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+    
+    
+      
+        <title>pytest_cases</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/application.0284f74d.css">
+      
+      
+    
+    
+      <script src="assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#pytest-cases" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="." title="pytest_cases" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              pytest_cases
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Home
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/smarie/python-pytest-cases/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="." title="pytest_cases" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    pytest_cases
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/smarie/python-pytest-cases/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Home
+      </label>
+    
+    <a href="." title="Home" class="md-nav__link md-nav__link--active">
+      Home
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing" title="Installing" class="md-nav__link">
+    Installing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-data-cases" title="Usage - 'Data' cases" class="md-nav__link">
+    Usage - 'Data' cases
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-some-code-to-test" title="a- Some code to test" class="md-nav__link">
+    a- Some code to test
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-case-functions" title="b- Case functions" class="md-nav__link">
+    b- Case functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-test-functions" title="c- Test functions" class="md-nav__link">
+    c- Test functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-case-fixtures" title="d- Case fixtures" class="md-nav__link">
+    d- Case fixtures
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-true-test-cases" title="Usage - 'True' test cases" class="md-nav__link">
+    Usage - 'True' test cases
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-case-functions-update" title="a- Case functions update" class="md-nav__link">
+    a- Case functions update
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-test-body-update" title="b- Test body update" class="md-nav__link">
+    b- Test body update
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pytest-goodies" title="pytest Goodies" class="md-nav__link">
+    pytest Goodies
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-with-reorder" title="--with-reorder" class="md-nav__link">
+    --with-reorder
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pytest_fixture_plus" title="@pytest_fixture_plus" class="md-nav__link">
+    @pytest_fixture_plus
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#param_fixtures" title="param_fixture[s]" class="md-nav__link">
+    param_fixture[s]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixture_union" title="fixture_union" class="md-nav__link">
+    fixture_union
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pytest_parametrize_plus" title="@pytest_parametrize_plus" class="md-nav__link">
+    @pytest_parametrize_plus
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-features-benefits" title="Main features / benefits" class="md-nav__link">
+    Main features / benefits
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" title="See Also" class="md-nav__link">
+    See Also
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#others" title="Others" class="md-nav__link">
+    Others
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#want-to-contribute" title="Want to contribute ?" class="md-nav__link">
+    Want to contribute ?
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Usage details
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Usage details
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="usage/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="usage/basics/" title="Basics" class="md-nav__link">
+      Basics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="usage/intermediate/" title="Intermediate" class="md-nav__link">
+      Intermediate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="usage/advanced/" title="Advanced" class="md-nav__link">
+      Advanced
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="api_reference/" title="API reference" class="md-nav__link">
+      API reference
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing" title="Installing" class="md-nav__link">
+    Installing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-data-cases" title="Usage - 'Data' cases" class="md-nav__link">
+    Usage - 'Data' cases
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-some-code-to-test" title="a- Some code to test" class="md-nav__link">
+    a- Some code to test
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-case-functions" title="b- Case functions" class="md-nav__link">
+    b- Case functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-test-functions" title="c- Test functions" class="md-nav__link">
+    c- Test functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-case-fixtures" title="d- Case fixtures" class="md-nav__link">
+    d- Case fixtures
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-true-test-cases" title="Usage - 'True' test cases" class="md-nav__link">
+    Usage - 'True' test cases
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-case-functions-update" title="a- Case functions update" class="md-nav__link">
+    a- Case functions update
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-test-body-update" title="b- Test body update" class="md-nav__link">
+    b- Test body update
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pytest-goodies" title="pytest Goodies" class="md-nav__link">
+    pytest Goodies
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-with-reorder" title="--with-reorder" class="md-nav__link">
+    --with-reorder
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pytest_fixture_plus" title="@pytest_fixture_plus" class="md-nav__link">
+    @pytest_fixture_plus
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#param_fixtures" title="param_fixture[s]" class="md-nav__link">
+    param_fixture[s]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixture_union" title="fixture_union" class="md-nav__link">
+    fixture_union
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pytest_parametrize_plus" title="@pytest_parametrize_plus" class="md-nav__link">
+    @pytest_parametrize_plus
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-features-benefits" title="Main features / benefits" class="md-nav__link">
+    Main features / benefits
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" title="See Also" class="md-nav__link">
+    See Also
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#others" title="Others" class="md-nav__link">
+    Others
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#want-to-contribute" title="Want to contribute ?" class="md-nav__link">
+    Want to contribute ?
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/smarie/python-pytest-cases/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="pytest-cases">pytest-cases<a class="headerlink" href="#pytest-cases" title="Permanent link">&para;</a></h1>
 <p><em>Separate test code from test cases in <code>pytest</code>.</em></p>
 <p><a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/pytest-cases.svg" /></a> <a href="https://travis-ci.org/smarie/python-pytest-cases"><img alt="Build Status" src="https://travis-ci.org/smarie/python-pytest-cases.svg?branch=master" /></a> <a href="https://smarie.github.io/python-pytest-cases/junit/report.html"><img alt="Tests Status" src="https://smarie.github.io/python-pytest-cases/junit/junit-badge.svg?dummy=8484744" /></a> <a href="https://codecov.io/gh/smarie/python-pytest-cases"><img alt="codecov" src="https://codecov.io/gh/smarie/python-pytest-cases/branch/master/graph/badge.svg" /></a></p>
 <p><a href="https://smarie.github.io/python-pytest-cases/"><img alt="Documentation" src="https://img.shields.io/badge/doc-latest-blue.svg" /></a> <a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pytest-cases.svg" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads" src="https://pepy.tech/badge/pytest-cases" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads per week" src="https://pepy.tech/badge/pytest-cases/week" /></a> <a href="https://github.com/smarie/python-pytest-cases/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/smarie/python-pytest-cases.svg" /></a></p>
@@ -160,6 +862,18 @@
 
 <p>See <a href="./usage">Usage</a> for complete examples with custom case names, case generators, exceptions handling, and more.</p>
 <h2 id="pytest-goodies"><code>pytest</code> Goodies<a class="headerlink" href="#pytest-goodies" title="Permanent link">&para;</a></h2>
+<h3 id="-with-reorder"><code>--with-reorder</code><a class="headerlink" href="#-with-reorder" title="Permanent link">&para;</a></h3>
+<p><code>pytest</code> postprocesses the order of the collected items in order to optimize setup/teardown of session, module and class fixtures. This optimization algorithm happens at the <code>pytest_collection_modifyitems</code> stage, and is still under improvement, as can be seen in <a href="https://github.com/pytest-dev/pytest/pull/3551">pytest#3551</a>, <a href="https://github.com/pytest-dev/pytest/issues/3393">pytest#3393</a>, <a href="https://github.com/pytest-dev/pytest/issues/2846">#2846</a>...</p>
+<p>Besides other plugins such as <a href="https://github.com/not-raspberry/pytest_reorder">pytest-reorder</a> can modify the order as well.</p>
+<p>This new commandline is a goodie to change the reordering:</p>
+<ul>
+<li>
+<p><code>--with-reorder normal</code> is the default behaviour: it lets pytest and all the plugins execute their reordering in each of their <code>pytest_collection_modifyitems</code> hooks, and simply does not interact </p>
+</li>
+<li>
+<p><code>--with-reorder skip</code> allows you to restore the original order that was active before <code>pytest_collection_modifyitems</code> was initially called, thus not taking into account any reordering done by pytest or by any of its plugins.</p>
+</li>
+</ul>
 <h3 id="pytest_fixture_plus"><code>@pytest_fixture_plus</code><a class="headerlink" href="#pytest_fixture_plus" title="Permanent link">&para;</a></h3>
 <p><code>@pytest_fixture_plus</code> is similar to <code>pytest.fixture</code> but without its <code>param</code> and <code>ids</code> arguments. Instead, it is able to pick the parametrization from <code>@pytest.mark.parametrize</code> marks applied on fixtures. This makes it very intuitive for users to parametrize both their tests and fixtures. As a bonus, its <code>name</code> argument works even in old versions of pytest (which is not the case for <code>fixture</code>).</p>
 <div class="admonition note">
@@ -297,4 +1011,66 @@ test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_w
 <h3 id="others">Others<a class="headerlink" href="#others" title="Permanent link">&para;</a></h3>
 <p><em>Do you like this library ? You might also like <a href="https://github.com/smarie/OVERVIEW#python">my other python libraries</a></em> </p>
 <h2 id="want-to-contribute">Want to contribute ?<a class="headerlink" href="#want-to-contribute" title="Permanent link">&para;</a></h2>
-<p>Details on the github page: <a href="https://github.com/smarie/python-pytest-cases">https://github.com/smarie/python-pytest-cases</a></p></article></div></div></main><footer class="md-footer"><div class="md-footer-nav"><nav class="md-footer-nav__inner md-grid"><a href="usage/" title="Overview" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next"><div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span class="md-flex__ellipsis"><span class="md-footer-nav__direction">Next</span>Overview</span></div><div class="md-flex__cell md-flex__cell--shrink"><i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i></div></a></nav></div><div class="md-footer-meta md-typeset"><div class="md-footer-meta__inner md-grid"><div class="md-footer-copyright">powered by <a href="https://www.mkdocs.org">MkDocs</a> and <a href="https://squidfunk.github.io/mkdocs-material/">Material for MkDocs</a></div></div></div></footer></div><script src="assets/javascripts/application.b260a35d.js"></script><script>app.initialize({version:"1.0.4",url:{base:"."}})</script></body></html>
+<p>Details on the github page: <a href="https://github.com/smarie/python-pytest-cases">https://github.com/smarie/python-pytest-cases</a></p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+        
+          <a href="usage/" title="Overview" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Overview
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/application.245445c6.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      
+    
+  </body>
+</html>
