@@ -36,8 +36,8 @@ for dataset_name, dataset_indices in datasets_indices.items():
     globals()["data_from_%s" % dataset_name] = create_data_from_dataset_fixture(dataset_name)
 
 # ------ Test
-@pytest_parametrize_plus('data', [fixture_ref('data_from_DA'),
-                                  fixture_ref('data_from_DB')])
+@pytest_parametrize_plus('data', [fixture_ref('data_from_%s' % n)
+                                  for n in datasets_indices.keys()])
 def test_databases(data):
     # do test
     print(data)
