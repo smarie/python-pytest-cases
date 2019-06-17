@@ -196,6 +196,20 @@ See [Usage](./usage) for complete examples with custom case names, case generato
 
 ## `pytest` Goodies
 
+### `--with-reorder`
+
+`pytest` postprocesses the order of the collected items in order to optimize setup/teardown of session, module and class fixtures. This optimization algorithm happens at the `pytest_collection_modifyitems` stage, and is still under improvement, as can be seen in [pytest#3551](https://github.com/pytest-dev/pytest/pull/3551), [pytest#3393](https://github.com/pytest-dev/pytest/issues/3393), [#2846](https://github.com/pytest-dev/pytest/issues/2846)...
+
+Besides other plugins such as [pytest-reorder](https://github.com/not-raspberry/pytest_reorder) can modify the order as well.
+
+
+This new commandline is a goodie to change the reordering:
+
+ * `--with-reorder normal` is the default behaviour: it lets pytest and all the plugins execute their reordering in each of their `pytest_collection_modifyitems` hooks, and simply does not interact 
+ 
+ * `--with-reorder skip` allows you to restore the original order that was active before `pytest_collection_modifyitems` was initially called, thus not taking into account any reordering done by pytest or by any of its plugins.
+ 
+
 ### `@pytest_fixture_plus`
 
 `@pytest_fixture_plus` is similar to `pytest.fixture` but without its `param` and `ids` arguments. Instead, it is able to pick the parametrization from `@pytest.mark.parametrize` marks applied on fixtures. This makes it very intuitive for users to parametrize both their tests and fixtures. As a bonus, its `name` argument works even in old versions of pytest (which is not the case for `fixture`).
