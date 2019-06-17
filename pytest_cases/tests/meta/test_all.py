@@ -1,5 +1,6 @@
 import ast
 import os
+import shlex
 import sys
 from importlib import import_module
 
@@ -35,11 +36,18 @@ def test_run_all_tests(test_to_run, testdir):
     :param testdir:
     :return:
     """
-
+    cmdargs = []
     conf_file_path = None
     test_to_run_path = join(tests_raw_folder, test_to_run)
     if isdir(test_to_run_path):
         test_folder_path = test_to_run_path
+
+        # check if there is a cmdargs file
+        cmdargs_file_path = join(test_folder_path, "cmdargs.txt")
+        if exists(cmdargs_file_path):
+            with open(cmdargs_file_path) as c:
+                cmdargs = c.read()
+            cmdargs = process_cmdargs(cmdargs)
 
         # check if there is a conf file
         conf_file_path = join(test_folder_path, "conf.py")
@@ -92,9 +100,10 @@ def test_run_all_tests(test_to_run, testdir):
         # outfirst = "\n".join(first.outlines)
         # assert "collected 1 items" in outfirst
 
-        result = testdir.runpytest("-s", "-vv")  # ("-q")
-        # testdir.finalize()
-        # put back
+        # ********* RUN *********
+        result = testdir.runpytest(*cmdargs)  # ("-q")
+
+        # put back the PyCharm hack
         config._prepareconfig = jb_prepareconfig
 
         # Here we check that everything is ok
@@ -161,3 +170,7 @@ def get_pytest_prepare_config(dynamic=False):
                 raise
 
     return real_prepare_config
+
+
+def process_cmdargs(cmdargs):
+    return shlex.split(cmdargs)
