@@ -535,7 +535,7 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     # note as an alternative we could return a custom object in place of the ref_fixturenames
     # store_union_closure_in_node(fixturenames_closure_node, parentnode)
 
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.10.0'):
+    if LooseVersion(pytest.__version__) >= LooseVersion('3.7.0'):
         our_initial_names = sorted_fixturenames  # initial_names
         return our_initial_names, fixturenames_closure_node, ref_arg2fixturedefs
     else:

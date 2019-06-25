@@ -1,6 +1,10 @@
 # Changelog
 
-### 1.9.1 - Bugfix
+### 1.9.2 - Bugfix with pytest 3.7 
+
+Fixed [#48](https://github.com/smarie/python-pytest-cases/issues/48).
+
+### 1.9.1 - Bugfix with pytest 3.7
 
 Fixed [#48](https://github.com/smarie/python-pytest-cases/issues/48).
 
