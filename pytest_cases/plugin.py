@@ -471,7 +471,7 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
         # new argument "ignore_args" in 4.6+
         kwargs['ignore_args'] = ignore_args
 
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.10.0'):
+    if LooseVersion(pytest.__version__) >= LooseVersion('3.7.0'):
         # three outputs
         initial_names, ref_fixturenames, ref_arg2fixturedefs = \
             fm.__class__.getfixtureclosure(fm, fixturenames, parentnode, **kwargs)

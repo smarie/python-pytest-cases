@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.9.1 - Bugfix
+
+Fixed [#48](https://github.com/smarie/python-pytest-cases/issues/48).
+
 ### 1.9.0 - New `--with-reorder` commandline option
 
 New commandline option '--with-reorder' to change the reordering startegy currently in application. Fixes [#45](https://github.com/smarie/python-pytest-cases/issues/45).
