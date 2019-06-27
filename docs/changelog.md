@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.9.3 - Bugfix
+
+Fixed issues when parametrize argnames contains a list. This fixed [#49](https://github.com/smarie/python-pytest-cases/issues/49)
+
 ### 1.9.2 - Bugfix with pytest 3.7 
 
 Fixed [#48](https://github.com/smarie/python-pytest-cases/issues/48).
