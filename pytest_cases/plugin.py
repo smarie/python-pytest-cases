@@ -8,7 +8,7 @@ from functools import partial
 import pytest
 
 from pytest_cases.common import get_pytest_nodeid, get_pytest_function_scopenum, \
-    is_function_node, get_param_names, get_pytest_scopenum
+    is_function_node, get_param_names, get_pytest_scopenum, get_param_argnames_as_list
 from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params, UnionFixtureAlternative, apply_id_style
 
 try:  # python 3.3+
@@ -708,7 +708,7 @@ class CallsReactor:
 
         # ------ parametrize the calls --------
         # create a dictionary of pending things to parametrize, and only keep the first parameter in case of several
-        pending_items = [(str(p[0]).replace(' ', '').split(',')[0], p) for p in self._pending]
+        pending_items = [(get_param_argnames_as_list(p[0])[0], p) for p in self._pending]
         pending = OrderedDict(pending_items)
 
         if _DEBUG:
@@ -766,7 +766,7 @@ class CallsReactor:
                                                                indirect=True, discard_id=True,
                                                                scope=p_to_apply.scope, **p_to_apply.kwargs)
                     else:
-                        _nb_argnames = len(p_to_apply.argnames.split(','))
+                        _nb_argnames = len(get_param_argnames_as_list(p_to_apply.argnames))
                         if _nb_argnames > 1:
                             _vals = [(NOT_USED,) * _nb_argnames]
                         else:

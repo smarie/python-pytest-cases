@@ -46,6 +46,18 @@ def get_fixture_name(fixture_fun):
             return str(fixture_fun)
 
 
+def get_param_argnames_as_list(argnames):
+    """
+    pytest parametrize accepts both coma-separated names and list/tuples.
+    This function makes sure that we always return a list
+    :param argnames:
+    :return:
+    """
+    if isinstance(argnames, str):
+        argnames = argnames.replace(' ', '').split(',')
+    return list(argnames)
+
+
 # ------------ container for the mark information that we grab from the fixtures (`@pytest_fixture_plus`)
 class _ParametrizationMark:
     """
@@ -55,7 +67,7 @@ class _ParametrizationMark:
 
     def __init__(self, mark):
         bound = get_parametrize_signature().bind(*mark.args, **mark.kwargs)
-        self.param_names = bound.arguments['argnames'].replace(' ', '').split(',')
+        self.param_names = get_param_argnames_as_list(bound.arguments['argnames'])
         self.param_values = bound.arguments['argvalues']
         try:
             bound.apply_defaults()
@@ -107,7 +119,7 @@ def get_param_names(fnode):
     p_markers = get_parametrization_markers(fnode)
     param_names = []
     for paramz_mark in p_markers:
-        param_names += paramz_mark.args[0].replace(' ', '').split(',')
+        param_names += get_param_argnames_as_list(paramz_mark.args[0])
     return param_names
 
 

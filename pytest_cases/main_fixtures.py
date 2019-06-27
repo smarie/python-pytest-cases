@@ -39,7 +39,7 @@ except ImportError:
     pass
 
 from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get_test_ids_from_param_values, \
-    make_marked_parameter_value, extract_parameterset_info, get_fixture_name
+    make_marked_parameter_value, extract_parameterset_info, get_fixture_name, get_param_argnames_as_list
 from pytest_cases.main_params import cases_data
 
 
@@ -167,7 +167,7 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
     :return:
     """
     created_fixtures = []
-    argnames_lst = argnames.replace(' ', '').split(',')
+    argnames_lst = get_param_argnames_as_list(argnames)
 
     caller_module = get_caller_module()
 
@@ -763,7 +763,7 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
     else:
         # there are fixture references: we have to create a specific decorator
         caller_module = get_caller_module()
-        all_param_names = argnames.replace(' ', '').split(',')
+        all_param_names = get_param_argnames_as_list(argnames)
 
         def create_param_fixture(from_i, to_i, p_fix_name):
             """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
