@@ -443,6 +443,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#unpack_fixture" title="unpack_fixture" class="md-nav__link">
+    unpack_fixture
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fixture_union" title="fixture_union" class="md-nav__link">
     fixture_union
   </a>
@@ -632,6 +639,13 @@
           <li class="md-nav__item">
   <a href="#pytest_fixture_plus" title="@pytest_fixture_plus" class="md-nav__link">
     @pytest_fixture_plus
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unpack_fixture" title="unpack_fixture" class="md-nav__link">
+    unpack_fixture
   </a>
   
 </li>
@@ -883,8 +897,26 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 <h2 id="3-pytest-goodies">3 - Pytest goodies<a class="headerlink" href="#3-pytest-goodies" title="Permanent link">&para;</a></h2>
 <h3 id="pytest_fixture_plus"><code>@pytest_fixture_plus</code><a class="headerlink" href="#pytest_fixture_plus" title="Permanent link">&para;</a></h3>
 <p><code>pytest_fixture_plus(scope="function", autouse=False, name=None, **kwargs)</code></p>
-<p>Identical to <code>@pytest.fixture</code> decorator, except that it supports multi-parametrization with <code>@pytest.mark.parametrize</code> as requested in <a href="https://github.com/pytest-dev/pytest/issues/3960">pytest#3960</a>.</p>
+<p>Identical to <code>@pytest.fixture</code> decorator, except that </p>
+<ul>
+<li>
+<p>it supports multi-parametrization with <code>@pytest.mark.parametrize</code> as requested in <a href="https://github.com/pytest-dev/pytest/issues/3960">pytest#3960</a>. As a consequence it does not support the <code>params</code> and <code>ids</code> arguments anymore.</p>
+</li>
+<li>
+<p>it supports a new argument <code>unpack_into</code> where you can provide names for fixtures where to unpack this fixture into.</p>
+</li>
+</ul>
 <p>As a consequence it does not support the <code>params</code> and <code>ids</code> arguments anymore.</p>
+<h3 id="unpack_fixture"><code>unpack_fixture</code><a class="headerlink" href="#unpack_fixture" title="Permanent link">&para;</a></h3>
+<p><code>unpack_fixture(argnames, fixture) -&gt; Tuple[&lt;Fixture&gt;]</code></p>
+<p>Creates several fixtures with names <code>argnames</code> from the source <code>fixture</code>. Created fixtures will correspond to elements unpacked from <code>fixture</code> in order. For example if <code>fixture</code> is a tuple of length 2, <code>argnames="a,b"</code> will create two fixtures containing the first and second element respectively.</p>
+<p>The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. <code>a, b = unpack_fixture('a,b', 'c')</code>.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>argnames</strong>: same as <code>@pytest.mark.parametrize</code> <code>argnames</code>.</li>
+<li><strong>fixture</strong>: a fixture name string or a fixture symbol. If a fixture symbol is provided, the created fixtures will have the same scope. If a name is provided, they will have scope='function'. Note that in practice the performance loss resulting from using <code>function</code> rather than a higher scope is negligible since the created fixtures' body is a one-liner.</li>
+</ul>
+<p><strong>Outputs:</strong> the created fixtures.</p>
 <h3 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h3>
 <p><code>fixture_union(name, fixtures, scope="function", idstyle='explicit',
                ids=fixture_alternative_to_str, autouse=False, **kwargs)
@@ -908,11 +940,11 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 </ul>
 <p><strong>Outputs:</strong> the new fixture. Note: you do not need to capture that output in a symbol, since the fixture is automatically registered in your module. However if you decide to do so make sure that you use the same name.</p>
 <h3 id="param_fixtures"><code>param_fixtures</code><a class="headerlink" href="#param_fixtures" title="Permanent link">&para;</a></h3>
-<p><code>param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs)</code></p>
+<p><code>param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs) -&gt; Tuple[&lt;Fixture&gt;]</code></p>
 <p>Creates one or several "parameters" fixtures - depending on the number or coma-separated names in <code>argnames</code>. The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. <code>p, q = param_fixtures('p,q', [(0, 1), (2, 3)])</code>.</p>
 <p>Note that the <code>(argnames, argvalues, ids)</code> signature is similar to <code>@pytest.mark.parametrize</code> for consistency, see https://docs.pytest.org/en/latest/reference.html?highlight=pytest.param#pytest-mark-parametrize</p>
 <h3 id="param_fixture"><code>param_fixture</code><a class="headerlink" href="#param_fixture" title="Permanent link">&para;</a></h3>
-<p><code>param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs)</code></p>
+<p><code>param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs) -&gt; &lt;Fixture&gt;</code></p>
 <p>Identical to <code>param_fixtures</code> but for a single parameter name, so that you can assign its output to a single variable.</p>
 <h3 id="pytest_parametrize_plus"><code>@pytest_parametrize_plus</code><a class="headerlink" href="#pytest_parametrize_plus" title="Permanent link">&para;</a></h3>
 <p><code>pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs)</code></p>

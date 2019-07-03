@@ -338,6 +338,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#unpack_fixture-unpack_into" title="unpack_fixture / unpack_into" class="md-nav__link">
+    unpack_fixture / unpack_into
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#param_fixtures" title="param_fixture[s]" class="md-nav__link">
     param_fixture[s]
   </a>
@@ -622,6 +629,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#unpack_fixture-unpack_into" title="unpack_fixture / unpack_into" class="md-nav__link">
+    unpack_fixture / unpack_into
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#param_fixtures" title="param_fixture[s]" class="md-nav__link">
     param_fixture[s]
   </a>
@@ -880,6 +894,37 @@
 <p class="admonition-title"><code>@pytest_fixture_plus</code> deprecation if/when <code>@pytest.fixture</code> supports <code>@pytest.mark.parametrize</code></p>
 <p>The ability for pytest fixtures to support the <code>@pytest.mark.parametrize</code> annotation is a feature that clearly belongs to <code>pytest</code> scope, and has been <a href="https://github.com/pytest-dev/pytest/issues/3960">requested already</a>. It is therefore expected that <code>@pytest_fixture_plus</code> will be deprecated in favor of <code>@pytest_fixture</code> if/when the <code>pytest</code> team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.</p>
 </div>
+<h3 id="unpack_fixture-unpack_into"><code>unpack_fixture</code> / <code>unpack_into</code><a class="headerlink" href="#unpack_fixture-unpack_into" title="Permanent link">&para;</a></h3>
+<p>In some cases fixtures return a tuple or a list of items. It is not easy to refer to a single of these items in a test or another fixture. With <code>unpack_fixture</code> you can easily do it:</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">unpack_fixture</span><span class="p">,</span> <span class="n">pytest_fixture_plus</span>
+
+<span class="nd">@pytest_fixture_plus</span>
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">unpack_fixture</span><span class="p">(</span><span class="s2">&quot;a,b&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
+</pre></div>
+
+
+<p>Note that you can also use the <code>unpack_into=</code> argument of <code>@pytest_fixture_plus</code> to do the same thing:</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">pytest_fixture_plus</span>
+
+<span class="nd">@pytest_fixture_plus</span><span class="p">(</span><span class="n">unpack_into</span><span class="o">=</span><span class="s2">&quot;a,b&quot;</span><span class="p">)</span>
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
+</pre></div>
+
+
 <h3 id="param_fixtures"><code>param_fixture[s]</code><a class="headerlink" href="#param_fixtures" title="Permanent link">&para;</a></h3>
 <p>If you wish to share some parameters across several fixtures and tests, it might be convenient to have a fixture representing this parameter. This is relatively easy for single parameters, but a bit harder for parameter tuples.</p>
 <p>The two utilities functions <code>param_fixture</code> (for a single parameter name) and <code>param_fixtures</code> (for a tuple of parameter names) handle the difficulty for you:</p>
