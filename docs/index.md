@@ -6,7 +6,7 @@
 
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 
-!!! success "New `fixture_union` and `@pytest_parametrize_plus` are there, [check them out](#fixture_union) !"
+!!! success "New `unpacking feature`, [check it out](#unpack_fixture-unpack_into) !"
 
 !!! warning "Test execution order"
     Installing pytest-cases now has effects on the order of `pytest` tests execution, even if you do not use its features. One positive side effect is that it fixed [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054). But if you see less desirable ordering please [report it](https://github.com/smarie/python-pytest-cases/issues).
@@ -214,6 +214,8 @@ This new commandline is a goodie to change the reordering:
 
 `@pytest_fixture_plus` is similar to `pytest.fixture` but without its `param` and `ids` arguments. Instead, it is able to pick the parametrization from `@pytest.mark.parametrize` marks applied on fixtures. This makes it very intuitive for users to parametrize both their tests and fixtures. As a bonus, its `name` argument works even in old versions of pytest (which is not the case for `fixture`).
 
+Finally it now supports unpacking, see [unpacking feature](#unpack_fixture-unpack_into).
+
 !!! note "`@pytest_fixture_plus` deprecation if/when `@pytest.fixture` supports `@pytest.mark.parametrize`"
     The ability for pytest fixtures to support the `@pytest.mark.parametrize` annotation is a feature that clearly belongs to `pytest` scope, and has been [requested already](https://github.com/pytest-dev/pytest/issues/3960). It is therefore expected that `@pytest_fixture_plus` will be deprecated in favor of `@pytest_fixture` if/when the `pytest` team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.
 
@@ -347,6 +349,8 @@ This feature has been tested in very complex cases (several union fixtures, fixt
 
 !!! note "fixture unions vs. cases" 
     If you're familiar with `pytest-cases` already, you might note `@cases_data` is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by `pytest`, we will probably refactor this lib to align all the concepts.
+
+Finally fixture unions now supports unpacking, see [unpacking feature](#unpack_fixture-unpack_into).
 
 ### `@pytest_parametrize_plus`
 
