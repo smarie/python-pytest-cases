@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.10.0 - New feature: fixtures unpacking
+
+You can now unpack a fixture iterable into several individual fixtures using `unpack_fixture` or using `@pytest_fixture_plus(unpack_into=)`. Fixed [#50](https://github.com/smarie/python-pytest-cases/issues/50).
+
 ### 1.9.3 - Bugfix
 
 Fixed issues when parametrize argnames contains a list. This fixed [#49](https://github.com/smarie/python-pytest-cases/issues/49)
