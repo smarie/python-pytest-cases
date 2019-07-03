@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.10.1 - Bugfix
+
+Fixed [#52](https://github.com/smarie/python-pytest-cases/issues/52).
+
 ### 1.10.0 - New feature: fixtures unpacking
 
 You can now unpack a fixture iterable into several individual fixtures using `unpack_fixture` or using `@pytest_fixture_plus(unpack_into=<names>)`. This is also available in `union_fixture(unpack_into=<names>)`. Fixed [#50](https://github.com/smarie/python-pytest-cases/issues/50) and [#51](https://github.com/smarie/python-pytest-cases/issues/51).
