@@ -217,6 +217,40 @@ This new commandline is a goodie to change the reordering:
 !!! note "`@pytest_fixture_plus` deprecation if/when `@pytest.fixture` supports `@pytest.mark.parametrize`"
     The ability for pytest fixtures to support the `@pytest.mark.parametrize` annotation is a feature that clearly belongs to `pytest` scope, and has been [requested already](https://github.com/pytest-dev/pytest/issues/3960). It is therefore expected that `@pytest_fixture_plus` will be deprecated in favor of `@pytest_fixture` if/when the `pytest` team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.
 
+### `unpack_fixture` / `unpack_into`
+
+In some cases fixtures return a tuple or a list of items. It is not easy to refer to a single of these items in a test or another fixture. With `unpack_fixture` you can easily do it:
+
+```python
+import pytest
+from pytest_cases import unpack_fixture, pytest_fixture_plus
+
+@pytest_fixture_plus
+@pytest.mark.parametrize("o", ['hello', 'world'])
+def c(o):
+    return o, o[0]
+
+a, b = unpack_fixture("a,b", c)
+
+def test_function(a, b):
+    assert a[0] == b
+```
+
+Note that you can also use the `unpack_into=` argument of `@pytest_fixture_plus` to do the same thing:
+
+```python
+import pytest
+from pytest_cases import pytest_fixture_plus
+
+@pytest_fixture_plus(unpack_into="a,b")
+@pytest.mark.parametrize("o", ['hello', 'world'])
+def c(o):
+    return o, o[0]
+
+def test_function(a, b):
+    assert a[0] == b
+```
+
 ### `param_fixture[s]`
 
 If you wish to share some parameters across several fixtures and tests, it might be convenient to have a fixture representing this parameter. This is relatively easy for single parameters, but a bit harder for parameter tuples.

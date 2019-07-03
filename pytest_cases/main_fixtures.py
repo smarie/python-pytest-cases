@@ -136,13 +136,28 @@ def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function",
     Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single
     variable.
 
+    ```python
+    import pytest
+    from pytest_cases import param_fixtures, param_fixture
+
+    # create a single parameter fixture
+    my_parameter = param_fixture("my_parameter", [1, 2, 3, 4])
+
+    @pytest.fixture
+    def fixture_uses_param(my_parameter):
+        ...
+
+    def test_uses_param(my_parameter, fixture_uses_param):
+        ...
+    ```
+
     :param argname: see fixture `name`
     :param argvalues: see fixture `params`
     :param autouse: see fixture `autouse`
     :param ids: see fixture `ids`
     :param scope: see fixture `scope`
     :param kwargs: any other argument for 'fixture'
-    :return:
+    :return: the create fixture
     """
     if "," in argname:
         raise ValueError("`param_fixture` is an alias for `param_fixtures` that can only be used for a single "
@@ -246,13 +261,28 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
     Note that the (argnames, argvalues, ids) signature is similar to `@pytest.mark.parametrize` for consistency,
     see https://docs.pytest.org/en/latest/reference.html?highlight=pytest.param#pytest-mark-parametrize
 
+    ```python
+    import pytest
+    from pytest_cases import param_fixtures, param_fixture
+
+    # create a 2-tuple parameter fixture
+    arg1, arg2 = param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
+
+    @pytest.fixture
+    def fixture_uses_param2(arg2):
+        ...
+
+    def test_uses_param2(arg1, arg2, fixture_uses_param2):
+        ...
+    ```
+
     :param argnames: same as `@pytest.mark.parametrize` `argnames`.
     :param argvalues: same as `@pytest.mark.parametrize` `argvalues`.
     :param autouse: see fixture `autouse`
     :param ids: same as `@pytest.mark.parametrize` `ids`
     :param scope: see fixture `scope`
     :param kwargs: any other argument for the created 'fixtures'
-    :return:
+    :return: the created fixtures
     """
     created_fixtures = []
     argnames_lst = get_param_argnames_as_list(argnames)
@@ -281,7 +311,7 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
     # finally create the sub-fixtures
     for param_idx, argname in enumerate(argnames_lst):
         # create the fixture
-        # To fix late binding issue with `param_idx` we add an extra layer of scope
+        # To fix late binding issue with `param_idx` we add an extra layer of scope: a factory function
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(param_idx):
             @pytest_fixture_plus(name=argname, scope=scope, autouse=autouse, **kwargs)

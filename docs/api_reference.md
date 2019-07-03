@@ -247,9 +247,28 @@ Lists all desired cases for a given user query. This function may be convenient 
 
 `pytest_fixture_plus(scope="function", autouse=False, name=None, **kwargs)`
 
-Identical to `@pytest.fixture` decorator, except that it supports multi-parametrization with `@pytest.mark.parametrize` as requested in [pytest#3960](https://github.com/pytest-dev/pytest/issues/3960).
+Identical to `@pytest.fixture` decorator, except that 
+
+ - it supports multi-parametrization with `@pytest.mark.parametrize` as requested in [pytest#3960](https://github.com/pytest-dev/pytest/issues/3960). As a consequence it does not support the `params` and `ids` arguments anymore.
+ 
+ - it supports a new argument `unpack_into` where you can provide names for fixtures where to unpack this fixture into.
 
 As a consequence it does not support the `params` and `ids` arguments anymore.
+
+### `unpack_fixture`
+
+`unpack_fixture(argnames, fixture) -> Tuple[<Fixture>]`
+
+Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to elements unpacked from `fixture` in order. For example if `fixture` is a tuple of length 2, `argnames="a,b"` will create two fixtures containing the first and second element respectively.
+
+The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. `a, b = unpack_fixture('a,b', 'c')`.
+
+**Parameters**
+
+ - **argnames**: same as `@pytest.mark.parametrize` `argnames`.
+ - **fixture**: a fixture name string or a fixture symbol. If a fixture symbol is provided, the created fixtures will have the same scope. If a name is provided, they will have scope='function'. Note that in practice the performance loss resulting from using `function` rather than a higher scope is negligible since the created fixtures' body is a one-liner.
+
+**Outputs:** the created fixtures.
 
 ### `fixture_union`
 
@@ -279,7 +298,7 @@ The style of test ids corresponding to the union alternatives can be changed wit
 
 ### `param_fixtures`
 
-`param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs)`
+`param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs) -> Tuple[<Fixture>]`
 
 Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`. The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. `p, q = param_fixtures('p,q', [(0, 1), (2, 3)])`.
 
@@ -289,7 +308,7 @@ Note that the `(argnames, argvalues, ids)` signature is similar to `@pytest.mark
 
 ### `param_fixture`
 
-`param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs)`
+`param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs) -> <Fixture>`
 
 Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single variable.
 
