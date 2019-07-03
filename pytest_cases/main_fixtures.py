@@ -468,6 +468,16 @@ def pytest_fixture_plus(scope="function",
             # 'name' argument is not supported in this old version, use the __name__ trick.
             fixture_func.__name__ = name
 
+    # if unpacking is requested, do it first
+    if unpack_into is not None:
+        # get the future fixture name if needed
+        if name is None:
+            name = fixture_func.__name__
+
+        # get caller module to create the symbols
+        caller_module = get_caller_module(frame_offset=2)
+        _unpack_fixture(caller_module, unpack_into, name)
+
     # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
     parametrizer_marks = get_pytest_parametrize_marks(fixture_func)
     if len(parametrizer_marks) < 1:
@@ -576,16 +586,6 @@ def pytest_fixture_plus(scope="function",
                     kwargs[old_p_name] = old_p_value
 
         return args, kwargs
-
-    # if unpacking is requested, do it here
-    if unpack_into is not None:
-        # get the future fixture name if needed
-        if name is None:
-            name = fixture_func.__name__
-
-        # get caller module to create the symbols
-        caller_module = get_caller_module(frame_offset=2)
-        _unpack_fixture(caller_module, unpack_into, name)
 
     # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
     if not isgeneratorfunction(fixture_func):
@@ -864,7 +864,7 @@ def _fixture_union(caller_module, name, fixtures, idstyle, scope="function", ids
 
     # if unpacking is requested, do it here
     if unpack_into is not None:
-        _unpack_fixture(caller_module, unpack_into, name)
+        _unpack_fixture(caller_module, argnames=unpack_into, fixture=name)
 
     return fix
 
