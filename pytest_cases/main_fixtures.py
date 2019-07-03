@@ -459,13 +459,14 @@ def pytest_fixture_plus(scope="function",
         fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
     :param kwargs: other keyword arguments for `@pytest.fixture`
     """
-    # Compatibility for the 'name' argument
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-        # pytest version supports "name" keyword argument
-        kwargs['name'] = name
-    elif name is not None:
-        # 'name' argument is not supported in this old version, use the __name__ trick.
-        fixture_func.__name__ = name
+    if name is not None:
+        # Compatibility for the 'name' argument
+        if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+            # pytest version supports "name" keyword argument
+            kwargs['name'] = name
+        elif name is not None:
+            # 'name' argument is not supported in this old version, use the __name__ trick.
+            fixture_func.__name__ = name
 
     # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
     parametrizer_marks = get_pytest_parametrize_marks(fixture_func)
