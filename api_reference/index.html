@@ -896,7 +896,7 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 </ul>
 <h2 id="3-pytest-goodies">3 - Pytest goodies<a class="headerlink" href="#3-pytest-goodies" title="Permanent link">&para;</a></h2>
 <h3 id="pytest_fixture_plus"><code>@pytest_fixture_plus</code><a class="headerlink" href="#pytest_fixture_plus" title="Permanent link">&para;</a></h3>
-<p><code>pytest_fixture_plus(scope="function", autouse=False, name=None, **kwargs)</code></p>
+<p><code>pytest_fixture_plus(scope="function", autouse=False, name=None, unpack_into=None, **kwargs)</code></p>
 <p>Identical to <code>@pytest.fixture</code> decorator, except that </p>
 <ul>
 <li>
@@ -907,6 +907,14 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 </li>
 </ul>
 <p>As a consequence it does not support the <code>params</code> and <code>ids</code> arguments anymore.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong>scope</strong>: the scope for which this fixture is shared, one of "function" (default), "class", "module" or "session".</li>
+<li><strong>autouse</strong>: if True, the fixture func is activated for all tests that can see it.  If False (the default) then an explicitreference is needed to activate the fixture.</li>
+<li><strong>name</strong>: the name of the fixture. This defaults to the name of the decorated function. Note: If a fixture is used in the same module in which it is defined, the function name of the fixture will be shadowed by the function arg that requests the fixture; one wayto resolve this is to name the decorated function <code>fixture_&lt;fixturename&gt;</code> and then use <code>@pytest.fixture(name='&lt;fixturename&gt;')</code>.</li>
+<li><strong>unpack_into</strong>: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See <code>unpack_fixture</code> for details.</li>
+<li><strong>kwargs</strong>: other keyword arguments for <code>@pytest.fixture</code></li>
+</ul>
 <h3 id="unpack_fixture"><code>unpack_fixture</code><a class="headerlink" href="#unpack_fixture" title="Permanent link">&para;</a></h3>
 <p><code>unpack_fixture(argnames, fixture) -&gt; Tuple[&lt;Fixture&gt;]</code></p>
 <p>Creates several fixtures with names <code>argnames</code> from the source <code>fixture</code>. Created fixtures will correspond to elements unpacked from <code>fixture</code> in order. For example if <code>fixture</code> is a tuple of length 2, <code>argnames="a,b"</code> will create two fixtures containing the first and second element respectively.</p>
@@ -919,7 +927,7 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 <p><strong>Outputs:</strong> the created fixtures.</p>
 <h3 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h3>
 <p><code>fixture_union(name, fixtures, scope="function", idstyle='explicit',
-               ids=fixture_alternative_to_str, autouse=False, **kwargs)
+               ids=fixture_alternative_to_str, autouse=False, unpack_into=None, **kwargs)
                -&gt; &lt;Fixture&gt;</code></p>
 <p>Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically registered into the callers' module, but you may wish to assign it to a variable for convenience. In that case make sure that you use the same name, e.g. <code>a = fixture_union('a', ['b', 'c'])</code></p>
 <p>The style of test ids corresponding to the union alternatives can be changed with <code>idstyle</code>. Three values are allowed:</p>
@@ -934,6 +942,7 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 <li><code>fixtures</code>: an array-like containing fixture names and/or fixture symbols</li>
 <li><code>scope</code>: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the smallest scope of fixtures referenced.</li>
 <li><code>idstyle</code>: The style of test ids corresponding to the union alternatives. One of <code>'explicit'</code> (default), <code>'compact'</code>, or <code>None</code>.</li>
+<li><code>unpack_into</code>: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See <code>unpack_fixture</code> for details.</li>
 <li><code>ids</code>: as in pytest. The default value returns the correct fixture</li>
 <li><code>autouse</code>: as in pytest</li>
 <li><code>kwargs</code>: other pytest fixture options. They might not be supported correctly.</li>

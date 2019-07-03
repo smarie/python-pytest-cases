@@ -719,7 +719,7 @@
 <p><a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/pytest-cases.svg" /></a> <a href="https://travis-ci.org/smarie/python-pytest-cases"><img alt="Build Status" src="https://travis-ci.org/smarie/python-pytest-cases.svg?branch=master" /></a> <a href="https://smarie.github.io/python-pytest-cases/junit/report.html"><img alt="Tests Status" src="https://smarie.github.io/python-pytest-cases/junit/junit-badge.svg?dummy=8484744" /></a> <a href="https://codecov.io/gh/smarie/python-pytest-cases"><img alt="codecov" src="https://codecov.io/gh/smarie/python-pytest-cases/branch/master/graph/badge.svg" /></a></p>
 <p><a href="https://smarie.github.io/python-pytest-cases/"><img alt="Documentation" src="https://img.shields.io/badge/doc-latest-blue.svg" /></a> <a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pytest-cases.svg" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads" src="https://pepy.tech/badge/pytest-cases" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads per week" src="https://pepy.tech/badge/pytest-cases/week" /></a> <a href="https://github.com/smarie/python-pytest-cases/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/smarie/python-pytest-cases.svg" /></a></p>
 <div class="admonition success">
-<p class="admonition-title">New <code>fixture_union</code> and <code>@pytest_parametrize_plus</code> are there, <a href="#fixture_union">check them out</a> !</p>
+<p class="admonition-title">New <code>unpacking feature</code>, <a href="#unpack_fixture-unpack_into">check it out</a> !</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Test execution order</p>
@@ -890,6 +890,7 @@
 </ul>
 <h3 id="pytest_fixture_plus"><code>@pytest_fixture_plus</code><a class="headerlink" href="#pytest_fixture_plus" title="Permanent link">&para;</a></h3>
 <p><code>@pytest_fixture_plus</code> is similar to <code>pytest.fixture</code> but without its <code>param</code> and <code>ids</code> arguments. Instead, it is able to pick the parametrization from <code>@pytest.mark.parametrize</code> marks applied on fixtures. This makes it very intuitive for users to parametrize both their tests and fixtures. As a bonus, its <code>name</code> argument works even in old versions of pytest (which is not the case for <code>fixture</code>).</p>
+<p>Finally it now supports unpacking, see <a href="#unpack_fixture-unpack_into">unpacking feature</a>.</p>
 <div class="admonition note">
 <p class="admonition-title"><code>@pytest_fixture_plus</code> deprecation if/when <code>@pytest.fixture</code> supports <code>@pytest.mark.parametrize</code></p>
 <p>The ability for pytest fixtures to support the <code>@pytest.mark.parametrize</code> annotation is a feature that clearly belongs to <code>pytest</code> scope, and has been <a href="https://github.com/pytest-dev/pytest/issues/3960">requested already</a>. It is therefore expected that <code>@pytest_fixture_plus</code> will be deprecated in favor of <code>@pytest_fixture</code> if/when the <code>pytest</code> team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.</p>
@@ -919,6 +920,27 @@
 <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
+</pre></div>
+
+
+<p>And it is also available in <code>fixture_union</code>:</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">pytest_fixture_plus</span><span class="p">,</span> <span class="n">fixture_union</span>
+
+<span class="nd">@pytest_fixture_plus</span>
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nd">@pytest_fixture_plus</span>
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;yeepee&#39;</span><span class="p">,</span> <span class="s1">&#39;yay&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">d</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">fixture_union</span><span class="p">(</span><span class="s2">&quot;c_or_d&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">],</span> <span class="n">unpack_into</span><span class="o">=</span><span class="s2">&quot;a, b&quot;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
@@ -990,6 +1012,7 @@
 <p class="admonition-title">fixture unions vs. cases</p>
 <p>If you're familiar with <code>pytest-cases</code> already, you might note <code>@cases_data</code> is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by <code>pytest</code>, we will probably refactor this lib to align all the concepts.</p>
 </div>
+<p>Finally fixture unions now supports unpacking, see <a href="#unpack_fixture-unpack_into">unpacking feature</a>.</p>
 <h3 id="pytest_parametrize_plus"><code>@pytest_parametrize_plus</code><a class="headerlink" href="#pytest_parametrize_plus" title="Permanent link">&para;</a></h3>
 <p><code>@pytest_parametrize_plus</code> is a replacement for <code>@pytest.mark.parametrize</code> that allows you to include references to fixtures in the parameter values. Simply use <code>fixture_ref(&lt;fixture&gt;)</code> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function.</p>
 <p>For example:</p>
