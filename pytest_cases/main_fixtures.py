@@ -39,8 +39,96 @@ except ImportError:
     pass
 
 from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get_test_ids_from_param_values, \
-    make_marked_parameter_value, extract_parameterset_info, get_fixture_name, get_param_argnames_as_list
+    make_marked_parameter_value, extract_parameterset_info, get_fixture_name, get_param_argnames_as_list, \
+    get_fixture_scope
 from pytest_cases.main_params import cases_data
+
+
+def unpack_fixture(argnames, fixture):
+    """
+    Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to
+    elements unpacked from `fixture` in order. For example if `fixture` is a tuple of length 2, `argnames="a,b"` will
+    create two fixtures containing the first and second element respectively.
+
+    The created fixtures are automatically registered into the callers' module, but you may wish to assign them to
+    variables for convenience. In that case make sure that you use the same names,
+    e.g. `a, b = unpack_fixture('a,b', 'c')`.
+
+    ```python
+    import pytest
+    from pytest_cases import unpack_fixture, pytest_fixture_plus
+
+    @pytest_fixture_plus
+    @pytest.mark.parametrize("o", ['hello', 'world'])
+    def c(o):
+        return o, o[0]
+
+    a, b = unpack_fixture("a,b", c)
+
+    def test_function(a, b):
+        assert a[0] == b
+    ```
+
+    :param argnames: same as `@pytest.mark.parametrize` `argnames`.
+    :param fixture: a fixture name string or a fixture symbol. If a fixture symbol is provided, the created fixtures
+        will have the same scope. If a name is provided, they will have scope='function'. Note that in practice the
+        performance loss resulting from using `function` rather than a higher scope is negligible since the created
+        fixtures' body is a one-liner.
+    :return: the created fixtures.
+    """
+    # get caller module to create the symbols
+    caller_module = get_caller_module()
+    return _unpack_fixture(caller_module, argnames, fixture)
+
+
+def _unpack_fixture(caller_module, argnames, fixture):
+    """
+
+    :param caller_module:
+    :param argnames:
+    :param fixture:
+    :return:
+    """
+    # unpack fixture names to create if needed
+    argnames_lst = get_param_argnames_as_list(argnames)
+
+    # possibly get the source fixture name if the fixture symbol was provided
+    if not isinstance(fixture, str):
+        source_f_name = get_fixture_name(fixture)
+        scope = get_fixture_scope(fixture)
+    else:
+        source_f_name = fixture
+        # we dont have a clue about the real scope, so lets use function scope
+        scope = 'function'
+
+    # finally create the sub-fixtures
+    created_fixtures = []
+    for value_idx, argname in enumerate(argnames_lst):
+        # create the fixture
+        # To fix late binding issue with `value_idx` we add an extra layer of scope: a factory function
+        # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
+        def _create_fixture(value_idx):
+            # no need to autouse=True: this fixture does not bring any added value in terms of setup.
+            @pytest_fixture_plus(name=argname, scope=scope, autouse=False)
+            @with_signature("(%s)" % source_f_name)
+            def _param_fixture(**kwargs):
+                source_fixture_value = kwargs.pop(source_f_name)
+                # unpack
+                return source_fixture_value[value_idx]
+
+            return _param_fixture
+
+        # create it
+        fix = _create_fixture(value_idx)
+
+        # add to module
+        check_name_available(caller_module, argname, if_name_exists=WARN, caller=unpack_fixture)
+        setattr(caller_module, argname, fix)
+
+        # collect to return the whole list eventually
+        created_fixtures.append(fix)
+
+    return created_fixtures
 
 
 def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs):
@@ -311,14 +399,19 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
 def pytest_fixture_plus(scope="function",
                         autouse=False,
                         name=None,
+                        unpack_into=None,
                         fixture_func=DECORATED,
                         **kwargs):
     """ decorator to mark a fixture factory function.
 
-    Identical to `@pytest.fixture` decorator, except that it supports multi-parametrization with
-    `@pytest.mark.parametrize` as requested in https://github.com/pytest-dev/pytest/issues/3960.
+    Identical to `@pytest.fixture` decorator, except that
 
-    As a consequence it does not support the `params` and `ids` arguments anymore.
+     - it supports multi-parametrization with `@pytest.mark.parametrize` as requested in
+       https://github.com/pytest-dev/pytest/issues/3960. As a consequence it does not support the `params` and `ids`
+       arguments anymore.
+
+     - it supports a new argument `unpack_into` where you can provide names for fixtures where to unpack this fixture
+       into.
 
     :param scope: the scope for which this fixture is shared, one of
                 "function" (default), "class", "module" or "session".
@@ -332,6 +425,8 @@ def pytest_fixture_plus(scope="function",
                 to resolve this is to name the decorated function
                 ``fixture_<fixturename>`` and then use
                 ``@pytest.fixture(name='<fixturename>')``.
+    :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional
+        fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
     :param kwargs: other keyword arguments for `@pytest.fixture`
     """
     # Compatibility for the 'name' argument
@@ -450,6 +545,16 @@ def pytest_fixture_plus(scope="function",
                     kwargs[old_p_name] = old_p_value
 
         return args, kwargs
+
+    # if unpacking is requested, do it here
+    if unpack_into is not None:
+        # get the future fixture name if needed
+        if name is None:
+            name = fixture_func.__name__
+
+        # get caller module to create the symbols
+        caller_module = get_caller_module(frame_offset=2)
+        _unpack_fixture(caller_module, unpack_into, name)
 
     # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
     if not isgeneratorfunction(fixture_func):

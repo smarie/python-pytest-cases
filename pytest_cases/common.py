@@ -46,6 +46,22 @@ def get_fixture_name(fixture_fun):
             return str(fixture_fun)
 
 
+def get_fixture_scope(fixture_fun):
+    """
+    Internal utility to retrieve the fixture scope corresponding to the given fixture function .
+    Indeed there is currently no pytest API to do this.
+
+    :param fixture_fun:
+    :return:
+    """
+    # try:
+    #     # pytest 3
+    return fixture_fun._pytestfixturefunction.scope
+    # except AttributeError:
+    #     # pytest 2
+    #     return fixture_fun.func_scope
+
+
 def get_param_argnames_as_list(argnames):
     """
     pytest parametrize accepts both coma-separated names and list/tuples.
