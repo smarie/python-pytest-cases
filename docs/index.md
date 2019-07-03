@@ -251,6 +251,28 @@ def test_function(a, b):
     assert a[0] == b
 ```
 
+And it is also available in `fixture_union`:
+
+```python
+import pytest
+from pytest_cases import pytest_fixture_plus, fixture_union
+
+@pytest_fixture_plus
+@pytest.mark.parametrize("o", ['hello', 'world'])
+def c(o):
+    return o, o[0]
+
+@pytest_fixture_plus
+@pytest.mark.parametrize("o", ['yeepee', 'yay'])
+def d(o):
+    return o, o[0]
+
+fixture_union("c_or_d", [c, d], unpack_into="a, b")
+
+def test_function(a, b):
+    assert a[0] == b
+```
+
 ### `param_fixture[s]`
 
 If you wish to share some parameters across several fixtures and tests, it might be convenient to have a fixture representing this parameter. This is relatively easy for single parameters, but a bit harder for parameter tuples.

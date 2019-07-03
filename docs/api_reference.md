@@ -245,7 +245,7 @@ Lists all desired cases for a given user query. This function may be convenient 
 
 ### `@pytest_fixture_plus`
 
-`pytest_fixture_plus(scope="function", autouse=False, name=None, **kwargs)`
+`pytest_fixture_plus(scope="function", autouse=False, name=None, unpack_into=None, **kwargs)`
 
 Identical to `@pytest.fixture` decorator, except that 
 
@@ -254,6 +254,14 @@ Identical to `@pytest.fixture` decorator, except that
  - it supports a new argument `unpack_into` where you can provide names for fixtures where to unpack this fixture into.
 
 As a consequence it does not support the `params` and `ids` arguments anymore.
+
+**Parameters:**
+
+ - **scope**: the scope for which this fixture is shared, one of "function" (default), "class", "module" or "session".
+ - **autouse**: if True, the fixture func is activated for all tests that can see it.  If False (the default) then an explicitreference is needed to activate the fixture.
+ - **name**: the name of the fixture. This defaults to the name of the decorated function. Note: If a fixture is used in the same module in which it is defined, the function name of the fixture will be shadowed by the function arg that requests the fixture; one wayto resolve this is to name the decorated function ``fixture_<fixturename>`` and then use ``@pytest.fixture(name='<fixturename>')``.
+ - **unpack_into**: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
+ - **kwargs**: other keyword arguments for `@pytest.fixture`
 
 ### `unpack_fixture`
 
@@ -273,7 +281,7 @@ The created fixtures are automatically registered into the callers' module, but 
 ### `fixture_union`
 
 `fixture_union(name, fixtures, scope="function", idstyle='explicit',
-               ids=fixture_alternative_to_str, autouse=False, **kwargs)
+               ids=fixture_alternative_to_str, autouse=False, unpack_into=None, **kwargs)
                -> <Fixture>`
 
 Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically registered into the callers' module, but you may wish to assign it to a variable for convenience. In that case make sure that you use the same name, e.g. `a = fixture_union('a', ['b', 'c'])`
@@ -290,6 +298,7 @@ The style of test ids corresponding to the union alternatives can be changed wit
  - `fixtures`: an array-like containing fixture names and/or fixture symbols
  - `scope`: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the smallest scope of fixtures referenced.
  - `idstyle`: The style of test ids corresponding to the union alternatives. One of `'explicit'` (default), `'compact'`, or `None`.
+ - `unpack_into`: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
  - `ids`: as in pytest. The default value returns the correct fixture
  - `autouse`: as in pytest
  - `kwargs`: other pytest fixture options. They might not be supported correctly.

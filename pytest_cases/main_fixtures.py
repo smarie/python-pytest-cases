@@ -762,8 +762,14 @@ def fixture_alternative_to_str(fixture_alternative,  # type: UnionFixtureAlterna
     return fixture_alternative.fixture_name
 
 
-def fixture_union(name, fixtures, scope="function", idstyle='explicit',
-                  ids=fixture_alternative_to_str, autouse=False, **kwargs):
+def fixture_union(name,
+                  fixtures,
+                  scope="function",
+                  idstyle='explicit',
+                  ids=fixture_alternative_to_str,
+                  unpack_into=None,
+                  autouse=False,
+                  **kwargs):
     """
     Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically
     registered into the callers' module, but you may wish to assign it to a variable for convenience. In that case
@@ -784,6 +790,8 @@ def fixture_union(name, fixtures, scope="function", idstyle='explicit',
     :param idstyle: The style of test ids corresponding to the union alternatives. One of `'explicit'` (default),
         `'compact'`, or `None`.
     :param ids: as in pytest. The default value returns the correct fixture
+    :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional
+        fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
     :param autouse: as in pytest
     :param kwargs: other pytest fixture options. They might not be supported correctly.
     :return: the new fixture. Note: you do not need to capture that output in a symbol, since the fixture is
@@ -791,11 +799,11 @@ def fixture_union(name, fixtures, scope="function", idstyle='explicit',
     """
     caller_module = get_caller_module()
     return _fixture_union(caller_module, name, fixtures, scope=scope, idstyle=idstyle, ids=ids, autouse=autouse,
-                          **kwargs)
+                          unpack_into=unpack_into, **kwargs)
 
 
 def _fixture_union(caller_module, name, fixtures, idstyle, scope="function", ids=fixture_alternative_to_str,
-                   autouse=False, **kwargs):
+                   unpack_into=None, autouse=False, **kwargs):
     """
     Internal implementation for fixture_union
 
@@ -805,6 +813,7 @@ def _fixture_union(caller_module, name, fixtures, idstyle, scope="function", ids
     :param idstyle:
     :param scope:
     :param ids:
+    :param unpack_into:
     :param autouse:
     :param kwargs:
     :return:
@@ -852,6 +861,10 @@ def _fixture_union(caller_module, name, fixtures, idstyle, scope="function", ids
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
     check_name_available(caller_module, name, if_name_exists=WARN, caller=param_fixture)
     setattr(caller_module, name, fix)
+
+    # if unpacking is requested, do it here
+    if unpack_into is not None:
+        _unpack_fixture(caller_module, unpack_into, name)
 
     return fix
 
