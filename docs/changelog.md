@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.10.2 - More intuitive error messages
+
+Now raising an explicit `InvalidParamsList` when pytest parametrize `argvalues` are incorrect. See [#54](https://github.com/smarie/python-pytest-cases/issues/54)
+
 ### 1.10.1 - Bugfix
 
 Fixed [#52](https://github.com/smarie/python-pytest-cases/issues/52).
