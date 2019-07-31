@@ -12,7 +12,7 @@
     Installing pytest-cases now has effects on the order of `pytest` tests execution, even if you do not use its features. One positive side effect is that it fixed [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054). But if you see less desirable ordering please [report it](https://github.com/smarie/python-pytest-cases/issues).
 
 
-Did you ever thought that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
+Did you ever think that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
 `pytest-cases` leverages `pytest` and its great `@pytest.mark.parametrize` decorator, so that you can **separate your test cases from your test functions**. For example with `pytest-cases` you can now write your tests with the following pattern:
 
