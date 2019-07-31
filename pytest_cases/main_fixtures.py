@@ -735,13 +735,30 @@ def apply_id_style(id, union_fixture_name, idstyle):
         raise ValueError("Invalid id style")
 
 
+class InvalidParamsList(Exception):
+    """
+    Exception raised when users attempt to provide a non-iterable `argvalues` in pytest parametrize.
+    See https://docs.pytest.org/en/latest/reference.html#pytest-mark-parametrize-ref
+    """
+    __slots__ = 'params',
+
+    def __init__(self, params):
+        self.params = params
+
+    def __str__(self):
+        return "Invalid parameters list (`argvalues`) in pytest parametrize: %s" % self.params
+
+
 def is_fixture_union_params(params):
     """
     Internal helper to quickly check if a bunch of parameters correspond to a union fixture.
     :param params:
     :return:
     """
-    return len(params) >= 1 and isinstance(params[0], UnionFixtureAlternative)
+    try:
+        return len(params) >= 1 and isinstance(params[0], UnionFixtureAlternative)
+    except TypeError:
+        raise InvalidParamsList(params)
 
 
 def is_used_request(request):
@@ -898,7 +915,10 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
     :return:
     """
     # make sure that we do not destroy the argvalues if it is provided as an iterator
-    argvalues = list(argvalues)
+    try:
+        argvalues = list(argvalues)
+    except TypeError:
+        raise InvalidParamsList(argvalues)
 
     # find if there are fixture references in the values provided
     fixture_indices = []
