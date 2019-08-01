@@ -17,6 +17,13 @@ else:
     yield_fixture = pytest.fixture
 
 
+def remove_duplicates(lst):
+    dset = set()
+    # relies on the fact that dset.add() always returns None.
+    return [item for item in lst
+            if item not in dset and not dset.add(item)]
+
+
 def get_fixture_name(fixture_fun):
     """
     Internal utility to retrieve the fixture name corresponding to the given fixture function .

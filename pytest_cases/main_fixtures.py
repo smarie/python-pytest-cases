@@ -40,7 +40,7 @@ except ImportError:
 
 from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get_test_ids_from_param_values, \
     make_marked_parameter_value, extract_parameterset_info, get_fixture_name, get_param_argnames_as_list, \
-    get_fixture_scope
+    get_fixture_scope, remove_duplicates
 from pytest_cases.main_params import cases_data
 
 
@@ -886,6 +886,76 @@ def _fixture_union(caller_module, name, fixtures, idstyle, scope="function", ids
     return fix
 
 
+def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
+                     scope="function", ids=fixture_alternative_to_str,
+                     unpack_into=None, autouse=False, **kwargs):
+    """
+    Internal implementation for fixture products created by pytest parametrize plus.
+
+    :param caller_module:
+    :param name:
+    :param fixtures_or_values:
+    :param fixture_positions:
+    :param idstyle:
+    :param scope:
+    :param ids:
+    :param unpack_into:
+    :param autouse:
+    :param kwargs:
+    :return:
+    """
+    # test the `fixtures` argument to avoid common mistakes
+    if not isinstance(fixtures_or_values, (tuple, set, list)):
+        raise TypeError("fixture_product: the `fixtures_or_values` argument should be a tuple, set or list")
+
+    _tuple_size = len(fixtures_or_values)
+
+    # first get all required fixture names
+    f_names = [None] * _tuple_size
+    for f_pos in fixture_positions:
+        # possibly get the fixture name if the fixture symbol was provided
+        f = fixtures_or_values[f_pos]
+        # and remember the position in the tuple
+        f_names[f_pos] = get_fixture_name(f) if not isinstance(f, str) else f
+
+    # remove duplicates by making it an ordered set
+    all_names = remove_duplicates((n for n in f_names if n is not None))
+    if len(all_names) < 1:
+        raise ValueError("Empty fixture products are not permitted")
+
+    def _tuple_generator(all_fixtures):
+        for i in range(_tuple_size):
+            fix_at_pos_i = f_names[i]
+            if fix_at_pos_i is None:
+                # fixed value
+                yield fixtures_or_values[i]
+            else:
+                # fixture value
+                yield all_fixtures[fix_at_pos_i]
+
+    # then generate the body of our product fixture. It will require all of its dependent fixtures
+    @with_signature("(%s)" % ', '.join(all_names))
+    def _new_fixture(**all_fixtures):
+        return tuple(_tuple_generator(all_fixtures))
+
+    _new_fixture.__name__ = name
+
+    # finally create the fixture per se.
+    # WARNING we do not use pytest.fixture but pytest_fixture_plus so that NOT_USED is discarded
+    f_decorator = pytest_fixture_plus(scope=scope, autouse=autouse, ids=ids, **kwargs)
+    fix = f_decorator(_new_fixture)
+
+    # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
+    check_name_available(caller_module, name, if_name_exists=WARN, caller=param_fixture)
+    setattr(caller_module, name, fix)
+
+    # if unpacking is requested, do it here
+    if unpack_into is not None:
+        _unpack_fixture(caller_module, argnames=unpack_into, fixture=name)
+
+    return fix
+
+
 class fixture_ref:
     """
     A reference to a fixture, to be used in `pytest_parametrize_plus`.
@@ -920,11 +990,37 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
     except TypeError:
         raise InvalidParamsList(argvalues)
 
+    # get the param names
+    all_param_names = get_param_argnames_as_list(argnames)
+    nb_params = len(all_param_names)
+
     # find if there are fixture references in the values provided
     fixture_indices = []
-    for i, v in enumerate(argvalues):
-        if isinstance(v, fixture_ref):
-            fixture_indices.append(i)
+    if nb_params == 1:
+        for i, v in enumerate(argvalues):
+            if isinstance(v, fixture_ref):
+                fixture_indices.append((i, None))
+    elif nb_params > 1:
+        for i, v in enumerate(argvalues):
+            try:
+                j = 0
+                fix_pos = []
+                for j, _pval in enumerate(v):
+                    if isinstance(_pval, fixture_ref):
+                        fix_pos.append(j)
+                if len(fix_pos) > 0:
+                    fixture_indices.append((i, fix_pos))
+                if j+1 != nb_params:
+                    raise ValueError("Invalid parameter values containing %s items while the number of parameters is %s: "
+                                     "%s." % (j+1, nb_params, v))
+            except TypeError:
+                # a fixture ref is
+                if isinstance(v, fixture_ref):
+                    fixture_indices.append((i, None))
+                else:
+                    raise ValueError(
+                        "Invalid parameter values containing %s items while the number of parameters is %s: "
+                        "%s." % (1, nb_params, v))
 
     if len(fixture_indices) == 0:
         # no fixture reference: do as usual
@@ -932,9 +1028,8 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
     else:
         # there are fixture references: we have to create a specific decorator
         caller_module = get_caller_module()
-        all_param_names = get_param_argnames_as_list(argnames)
 
-        def create_param_fixture(from_i, to_i, p_fix_name):
+        def _create_param_fixture(from_i, to_i, p_fix_name):
             """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
             selected_argvalues = argvalues[from_i:to_i]
             try:
@@ -944,13 +1039,31 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                 # a callable to create the ids
                 selected_ids = ids
 
+            # default behaviour is not the same betwee pytest params and pytest fixtures
+            if selected_ids is None:
+                # selected_ids = ['-'.join([str(_v) for _v in v]) for v in selected_argvalues]
+                selected_ids = get_test_ids_from_param_values(all_param_names, selected_argvalues)
+
             if to_i == from_i + 1:
                 p_fix_name = "%s_is_%s" % (p_fix_name, from_i)
             else:
                 p_fix_name = "%s_is_%sto%s" % (p_fix_name, from_i, to_i - 1)
-            p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE, caller=pytest_parametrize_plus)
-            param_fix = _param_fixture(caller_module, p_fix_name, selected_argvalues, selected_ids)
+            p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
+                                              caller=pytest_parametrize_plus)
+            param_fix = _param_fixture(caller_module, argname=p_fix_name, argvalues=selected_argvalues,
+                                       ids=selected_ids)
             return param_fix
+
+        def _create_fixture_product(argvalue_i, fixture_ref_positions, base_name):
+            # do not use base name - we dont care if there is another in the same module, it will still be more readable
+            p_fix_name = "fixtureproduct__%s" % (argvalue_i, )
+            p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
+                                              caller=pytest_parametrize_plus)
+            # unpack the fixture references
+            _vtuple = argvalues[argvalue_i]
+            fixtures_or_values = tuple(v.fixture if i in fixture_ref_positions else v for i, v in enumerate(_vtuple))
+            product_fix = _fixture_product(caller_module, p_fix_name, fixtures_or_values, fixture_ref_positions)
+            return product_fix
 
         # then create the decorator
         def parametrize_plus_decorate(test_func):
@@ -981,21 +1094,32 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             fixtures_to_union = []
             fixtures_to_union_names_for_ids = []
             prev_i = -1
-            for i in fixture_indices:
+            for i, j_list in fixture_indices:
                 if i > prev_i + 1:
-                    param_fix = create_param_fixture(prev_i + 1, i, base_name)
+                    # there was a non-empty group of 'normal' parameters before this fixture_ref.
+                    # create a new fixture parametrized with all of that consecutive group.
+                    param_fix = _create_param_fixture(prev_i + 1, i, base_name)
                     fixtures_to_union.append(param_fix)
                     fixtures_to_union_names_for_ids.append(get_fixture_name(param_fix))
 
-                fixtures_to_union.append(argvalues[i].fixture)
-                id_for_fixture = apply_id_style(get_fixture_name(argvalues[i].fixture), base_name, IdStyle.explicit)
-                fixtures_to_union_names_for_ids.append(id_for_fixture)
+                if j_list is None:
+                    # add the fixture referenced with `fixture_ref`
+                    referenced_fixture = argvalues[i].fixture
+                    fixtures_to_union.append(referenced_fixture)
+                    id_for_fixture = apply_id_style(get_fixture_name(referenced_fixture), base_name, IdStyle.explicit)
+                    fixtures_to_union_names_for_ids.append(id_for_fixture)
+                else:
+                    # create a fixture refering to all the fixtures required in the tuple
+                    prod_fix = _create_fixture_product(i, j_list, base_name)
+                    fixtures_to_union.append(prod_fix)
+                    id_for_fixture = apply_id_style(get_fixture_name(prod_fix), base_name, IdStyle.explicit)
+                    fixtures_to_union_names_for_ids.append(id_for_fixture)
                 prev_i = i
 
-            # last bit if any
+            # handle last consecutive group of normal parameters, if any
             i = len(argvalues)
             if i > prev_i + 1:
-                param_fix = create_param_fixture(prev_i + 1, i, base_name)
+                param_fix = _create_param_fixture(prev_i + 1, i, base_name)
                 fixtures_to_union.append(param_fix)
                 fixtures_to_union_names_for_ids.append(get_fixture_name(param_fix))
 
@@ -1016,7 +1140,7 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                 # remove the created fixture value
                 encompassing_fixture = kwargs.pop(base_name)
                 # and add instead the parameter values
-                if len(all_param_names) > 1:
+                if nb_params > 1:
                     for i, p in enumerate(all_param_names):
                         kwargs[p] = encompassing_fixture[i]
                 else:
