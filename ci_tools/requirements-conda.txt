@@ -1,8 +1,6 @@
 # --- to execute setup.py whatever the goal
 # pytest-runner
-setuptools_scm
 pandoc
-pypandoc
 
 # --- to install
 
@@ -13,11 +11,9 @@ pypandoc
 
 # --- to generate the reports (see scripts in ci_tools, called by .travis)
 # (pip) pytest-html$PYTEST_HTML_VERSION
-requests
 # (pip) xunitparser
 # pytest-cov  # ==2.5
-coverage
-pylint
+# pylint
 
 # --- to generate the doc (see .travis)
 # (pip) mkdocs-material==2.7.3

@@ -1,5 +1,7 @@
 # --- to execute setup.py whatever the goal
 pytest-runner
+setuptools_scm
+pypandoc
 
 # -- to install
 makefun
@@ -9,6 +11,7 @@ wrapt
 # --- to generate the reports (see scripts in ci_tools, called by .travis)
 pytest-html$PYTEST_HTML_VERSION
 xunitparser
+requests
 
 # --- to run the tests
 pytest$PYTEST_VERSION
@@ -18,6 +21,7 @@ pytest-harvest
 
 # --- to generate the reports (see scripts in ci_tools, called by .travis)
 pytest-cov$PYTEST_COV_VERSION  # after 2.6.1 it requires pytest 3.6
+coverage
 
 # --- to generate the doc (see .travis)
 mkdocs-material  # ==2.7.3
