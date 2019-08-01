@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.0 - `fixture_ref` can now be used inside tuples, leading to cross-products
+
+Fixes [#47](https://github.com/smarie/python-pytest-cases/issues/47).
+
 ### 1.10.2 - More intuitive error messages
 
 Now raising an explicit `InvalidParamsList` when pytest parametrize `argvalues` are incorrect. See [#54](https://github.com/smarie/python-pytest-cases/issues/54)
