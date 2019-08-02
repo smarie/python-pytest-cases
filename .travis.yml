@@ -63,7 +63,7 @@ before_install:
   - echo "activating conda environment"; source activate test-environment
 
 install:
-  - pip install six  # on python 2, it has to be present before the other packages are installed.
+  - pip install six setuptools_scm  # on python 2 this needs to be installed beforehand
   - conda list
   - python ci_tools/py_install.py conda ci_tools/requirements-conda.txt
   - python ci_tools/py_install.py pip ci_tools/requirements-pip.txt
