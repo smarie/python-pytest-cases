@@ -126,7 +126,20 @@ class FixtureClosureNode(object):
     def __setitem__(self, key, value):
         # This is called in Pytest 4+. TODO how should we behave ?
         warn("WARNING the new order is not taken into account !!")
-        pass
+
+    def append(self, item):
+        warn("WARNING some code tries to add an item to the fixture tree, this will be IGNORED !! Item: %s" % item)
+
+    def insert(self, index, object):
+        warn("WARNING some code tries to insert an item in the fixture tree, this will be IGNORED !! "
+             "Item: %s, Index: %s" % (index, object))
+
+    def pop(self, index):
+        warn("WARNING some code tries to pop an item from the fixture tree, this will be IGNORED !! Index: %s" % index)
+
+    def extend(self, iterable):
+        if len(iterable) > 0:
+            warn("WARNING some code tries to extend the fixture tree, this will be IGNORED !! Iterable: %s" % iterable)
 
     def index(self, *args):
         return self.to_list().index(*args)
