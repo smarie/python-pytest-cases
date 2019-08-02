@@ -12,9 +12,9 @@ here = path.abspath(path.dirname(__file__))
 
 # *************** Dependencies *********
 INSTALL_REQUIRES = ['wrapt', 'decopatch', 'makefun', 'functools32;python_version<"3.2"',
-                    'funcsigs;python_version<"3.3"', 'enum34;python_version<"3.4"']
+                    'funcsigs;python_version<"3.3"', 'enum34;python_version<"3.4"', 'six']
 DEPENDENCY_LINKS = []
-SETUP_REQUIRES = ['pytest-runner', 'setuptools_scm', 'pypandoc', 'pandoc']
+SETUP_REQUIRES = ['pytest-runner', 'setuptools_scm', 'pypandoc', 'pandoc', 'six']
 TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'pytest-steps', 'pytest-harvest']
 EXTRAS_REQUIRE = {}
 

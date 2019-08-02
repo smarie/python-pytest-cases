@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.1 - Added `six` dependency explicitly
+
+It was missing from `setup.py`.
+
 ### 1.11.0 - `fixture_ref` can now be used inside tuples, leading to cross-products
 
 Fixes [#47](https://github.com/smarie/python-pytest-cases/issues/47).
