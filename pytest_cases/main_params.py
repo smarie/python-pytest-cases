@@ -397,7 +397,7 @@ def _get_case_getter_s(f,
         names, param_ids, all_param_values_combinations = gen
 
         if isinstance(names, str):
-            # then this is a string formatter creating the names
+            # then this is a string formatter creating the names. Create the corresponding callable
             _formatter = names
             def names(**params):
                 try:
@@ -407,6 +407,7 @@ def _get_case_getter_s(f,
 
         nb_cases_generated = len(all_param_values_combinations)
         if not callable(names):
+            # This is an explicit list
             if len(names) != nb_cases_generated:
                 raise ValueError("An explicit list of names has been provided but it has not the same length (%s) than"
                                  " the number of cases to be generated (%s)" % (len(names), nb_cases_generated))
