@@ -513,6 +513,7 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     else:
         # we cannot sort yet
         merge(fixturenames, _init_fixnames)
+        sorted_fixturenames = []
 
     # Finally create the closure tree
     if _DEBUG:
