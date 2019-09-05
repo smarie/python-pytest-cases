@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.11.2 - Increased tolerance to other plugins + bugfix
+
+Now when other plugins try to manipulate the fixture closure, warning messages are emitted but no error is raised. Fixed [#55](https://github.com/smarie/python-pytest-cases/issues/55).
+
+Also fixed issue [#58](https://github.com/smarie/python-pytest-cases/issues/58) happening with doctest.
+
 ### 1.11.1 - Added `six` dependency explicitly
 
 It was missing from `setup.py`.
