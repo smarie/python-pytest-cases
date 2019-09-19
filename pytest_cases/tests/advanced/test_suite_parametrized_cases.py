@@ -13,9 +13,9 @@ def case_simple(step_name):
     
     ins = dict(a=1, b=2)
 
-    if step_name is 'step_check_a':
+    if step_name == 'step_check_a':
         outs = 2, 3
-    elif step_name is 'step_check_b':
+    elif step_name == 'step_check_b':
         outs = 5, 4
     else:
         raise ValueError("Unknown step")
@@ -29,9 +29,9 @@ def case_simple2(step_name):
     This function is called for each test step, we make the case data output vary accordingly"""
     ins = dict(a=-1, b=2)
 
-    if step_name is 'step_check_a':
+    if step_name == 'step_check_a':
         outs = 0, 3
-    elif step_name is 'step_check_b':
+    elif step_name == 'step_check_b':
         outs = 1, 4
     else:
         raise ValueError("Unknown step")
