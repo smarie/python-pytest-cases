@@ -21,7 +21,6 @@ pytest-steps
 pytest-harvest
 
 # --- to generate the reports (see scripts in ci_tools, called by .travis)
-pytest-cov$PYTEST_COV_VERSION  # after 2.6.1 it requires pytest 3.6
 coverage
 
 # --- to generate the doc (see .travis)

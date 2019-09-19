@@ -15,7 +15,7 @@ INSTALL_REQUIRES = ['wrapt', 'decopatch', 'makefun', 'functools32;python_version
                     'funcsigs;python_version<"3.3"', 'enum34;python_version<"3.4"', 'six']
 DEPENDENCY_LINKS = []
 SETUP_REQUIRES = ['pytest-runner', 'setuptools_scm', 'pypandoc', 'pandoc', 'six']
-TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'pytest-steps', 'pytest-harvest']
+TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-steps', 'pytest-harvest']
 EXTRAS_REQUIRE = {}
 
 # simple check
