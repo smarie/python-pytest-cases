@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.3 IN PROGRESS - minor improvements
+
+Better error message when users use `THIS_MODULE` in `cases=` instead of `module=`.
+
 ### 1.11.2 - Increased tolerance to other plugins + bugfix
 
 Now when other plugins try to manipulate the fixture closure, warning messages are emitted but no error is raised. Fixed [#55](https://github.com/smarie/python-pytest-cases/issues/55).

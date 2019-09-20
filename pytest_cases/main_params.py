@@ -269,6 +269,8 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
         if callable(cases):
             # single element
             _cases = [case_getter for case_getter in _get_case_getter_s(cases)]
+        elif cases is THIS_MODULE:
+            raise ValueError("`THIS_MODULE` should only be used in the `module` argument, not in the `cases` argument")
         else:
             # already a sequence
             _cases = [case_getter for c in cases for case_getter in _get_case_getter_s(c)]
