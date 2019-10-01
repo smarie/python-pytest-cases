@@ -115,7 +115,7 @@ setup(
     dependency_links=DEPENDENCY_LINKS,
 
     # we're using git
-    use_scm_version={'write_to': '%s/_version.py' % DISTNAME}, # this provides the version + adds the date if local non-commited changes.
+    use_scm_version={'write_to': 'pytest_cases/_version.py'}, # this provides the version + adds the date if local non-commited changes.
     # use_scm_version={'local_scheme':'dirty-tag'}, # this provides the version + adds '+dirty' if local non-commited changes.
     setup_requires=SETUP_REQUIRES,
 
