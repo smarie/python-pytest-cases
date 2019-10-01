@@ -1,8 +1,10 @@
 # Changelog
 
-### 1.11.3 IN PROGRESS - minor improvements
+### 1.11.3 - minor improvements
 
 Better error message when users use `THIS_MODULE` in `cases=` instead of `module=`.
+
+Added `__version__` package-level attribute.
 
 ### 1.11.2 - Increased tolerance to other plugins + bugfix
 
