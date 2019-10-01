@@ -2,7 +2,6 @@
 six
 pytest-runner
 setuptools_scm
-pypandoc
 
 # -- to install
 makefun
