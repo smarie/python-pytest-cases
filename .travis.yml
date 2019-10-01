@@ -9,39 +9,39 @@ matrix:
     - python: 2.7 # pytest 2
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
     - python: 2.7 # pytest 3
-      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION="==1.9.0"
     - python: 2.7 # pytest 4
-      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION="==1.9.0"
     - python: 3.5 # pytest 2
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
     - python: 3.5 # pytest 3
-      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION="==1.9.0"
     - python: 3.5 # pytest 4
-      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION="==1.9.0"
     - python: 3.5 # pytest 5
-      env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION="==1.9.0"
     - python: 3.6 # pytest 2
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
     - python: 3.6 # pytest 3
-      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION="==1.9.0"
     - python: 3.6 # pytest 4
-      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION="==1.9.0"
     - python: 3.6 # pytest 5
-      env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION="==1.9.0"
     - python: 3.7 # pytest 2
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
       dist: xenial
       sudo: true
     - python: 3.7 # pytest 3
-      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION="==1.9.0"
       dist: xenial
       sudo: true
     - python: 3.7 # pytest 4
-      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION="==1.9.0"
       dist: xenial
       sudo: true
     - python: 3.7 # pytest 5
-      env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION=""
+      env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION="==1.9.0"
       dist: xenial
       sudo: true
 
