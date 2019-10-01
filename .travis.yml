@@ -102,7 +102,7 @@ after_success:
   # - pylint pytest_cases  # note that at the moment the report is simply lost, we dont transform the result into anything
 # ***documentation***
   - mkdocs build -f docs/mkdocs.yml
-  - mv reports/junit site/
+  - mv reports/junit docs/  # not in site/ anymore so that we do not need to use --dirty (it breaks client-side search)
   # mkdocs gh-deploy requires special care :
   # ---grant the possibility to push on the repo---
   - openssl aes-256-cbc -K $encrypted_b1669b6e8c83_key -iv $encrypted_b1669b6e8c83_iv -in ci_tools/github_travis_rsa.enc -out ci_tools/github_travis_rsa -d
@@ -118,7 +118,8 @@ after_success:
       git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;  # make sure we have the latest gh-remote
       # push but only if this is not a build triggered by a pull request
       # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
-      if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ] && [ "${PYTEST_VERSION}" = "<3" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v --dirty -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
+      # note: do not use the --dirty flag as it breaks client-side search
+      if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ] && [ "${PYTEST_VERSION}" = "<3" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
     else
       echo "File 'ci_tools/github_travis_rsa' has not been created, please check your encrypted repo token in .travis.yml, on the line starting with 'openssl aes-256-cbc...'"
     fi
