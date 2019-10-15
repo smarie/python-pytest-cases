@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
     
     
       
@@ -817,9 +817,9 @@ case_simple2
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="c1"># adapt the expected output to the current step</span>
-    <span class="k">if</span> <span class="n">step_name</span> <span class="ow">is</span> <span class="s1">&#39;step_check_a&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_a&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">elif</span> <span class="n">step_name</span> <span class="ow">is</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
 
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
@@ -829,9 +829,9 @@ case_simple2
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="c1"># adapt the expected output to the current step</span>
-    <span class="k">if</span> <span class="n">step_name</span> <span class="ow">is</span> <span class="s1">&#39;step_check_a&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_a&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">elif</span> <span class="n">step_name</span> <span class="ow">is</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span>
 
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
@@ -876,9 +876,9 @@ case_simple2
     <span class="n">ins</span> <span class="o">=</span> <span class="n">input_for_case_simple</span><span class="p">()</span>
 
     <span class="c1"># adapt the expected output to the current step</span>
-    <span class="k">if</span> <span class="n">step_name</span> <span class="ow">is</span> <span class="s1">&#39;step_check_a&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_a&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">elif</span> <span class="n">step_name</span> <span class="ow">is</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
 
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
@@ -975,7 +975,7 @@ case_simple2
       
     </div>
     
-      <script src="../../assets/javascripts/application.c648116f.js"></script>
+      <script src="../../assets/javascripts/application.ac79c3b0.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
