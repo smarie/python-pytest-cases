@@ -6,6 +6,7 @@ except ImportError:
 from distutils.version import LooseVersion
 from warnings import warn
 
+from six import string_types
 import pytest
 
 
@@ -76,7 +77,7 @@ def get_param_argnames_as_list(argnames):
     :param argnames:
     :return:
     """
-    if isinstance(argnames, str):
+    if isinstance(argnames, string_types):
         argnames = argnames.replace(' ', '').split(',')
     return list(argnames)
 

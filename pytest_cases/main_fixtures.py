@@ -10,6 +10,7 @@ from warnings import warn
 from decopatch import function_decorator, DECORATED
 from makefun import with_signature, add_signature_parameters, remove_signature_parameters, wraps
 
+from six import string_types
 import pytest
 
 try:  # python 3.3+
@@ -93,7 +94,7 @@ def _unpack_fixture(caller_module, argnames, fixture):
     argnames_lst = get_param_argnames_as_list(argnames)
 
     # possibly get the source fixture name if the fixture symbol was provided
-    if not isinstance(fixture, str):
+    if not isinstance(fixture, string_types):
         source_f_name = get_fixture_name(fixture)
         scope = get_fixture_scope(fixture)
     else:
@@ -846,7 +847,7 @@ def _fixture_union(caller_module, name, fixtures, idstyle, scope="function", ids
     f_names = []
     for f in fixtures:
         # possibly get the fixture name if the fixture symbol was provided
-        f_names.append(get_fixture_name(f) if not isinstance(f, str) else f)
+        f_names.append(get_fixture_name(f) if not isinstance(f, string_types) else f)
 
     if len(f_names) < 1:
         raise ValueError("Empty fixture unions are not permitted")
@@ -916,7 +917,7 @@ def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
         # possibly get the fixture name if the fixture symbol was provided
         f = fixtures_or_values[f_pos]
         # and remember the position in the tuple
-        f_names[f_pos] = get_fixture_name(f) if not isinstance(f, str) else f
+        f_names[f_pos] = get_fixture_name(f) if not isinstance(f, string_types) else f
 
     # remove duplicates by making it an ordered set
     all_names = remove_duplicates((n for n in f_names if n is not None))

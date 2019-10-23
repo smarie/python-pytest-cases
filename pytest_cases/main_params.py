@@ -8,7 +8,7 @@ from warnings import warn
 
 from decopatch import function_decorator, DECORATED, with_parenthesis
 
-import six
+from six import with_metaclass, string_types
 import pytest
 
 try:  # python 3.3+
@@ -41,7 +41,7 @@ from pytest_cases.case_funcs import _GENERATOR_FIELD, CASE_TAGS_FIELD
 from pytest_cases.common import make_marked_parameter_value, get_pytest_marks_on_function
 
 
-class CaseDataGetter(six.with_metaclass(ABCMeta)):
+class CaseDataGetter(with_metaclass(ABCMeta)):
     """
     A proxy for a test case. Instances of this class are created by `@cases_data` or `get_all_cases`.
 
@@ -398,7 +398,7 @@ def _get_case_getter_s(f,
 
         names, param_ids, all_param_values_combinations = gen
 
-        if isinstance(names, str):
+        if isinstance(names, string_types):
             # then this is a string formatter creating the names. Create the corresponding callable
             _formatter = names
             def names(**params):

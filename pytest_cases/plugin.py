@@ -4,6 +4,7 @@ from distutils.version import LooseVersion
 from warnings import warn
 
 from functools import partial
+from six import string_types
 
 import pytest
 
@@ -629,7 +630,7 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
 
     # detect union fixtures
     if is_fixture_union_params(argvalues):
-        if ',' in argnames or not isinstance(argnames, str):
+        if ',' in argnames or not isinstance(argnames, string_types):
             raise ValueError("Union fixtures can not be parametrized")
         union_fixture_name = argnames
         union_fixture_alternatives = argvalues
