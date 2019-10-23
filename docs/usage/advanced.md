@@ -316,9 +316,9 @@ def case_simple(step_name: str) -> CaseData:
     ins = dict(a=1, b=2)
     
     # adapt the expected output to the current step
-    if step_name is 'step_check_a':
+    if step_name == 'step_check_a':
         outs = 2, 3
-    elif step_name is 'step_check_b':
+    elif step_name == 'step_check_b':
         outs = 5, 4
 
     return ins, outs, None
@@ -328,9 +328,9 @@ def case_simple2(step_name: str) -> CaseData:
     ins = dict(a=-1, b=2)
 
     # adapt the expected output to the current step
-    if step_name is 'step_check_a':
+    if step_name == 'step_check_a':
         outs = 0, 3
-    elif step_name is 'step_check_b':
+    elif step_name == 'step_check_b':
         outs = 1, 4
 
     return ins, outs, None
@@ -377,9 +377,9 @@ def case_simple(step_name: str) -> CaseData:
     ins = input_for_case_simple()
     
     # adapt the expected output to the current step
-    if step_name is 'step_check_a':
+    if step_name == 'step_check_a':
         outs = 2, 3
-    elif step_name is 'step_check_b':
+    elif step_name == 'step_check_b':
         outs = 5, 4
 
     return ins, outs, None
