@@ -3,12 +3,11 @@ From https://github.com/smarie/python-pytest-cases/issues/62
 """
 from __future__ import unicode_literals
 import pytest
-from typing import Text
 
 
 @pytest.fixture
 def my_cool_fixture():
-    return Text('hello world')
+    return 'hello world'
 
 
 @pytest.mark.parametrize('object_id', ['a1', 'b2', 'b3'])
