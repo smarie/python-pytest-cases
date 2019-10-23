@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.4 - python 2 bugfix
+
+Fixed issue happening with `@pytest.mark.parametrize` with python 2. Fixed [#62](https://github.com/smarie/python-pytest-cases/issues/62).
+
 ### 1.11.3 - minor improvements
 
 Better error message when users use `THIS_MODULE` in `cases=` instead of `module=`.
