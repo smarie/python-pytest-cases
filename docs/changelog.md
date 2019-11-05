@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.5 - bugfix
+
+`pytest_parametrize_plus` was not working correctly with test classes, leading to `fixture 'self' not found`. Fixed [#63](https://github.com/smarie/python-pytest-cases/issues/63).
+
 ### 1.11.4 - python 2 bugfix
 
 Fixed issue happening with `@pytest.mark.parametrize` with python 2. Fixed [#62](https://github.com/smarie/python-pytest-cases/issues/62).
