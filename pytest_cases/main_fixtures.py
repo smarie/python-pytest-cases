@@ -1134,7 +1134,8 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             # it is the same than existing, except that we want to replace all parameters with the new fixture
 
             new_sig = remove_signature_parameters(old_sig, *all_param_names)
-            new_sig = add_signature_parameters(new_sig, Parameter(base_name, kind=Parameter.POSITIONAL_OR_KEYWORD))
+            # add it in last position, so that potential 'self' argument (case of test class methods) can stay first
+            new_sig = add_signature_parameters(new_sig, last=Parameter(base_name, kind=Parameter.POSITIONAL_OR_KEYWORD))
 
             # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
             def replace_paramfixture_with_values(kwargs):
