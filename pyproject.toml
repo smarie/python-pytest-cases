@@ -1,0 +1,2 @@
+[build-system]
+requires = ["six", "setuptools", "setuptools_scm"]
