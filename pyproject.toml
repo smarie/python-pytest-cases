@@ -1,8 +1,3 @@
-[dependencies]
-six = "*"
-setuptools = "*"
-setuptools_scm = "*"
-
 [build-system]
 requires = [
     "setuptools",
