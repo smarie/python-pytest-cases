@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.6 - pyproject.toml
+
+[raddessi](https://github.com/raddessi) added a `pyproject.toml` - thanks! Fixed [#65](https://github.com/smarie/python-pytest-cases/issues/65).
+
 ### 1.11.5 - bugfix
 
 `pytest_parametrize_plus` was not working correctly with test classes, leading to `fixture 'self' not found`. Fixed [#63](https://github.com/smarie/python-pytest-cases/issues/63).
