@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.7 - bugfix
+
+Fixed `ValueError` issue happening with indirectly parametrized fixtures. Fixed [#64](https://github.com/smarie/python-pytest-cases/issues/64).
+
 ### 1.11.6 - pyproject.toml
 
 [raddessi](https://github.com/raddessi) added a `pyproject.toml` - thanks! Fixed [#65](https://github.com/smarie/python-pytest-cases/issues/65).
