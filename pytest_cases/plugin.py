@@ -510,9 +510,10 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
 
         sorted_fixturenames = sort_according_to_ref_list(fixturenames, param_names)
         # **********
+        # merge the fixture names in correct order into the _init_fixnames
         merge(sorted_fixturenames, _init_fixnames)
     else:
-        # we cannot sort yet
+        # we cannot sort yet - merge the fixture names into the _init_fixnames
         merge(fixturenames, _init_fixnames)
         sorted_fixturenames = []
 
@@ -976,7 +977,12 @@ def sort_according_to_ref_list(fixturenames, param_names):
     """
     cur_indices = []
     for pname in param_names:
-        cur_indices.append(fixturenames.index(pname))
+        try:
+            cur_indices.append(fixturenames.index(pname))
+        except (ValueError, IndexError):
+            # can happen in case of indirect parametrization: a parameter is not in the fixture name.
+            # TODO we should maybe rather add the pname to fixturenames in this case ?
+            pass
     target_indices = sorted(cur_indices)
     sorted_fixturenames = list(fixturenames)
     for old_i, new_i in zip(cur_indices, target_indices):
