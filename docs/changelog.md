@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.8 - bugfix
+
+Fixed `KeyError` issue happening when a fixture is not found. Now users will see the "normal" error message from pytest (`"fixture <name> not found"`). Fixed [#67](https://github.com/smarie/python-pytest-cases/issues/67).
+
 ### 1.11.7 - bugfix
 
 Fixed `ValueError` issue happening with indirectly parametrized fixtures. Fixed [#64](https://github.com/smarie/python-pytest-cases/issues/64).
