@@ -802,7 +802,11 @@ class CallsReactor:
             # for fixture in list(fix_closure_tree):
             # for fixture_name, fixdef in self.metafunc._arg2fixturedefs.items():
             for fixture_name in fix_closure_tree.get_not_always_used():
-                fixdef = self.metafunc._arg2fixturedefs[fixture_name]
+                try:
+                    fixdef = self.metafunc._arg2fixturedefs[fixture_name]
+                except KeyError:
+                    continue  # dont raise any error here and let pytest say "not found"
+                    
                 if fixture_name not in c.params and fixture_name not in c.funcargs:
                     if not n.requires(fixture_name):
                         # explicitly add it as discarded by creating a parameter value for it.
