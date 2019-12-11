@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.9 - bugfix
+
+`FixtureClosureNode` is now able to properly handle `ignore_args`, and now supports that plugins append fixtures to the closure, such as pytest-asyncio. Added corresponding tests. Fixes [#68](https://github.com/smarie/python-pytest-cases/issues/68)
+
 ### 1.11.8 - bugfix
 
 Fixed `KeyError` issue happening when a fixture is not found. Now users will see the "normal" error message from pytest (`"fixture <name> not found"`). Fixed [#67](https://github.com/smarie/python-pytest-cases/issues/67).
