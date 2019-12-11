@@ -61,9 +61,20 @@ class FixtureDefsCache(object):
 class FixtureClosureNode(object):
     __slots__ = 'parent', 'fixture_defs', \
                 'split_fixture_name', 'split_fixture_discarded_names', 'children', \
-                '_as_list', 'all_fixture_defs'
+                '_as_list', 'all_fixture_defs', 'fixture_defs_mgr'
 
-    def __init__(self, parent_node=None):
+    def __init__(self,
+                 fixture_defs_mgr=None,   # type: FixtureDefsCache
+                 parent_node=None         # type: FixtureClosureNode
+                 ):
+        if fixture_defs_mgr is None:
+            if parent_node is None:
+                raise ValueError()
+            fixture_defs_mgr = parent_node.fixture_defs_mgr
+        else:
+            assert isinstance(fixture_defs_mgr, FixtureDefsCache)
+
+        self.fixture_defs_mgr = fixture_defs_mgr
         self.parent = parent_node
 
         # these will be set after closure has been built
@@ -129,7 +140,15 @@ class FixtureClosureNode(object):
         warn("WARNING the new order is not taken into account !!")
 
     def append(self, item):
-        warn("WARNING some code tries to add an item to the fixture tree, this will be IGNORED !! Item: %s" % item)
+        """
+        This is now supported: we simply update the closure with the new item.
+        `self.all_fixture_defs` and `self._as_list` are updated on the way
+        so the resulting facades used by pytest are consistent after the update.
+
+        :param item:
+        :return:
+        """
+        self.build_closure((item, ))
 
     def insert(self, index, object):
         warn("WARNING some code tries to insert an item in the fixture tree, this will be IGNORED !! "
@@ -224,10 +243,36 @@ class FixtureClosureNode(object):
     # ---- utils to build the closure
 
     def build_closure(self,
-                      fixture_defs_mgr,      # type: FixtureDefsCache
-                      initial_fixture_names  # type: Iterable[str]
+                      initial_fixture_names,  # type: Iterable[str]
+                      ignore_args=()
                       ):
-        self._build_closure(fixture_defs_mgr, initial_fixture_names)
+        """
+        Updates this Node with the fixture names provided as argument.
+        Fixture names and definitions will be stored in self.fixture_defs.
+
+        If some fixtures are Union fixtures, this node will become a "split" node
+        and have children. If new fixtures are added to the closure after that,
+        they will be added to the child nodes rather than self.
+
+        Note: when this method is used on an existing (already filled) root node,
+        all of its internal structures (self._as_list and self.all_fixture_defs) are updated accordingly so that the
+        facades used by pytest are still consistent.
+
+        :param initial_fixture_names:
+        :param ignore_args: arguments to keep in the names but not to put in the fixture defs, because they correspond
+            "direct parametrize"
+        :return:
+        """
+        self._build_closure(self.fixture_defs_mgr, initial_fixture_names, ignore_args=ignore_args)
+
+        # update fixture defs
+        if self.all_fixture_defs is None:
+            self.all_fixture_defs = self._get_all_fixture_defs()
+        else:
+            self.all_fixture_defs.update(self._get_all_fixture_defs())
+
+        # mark the fixture list as to be rebuilt (automatic next time one iterates on self)
+        self._as_list = None
 
     def is_closure_built(self):
         return self.fixture_defs is not None
@@ -242,12 +287,15 @@ class FixtureClosureNode(object):
             return self.parent.already_knows_fixture(fixture_name)
 
     def _build_closure(self,
-                       fixture_defs_mgr,      # type: FixtureDefsCache
-                       initial_fixture_names  # type: Iterable[str]
+                       fixture_defs_mgr,       # type: FixtureDefsCache
+                       initial_fixture_names,  # type: Iterable[str]
+                       ignore_args
                        ):
         """
 
-        :param arg2fixturedefs: set of fixtures already known by the parent node
+        :param fixture_defs_mgr:
+        :param initial_fixture_names:
+        :param ignore_args: arguments to keep in the names but not to put in the fixture defs
         :return: nothing (the input arg2fixturedefs is modified)
         """
 
@@ -265,6 +313,11 @@ class FixtureClosureNode(object):
 
             # if the fixture is already known in this node or above, do not care
             if self.already_knows_fixture(fixname):
+                continue
+
+            # new ignore_args option in pytest 4.6+
+            if fixname in ignore_args:
+                self.add_required_fixture(fixname, None)
                 continue
 
             # else grab the fixture definition(s) for this fixture name for this test node id
@@ -289,7 +342,7 @@ class FixtureClosureNode(object):
 
                     # propagate WITH the pending
                     self.split_and_build(fixture_defs_mgr, fixname, fixturedefs, alternative_f_names,
-                                         pending_fixture_names)
+                                         pending_fixture_names, ignore_args=ignore_args)
 
                     # empty the pending
                     pending_fixture_names = []
@@ -325,7 +378,8 @@ class FixtureClosureNode(object):
                         split_fixture_name,         # type: str
                         split_fixture_defs,         # type: Tuple[FixtureDefinition]
                         alternative_fixture_names,  # type: List[str]
-                        pending_fixtures_list       #
+                        pending_fixtures_list,      #
+                        ignore_args
                         ):
         """ Declares that this node contains a union with alternatives (child nodes=subtrees) """
 
@@ -344,7 +398,7 @@ class FixtureClosureNode(object):
             # create the child nodes
             for f in alternative_fixture_names:
                 # create the child node
-                new_c = FixtureClosureNode(self)
+                new_c = FixtureClosureNode(parent_node=self)
                 self.children[f] = new_c
 
                 # set the discarded fixture names
@@ -354,9 +408,9 @@ class FixtureClosureNode(object):
                 # create a copy of the pending fixtures list and prepend the fixture used
                 pending_for_child = copy(pending_fixtures_list)
                 # (a) first propagate all child's dependencies
-                new_c._build_closure(fixture_defs_mgr, [f])
+                new_c._build_closure(fixture_defs_mgr, [f], ignore_args=ignore_args)
                 # (b) then the ones required by parent
-                new_c._build_closure(fixture_defs_mgr, pending_for_child)
+                new_c._build_closure(fixture_defs_mgr, pending_for_child, ignore_args=ignore_args)
 
     def has_split(self):
         return self.split_fixture_name is not None
@@ -522,8 +576,8 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
         print("Creating closure for %s:" % parentid)
 
     fixture_defs_mger = FixtureDefsCache(fm, parentid)
-    fixturenames_closure_node = FixtureClosureNode()
-    fixturenames_closure_node.build_closure(fixture_defs_mger, _init_fixnames)
+    fixturenames_closure_node = FixtureClosureNode(fixture_defs_mgr=fixture_defs_mger)
+    fixturenames_closure_node.build_closure(_init_fixnames, ignore_args=ignore_args)
 
     if _DEBUG:
         print("Closure for %s completed:" % parentid)
@@ -533,19 +587,20 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     fixturenames_closure_node.to_list()
 
     # FINALLY compare with the previous behaviour TODO remove when in 'production' ?
-    if len(ignore_args) == 0:
-        assert fixturenames_closure_node.get_all_fixture_defs() == ref_arg2fixturedefs
-        # if fixturenames_closure_node.has_split():
-        #     # order might be changed
-        #     assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
-        # else:
-        #     # same order
-        #     if len(p_markers) < 2:
-        #         assert list(fixturenames_closure_node) == ref_fixturenames
-        #     else:
-        # NOW different order happens all the time because of the "prepend" strategy in the closure building
-        # which makes much more sense/intuition.
-        assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
+    arg2fixturedefs = fixturenames_closure_node.get_all_fixture_defs()
+    # if len(ignore_args) == 0:
+    assert dict(arg2fixturedefs) == ref_arg2fixturedefs
+    # if fixturenames_closure_node.has_split():
+    #     # order might be changed
+    #     assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
+    # else:
+    #     # same order
+    #     if len(p_markers) < 2:
+    #         assert list(fixturenames_closure_node) == ref_fixturenames
+    #     else:
+    # NOW different order happens all the time because of the "prepend" strategy in the closure building
+    # which makes much more sense/intuition.
+    assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
 
     # and store our closure in the node
     # note as an alternative we could return a custom object in place of the ref_fixturenames
@@ -553,9 +608,9 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
 
     if LooseVersion(pytest.__version__) >= LooseVersion('3.7.0'):
         our_initial_names = sorted_fixturenames  # initial_names
-        return our_initial_names, fixturenames_closure_node, ref_arg2fixturedefs
+        return our_initial_names, fixturenames_closure_node, arg2fixturedefs
     else:
-        return fixturenames_closure_node, ref_arg2fixturedefs
+        return fixturenames_closure_node, arg2fixturedefs
 
 
 # ------------ hack to store and retrieve our custom "closure" object
