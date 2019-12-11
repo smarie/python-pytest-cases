@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
     
     
       
@@ -525,7 +525,7 @@
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># 2- Use it: nominal test only</span>
-    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
 
@@ -537,7 +537,7 @@
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># 2- Use it: nominal test only</span>
-    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="n">bar</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
 </pre></div>
@@ -557,14 +557,14 @@
 <span class="k">def</span> <span class="nf">case_foo_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="c1"># a case only to be used when function bar is under test</span>
 <span class="nd">@test_target</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">case_bar_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
 
 
@@ -585,7 +585,7 @@
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># 2- Use it: nominal test only</span>
-    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
 
@@ -598,7 +598,7 @@
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># 2- Use it: nominal test only</span>
-    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="n">bar</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
 </pre></div>
@@ -614,7 +614,7 @@
 <span class="k">def</span> <span class="nf">case_multitag_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
 
 
@@ -728,7 +728,7 @@
       
     </div>
     
-      <script src="../../assets/javascripts/application.a8b5e56f.js"></script>
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       

@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
     
     
       
@@ -841,7 +841,7 @@
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="k">def</span> <span class="nf">case_two_negative_ints</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Inputs are two negative integers &quot;&quot;&quot;</span>
@@ -849,7 +849,7 @@
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
 
 
@@ -864,7 +864,7 @@
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># 2- Use it: we can now do some asserts !</span>
-    <span class="k">if</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># **** Nominal test ****</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
@@ -901,7 +901,7 @@
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">unpack_fixture</span><span class="p">,</span> <span class="n">pytest_fixture_plus</span>
 
 <span class="nd">@pytest_fixture_plus</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -917,7 +917,7 @@
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">pytest_fixture_plus</span>
 
 <span class="nd">@pytest_fixture_plus</span><span class="p">(</span><span class="n">unpack_into</span><span class="o">=</span><span class="s2">&quot;a,b&quot;</span><span class="p">)</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -931,12 +931,12 @@
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">pytest_fixture_plus</span><span class="p">,</span> <span class="n">fixture_union</span>
 
 <span class="nd">@pytest_fixture_plus</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="nd">@pytest_fixture_plus</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;yeepee&#39;</span><span class="p">,</span> <span class="s1">&#39;yay&#39;</span><span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;yeepee&#39;</span><span class="p">,</span> <span class="s1">&#39;yay&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">d</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -956,7 +956,7 @@
 <span class="c1"># create a single parameter fixture</span>
 <span class="n">my_parameter</span> <span class="o">=</span> <span class="n">param_fixture</span><span class="p">(</span><span class="s2">&quot;my_parameter&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 
-<span class="nd">@pytest.fixture</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span> <span class="nf">fixture_uses_param</span><span class="p">(</span><span class="n">my_parameter</span><span class="p">):</span>
     <span class="o">...</span>
 
@@ -967,7 +967,7 @@
 <span class="c1"># create a 2-tuple parameter fixture</span>
 <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span> <span class="o">=</span> <span class="n">param_fixtures</span><span class="p">(</span><span class="s2">&quot;arg1, arg2&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
 
-<span class="nd">@pytest.fixture</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span> <span class="nf">fixture_uses_param2</span><span class="p">(</span><span class="n">arg2</span><span class="p">):</span>
     <span class="o">...</span>
 
@@ -994,7 +994,7 @@
 <span class="n">c</span> <span class="o">=</span> <span class="n">fixture_union</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">test_basic_union</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
 </pre></div>
 
 
@@ -1019,7 +1019,7 @@
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">pytest_parametrize_plus</span><span class="p">,</span> <span class="n">pytest_fixture_plus</span><span class="p">,</span> <span class="n">fixture_ref</span>
 
-<span class="nd">@pytest.fixture</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span> <span class="nf">world_str</span><span class="p">():</span>
     <span class="k">return</span> <span class="s1">&#39;world&#39;</span>
 
@@ -1032,9 +1032,9 @@
 <span class="nd">@pytest_parametrize_plus</span><span class="p">(</span><span class="s1">&#39;main_msg&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nothing&#39;</span><span class="p">,</span> 
                                       <span class="n">fixture_ref</span><span class="p">(</span><span class="n">world_str</span><span class="p">),</span> 
                                       <span class="n">fixture_ref</span><span class="p">(</span><span class="n">greetings</span><span class="p">)])</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s1">&#39;ending&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;ending&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">test_prints</span><span class="p">(</span><span class="n">main_msg</span><span class="p">,</span> <span class="n">ending</span><span class="p">):</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">main_msg</span> <span class="o">+</span> <span class="n">ending</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">main_msg</span> <span class="o">+</span> <span class="n">ending</span><span class="p">)</span>
 </pre></div>
 
 
@@ -1135,7 +1135,7 @@ test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_w
       
     </div>
     
-      <script src="assets/javascripts/application.a8b5e56f.js"></script>
+      <script src="assets/javascripts/application.8e03edeb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
       

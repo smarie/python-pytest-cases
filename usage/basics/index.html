@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
     
     
       
@@ -485,7 +485,7 @@
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
 
 
@@ -500,11 +500,11 @@
 </ul>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_generator</span><span class="p">,</span> <span class="n">CaseData</span>
 
-<span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;case i={i}, j={j}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;case i=</span><span class="si">{i}</span><span class="s2">, j=</span><span class="si">{j}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">case_simple_generator</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
 
 
@@ -566,7 +566,7 @@
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="s2">&quot;a_string_not_an_int&quot;</span><span class="p">)</span>
     <span class="n">err</span> <span class="o">=</span> <span class="ne">TypeError</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">err</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err</span>
 
 
 <span class="k">def</span> <span class="nf">case_simple_error_instance</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
@@ -575,7 +575,7 @@
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">inf</span><span class="p">)</span>
     <span class="n">err</span> <span class="o">=</span> <span class="n">InfiniteInput</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">err</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">err</span>
 
 
 <span class="k">def</span> <span class="nf">case_simple_error_callable</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
@@ -585,7 +585,7 @@
     <span class="k">def</span> <span class="nf">is_good_error</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">is</span> <span class="n">InfiniteInput</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,)</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">is_good_error</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_good_error</span>
 </pre></div>
 
 
@@ -606,7 +606,7 @@
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># 2- Use it</span>
-    <span class="k">if</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># **** Nominal test ****</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">outs</span> <span class="o">==</span> <span class="n">expected_o</span>
@@ -621,11 +621,11 @@
             <span class="n">foo</span><span class="p">(</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
 
         <span class="c1"># Optional - Additional Exception instance check</span>
-        <span class="k">if</span> <span class="n">err_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">err_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">err_info</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">err_inst</span>
 
         <span class="c1"># Optional - Additional exception instance check</span>
-        <span class="k">if</span> <span class="n">err_checker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">err_checker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">err_checker</span><span class="p">(</span><span class="n">err_info</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 
@@ -637,12 +637,12 @@
 <span class="k">def</span> <span class="nf">case_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="k">def</span> <span class="nf">case_simple2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_with_cases_decorated</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">):</span>
@@ -726,7 +726,7 @@
       
     </div>
     
-      <script src="../../assets/javascripts/application.a8b5e56f.js"></script>
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       

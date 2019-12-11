@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
     
     
       
@@ -753,12 +753,12 @@
 <p><code>@cases_generator(name_template: str, lru_cache: bool=False, **param_ranges)</code></p>
 <p>Decorator to declare a case function as being a cases generator. <code>param_ranges</code>  should be a named list of parameter ranges to explore to generate the cases.</p>
 <p>The decorator will use <code>itertools.product</code> to create a cartesian product of the named parameter ranges, and create a case for each combination. When the case function will be called for a given combination, the corresponding parameters will be passed to the decorated function.</p>
-<div class="codehilite"><pre><span></span><span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;test with i={i}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<div class="codehilite"><pre><span></span><span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;test with i=</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">case_10_times</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Generates 10 cases &#39;&#39;&#39;</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">2</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
 
 
@@ -808,7 +808,7 @@ all cases listed explicitly in <code>cases</code>.</p>
 <span class="n">marked_cases</span><span class="p">,</span> <span class="n">cases_ids</span> <span class="o">=</span> <span class="n">get_pytest_parametrize_args</span><span class="p">(</span><span class="n">cases</span><span class="p">)</span>
 
 <span class="c1"># parametrize the fixture manually</span>
-<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">marked_cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">cases_ids</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">marked_cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">cases_ids</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">foo_fixture</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">case_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>  <span class="c1"># type: CaseData</span>
     <span class="o">...</span>
@@ -854,7 +854,7 @@ all cases listed explicitly in <code>cases</code>.</p>
 <span class="n">marked_cases</span><span class="p">,</span> <span class="n">cases_ids</span> <span class="o">=</span> <span class="n">get_pytest_parametrize_args</span><span class="p">(</span><span class="n">cases</span><span class="p">)</span>
 
 <span class="c1"># parametrize the test function manually</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s1">&#39;case_data&#39;</span><span class="p">,</span> <span class="n">marked_cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;case_data&#39;</span><span class="p">,</span> <span class="n">marked_cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">case_data</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
@@ -1028,7 +1028,7 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
       
     </div>
     
-      <script src="../assets/javascripts/application.a8b5e56f.js"></script>
+      <script src="../assets/javascripts/application.8e03edeb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       

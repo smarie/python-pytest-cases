@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
     
     
       
@@ -545,20 +545,20 @@
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span>
 
 <span class="k">def</span> <span class="nf">case_simple</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;using version &quot;</span> <span class="o">+</span> <span class="n">version</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;using version &quot;</span> <span class="o">+</span> <span class="n">version</span><span class="p">)</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="k">def</span> <span class="nf">case_simple2</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;using version &quot;</span> <span class="o">+</span> <span class="n">version</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;using version &quot;</span> <span class="o">+</span> <span class="n">version</span><span class="p">)</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="c1"># the order of the loops will be [for version] &gt; [for case]</span>
 <span class="nd">@cases_data</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">THIS_MODULE</span><span class="p">)</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;2.0.0&quot;</span><span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;2.0.0&quot;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">test_with_parameters</span><span class="p">(</span><span class="n">case_data</span><span class="p">:</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
     <span class="c1"># 1- Grab the test case data with the parameter</span>
     <span class="n">i</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span> <span class="o">=</span> <span class="n">case_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
@@ -569,12 +569,12 @@
 
 
 <p>This also works with case generators: simply add the argument(s) to the function signature, <em>without</em> declaring them in the <code>@cases_generator</code> decorator.</p>
-<div class="codehilite"><pre><span></span><span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;gen case i={i}, j={j}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<div class="codehilite"><pre><span></span><span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;gen case i=</span><span class="si">{i}</span><span class="s2">, j=</span><span class="si">{j}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">case_gen</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;using version &quot;</span> <span class="o">+</span> <span class="n">version</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;using version &quot;</span> <span class="o">+</span> <span class="n">version</span><span class="p">)</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
 
 
@@ -625,11 +625,11 @@
 
 <span class="c1"># ----------------------CASES--------------------------</span>
 <span class="c1"># case generator with caching enabled</span>
-<span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;case {i}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">lru_cache</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;case </span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">lru_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">case_gen</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;generating case &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;generating case &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="n">i</span>
-    <span class="n">outs</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="n">outs</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="n">err</span>
 
 <span class="c1"># ----------------------TESTS--------------------------</span>
@@ -683,11 +683,11 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 <span class="c1"># -------- test cases</span>
 <span class="k">def</span> <span class="nf">case_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="k">def</span> <span class="nf">case_simple2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="c1"># ------- test steps</span>
 <span class="k">def</span> <span class="nf">step_a</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
@@ -756,7 +756,7 @@ case_simple2
     <span class="n">outs_for_b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">step_check_a</span><span class="o">=</span><span class="n">outs_for_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="o">=</span><span class="n">outs_for_b</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="k">def</span> <span class="nf">case_simple2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MultipleStepsCaseData</span><span class="p">:</span>
     <span class="c1"># common input</span>
@@ -767,7 +767,7 @@ case_simple2
     <span class="n">outs_for_b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">step_check_a</span><span class="o">=</span><span class="n">outs_for_a</span><span class="p">,</span> <span class="n">step_check_b</span><span class="o">=</span><span class="n">outs_for_b</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="c1"># ------- test steps</span>
 <span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
@@ -791,8 +791,8 @@ case_simple2
 
     <span class="c1"># Filter it, based on the step name</span>
     <span class="n">key</span> <span class="o">=</span> <span class="n">test_step</span><span class="o">.</span><span class="vm">__name__</span>
-    <span class="n">expected_o</span> <span class="o">=</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">expected_o</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">expected_o</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    <span class="n">expected_e</span> <span class="o">=</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">expected_e</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="n">expected_o</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">expected_o</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">expected_o</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="n">expected_e</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">expected_e</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">expected_e</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="c1"># Execute the step</span>
     <span class="n">test_step</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
@@ -822,7 +822,7 @@ case_simple2
     <span class="k">elif</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="k">def</span> <span class="nf">case_simple2</span><span class="p">(</span><span class="n">step_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="c1"># reuse the same input whatever the step</span>
@@ -834,7 +834,7 @@ case_simple2
     <span class="k">elif</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="c1"># ------- test steps</span>
 <span class="k">def</span> <span class="nf">step_check_a</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">):</span>
@@ -881,7 +881,7 @@ case_simple2
     <span class="k">elif</span> <span class="n">step_name</span> <span class="o">==</span> <span class="s1">&#39;step_check_b&#39;</span><span class="p">:</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
 
-    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
 </pre></div>
 
 
@@ -902,7 +902,7 @@ case_simple2
 <span class="n">marked_cases</span><span class="p">,</span> <span class="n">cases_ids</span> <span class="o">=</span> <span class="n">get_pytest_parametrize_args</span><span class="p">(</span><span class="n">cases</span><span class="p">)</span>
 
 <span class="c1"># parametrize the test function manually</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s1">&#39;case_data&#39;</span><span class="p">,</span> <span class="n">marked_cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">cases_ids</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;case_data&#39;</span><span class="p">,</span> <span class="n">marked_cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">cases_ids</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_with_cases_decorated</span><span class="p">(</span><span class="n">case_data</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
@@ -975,7 +975,7 @@ case_simple2
       
     </div>
     
-      <script src="../../assets/javascripts/application.a8b5e56f.js"></script>
+      <script src="../../assets/javascripts/application.8e03edeb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
