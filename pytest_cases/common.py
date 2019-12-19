@@ -91,10 +91,14 @@ class _ParametrizationMark:
 
     def __init__(self, mark):
         bound = get_parametrize_signature().bind(*mark.args, **mark.kwargs)
-        remaining_kwargs = bound.arguments['kwargs']
-        if len(remaining_kwargs) > 0:
-            warn("parametrize kwargs not taken into account: %s. Please report it at"
-                 " https://github.com/smarie/python-pytest-cases/issues" % remaining_kwargs)
+        try:
+            remaining_kwargs = bound.arguments['kwargs']
+        except KeyError:
+            pass
+        else:
+            if len(remaining_kwargs) > 0:
+                warn("parametrize kwargs not taken into account: %s. Please report it at"
+                     " https://github.com/smarie/python-pytest-cases/issues" % remaining_kwargs)
         self.param_names = get_param_argnames_as_list(bound.arguments['argnames'])
         self.param_values = bound.arguments['argvalues']
         try:
