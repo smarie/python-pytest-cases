@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.12.0 - better test ids for parametrized tests with fixture refs + bugfix
+
+ - Improved test ids for the cases where `fixture_ref` is used in the parameters list in `@pytest_parametrize_plus`. Fixed [#69](https://github.com/smarie/python-pytest-cases/issues/69). Thanks [`last-partizan`](https://github.com/last-partizan) for the suggestion !
+
+ - Fixed `TypeError: got an unexpected keyword argument 'indirect'` with `pytest` 5+. Fixed [#70](https://github.com/smarie/python-pytest-cases/issues/70).
+
 ### 1.11.9 - bugfix
 
 `FixtureClosureNode` is now able to properly handle `ignore_args`, and now supports that plugins append fixtures to the closure, such as pytest-asyncio. Added corresponding tests. Fixes [#68](https://github.com/smarie/python-pytest-cases/issues/68)
