@@ -820,8 +820,15 @@ def fixture_union(name,
                           unpack_into=unpack_into, **kwargs)
 
 
-def _fixture_union(caller_module, name, fixtures, idstyle, scope="function", ids=fixture_alternative_to_str,
-                   unpack_into=None, autouse=False, **kwargs):
+def _fixture_union(caller_module,
+                   name,                            # type: str
+                   fixtures,                        # type: Iterable[Union[str, Callable]]
+                   idstyle,                         # type: Optional[IdStyle]
+                   scope="function",                # type: str
+                   ids=fixture_alternative_to_str,  # type: Union[Callable, List[str]]
+                   unpack_into=None,                # type: Iterable[str]
+                   autouse=False,                   # type: bool
+                   **kwargs):
     """
     Internal implementation for fixture_union
 
@@ -1030,7 +1037,7 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
         # there are fixture references: we have to create a specific decorator
         caller_module = get_caller_module()
 
-        def _create_param_fixture(from_i, to_i, p_fix_name):
+        def _create_param_fixture(from_i, to_i, p_names, test_func_name):
             """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
             selected_argvalues = argvalues[from_i:to_i]
             try:
@@ -1046,18 +1053,22 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                 selected_ids = get_test_ids_from_param_values(all_param_names, selected_argvalues)
 
             if to_i == from_i + 1:
-                p_fix_name = "%s_is_%s" % (p_fix_name, from_i)
+                p_names_with_idx = "%s_is_%s" % (p_names, from_i)
             else:
-                p_fix_name = "%s_is_%sto%s" % (p_fix_name, from_i, to_i - 1)
+                p_names_with_idx = "%s_is_%sto%s" % (p_names, from_i, to_i - 1)
+
+            # now create a unique fixture name
+            p_fix_name = "%s_%s" % (test_func_name, p_names_with_idx)
             p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
                                               caller=pytest_parametrize_plus)
+
             param_fix = _param_fixture(caller_module, argname=p_fix_name, argvalues=selected_argvalues,
                                        ids=selected_ids)
-            return param_fix
+            return param_fix, p_names_with_idx
 
-        def _create_fixture_product(argvalue_i, fixture_ref_positions, base_name):
+        def _create_fixture_product(argvalue_i, fixture_ref_positions, param_names_str, test_func_name):
             # do not use base name - we dont care if there is another in the same module, it will still be more readable
-            p_fix_name = "fixtureproduct__%s" % (argvalue_i, )
+            p_fix_name = "%s_%s__fixtureproduct__%s" % (test_func_name, param_names_str, argvalue_i)
             p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
                                               caller=pytest_parametrize_plus)
             # unpack the fixture references
@@ -1082,11 +1093,13 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                     raise ValueError("parameter '%s' not found in test function signature '%s%s'"
                                      "" % (p, test_func.__name__, old_sig))
 
-            # The base name for all fixtures that will be created below
+            # The name for the final "union" fixture
             # style_template = "%s_param__%s"
+            param_names_str = argnames.replace(' ', '').replace(',', '_')
             style_template = "%s_%s"
-            base_name = style_template % (test_func.__name__, argnames.replace(' ', '').replace(',', '_'))
-            base_name = check_name_available(caller_module, base_name, if_name_exists=CHANGE, caller=pytest_parametrize_plus)
+            fixture_union_name = style_template % (test_func.__name__, param_names_str)
+            fixture_union_name = check_name_available(caller_module, fixture_union_name, if_name_exists=CHANGE,
+                                                      caller=pytest_parametrize_plus)
 
             # Retrieve (if ref) or create (for normal argvalues) the fixtures that we will union
             # TODO important note: we could either wish to create one fixture for parameter value or to create one for
@@ -1099,35 +1112,36 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                 if i > prev_i + 1:
                     # there was a non-empty group of 'normal' parameters before this fixture_ref.
                     # create a new fixture parametrized with all of that consecutive group.
-                    param_fix = _create_param_fixture(prev_i + 1, i, base_name)
+                    param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__)
                     fixtures_to_union.append(param_fix)
-                    fixtures_to_union_names_for_ids.append(get_fixture_name(param_fix))
+                    fixtures_to_union_names_for_ids.append(_id_for_fix)
 
                 if j_list is None:
                     # add the fixture referenced with `fixture_ref`
                     referenced_fixture = argvalues[i].fixture
                     fixtures_to_union.append(referenced_fixture)
-                    id_for_fixture = apply_id_style(get_fixture_name(referenced_fixture), base_name, IdStyle.explicit)
+                    id_for_fixture = apply_id_style(get_fixture_name(referenced_fixture), param_names_str, IdStyle.explicit)
                     fixtures_to_union_names_for_ids.append(id_for_fixture)
                 else:
                     # create a fixture refering to all the fixtures required in the tuple
-                    prod_fix = _create_fixture_product(i, j_list, base_name)
+                    prod_fix = _create_fixture_product(i, j_list, param_names_str, test_func.__name__)
                     fixtures_to_union.append(prod_fix)
-                    id_for_fixture = apply_id_style(get_fixture_name(prod_fix), base_name, IdStyle.explicit)
+                    _id_product = "fixtureproduct__%s" % i
+                    id_for_fixture = apply_id_style(_id_product, param_names_str, IdStyle.explicit)
                     fixtures_to_union_names_for_ids.append(id_for_fixture)
                 prev_i = i
 
             # handle last consecutive group of normal parameters, if any
             i = len(argvalues)
             if i > prev_i + 1:
-                param_fix = _create_param_fixture(prev_i + 1, i, base_name)
+                param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__)
                 fixtures_to_union.append(param_fix)
-                fixtures_to_union_names_for_ids.append(get_fixture_name(param_fix))
+                fixtures_to_union_names_for_ids.append(_id_for_fix)
 
             # Finally create a "main" fixture with a unique name for this test function
             # note: the function automatically registers it in the module
             # note 2: idstyle is set to None because we provide an explicit enough list of ids
-            big_param_fixture = _fixture_union(caller_module, base_name, fixtures_to_union, idstyle=None,
+            big_param_fixture = _fixture_union(caller_module, fixture_union_name, fixtures_to_union, idstyle=None,
                                                ids=fixtures_to_union_names_for_ids)
 
             # --create the new test function's signature that we want to expose to pytest
@@ -1141,12 +1155,12 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             # finally insert the new fixture in that position. Indeed we can not insert first or last, because
             # 'self' arg (case of test class methods) should stay first and exec order should be preserved when possible
             new_sig = add_signature_parameters(new_sig, custom_idx=_first_idx,
-                                               custom=Parameter(base_name, kind=Parameter.POSITIONAL_OR_KEYWORD))
+                                               custom=Parameter(fixture_union_name, kind=Parameter.POSITIONAL_OR_KEYWORD))
 
             # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
             def replace_paramfixture_with_values(kwargs):
                 # remove the created fixture value
-                encompassing_fixture = kwargs.pop(base_name)
+                encompassing_fixture = kwargs.pop(fixture_union_name)
                 # and add instead the parameter values
                 if nb_params > 1:
                     for i, p in enumerate(all_param_names):
@@ -1160,7 +1174,7 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                 # normal test function with return statement
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):
-                    if kwargs.get(base_name, None) is NOT_USED:
+                    if kwargs.get(fixture_union_name, None) is NOT_USED:
                         return NOT_USED
                     else:
                         replace_paramfixture_with_values(kwargs)
@@ -1170,7 +1184,7 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
                 # generator test function (with one or several yield statement)
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):
-                    if kwargs.get(base_name, None) is NOT_USED:
+                    if kwargs.get(fixture_union_name, None) is NOT_USED:
                         yield NOT_USED
                     else:
                         replace_paramfixture_with_values(kwargs)

@@ -31,8 +31,8 @@ def test_foo(arg, bar):
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == ['test_foo[test_foo_arg_is_0-z-bar]',
-                                        'test_foo[test_foo_arg_is_a-bar]',
-                                        'test_foo[test_foo_arg_is_b-b_second_letter_is_a-bar]',
-                                        'test_foo[test_foo_arg_is_b-b_second_letter_is_1-o-bar]',
-                                        'test_foo[test_foo_arg_is_3-o-bar]']
+    assert list(module_results_dct) == ['test_foo[arg_is_0-z-bar]',
+                                        'test_foo[arg_is_a-bar]',
+                                        'test_foo[arg_is_b-second_letter_is_a-bar]',
+                                        'test_foo[arg_is_b-second_letter_is_1-o-bar]',
+                                        'test_foo[arg_is_3-o-bar]']
