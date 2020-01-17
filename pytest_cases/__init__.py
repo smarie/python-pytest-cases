@@ -25,7 +25,7 @@ __all__ = [
     # --cases_funcs
     'case_name',  'test_target', 'case_tags', 'cases_generator',
     # --main_fixtures
-    'cases_fixture', 'pytest_fixture_plus', 'param_fixtures', 'param_fixture',  # 'pytest_parametrize_plus',
+    'cases_fixture', 'pytest_fixture_plus', 'param_fixtures', 'param_fixture',
     'fixture_union', 'NOT_USED', 'pytest_parametrize_plus', 'fixture_ref', 'unpack_fixture',
     # --main params
     'cases_data', 'CaseDataGetter', 'THIS_MODULE', 'unfold_expected_err', 'get_all_cases',
