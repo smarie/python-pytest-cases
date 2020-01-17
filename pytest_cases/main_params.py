@@ -334,8 +334,11 @@ def extract_cases_from_module(module,        # type: ModuleType
         #  - starting with prefix 'case_'
         if f_name.startswith(CASE_PREFIX):
             code = _get_code(f)
-            # check if the function is actually defined in this module (not imported)
-            if code.co_filename == module.__file__:  # or we could use f.__module__ == module.__name__ ?
+            # check if the function is actually defined in this module (not imported from elsewhere)
+            # Note: we used code.co_filename == module.__file__ in the past
+            # but on some targets the file changes to a cached one so this does not work reliably,
+            # see https://github.com/smarie/python-pytest-cases/issues/72
+            if f.__module__ == module.__name__:
                 #  - with the optional filter/tag
                 _tags = getattr(f, CASE_TAGS_FIELD, ())
 
