@@ -1,8 +1,8 @@
 import pytest
-from pytest_cases import pytest_fixture_plus, fixture_union
+from pytest_cases import fixture_plus, pytest_fixture_plus, fixture_union
 
 
-@pytest_fixture_plus(unpack_into="a,b")
+@fixture_plus(unpack_into="a,b")
 @pytest.mark.parametrize("o", ['hello', 'world'])
 def root1(o):
     return o, o[0]

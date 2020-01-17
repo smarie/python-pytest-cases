@@ -436,7 +436,12 @@ def pytest_fixture_plus(*args,
                         **kwargs):
     warn("`pytest_fixture_plus` is deprecated. Please use the new alias `fixture_plus`. "
          "See https://github.com/pytest-dev/pytest/issues/6475")
-    return fixture_plus(*args, **kwargs)
+    if len(args) == 1:
+        if callable(args[0]):
+            return _decorate_fixture_plus(args[0], _caller_module_offset_when_unpack=2, **kwargs)
+    def _fixture_plus(f):
+        return _decorate_fixture_plus(f, *args, _caller_module_offset_when_unpack=2, **kwargs)
+    return _fixture_plus
 
 
 @function_decorator
@@ -446,6 +451,45 @@ def fixture_plus(scope="function",
                  unpack_into=None,
                  fixture_func=DECORATED,
                  **kwargs):
+    """ decorator to mark a fixture factory function.
+
+    Identical to `@pytest.fixture` decorator, except that
+
+     - it supports multi-parametrization with `@pytest.mark.parametrize` as requested in
+       https://github.com/pytest-dev/pytest/issues/3960. As a consequence it does not support the `params` and `ids`
+       arguments anymore.
+
+     - it supports a new argument `unpack_into` where you can provide names for fixtures where to unpack this fixture
+       into.
+
+    :param scope: the scope for which this fixture is shared, one of
+                "function" (default), "class", "module" or "session".
+    :param autouse: if True, the fixture func is activated for all tests that
+                can see it.  If False (the default) then an explicit
+                reference is needed to activate the fixture.
+    :param name: the name of the fixture. This defaults to the name of the
+                decorated function. Note: If a fixture is used in the same module in
+                which it is defined, the function name of the fixture will be
+                shadowed by the function arg that requests the fixture; one way
+                to resolve this is to name the decorated function
+                ``fixture_<fixturename>`` and then use
+                ``@pytest.fixture(name='<fixturename>')``.
+    :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional
+        fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
+    :param kwargs: other keyword arguments for `@pytest.fixture`
+    """
+    # the offset is 3 because of @function_decorator (decopatch library)
+    return _decorate_fixture_plus(fixture_func, scope=scope, autouse=autouse, name=name, unpack_into=unpack_into,
+                                  _caller_module_offset_when_unpack=3, **kwargs)
+
+
+def _decorate_fixture_plus(fixture_func,
+                           scope="function",
+                           autouse=False,
+                           name=None,
+                           unpack_into=None,
+                           _caller_module_offset_when_unpack=3,
+                           **kwargs):
     """ decorator to mark a fixture factory function.
 
     Identical to `@pytest.fixture` decorator, except that
@@ -489,7 +533,7 @@ def fixture_plus(scope="function",
             name = fixture_func.__name__
 
         # get caller module to create the symbols
-        caller_module = get_caller_module(frame_offset=2)
+        caller_module = get_caller_module(frame_offset=_caller_module_offset_when_unpack)
         _unpack_fixture(caller_module, unpack_into, name)
 
     # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
@@ -995,10 +1039,10 @@ class fixture_ref:
 # See https://github.com/pytest-dev/pytest/issues/6475
 @pytest.hookimpl(optionalhook=True)
 def pytest_parametrize_plus(*args,
-                     **kwargs):
+                            **kwargs):
     warn("`parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
          "See https://github.com/pytest-dev/pytest/issues/6475")
-    return parametrize_plus(*args, **kwargs)
+    return _parametrize_plus(*args, **kwargs)
 
 
 def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
@@ -1018,6 +1062,10 @@ def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, 
     :param kwargs:
     :return:
     """
+    return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+
+
+def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, _frame_offset=2, **kwargs):
     # make sure that we do not destroy the argvalues if it is provided as an iterator
     try:
         argvalues = list(argvalues)
@@ -1061,7 +1109,7 @@ def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, 
         return pytest.mark.parametrize(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
     else:
         # there are fixture references: we have to create a specific decorator
-        caller_module = get_caller_module()
+        caller_module = get_caller_module(frame_offset=_frame_offset)
 
         def _create_param_fixture(from_i, to_i, p_names, test_func_name):
             """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
