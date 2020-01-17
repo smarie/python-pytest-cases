@@ -243,9 +243,9 @@ Lists all desired cases for a given user query. This function may be convenient 
 
 ## 3 - Pytest goodies
 
-### `@pytest_fixture_plus`
+### `@fixture_plus`
 
-`pytest_fixture_plus(scope="function", autouse=False, name=None, unpack_into=None, **kwargs)`
+`fixture_plus(scope="function", autouse=False, name=None, unpack_into=None, **kwargs)`
 
 Identical to `@pytest.fixture` decorator, except that 
 
@@ -322,9 +322,9 @@ Note that the `(argnames, argvalues, ids)` signature is similar to `@pytest.mark
 Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single variable.
 
 
-### `@pytest_parametrize_plus`
+### `@parametrize_plus`
 
-`pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs)`
+`parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs)`
 
 Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
 

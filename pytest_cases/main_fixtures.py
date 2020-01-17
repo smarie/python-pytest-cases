@@ -57,9 +57,9 @@ def unpack_fixture(argnames, fixture):
 
     ```python
     import pytest
-    from pytest_cases import unpack_fixture, pytest_fixture_plus
+    from pytest_cases import unpack_fixture, fixture_plus
 
-    @pytest_fixture_plus
+    @fixture_plus
     @pytest.mark.parametrize("o", ['hello', 'world'])
     def c(o):
         return o, o[0]
@@ -110,7 +110,7 @@ def _unpack_fixture(caller_module, argnames, fixture):
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(value_idx):
             # no need to autouse=True: this fixture does not bring any added value in terms of setup.
-            @pytest_fixture_plus(name=argname, scope=scope, autouse=False)
+            @fixture_plus(name=argname, scope=scope, autouse=False)
             @with_signature("(%s)" % source_f_name)
             def _param_fixture(**kwargs):
                 source_fixture_value = kwargs.pop(source_f_name)
@@ -178,8 +178,8 @@ def _param_fixture(caller_module, argname, argvalues, autouse=False, ids=None, s
     def __param_fixture(request):
         return request.param
 
-    fix = pytest_fixture_plus(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
-                              **kwargs)(__param_fixture)
+    fix = fixture_plus(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
+                       **kwargs)(__param_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
     check_name_available(caller_module, argname, if_name_exists=WARN, caller=param_fixture)
@@ -300,7 +300,7 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
     root_fixture_name = check_name_available(caller_module, root_fixture_name, if_name_exists=CHANGE, caller=param_fixtures)
 
-    @pytest_fixture_plus(name=root_fixture_name, autouse=autouse, scope=scope, **kwargs)
+    @fixture_plus(name=root_fixture_name, autouse=autouse, scope=scope, **kwargs)
     @pytest.mark.parametrize(argnames, argvalues, ids=ids)
     @with_signature("(%s)" % argnames)
     def _root_fixture(**kwargs):
@@ -315,7 +315,7 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
         # To fix late binding issue with `param_idx` we add an extra layer of scope: a factory function
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(param_idx):
-            @pytest_fixture_plus(name=argname, scope=scope, autouse=autouse, **kwargs)
+            @fixture_plus(name=argname, scope=scope, autouse=autouse, **kwargs)
             @with_signature("(%s)" % root_fixture_name)
             def _param_fixture(**kwargs):
                 params = kwargs.pop(root_fixture_name)
@@ -355,10 +355,10 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
                   **kwargs
                   ):
     """
-    DEPRECATED - use double annotation `@pytest_fixture_plus` + `@cases_data` instead
+    DEPRECATED - use double annotation `@fixture_plus` + `@cases_data` instead
 
     ```python
-    @pytest_fixture_plus
+    @fixture_plus
     @cases_data(module=xxx)
     def my_fixture(case_data)
     ```
@@ -422,8 +422,8 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
     # apply @cases_data (that will translate to a @pytest.mark.parametrize)
     parametrized_f = cases_data(cases=cases, module=module,
                                 case_data_argname=case_data_argname, has_tag=has_tag, filter=filter)(f)
-    # apply @pytest_fixture_plus
-    return pytest_fixture_plus(**kwargs)(parametrized_f)
+    # apply @fixture_plus
+    return fixture_plus(**kwargs)(parametrized_f)
 
 
 # Fix for https://github.com/smarie/python-pytest-cases/issues/71
@@ -432,13 +432,20 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
 # A workaround otherwise would be to remove the 'pytest_' name prefix
 # See https://github.com/pytest-dev/pytest/issues/6475
 @pytest.hookimpl(optionalhook=True)
-@function_decorator
-def pytest_fixture_plus(scope="function",
-                        autouse=False,
-                        name=None,
-                        unpack_into=None,
-                        fixture_func=DECORATED,
+def pytest_fixture_plus(*args,
                         **kwargs):
+    warn("`pytest_fixture_plus` is deprecated. Please use the new alias `fixture_plus`. "
+         "See https://github.com/pytest-dev/pytest/issues/6475")
+    return fixture_plus(*args, **kwargs)
+
+
+@function_decorator
+def fixture_plus(scope="function",
+                 autouse=False,
+                 name=None,
+                 unpack_into=None,
+                 fixture_func=DECORATED,
+                 **kwargs):
     """ decorator to mark a fixture factory function.
 
     Identical to `@pytest.fixture` decorator, except that
@@ -492,7 +499,7 @@ def pytest_fixture_plus(scope="function",
     else:
         if 'params' in kwargs:
             raise ValueError(
-                "With `pytest_fixture_plus` you cannot mix usage of the keyword argument `params` and of "
+                "With `fixture_plus` you cannot mix usage of the keyword argument `params` and of "
                 "the pytest.mark.parametrize marks")
 
     # (2) create the huge "param" containing all params combined
@@ -504,7 +511,7 @@ def pytest_fixture_plus(scope="function",
     for pmark in parametrizer_marks:
         # check number of parameter names in this parameterset
         if len(pmark.param_names) < 1:
-            raise ValueError("Fixture function '%s' decorated with '@pytest_fixture_plus' has an empty parameter "
+            raise ValueError("Fixture function '%s' decorated with '@fixture_plus' has an empty parameter "
                              "name in a @pytest.mark.parametrize mark")
 
         # remember
@@ -883,10 +890,10 @@ def _fixture_union(caller_module,
     _new_fixture.__name__ = name
 
     # finally create the fixture per se.
-    # WARNING we do not use pytest.fixture but pytest_fixture_plus so that NOT_USED is discarded
-    f_decorator = pytest_fixture_plus(scope=scope,
-                                      params=[UnionFixtureAlternative(_name, idstyle) for _name in f_names],
-                                      autouse=autouse, ids=ids, **kwargs)
+    # WARNING we do not use pytest.fixture but fixture_plus so that NOT_USED is discarded
+    f_decorator = fixture_plus(scope=scope,
+                               params=[UnionFixtureAlternative(_name, idstyle) for _name in f_names],
+                               autouse=autouse, ids=ids, **kwargs)
     fix = f_decorator(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
@@ -955,8 +962,8 @@ def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
     _new_fixture.__name__ = name
 
     # finally create the fixture per se.
-    # WARNING we do not use pytest.fixture but pytest_fixture_plus so that NOT_USED is discarded
-    f_decorator = pytest_fixture_plus(scope=scope, autouse=autouse, ids=ids, **kwargs)
+    # WARNING we do not use pytest.fixture but fixture_plus so that NOT_USED is discarded
+    f_decorator = fixture_plus(scope=scope, autouse=autouse, ids=ids, **kwargs)
     fix = f_decorator(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
@@ -972,7 +979,7 @@ def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
 
 class fixture_ref:
     """
-    A reference to a fixture, to be used in `pytest_parametrize_plus`.
+    A reference to a fixture, to be used in `parametrize_plus`.
     You can create it from a fixture name or a fixture object (function).
     """
     __slots__ = 'fixture',
@@ -987,7 +994,14 @@ class fixture_ref:
 # A workaround otherwise would be to remove the 'pytest_' name prefix
 # See https://github.com/pytest-dev/pytest/issues/6475
 @pytest.hookimpl(optionalhook=True)
-def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
+def pytest_parametrize_plus(*args,
+                     **kwargs):
+    warn("`parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
+         "See https://github.com/pytest-dev/pytest/issues/6475")
+    return parametrize_plus(*args, **kwargs)
+
+
+def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
     """
     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to
     fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
@@ -1072,7 +1086,7 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             # now create a unique fixture name
             p_fix_name = "%s_%s" % (test_func_name, p_names_with_idx)
             p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
-                                              caller=pytest_parametrize_plus)
+                                              caller=parametrize_plus)
 
             param_fix = _param_fixture(caller_module, argname=p_fix_name, argvalues=selected_argvalues,
                                        ids=selected_ids)
@@ -1082,7 +1096,7 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             # do not use base name - we dont care if there is another in the same module, it will still be more readable
             p_fix_name = "%s_%s__fixtureproduct__%s" % (test_func_name, param_names_str, argvalue_i)
             p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
-                                              caller=pytest_parametrize_plus)
+                                              caller=parametrize_plus)
             # unpack the fixture references
             _vtuple = argvalues[argvalue_i]
             fixtures_or_values = tuple(v.fixture if i in fixture_ref_positions else v for i, v in enumerate(_vtuple))
@@ -1111,7 +1125,7 @@ def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope
             style_template = "%s_%s"
             fixture_union_name = style_template % (test_func.__name__, param_names_str)
             fixture_union_name = check_name_available(caller_module, fixture_union_name, if_name_exists=CHANGE,
-                                                      caller=pytest_parametrize_plus)
+                                                      caller=parametrize_plus)
 
             # Retrieve (if ref) or create (for normal argvalues) the fixtures that we will union
             # TODO important note: we could either wish to create one fixture for parameter value or to create one for

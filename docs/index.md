@@ -11,6 +11,8 @@
 !!! warning "Test execution order"
     Installing pytest-cases now has effects on the order of `pytest` tests execution, even if you do not use its features. One positive side effect is that it fixed [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054). But if you see less desirable ordering please [report it](https://github.com/smarie/python-pytest-cases/issues).
 
+!!! warning "New aliases"
+    `pytest_fixture_plus` and `pytest_parametrize_plus` were renamed to `fixture_plus` and `parametrize_plus` in order for pytest (pluggy) not to think they were hooks. Old aliases will stay around for a few versions, with a deprecation warning. See [#71](https://github.com/smarie/python-pytest-cases/issues/71).
 
 Did you ever think that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
@@ -111,16 +113,16 @@ You might be concerned that case data is gathered or created *during* test execu
 
 Indeed creating or collecting case data is not part of the test *per se*. Besides, if you benchmark your tests durations (for example with [pytest-harvest](https://smarie.github.io/python-pytest-harvest/)), you may want the test duration to be computed without acccounting for the data retrieval time - especially if you decide to add some caching mechanism as explained [here](https://smarie.github.io/python-pytest-cases/usage/advanced/#caching).
 
-It might therefore be more interesting for you to parametrize **case fixtures** instead of parametrizing your test function. Thanks to our new [`@pytest_fixture_plus`](#pytest_fixture_plus) decorator, this works exactly the same way than for test functions:
+It might therefore be more interesting for you to parametrize **case fixtures** instead of parametrizing your test function. Thanks to our new [`@fixture_plus`](#pytest_fixture_plus) decorator, this works exactly the same way than for test functions:
 
 ```python
-from pytest_cases import pytest_fixture_plus, cases_data
+from pytest_cases import fixture_plus, cases_data
 from example import foo
 
 # import the module containing the test cases
 import test_foo_cases
 
-@pytest_fixture_plus
+@fixture_plus
 @cases_data(module=test_foo_cases)
 def inputs(case_data):
     """ Example fixture that is automatically parametrized with @cases_data """
@@ -210,14 +212,14 @@ This new commandline is a goodie to change the reordering:
  * `--with-reorder skip` allows you to restore the original order that was active before `pytest_collection_modifyitems` was initially called, thus not taking into account any reordering done by pytest or by any of its plugins.
  
 
-### `@pytest_fixture_plus`
+### `@fixture_plus`
 
-`@pytest_fixture_plus` is similar to `pytest.fixture` but without its `param` and `ids` arguments. Instead, it is able to pick the parametrization from `@pytest.mark.parametrize` marks applied on fixtures. This makes it very intuitive for users to parametrize both their tests and fixtures. As a bonus, its `name` argument works even in old versions of pytest (which is not the case for `fixture`).
+`@fixture_plus` is similar to `pytest.fixture` but without its `param` and `ids` arguments. Instead, it is able to pick the parametrization from `@pytest.mark.parametrize` marks applied on fixtures. This makes it very intuitive for users to parametrize both their tests and fixtures. As a bonus, its `name` argument works even in old versions of pytest (which is not the case for `fixture`).
 
 Finally it now supports unpacking, see [unpacking feature](#unpack_fixture-unpack_into).
 
-!!! note "`@pytest_fixture_plus` deprecation if/when `@pytest.fixture` supports `@pytest.mark.parametrize`"
-    The ability for pytest fixtures to support the `@pytest.mark.parametrize` annotation is a feature that clearly belongs to `pytest` scope, and has been [requested already](https://github.com/pytest-dev/pytest/issues/3960). It is therefore expected that `@pytest_fixture_plus` will be deprecated in favor of `@pytest_fixture` if/when the `pytest` team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.
+!!! note "`@fixture_plus` deprecation if/when `@pytest.fixture` supports `@pytest.mark.parametrize`"
+    The ability for pytest fixtures to support the `@pytest.mark.parametrize` annotation is a feature that clearly belongs to `pytest` scope, and has been [requested already](https://github.com/pytest-dev/pytest/issues/3960). It is therefore expected that `@fixture_plus` will be deprecated in favor of `@pytest_fixture` if/when the `pytest` team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.
 
 ### `unpack_fixture` / `unpack_into`
 
@@ -225,9 +227,9 @@ In some cases fixtures return a tuple or a list of items. It is not easy to refe
 
 ```python
 import pytest
-from pytest_cases import unpack_fixture, pytest_fixture_plus
+from pytest_cases import unpack_fixture, fixture_plus
 
-@pytest_fixture_plus
+@fixture_plus
 @pytest.mark.parametrize("o", ['hello', 'world'])
 def c(o):
     return o, o[0]
@@ -238,13 +240,13 @@ def test_function(a, b):
     assert a[0] == b
 ```
 
-Note that you can also use the `unpack_into=` argument of `@pytest_fixture_plus` to do the same thing:
+Note that you can also use the `unpack_into=` argument of `@fixture_plus` to do the same thing:
 
 ```python
 import pytest
-from pytest_cases import pytest_fixture_plus
+from pytest_cases import fixture_plus
 
-@pytest_fixture_plus(unpack_into="a,b")
+@fixture_plus(unpack_into="a,b")
 @pytest.mark.parametrize("o", ['hello', 'world'])
 def c(o):
     return o, o[0]
@@ -257,14 +259,14 @@ And it is also available in `fixture_union`:
 
 ```python
 import pytest
-from pytest_cases import pytest_fixture_plus, fixture_union
+from pytest_cases import fixture_plus, fixture_union
 
-@pytest_fixture_plus
+@fixture_plus
 @pytest.mark.parametrize("o", ['hello', 'world'])
 def c(o):
     return o, o[0]
 
-@pytest_fixture_plus
+@fixture_plus
 @pytest.mark.parametrize("o", ['yeepee', 'yay'])
 def d(o):
     return o, o[0]
@@ -316,13 +318,13 @@ The topic has been largely discussed in [pytest-dev#349](https://github.com/pyte
 `fixture_union` is an implementation of this proposal.
 
 ```python
-from pytest_cases import pytest_fixture_plus, fixture_union
+from pytest_cases import fixture_plus, fixture_union
 
-@pytest_fixture_plus
+@fixture_plus
 def first():
     return 'hello'
 
-@pytest_fixture_plus(params=['a', 'b'])
+@fixture_plus(params=['a', 'b'])
 def second(request):
     return request.param
 
@@ -345,34 +347,34 @@ As you can see the ids of union fixtures are slightly different from standard id
 
 This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the [issues](https://github.com/smarie/python-pytest-cases/issues) page !
 
-**IMPORTANT** if you do not use `@pytest_fixture_plus` but only `@pytest.fixture`, then you will see that your fixtures are called even when they are not used, with a parameter `NOT_USED`. This symbol is automatically ignored if you use `@pytest_fixture_plus`, otherwise you have to handle it.
+**IMPORTANT** if you do not use `@fixture_plus` but only `@pytest.fixture`, then you will see that your fixtures are called even when they are not used, with a parameter `NOT_USED`. This symbol is automatically ignored if you use `@fixture_plus`, otherwise you have to handle it.
 
 !!! note "fixture unions vs. cases" 
     If you're familiar with `pytest-cases` already, you might note `@cases_data` is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by `pytest`, we will probably refactor this lib to align all the concepts.
 
 Finally fixture unions now supports unpacking, see [unpacking feature](#unpack_fixture-unpack_into).
 
-### `@pytest_parametrize_plus`
+### `@parametrize_plus`
 
-`@pytest_parametrize_plus` is a replacement for `@pytest.mark.parametrize` that allows you to include references to fixtures in the parameter values. Simply use `fixture_ref(<fixture>)` in the parameter values, where `<fixture>` can be the fixture name or fixture function.
+`@parametrize_plus` is a replacement for `@pytest.mark.parametrize` that allows you to include references to fixtures in the parameter values. Simply use `fixture_ref(<fixture>)` in the parameter values, where `<fixture>` can be the fixture name or fixture function.
 
 For example:
 
 ```python
 import pytest
-from pytest_cases import pytest_parametrize_plus, pytest_fixture_plus, fixture_ref
+from pytest_cases import parametrize_plus, fixture_plus, fixture_ref
 
 @pytest.fixture
 def world_str():
     return 'world'
 
-@pytest_fixture_plus
-@pytest_parametrize_plus('who', [fixture_ref(world_str), 
+@fixture_plus
+@parametrize_plus('who', [fixture_ref(world_str), 
                                  'you'])
 def greetings(who):
     return 'hello ' + who
 
-@pytest_parametrize_plus('main_msg', ['nothing', 
+@parametrize_plus('main_msg', ['nothing', 
                                       fixture_ref(world_str), 
                                       fixture_ref(greetings)])
 @pytest.mark.parametrize('ending', ['?', '!'])

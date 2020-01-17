@@ -1,7 +1,7 @@
 from pytest_cases.case_funcs import case_name, test_target, case_tags, cases_generator
 
-from pytest_cases.main_fixtures import cases_fixture, pytest_fixture_plus, param_fixtures, param_fixture, \
-    fixture_union, NOT_USED, pytest_parametrize_plus, fixture_ref, unpack_fixture
+from pytest_cases.main_fixtures import cases_fixture, fixture_plus, param_fixtures, param_fixture, \
+    fixture_union, NOT_USED, parametrize_plus, fixture_ref, unpack_fixture, pytest_fixture_plus, pytest_parametrize_plus
 
 from pytest_cases.main_params import cases_data, CaseDataGetter, unfold_expected_err, get_all_cases, THIS_MODULE, \
     get_pytest_parametrize_args
@@ -25,8 +25,8 @@ __all__ = [
     # --cases_funcs
     'case_name',  'test_target', 'case_tags', 'cases_generator',
     # --main_fixtures
-    'cases_fixture', 'pytest_fixture_plus', 'param_fixtures', 'param_fixture',
-    'fixture_union', 'NOT_USED', 'pytest_parametrize_plus', 'fixture_ref', 'unpack_fixture',
+    'cases_fixture', 'pytest_fixture_plus', 'fixture_plus', 'param_fixtures', 'param_fixture',
+    'fixture_union', 'NOT_USED', 'pytest_parametrize_plus', 'parametrize_plus', 'fixture_ref', 'unpack_fixture',
     # --main params
     'cases_data', 'CaseDataGetter', 'THIS_MODULE', 'unfold_expected_err', 'get_all_cases',
     'get_pytest_parametrize_args',

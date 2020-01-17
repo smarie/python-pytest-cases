@@ -82,10 +82,10 @@ def get_param_argnames_as_list(argnames):
     return list(argnames)
 
 
-# ------------ container for the mark information that we grab from the fixtures (`@pytest_fixture_plus`)
+# ------------ container for the mark information that we grab from the fixtures (`@fixture_plus`)
 class _ParametrizationMark:
     """
-    Represents the information required by `@pytest_fixture_plus` to work.
+    Represents the information required by `@fixture_plus` to work.
     """
     __slots__ = "param_names", "param_values", "param_ids"
 
