@@ -426,6 +426,12 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
     return pytest_fixture_plus(**kwargs)(parametrized_f)
 
 
+# Fix for https://github.com/smarie/python-pytest-cases/issues/71
+# In order for pytest to allow users to import this symbol in conftest.py
+# they should be declared as optional plugin hooks.
+# A workaround otherwise would be to remove the 'pytest_' name prefix
+# See https://github.com/pytest-dev/pytest/issues/6475
+@pytest.hookimpl(optionalhook=True)
 @function_decorator
 def pytest_fixture_plus(scope="function",
                         autouse=False,
@@ -975,6 +981,12 @@ class fixture_ref:
         self.fixture = fixture
 
 
+# Fix for https://github.com/smarie/python-pytest-cases/issues/71
+# In order for pytest to allow users to import this symbol in conftest.py
+# they should be declared as optional plugin hooks.
+# A workaround otherwise would be to remove the 'pytest_' name prefix
+# See https://github.com/pytest-dev/pytest/issues/6475
+@pytest.hookimpl(optionalhook=True)
 def pytest_parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
     """
     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to
