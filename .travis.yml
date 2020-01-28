@@ -51,7 +51,6 @@ env:
 
 before_install:
   # (a) linux dependencies
-  - sudo apt-get install pandoc
   - sudo apt-get install ant
   - sudo apt-get install ant-optional
 

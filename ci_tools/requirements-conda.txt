@@ -1,6 +1,5 @@
 # --- to execute setup.py whatever the goal
 # pytest-runner
-pandoc
 
 # --- to install
 
