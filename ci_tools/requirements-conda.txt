@@ -12,6 +12,7 @@
 # (pip) pytest-html$PYTEST_HTML_VERSION
 # (pip) xunitparser
 # pytest-cov  # ==2.5
+coverage
 # pylint
 
 # --- to generate the doc (see .travis)
