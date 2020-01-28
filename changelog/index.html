@@ -337,6 +337,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#1121-bugfixes" class="md-nav__link">
+    1.12.1 - Bugfixes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1120-better-test-ids-for-parametrized-tests-with-fixture-refs-bugfix" class="md-nav__link">
     1.12.0 - better test ids for parametrized tests with fixture refs + bugfix
   </a>
@@ -725,6 +732,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#1121-bugfixes" class="md-nav__link">
+    1.12.1 - Bugfixes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1120-better-test-ids-for-parametrized-tests-with-fixture-refs-bugfix" class="md-nav__link">
     1.12.0 - better test ids for parametrized tests with fixture refs + bugfix
   </a>
@@ -1101,6 +1115,15 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="1121-bugfixes">1.12.1 - Bugfixes<a class="headerlink" href="#1121-bugfixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Now using module name and not file path to detect symbols in cases files that are imported from elsewhere and not created locally. Indeed that was causing problems on some ^platforms where a <code>.pyc</code> cache file is created. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/72">#72</a></p>
+</li>
+<li>
+<p>Fixed <code>PluginValidationError</code> when <code>pytest_fixture_plus</code> or <code>pytest_parametrize_plus</code> were used in a <code>conftest.py</code> file. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/71">#71</a>. According to discussion in <a href="https://github.com/pytest-dev/pytest/issues/6475">pytest#6475</a>, <code>pytest_fixture_plus</code> and <code>pytest_parametrize_plus</code> are now renamed to <code>fixture_plus</code> and <code>parametrize_plus</code> in order for pytest (pluggy) not to think they are hooks. Old aliases will stay around for a few versions, with a deprecation warning.</p>
+</li>
+</ul>
 <h3 id="1120-better-test-ids-for-parametrized-tests-with-fixture-refs-bugfix">1.12.0 - better test ids for parametrized tests with fixture refs + bugfix<a class="headerlink" href="#1120-better-test-ids-for-parametrized-tests-with-fixture-refs-bugfix" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
