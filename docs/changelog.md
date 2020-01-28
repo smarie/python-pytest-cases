@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.12.1 - Bugfixes
+
+ - Now using module name and not file path to detect symbols in cases files that are imported from elsewhere and not created locally. Indeed that was causing problems on some ^platforms where a `.pyc` cache file is created. Fixes [#72](https://github.com/smarie/python-pytest-cases/issues/72)
+
+ - Fixed `PluginValidationError` when `pytest_fixture_plus` or `pytest_parametrize_plus` were used in a `conftest.py` file. Fixes [#71](https://github.com/smarie/python-pytest-cases/issues/71). According to discussion in [pytest#6475](https://github.com/pytest-dev/pytest/issues/6475), `pytest_fixture_plus` and `pytest_parametrize_plus` are now renamed to `fixture_plus` and `parametrize_plus` in order for pytest (pluggy) not to think they are hooks. Old aliases will stay around for a few versions, with a deprecation warning.
+
 ### 1.12.0 - better test ids for parametrized tests with fixture refs + bugfix
 
  - Improved test ids for the cases where `fixture_ref` is used in the parameters list in `@pytest_parametrize_plus`. Fixed [#69](https://github.com/smarie/python-pytest-cases/issues/69). Thanks [`last-partizan`](https://github.com/last-partizan) for the suggestion !
