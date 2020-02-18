@@ -74,6 +74,8 @@ install:
   - conda list
   - python ci_tools/py_install.py conda ci_tools/requirements-conda.txt
   - python ci_tools/py_install.py pip ci_tools/requirements-pip.txt
+  # this does not work anymore on python 2 so lets only do it when needed
+  - if [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then pip install mkdocs-material mkdocs; fi;
   # travis-specific installs
   - pip install PyGithub  # for ci_tools/github_release.py
   - pip install codecov  # See https://github.com/codecov/example-python.

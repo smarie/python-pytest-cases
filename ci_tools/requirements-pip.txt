@@ -23,5 +23,6 @@ pytest-harvest
 coverage
 
 # --- to generate the doc (see .travis)
-mkdocs-material  # ==2.7.3
-mkdocs  # ==0.17.3  # this is to prevent a version non-compliant with mkdocs-material to be installed.
+# does not work on python 2 anymore
+#mkdocs-material  # ==2.7.3
+#mkdocs  # ==0.17.3  # this is to prevent a version non-compliant with mkdocs-material to be installed.
