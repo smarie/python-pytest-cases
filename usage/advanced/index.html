@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -40,12 +40,12 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.adb8469c.css">
       
       
     
     
-      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -77,7 +77,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#advanced-usage" tabindex="1" class="md-skip">
+      <a href="#advanced-usage" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -86,7 +86,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../.." title="pytest_cases" class="md-header-nav__button md-logo">
+        <a href="../.." title="pytest_cases" aria-label="pytest_cases" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -117,7 +117,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
       <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
         &#xE5CD;
@@ -541,7 +541,7 @@
                 <h1 id="advanced-usage">Advanced usage<a class="headerlink" href="#advanced-usage" title="Permanent link">&para;</a></h1>
 <h2 id="case-arguments">Case arguments<a class="headerlink" href="#case-arguments" title="Permanent link">&para;</a></h2>
 <p>Case functions can have arguments. This makes it very easy to combine test cases with more elaborate pytest concepts (fixtures, parameters):</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span>
 
 <span class="k">def</span> <span class="nf">case_simple</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
@@ -565,22 +565,22 @@
 
     <span class="c1"># 2- Use it as usual...</span>
     <span class="c1"># ...</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>This also works with case generators: simply add the argument(s) to the function signature, <em>without</em> declaring them in the <code>@cases_generator</code> decorator.</p>
-<div class="codehilite"><pre><span></span><span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;gen case i=</span><span class="si">{i}</span><span class="s2">, j=</span><span class="si">{j}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<div class="codehilite"><pre><span></span><code><span class="nd">@cases_generator</span><span class="p">(</span><span class="s2">&quot;gen case i=</span><span class="si">{i}</span><span class="s2">, j=</span><span class="si">{j}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">case_gen</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CaseData</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;using version &quot;</span> <span class="o">+</span> <span class="n">version</span><span class="p">)</span>
     <span class="n">ins</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
     <span class="n">outs</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
-</pre></div>
+</code></pre></div>
 
 
 <h2 id="reusing-cases-in-several-tests">Reusing cases in several Tests<a class="headerlink" href="#reusing-cases-in-several-tests" title="Permanent link">&para;</a></h2>
 <p>You might wish to use the same test cases in several test functions. This works out of the box: simply refer to the same test case module in the <code>@case_data</code> decorator of several test functions, and you're set!</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span>
 
 <span class="c1"># import the module containing the test cases</span>
@@ -603,7 +603,7 @@
 
     <span class="c1"># 2- Use it</span>
     <span class="c1"># ...</span>
-</pre></div>
+</code></pre></div>
 
 
 <h3 id="with-variants">With variants<a class="headerlink" href="#with-variants" title="Permanent link">&para;</a></h3>
@@ -611,16 +611,16 @@
 <h3 id="caching">Caching<a class="headerlink" href="#caching" title="Permanent link">&para;</a></h3>
 <p>After starting to reuse cases in several test functions, you might end-up thinking <em>"why do I have to spend the data parsing/generation time several times ? It is the same case."</em>. You can solve this issue by using a cache.</p>
 <p>For simple cases you can simply decorate your case function with <code>@lru_cache(maxsize=1)</code> since simple case functions do not have arguments:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 
 <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">case_a</span><span class="p">():</span>
     <span class="c1"># ... (as usual)</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>For case generators you <strong>can</strong> also use <code>@lru_cache(maxsize=x)</code>, but you will have to set the max size according to the number of generated cases (or <code>None</code> to allow auto-grow). This can be automated: simply use the <code>lru_cache=True</code> parameter and <code>pytest-cases</code> will do it for you:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span><span class="p">,</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
   <span class="n">cases_generator</span>
 
 <span class="c1"># ----------------------CASES--------------------------</span>
@@ -649,11 +649,11 @@
 
     <span class="c1"># 2- Use it</span>
     <span class="o">...</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>yields:</p>
-<div class="codehilite"><pre><span></span><span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
+<div class="codehilite"><pre><span></span><code><span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
 ...
 collecting ... collected <span class="m">6</span> items
 test_memoize_generators.py::test_a<span class="o">[</span><span class="k">case</span> <span class="m">0</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">16</span>%<span class="o">]</span>generating <span class="k">case</span> <span class="m">0</span>
@@ -666,7 +666,7 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</span> <span class="m">1</span><span class="o">]</span> PASSED <span class="o">[</span> <span class="m">83</span>%<span class="o">]</span><span class="m">1</span>
 test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</span> <span class="m">2</span><span class="o">]</span> PASSED <span class="o">[</span><span class="m">100</span>%<span class="o">]</span><span class="nv">2</span>
 <span class="o">==========================</span> <span class="m">6</span> passed in <span class="m">0</span>.16 <span class="nv">seconds</span> <span class="o">===========================</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>You can see that the second time each case is needed, the cached value is used instead of executing the case generation function again.</p>
@@ -677,7 +677,7 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 <p>This tutorial assumes that you are already familiar with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a>.</p>
 <h3 id="1-if-steps-can-run-with-the-same-data">1- If steps can run with the same data<a class="headerlink" href="#1-if-steps-can-run-with-the-same-data" title="Permanent link">&para;</a></h3>
 <p>If all of the test steps require the same data to execute, it is straightforward, both in parametrizer mode (shown below) or in the new pytest steps generator mode (not shown):</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">CaseData</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">CaseData</span>
 <span class="kn">from</span> <span class="nn">pytest_steps</span> <span class="kn">import</span> <span class="n">test_steps</span>
 
 <span class="c1"># -------- test cases</span>
@@ -711,28 +711,28 @@ test_memoize_generators.py::test_b<span class="o">[</span><span class="k">case</
 
     <span class="c1"># Execute the step</span>
     <span class="n">test_step</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>This yields:</p>
-<div class="codehilite"><pre><span></span><span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
+<div class="codehilite"><pre><span></span><code><span class="o">=============================</span> <span class="nb">test</span> session <span class="nv">starts</span> <span class="o">=============================</span>
 ...
 test_p.py::test_suite<span class="o">[</span>case_simple-step_a<span class="o">]</span> PASSED  <span class="o">[</span> <span class="m">25</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: <span class="m">1</span>, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
 test_p.py::test_suite<span class="o">[</span>case_simple-step_b<span class="o">]</span> PASSED  <span class="o">[</span> <span class="m">50</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: <span class="m">1</span>, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
 test_p.py::test_suite<span class="o">[</span>case_simple2-step_a<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">75</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: -1, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
 test_p.py::test_suite<span class="o">[</span>case_simple2-step_b<span class="o">]</span> PASSED <span class="o">[</span><span class="m">100</span>%<span class="o">]{</span><span class="s1">&#39;a&#39;</span>: -1, <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="o">}</span>
 <span class="o">==========================</span> <span class="m">4</span> passed in <span class="m">0</span>.13 <span class="nv">seconds</span> <span class="o">===========================</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>You see that for each case data, all steps are executed in order. If you use an IDE it will appear in this intuitive order too:</p>
-<div class="codehilite"><pre><span></span>case_simple
+<div class="codehilite"><pre><span></span><code>case_simple
  - step_a
  - step_b
 case_simple2
  - step_a
  - step_b
-</pre></div>
+</code></pre></div>
 
 
 <p>If for some reason you wish to invert the order (executing all cases on step a then all cases on step b etc.) simply invert the order of decorators and it will work (<code>pytest</code> is great!). This is not recommended though, as it is a lot less intuitive.</p>
@@ -742,7 +742,7 @@ case_simple2
 <p>This is actually quite straightforward: simply adapt your custom case data format definition! Since <code>pytest-cases</code> does not impose <strong>any</strong> format for your case functions outputs, you can decide that your case functions return lists, dictionaries, etc.</p>
 <p>For example you can choose the format proposed by the <code>MultipleStepsCaseData</code> type hint, where each item in the returned inputs/outputs/errors tuple can either be a single element, or a dictionary of name -&gt; element. This allows your case functions to return alternate contents depending on the test step being executed.</p>
 <p>The example below shows a test suite where the inputs of the steps are the same, but the outputs and expected errors are different. Note that once again the example relies on the legacy "parametrizer" mode of pytest-steps, but it would be similar with the new "generator" mode.</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> \
   <span class="n">MultipleStepsCaseData</span>
 <span class="kn">from</span> <span class="nn">pytest_steps</span> <span class="kn">import</span> <span class="n">test_steps</span>
 
@@ -796,7 +796,7 @@ case_simple2
 
     <span class="c1"># Execute the step</span>
     <span class="n">test_step</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>There are two main differences with the previous example:</p>
@@ -808,7 +808,7 @@ case_simple2
 <h3 id="3-if-steps-require-different-data-b-arguments-recommended">3- If steps require different data (B: arguments, recommended)<a class="headerlink" href="#3-if-steps-require-different-data-b-arguments-recommended" title="Permanent link">&para;</a></h3>
 <p>The above example might seem a bit disappointing as it breaks the philosophy of doing each data access <strong>only when it is needed</strong>. Indeed everytime a single step is run it actually gets the data for all steps and then has to do some filtering.</p>
 <p>The style suggested below, making use of <a href="./advanced#case_arguments">case arguments</a>, is probably better: </p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">CaseData</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">cases_data</span><span class="p">,</span> <span class="n">CaseDataGetter</span><span class="p">,</span> <span class="n">THIS_MODULE</span><span class="p">,</span> <span class="n">CaseData</span>
 <span class="kn">from</span> <span class="nn">pytest_steps</span> <span class="kn">import</span> <span class="n">test_steps</span>
 
 <span class="c1"># -------- test cases</span>
@@ -859,12 +859,12 @@ case_simple2
 
     <span class="c1"># Execute the step</span>
     <span class="n">test_step</span><span class="p">(</span><span class="n">steps_data</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="n">expected_o</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>Notice that now <strong>the test step name is a parameter of the case function</strong>. So for each step, only the data relevant to this step is retrieved. </p>
 <p>Once again you might want to enable caching in order for the cases to be read only once, and not once for each test step. However since the case functions now have arguments, you should <strong>not</strong> use <code>@lru_cache()</code> directly on the case function but you should put it in a separate subfunction:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">CaseData</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 
 <span class="nd">@lru_cache</span><span class="p">()</span>
@@ -882,14 +882,14 @@ case_simple2
         <span class="n">outs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span>
 
     <span class="k">return</span> <span class="n">ins</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="kc">None</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>That way, <code>input_for_case_simple</code> will be cached across the steps.</p>
 <p>See <a href="#caching">caching</a> for details.</p>
 <h2 id="advanced-pytest-manual-parametrization">Advanced Pytest: Manual parametrization<a class="headerlink" href="#advanced-pytest-manual-parametrization" title="Permanent link">&para;</a></h2>
 <p>The <code>@cases_data</code> decorator is just syntactic sugar for the following two-steps process, that you may wish to rely on for advanced pytest usages:</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">get_all_cases</span><span class="p">,</span> <span class="n">get_pytest_parametrize_args</span>
 
 <span class="c1"># import the module containing the test cases</span>
@@ -905,7 +905,7 @@ case_simple2
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;case_data&#39;</span><span class="p">,</span> <span class="n">marked_cases</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">cases_ids</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_with_cases_decorated</span><span class="p">(</span><span class="n">case_data</span><span class="p">):</span>
     <span class="o">...</span>
-</pre></div>
+</code></pre></div>
                 
                   
                 
@@ -964,9 +964,9 @@ case_simple2
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
@@ -976,7 +976,7 @@ case_simple2
       
     </div>
     
-      <script src="../../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
