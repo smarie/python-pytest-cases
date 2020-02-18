@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.12.2 - Warning fix
+
+Fixed deprecation warning [#74](https://github.com/smarie/python-pytest-cases/issues/74)
+
 ### 1.12.1 - Bugfixes
 
  - Now using module name and not file path to detect symbols in cases files that are imported from elsewhere and not created locally. Indeed that was causing problems on some ^platforms where a `.pyc` cache file is created. Fixes [#72](https://github.com/smarie/python-pytest-cases/issues/72)
