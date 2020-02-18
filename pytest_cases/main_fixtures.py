@@ -1040,7 +1040,7 @@ class fixture_ref:
 @pytest.hookimpl(optionalhook=True)
 def pytest_parametrize_plus(*args,
                             **kwargs):
-    warn("`parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
+    warn("`pytest_parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
          "See https://github.com/pytest-dev/pytest/issues/6475")
     return _parametrize_plus(*args, **kwargs)
 
