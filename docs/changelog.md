@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.12.3 - Improved error messages
+
+Improved error message when something that is not a fixture is used in `unpack_fixture` or `fixture_union`. Fixed [#75](https://github.com/smarie/python-pytest-cases/issues/75)
+
 ### 1.12.2 - Warning fix
 
 Fixed deprecation warning [#74](https://github.com/smarie/python-pytest-cases/issues/74)
