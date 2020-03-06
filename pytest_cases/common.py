@@ -3,6 +3,11 @@ try:  # python 3.3+
 except ImportError:
     from funcsigs import signature
 
+try:
+    from typing import Union, Callable, Any
+except ImportError:
+    pass
+
 from distutils.version import LooseVersion
 from warnings import warn
 
@@ -25,14 +30,50 @@ def remove_duplicates(lst):
             if item not in dset and not dset.add(item)]
 
 
-def get_fixture_name(fixture_fun):
+def is_fixture(fixture_fun  # type: Any
+               ):
     """
-    Internal utility to retrieve the fixture name corresponding to the given fixture function .
-    Indeed there is currently no pytest API to do this.
+    Returns True if the provided function is a fixture
 
     :param fixture_fun:
     :return:
     """
+    try:
+        # noinspection PyStatementEffect
+        fixture_fun._pytestfixturefunction
+        return True
+    except AttributeError:
+        # not a fixture ?
+        return False
+
+
+def assert_is_fixture(fixture_fun  # type: Any
+                      ):
+    """
+    Raises a ValueError if the provided fixture function is not a fixture.
+
+    :param fixture_fun:
+    :return:
+    """
+    if not is_fixture(fixture_fun):
+        raise ValueError("The provided fixture function does not seem to be a fixture: %s. Did you properly decorate "
+                         "it ?" % fixture_fun)
+
+
+def get_fixture_name(fixture_fun  # type: Union[str, Callable]
+                     ):
+    """
+    Internal utility to retrieve the fixture name corresponding to the given fixture function.
+    Indeed there is currently no pytest API to do this.
+
+    Note: this function can receive a string, in which case it is directly returned.
+
+    :param fixture_fun:
+    :return:
+    """
+    if isinstance(fixture_fun, string_types):
+        return fixture_fun
+    assert_is_fixture(fixture_fun)
     try:  # pytest 3
         custom_fixture_name = fixture_fun._pytestfixturefunction.name
     except AttributeError:
@@ -62,8 +103,7 @@ def get_fixture_scope(fixture_fun):
     :param fixture_fun:
     :return:
     """
-    # try:
-    #     # pytest 3
+    assert_is_fixture(fixture_fun)
     return fixture_fun._pytestfixturefunction.scope
     # except AttributeError:
     #     # pytest 2

@@ -94,11 +94,10 @@ def _unpack_fixture(caller_module, argnames, fixture):
     argnames_lst = get_param_argnames_as_list(argnames)
 
     # possibly get the source fixture name if the fixture symbol was provided
+    source_f_name = get_fixture_name(fixture)
     if not isinstance(fixture, string_types):
-        source_f_name = get_fixture_name(fixture)
         scope = get_fixture_scope(fixture)
     else:
-        source_f_name = fixture
         # we dont have a clue about the real scope, so lets use function scope
         scope = 'function'
 
@@ -911,7 +910,7 @@ def _fixture_union(caller_module,
     f_names = []
     for f in fixtures:
         # possibly get the fixture name if the fixture symbol was provided
-        f_names.append(get_fixture_name(f) if not isinstance(f, string_types) else f)
+        f_names.append(get_fixture_name(f))
 
     if len(f_names) < 1:
         raise ValueError("Empty fixture unions are not permitted")
@@ -981,7 +980,7 @@ def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
         # possibly get the fixture name if the fixture symbol was provided
         f = fixtures_or_values[f_pos]
         # and remember the position in the tuple
-        f_names[f_pos] = get_fixture_name(f) if not isinstance(f, string_types) else f
+        f_names[f_pos] = get_fixture_name(f)
 
     # remove duplicates by making it an ordered set
     all_names = remove_duplicates((n for n in f_names if n is not None))
