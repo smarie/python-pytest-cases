@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.12.4 - Bugfix
+
+Fixed `ValueError` when a product of unions was used on a test node, for example when two `parametrize_plus` using `fixture_ref`s were used on the same fixture or test function. Fixed [#76](https://github.com/smarie/python-pytest-cases/issues/76)
+
 ### 1.12.3 - Improved error messages
 
 Improved error message when something that is not a fixture is used in `unpack_fixture` or `fixture_union`. Fixed [#75](https://github.com/smarie/python-pytest-cases/issues/75)
