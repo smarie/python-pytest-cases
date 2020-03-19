@@ -1211,6 +1211,8 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
                 fixtures_to_union.append(param_fix)
                 fixtures_to_union_names_for_ids.append(_id_for_fix)
 
+            # TO DO if fixtures_to_union has length 1, simplify ? >> No, we leave such "optimization" to the end user
+
             # Finally create a "main" fixture with a unique name for this test function
             # note: the function automatically registers it in the module
             # note 2: idstyle is set to None because we provide an explicit enough list of ids

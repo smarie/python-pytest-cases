@@ -336,6 +336,8 @@ class FixtureClosureNode(object):
                     # transform the _params into a list of names
                     alternative_f_names = UnionFixtureAlternative.to_list_of_fixture_names(_params)
 
+                    # TO DO if only one name, simplify ? >> No, we leave such "optimization" to the end user
+
                     # if there are direct dependencies that are not the union members, add them to pending
                     non_member_dependencies = [f for f in _fixdef.argnames if f not in alternative_f_names]
                     pending_fixture_names += non_member_dependencies
@@ -344,7 +346,7 @@ class FixtureClosureNode(object):
                     self.split_and_build(fixture_defs_mgr, fixname, fixturedefs, alternative_f_names,
                                          pending_fixture_names, ignore_args=ignore_args)
 
-                    # empty the pending
+                    # empty the pending because all of them have been propagated on all children with their dependencies
                     pending_fixture_names = []
 
                 else:
@@ -405,11 +407,9 @@ class FixtureClosureNode(object):
                 new_c.split_fixture_discarded_names = [g for g in alternative_fixture_names if g != f]
 
                 # perform the propagation:
-                # create a copy of the pending fixtures list and prepend the fixture used
-                pending_for_child = copy(pending_fixtures_list)
-                # (a) first propagate all child's dependencies
-                new_c._build_closure(fixture_defs_mgr, [f], ignore_args=ignore_args)
-                # (b) then the ones required by parent
+                # (a) first propagate all child's dependencies, (b) then the ones required by parent
+                # we need to do both at the same time in order to propagate the "pending for child" on all subbranches
+                pending_for_child = [f] + pending_fixtures_list
                 new_c._build_closure(fixture_defs_mgr, pending_for_child, ignore_args=ignore_args)
 
     def has_split(self):
