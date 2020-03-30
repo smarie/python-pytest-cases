@@ -28,7 +28,7 @@ def case_simple2(version  # type: str
     return ins, outs, None
 
 
-@cases_generator("gen case i={i}, j={j}", i=range(2), j=range(2))
+@cases_generator(i=range(2), j=range(2))
 def case_gen(version,  # type: str,
              i, j):
     # type: (...) -> CaseData

@@ -400,6 +400,11 @@ def _get_case_getter_s(f,
         already_used_names = []
 
         names, param_ids, all_param_values_combinations = gen
+        nb_cases_generated = len(all_param_values_combinations)
+
+        if names is None:
+            # default template based on parameter names
+            names = "%s__%s" % (f.__name__, ', '.join("%s={%s}" % (p_name, p_name) for p_name in param_ids))
 
         if isinstance(names, string_types):
             # then this is a string formatter creating the names. Create the corresponding callable
@@ -410,7 +415,6 @@ def _get_case_getter_s(f,
                 except Exception:
                     raise InvalidNamesTemplateException(f, _formatter, params)
 
-        nb_cases_generated = len(all_param_values_combinations)
         if not callable(names):
             # This is an explicit list
             if len(names) != nb_cases_generated:
