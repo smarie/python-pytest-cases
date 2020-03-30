@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.13.0 - `@cases_generator` default `names`
+
+`@cases_generator` now has a default value for the `names` template, based on the parameters. Fixes [#77](https://github.com/smarie/python-pytest-cases/issues/77).
+
 ### 1.12.4 - Bugfix
 
 Fixed `ValueError` when a product of unions was used on a test node, for example when two `parametrize_plus` using `fixture_ref`s were used on the same fixture or test function. Fixed [#76](https://github.com/smarie/python-pytest-cases/issues/76)
