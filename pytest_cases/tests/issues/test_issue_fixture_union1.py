@@ -15,6 +15,4 @@ def test_foo(u):
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == [
-
-    ]
+    assert list(module_results_dct) == ['test_foo[u_is_a0]', 'test_foo[u_is_a1]']
