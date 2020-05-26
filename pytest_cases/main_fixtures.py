@@ -45,7 +45,7 @@ from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get
 from pytest_cases.main_params import cases_data
 
 
-def unpack_fixture(argnames, fixture):
+def unpack_fixture(argnames, fixture, hook=None):
     """
     Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to
     elements unpacked from `fixture` in order. For example if `fixture` is a tuple of length 2, `argnames="a,b"` will
@@ -79,15 +79,19 @@ def unpack_fixture(argnames, fixture):
     """
     # get caller module to create the symbols
     caller_module = get_caller_module()
-    return _unpack_fixture(caller_module, argnames, fixture)
+    return _unpack_fixture(caller_module, argnames, fixture, hook=hook)
 
 
-def _unpack_fixture(caller_module, argnames, fixture):
+def _unpack_fixture(caller_module, argnames, fixture, hook):
     """
 
     :param caller_module:
     :param argnames:
     :param fixture:
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :return:
     """
     # unpack fixture names to create if needed
@@ -109,8 +113,8 @@ def _unpack_fixture(caller_module, argnames, fixture):
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(value_idx):
             # no need to autouse=True: this fixture does not bring any added value in terms of setup.
-            @fixture_plus(name=argname, scope=scope, autouse=False)
-            @with_signature("(%s)" % source_f_name)
+            @fixture_plus(name=argname, scope=scope, autouse=False, hook=hook)
+            @with_signature("%s(%s)" % (argname, source_f_name))
             def _param_fixture(**kwargs):
                 source_fixture_value = kwargs.pop(source_f_name)
                 # unpack
@@ -131,7 +135,7 @@ def _unpack_fixture(caller_module, argnames, fixture):
     return created_fixtures
 
 
-def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", **kwargs):
+def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", hook=None, **kwargs):
     """
     Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single
     variable.
@@ -156,6 +160,10 @@ def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function",
     :param autouse: see fixture `autouse`
     :param ids: see fixture `ids`
     :param scope: see fixture `scope`
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: any other argument for 'fixture'
     :return: the create fixture
     """
@@ -167,18 +175,21 @@ def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function",
 
     caller_module = get_caller_module()
 
-    return _param_fixture(caller_module, argname, argvalues, autouse=autouse, ids=ids, scope=scope, **kwargs)
+    return _param_fixture(caller_module, argname, argvalues, autouse=autouse, ids=ids, scope=scope,
+                          hook=hook, **kwargs)
 
 
-def _param_fixture(caller_module, argname, argvalues, autouse=False, ids=None, scope="function", **kwargs):
+def _param_fixture(caller_module, argname, argvalues, autouse=False, ids=None, scope="function", hook=None,
+                   **kwargs):
     """ Internal method shared with param_fixture and param_fixtures """
 
-    # create the fixture
+    # create the fixture - set its name so that the optional hook can read it easily
+    @with_signature("%s(request)" % argname)
     def __param_fixture(request):
         return request.param
 
     fix = fixture_plus(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
-                       **kwargs)(__param_fixture)
+                       hook=hook, **kwargs)(__param_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
     check_name_available(caller_module, argname, if_name_exists=WARN, caller=param_fixture)
@@ -251,7 +262,7 @@ def check_name_available(module,
     return name
 
 
-def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", **kwargs):
+def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", hook=None, **kwargs):
     """
     Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`. The
     created fixtures are automatically registered into the callers' module, but you may wish to assign them to
@@ -281,6 +292,10 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
     :param autouse: see fixture `autouse`
     :param ids: same as `@pytest.mark.parametrize` `ids`
     :param scope: see fixture `scope`
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: any other argument for the created 'fixtures'
     :return: the created fixtures
     """
@@ -290,18 +305,20 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
     caller_module = get_caller_module()
 
     if len(argnames_lst) < 2:
-        return _param_fixture(caller_module, argnames, argvalues, autouse=autouse, ids=ids, scope=scope, **kwargs)
+        return _param_fixture(caller_module, argnames, argvalues, autouse=autouse, ids=ids, scope=scope,
+                              hook=hook, **kwargs)
 
     # create the root fixture that will contain all parameter values
     # note: we sort the list so that the first in alphabetical order appears first. Indeed pytest uses this order.
     root_fixture_name = "%s__param_fixtures_root" % ('_'.join(sorted(argnames_lst)))
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
-    root_fixture_name = check_name_available(caller_module, root_fixture_name, if_name_exists=CHANGE, caller=param_fixtures)
+    root_fixture_name = check_name_available(caller_module, root_fixture_name, if_name_exists=CHANGE,
+                                             caller=param_fixtures)
 
-    @fixture_plus(name=root_fixture_name, autouse=autouse, scope=scope, **kwargs)
+    @fixture_plus(name=root_fixture_name, autouse=autouse, scope=scope, hook=hook, **kwargs)
     @pytest.mark.parametrize(argnames, argvalues, ids=ids)
-    @with_signature("(%s)" % argnames)
+    @with_signature("%s(%s)" % (root_fixture_name, argnames))
     def _root_fixture(**kwargs):
         return tuple(kwargs[k] for k in argnames_lst)
 
@@ -314,8 +331,8 @@ def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function
         # To fix late binding issue with `param_idx` we add an extra layer of scope: a factory function
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(param_idx):
-            @fixture_plus(name=argname, scope=scope, autouse=autouse, **kwargs)
-            @with_signature("(%s)" % root_fixture_name)
+            @fixture_plus(name=argname, scope=scope, autouse=autouse, hook=hook, **kwargs)
+            @with_signature("%s(%s)" % (argname, root_fixture_name))
             def _param_fixture(**kwargs):
                 params = kwargs.pop(root_fixture_name)
                 return params[param_idx]
@@ -448,6 +465,7 @@ def fixture_plus(scope="function",
                  autouse=False,
                  name=None,
                  unpack_into=None,
+                 hook=None,
                  fixture_func=DECORATED,
                  **kwargs):
     """ decorator to mark a fixture factory function.
@@ -475,11 +493,15 @@ def fixture_plus(scope="function",
                 ``@pytest.fixture(name='<fixturename>')``.
     :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional
         fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: other keyword arguments for `@pytest.fixture`
     """
     # the offset is 3 because of @function_decorator (decopatch library)
     return _decorate_fixture_plus(fixture_func, scope=scope, autouse=autouse, name=name, unpack_into=unpack_into,
-                                  _caller_module_offset_when_unpack=3, **kwargs)
+                                  hook=hook, _caller_module_offset_when_unpack=3, **kwargs)
 
 
 def _decorate_fixture_plus(fixture_func,
@@ -487,6 +509,7 @@ def _decorate_fixture_plus(fixture_func,
                            autouse=False,
                            name=None,
                            unpack_into=None,
+                           hook=None,
                            _caller_module_offset_when_unpack=3,
                            **kwargs):
     """ decorator to mark a fixture factory function.
@@ -514,6 +537,10 @@ def _decorate_fixture_plus(fixture_func,
                 ``@pytest.fixture(name='<fixturename>')``.
     :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional
         fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: other keyword arguments for `@pytest.fixture`
     """
     if name is not None:
@@ -533,12 +560,12 @@ def _decorate_fixture_plus(fixture_func,
 
         # get caller module to create the symbols
         caller_module = get_caller_module(frame_offset=_caller_module_offset_when_unpack)
-        _unpack_fixture(caller_module, unpack_into, name)
+        _unpack_fixture(caller_module, unpack_into, name, hook=hook)
 
     # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
     parametrizer_marks = get_pytest_parametrize_marks(fixture_func)
     if len(parametrizer_marks) < 1:
-        return _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs)
+        return _create_fixture_without_marks(fixture_func, scope, autouse, hook=hook, **kwargs)
     else:
         if 'params' in kwargs:
             raise ValueError(
@@ -655,6 +682,10 @@ def _decorate_fixture_plus(fixture_func,
                 args, kwargs = _get_arguments(*args, **kwargs)
                 return fixture_func(*args, **kwargs)
 
+        # call hook if needed
+        if hook is not None:
+            wrapped_fixture_func = hook(wrapped_fixture_func)
+
         # transform the created wrapper into a fixture
         fixture_decorator = pytest.fixture(scope=scope, params=final_values, autouse=autouse, ids=final_ids, **kwargs)
         return fixture_decorator(wrapped_fixture_func)
@@ -670,18 +701,26 @@ def _decorate_fixture_plus(fixture_func,
                 for res in fixture_func(*args, **kwargs):
                     yield res
 
+        # call hook if needed
+        if hook is not None:
+            wrapped_fixture_func = hook(wrapped_fixture_func)
+
         # transform the created wrapper into a fixture
         fixture_decorator = yield_fixture(scope=scope, params=final_values, autouse=autouse, ids=final_ids, **kwargs)
         return fixture_decorator(wrapped_fixture_func)
 
 
-def _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs):
+def _create_fixture_without_marks(fixture_func, scope, autouse, hook, **kwargs):
     """
     creates a fixture for decorated fixture function `fixture_func`.
 
     :param fixture_func:
     :param scope:
     :param autouse:
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs:
     :return:
     """
@@ -711,6 +750,10 @@ def _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs):
             else:
                 return NOT_USED
 
+        # call hook if needed
+        if hook is not None:
+            wrapped_fixture_func = hook(wrapped_fixture_func)
+
         # transform the created wrapper into a fixture
         fixture_decorator = pytest.fixture(scope=scope, autouse=autouse, **kwargs)
         return fixture_decorator(wrapped_fixture_func)
@@ -725,6 +768,10 @@ def _create_fixture_without_marks(fixture_func, scope, autouse, **kwargs):
                     yield res
             else:
                 yield NOT_USED
+
+        # call hook if needed
+        if hook is not None:
+            wrapped_fixture_func = hook(wrapped_fixture_func)
 
         # transform the created wrapper into a fixture
         fixture_decorator = yield_fixture(scope=scope, autouse=autouse, **kwargs)
@@ -843,6 +890,7 @@ def fixture_union(name,
                   ids=fixture_alternative_to_str,
                   unpack_into=None,
                   autouse=False,
+                  hook=None,
                   **kwargs):
     """
     Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically
@@ -867,23 +915,28 @@ def fixture_union(name,
     :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional
         fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
     :param autouse: as in pytest
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: other pytest fixture options. They might not be supported correctly.
     :return: the new fixture. Note: you do not need to capture that output in a symbol, since the fixture is
         automatically registered in your module. However if you decide to do so make sure that you use the same name.
     """
     caller_module = get_caller_module()
     return _fixture_union(caller_module, name, fixtures, scope=scope, idstyle=idstyle, ids=ids, autouse=autouse,
-                          unpack_into=unpack_into, **kwargs)
+                          hook=hook, unpack_into=unpack_into, **kwargs)
 
 
 def _fixture_union(caller_module,
                    name,                            # type: str
                    fixtures,                        # type: Iterable[Union[str, Callable]]
-                   idstyle,                         # type: Optional[IdStyle]
+                   idstyle,                         # type: Optional[Union[str, IdStyle]]
                    scope="function",                # type: str
                    ids=fixture_alternative_to_str,  # type: Union[Callable, List[str]]
                    unpack_into=None,                # type: Iterable[str]
                    autouse=False,                   # type: bool
+                   hook=None,              # type: Callable
                    **kwargs):
     """
     Internal implementation for fixture_union
@@ -896,6 +949,10 @@ def _fixture_union(caller_module,
     :param ids:
     :param unpack_into:
     :param autouse:
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs:
     :return:
     """
@@ -917,7 +974,7 @@ def _fixture_union(caller_module,
 
     # then generate the body of our union fixture. It will require all of its dependent fixtures and receive as
     # a parameter the name of the fixture to use
-    @with_signature("(%s, request)" % ', '.join(f_names))
+    @with_signature("%s(%s, request)" % (name, ', '.join(f_names)))
     def _new_fixture(request, **all_fixtures):
         if not is_used_request(request):
             return NOT_USED
@@ -930,13 +987,11 @@ def _fixture_union(caller_module,
                 raise TypeError("Union Fixture %s received invalid parameter type: %s. Please report this issue."
                                 "" % (name, alternative.__class__))
 
-    _new_fixture.__name__ = name
-
     # finally create the fixture per se.
     # WARNING we do not use pytest.fixture but fixture_plus so that NOT_USED is discarded
     f_decorator = fixture_plus(scope=scope,
                                params=[UnionFixtureAlternative(_name, idstyle) for _name in f_names],
-                               autouse=autouse, ids=ids, **kwargs)
+                               autouse=autouse, ids=ids, hook=hook, **kwargs)
     fix = f_decorator(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
@@ -945,14 +1000,14 @@ def _fixture_union(caller_module,
 
     # if unpacking is requested, do it here
     if unpack_into is not None:
-        _unpack_fixture(caller_module, argnames=unpack_into, fixture=name)
+        _unpack_fixture(caller_module, argnames=unpack_into, fixture=name, hook=hook)
 
     return fix
 
 
 def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
                      scope="function", ids=fixture_alternative_to_str,
-                     unpack_into=None, autouse=False, **kwargs):
+                     unpack_into=None, autouse=False, hook=None, **kwargs):
     """
     Internal implementation for fixture products created by pytest parametrize plus.
 
@@ -1006,7 +1061,7 @@ def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
 
     # finally create the fixture per se.
     # WARNING we do not use pytest.fixture but fixture_plus so that NOT_USED is discarded
-    f_decorator = fixture_plus(scope=scope, autouse=autouse, ids=ids, **kwargs)
+    f_decorator = fixture_plus(scope=scope, autouse=autouse, ids=ids, hook=hook, **kwargs)
     fix = f_decorator(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
@@ -1015,7 +1070,7 @@ def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
 
     # if unpacking is requested, do it here
     if unpack_into is not None:
-        _unpack_fixture(caller_module, argnames=unpack_into, fixture=name)
+        _unpack_fixture(caller_module, argnames=unpack_into, fixture=name, hook=hook)
 
     return fix
 
@@ -1044,7 +1099,7 @@ def pytest_parametrize_plus(*args,
     return _parametrize_plus(*args, **kwargs)
 
 
-def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
+def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, hook=None, **kwargs):
     """
     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to
     fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
@@ -1058,13 +1113,19 @@ def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, 
     :param indirect:
     :param ids:
     :param scope:
+    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
+        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
+        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs:
     :return:
     """
-    return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+    return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, scope=scope, hook=hook,
+                             **kwargs)
 
 
-def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, _frame_offset=2, **kwargs):
+def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, hook=None,
+                      _frame_offset=2, **kwargs):
     # make sure that we do not destroy the argvalues if it is provided as an iterator
     try:
         argvalues = list(argvalues)
@@ -1110,7 +1171,7 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
         # there are fixture references: we have to create a specific decorator
         caller_module = get_caller_module(frame_offset=_frame_offset)
 
-        def _create_param_fixture(from_i, to_i, p_names, test_func_name):
+        def _create_param_fixture(from_i, to_i, p_names, test_func_name, hook):
             """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
             selected_argvalues = argvalues[from_i:to_i]
             try:
@@ -1120,7 +1181,7 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
                 # a callable to create the ids
                 selected_ids = ids
 
-            # default behaviour is not the same betwee pytest params and pytest fixtures
+            # default behaviour is not the same between pytest params and pytest fixtures
             if selected_ids is None:
                 # selected_ids = ['-'.join([str(_v) for _v in v]) for v in selected_argvalues]
                 selected_ids = get_test_ids_from_param_values(all_param_names, selected_argvalues)
@@ -1136,10 +1197,10 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
                                               caller=parametrize_plus)
 
             param_fix = _param_fixture(caller_module, argname=p_fix_name, argvalues=selected_argvalues,
-                                       ids=selected_ids)
+                                       ids=selected_ids, hook=hook)
             return param_fix, p_names_with_idx
 
-        def _create_fixture_product(argvalue_i, fixture_ref_positions, param_names_str, test_func_name):
+        def _create_fixture_product(argvalue_i, fixture_ref_positions, param_names_str, test_func_name, hook):
             # do not use base name - we dont care if there is another in the same module, it will still be more readable
             p_fix_name = "%s_%s__fixtureproduct__%s" % (test_func_name, param_names_str, argvalue_i)
             p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
@@ -1147,7 +1208,8 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
             # unpack the fixture references
             _vtuple = argvalues[argvalue_i]
             fixtures_or_values = tuple(v.fixture if i in fixture_ref_positions else v for i, v in enumerate(_vtuple))
-            product_fix = _fixture_product(caller_module, p_fix_name, fixtures_or_values, fixture_ref_positions)
+            product_fix = _fixture_product(caller_module, p_fix_name, fixtures_or_values, fixture_ref_positions,
+                                           hook=hook)
             return product_fix
 
         # then create the decorator
@@ -1183,9 +1245,10 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
             prev_i = -1
             for i, j_list in fixture_indices:
                 if i > prev_i + 1:
-                    # there was a non-empty group of 'normal' parameters before this fixture_ref.
-                    # create a new fixture parametrized with all of that consecutive group.
-                    param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__)
+                    # there was a non-empty group of 'normal' parameters before the fixture_ref at <i>.
+                    # create a new "param" fixture parametrized with all of that consecutive group.
+                    param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__,
+                                                                   hook=hook)
                     fixtures_to_union.append(param_fix)
                     fixtures_to_union_names_for_ids.append(_id_for_fix)
 
@@ -1196,8 +1259,9 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
                     id_for_fixture = apply_id_style(get_fixture_name(referenced_fixture), param_names_str, IdStyle.explicit)
                     fixtures_to_union_names_for_ids.append(id_for_fixture)
                 else:
-                    # create a fixture refering to all the fixtures required in the tuple
-                    prod_fix = _create_fixture_product(i, j_list, param_names_str, test_func.__name__)
+                    # argvalues[i] is a tuple of argvalues, some of them being fixture_ref. create a fixture refering to all of them
+                    prod_fix = _create_fixture_product(i, j_list, param_names_str, test_func.__name__,
+                                                       hook=hook)
                     fixtures_to_union.append(prod_fix)
                     _id_product = "fixtureproduct__%s" % i
                     id_for_fixture = apply_id_style(_id_product, param_names_str, IdStyle.explicit)
@@ -1207,7 +1271,8 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
             # handle last consecutive group of normal parameters, if any
             i = len(argvalues)
             if i > prev_i + 1:
-                param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__)
+                param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__,
+                                                               hook=hook)
                 fixtures_to_union.append(param_fix)
                 fixtures_to_union_names_for_ids.append(_id_for_fix)
 
@@ -1217,7 +1282,7 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
             # note: the function automatically registers it in the module
             # note 2: idstyle is set to None because we provide an explicit enough list of ids
             big_param_fixture = _fixture_union(caller_module, fixture_union_name, fixtures_to_union, idstyle=None,
-                                               ids=fixtures_to_union_names_for_ids)
+                                               ids=fixtures_to_union_names_for_ids, hook=hook)
 
             # --create the new test function's signature that we want to expose to pytest
             # it is the same than existing, except that we want to replace all parameters with the new fixture
@@ -1256,7 +1321,7 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
                         return test_func(*args, **kwargs)
 
             else:
-                # generator test function (with one or several yield statement)
+                # generator test function (with one or several yield statements)
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):
                     if kwargs.get(fixture_union_name, None) is NOT_USED:

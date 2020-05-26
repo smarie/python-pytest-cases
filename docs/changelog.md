@@ -1,7 +1,9 @@
 # Changelog
 
-### 1.13.2 - in progress - bugfixes
+### 1.13.2 - in progress - bugfixes and hook feature
 
+ - Added the possibility to pass a `hook` function in all API where fixtures are created behind the scenes, so as to ease debugging and/or save fixtures (with `stored_fixture` from pytest harvest). Fixes [#83](https://github.com/smarie/python-pytest-cases/issues/83)
+ 
  - Fixture closures now support reordering when no unions are present. This suppressed the annoying warning "WARNING the new order is not taken into account !!" when it was not relevant. Fixes [#81](https://github.com/smarie/python-pytest-cases/issues/81)
 
 ### 1.13.1 - packaging improvements
