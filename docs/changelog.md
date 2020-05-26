@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.13.2 - in progress - bugfixes
+
+ - Suppressed annoying warning when not relevant. Fixes [#81](https://github.com/smarie/python-pytest-cases/issues/81)
+
 ### 1.13.1 - packaging improvements
 
  - packaging improvements: set the "universal wheel" flag to 1, and cleaned up the `setup.py`. In particular removed dependency to `six` for setup and added `py.typed` file. Fixes [#78](https://github.com/smarie/python-pytest-cases/issues/78)
