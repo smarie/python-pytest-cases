@@ -1208,7 +1208,8 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
             # unpack the fixture references
             _vtuple = argvalues[argvalue_i]
             fixtures_or_values = tuple(v.fixture if i in fixture_ref_positions else v for i, v in enumerate(_vtuple))
-            product_fix = _fixture_product(caller_module, p_fix_name, fixtures_or_values, fixture_ref_positions)
+            product_fix = _fixture_product(caller_module, p_fix_name, fixtures_or_values, fixture_ref_positions,
+                                           hook=hook)
             return product_fix
 
         # then create the decorator
@@ -1244,9 +1245,10 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
             prev_i = -1
             for i, j_list in fixture_indices:
                 if i > prev_i + 1:
-                    # there was a non-empty group of 'normal' parameters before this fixture_ref.
-                    # create a new fixture parametrized with all of that consecutive group.
-                    param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__)
+                    # there was a non-empty group of 'normal' parameters before the fixture_ref at <i>.
+                    # create a new "param" fixture parametrized with all of that consecutive group.
+                    param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__,
+                                                                   hook=hook)
                     fixtures_to_union.append(param_fix)
                     fixtures_to_union_names_for_ids.append(_id_for_fix)
 
@@ -1257,8 +1259,9 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
                     id_for_fixture = apply_id_style(get_fixture_name(referenced_fixture), param_names_str, IdStyle.explicit)
                     fixtures_to_union_names_for_ids.append(id_for_fixture)
                 else:
-                    # create a fixture refering to all the fixtures required in the tuple
-                    prod_fix = _create_fixture_product(i, j_list, param_names_str, test_func.__name__)
+                    # argvalues[i] is a tuple of argvalues, some of them being fixture_ref. create a fixture refering to all of them
+                    prod_fix = _create_fixture_product(i, j_list, param_names_str, test_func.__name__,
+                                                       hook=hook)
                     fixtures_to_union.append(prod_fix)
                     _id_product = "fixtureproduct__%s" % i
                     id_for_fixture = apply_id_style(_id_product, param_names_str, IdStyle.explicit)
@@ -1268,7 +1271,8 @@ def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None,
             # handle last consecutive group of normal parameters, if any
             i = len(argvalues)
             if i > prev_i + 1:
-                param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__)
+                param_fix, _id_for_fix = _create_param_fixture(prev_i + 1, i, param_names_str, test_func.__name__,
+                                                               hook=hook)
                 fixtures_to_union.append(param_fix)
                 fixtures_to_union_names_for_ids.append(_id_for_fix)
 
