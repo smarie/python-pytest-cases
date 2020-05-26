@@ -2,7 +2,7 @@
 
 ### 1.13.2 - in progress - bugfixes
 
- - Suppressed annoying warning when not relevant. Fixes [#81](https://github.com/smarie/python-pytest-cases/issues/81)
+ - Fixture closures now support reordering when no unions are present. This suppressed the annoying warning "WARNING the new order is not taken into account !!" when it was not relevant. Fixes [#81](https://github.com/smarie/python-pytest-cases/issues/81)
 
 ### 1.13.1 - packaging improvements
 
