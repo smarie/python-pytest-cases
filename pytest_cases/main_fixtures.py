@@ -972,9 +972,17 @@ def _fixture_union(caller_module,
     if len(f_names) < 1:
         raise ValueError("Empty fixture unions are not permitted")
 
+    # remove duplicates in the fixture arguments
+    f_names_args = []
+    for _fname in f_names:
+        if _fname in f_names_args:
+            warn("Creating a fixture union %r where two alternatives are the same fixture %r." % (name, _fname))
+        else:
+            f_names_args.append(_fname)
+
     # then generate the body of our union fixture. It will require all of its dependent fixtures and receive as
     # a parameter the name of the fixture to use
-    @with_signature("%s(%s, request)" % (name, ', '.join(f_names)))
+    @with_signature("%s(%s, request)" % (name, ', '.join(f_names_args)))
     def _new_fixture(request, **all_fixtures):
         if not is_used_request(request):
             return NOT_USED
