@@ -974,7 +974,7 @@ def _fixture_union(caller_module,
 
     # then generate the body of our union fixture. It will require all of its dependent fixtures and receive as
     # a parameter the name of the fixture to use
-    @with_signature("%s(%s, request)" % (name, ', '.join(f_names_args)))
+    @with_signature("%s(%s, request)" % (name, ', '.join(f_names)))
     def _new_fixture(request, **all_fixtures):
         if not is_used_request(request):
             return NOT_USED
