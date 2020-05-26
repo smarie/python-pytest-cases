@@ -136,8 +136,12 @@ class FixtureClosureNode(object):
         return self.to_list()[item]
 
     def __setitem__(self, key, value):
-        # This is called in Pytest 4+. TODO how should we behave ?
-        warn("WARNING the new order is not taken into account !!")
+        # This is called in Pytest 4+.
+        if self.has_split():
+            # TODO how should we behave ?
+            warn("WARNING the new order is not taken into account !!")
+        else:
+            self.to_list()[key] = value
 
     def append(self, item):
         """
