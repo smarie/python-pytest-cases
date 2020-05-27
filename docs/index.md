@@ -401,6 +401,12 @@ As you can see, the ids are a bit more explicit than usual. As opposed to `fixtu
 
 Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard `pytest.mark.parametrize` parameters that you would place on the same function, will get impacted. You may solve this by replacing your mark parameters with `param_fixture`s (see [above](#param_fixtures).)
 
+### passing a `hook`
+
+As per version `1.14`, all the above functions now support passing a `hook` argument. This argument should be a callable. It will be called everytime a fixture is about to be created by `pytest_cases` on your behalf. The fixture function is passed as the argument of the hook, and the hook should return it as the result.
+
+You can use this fixture to better understand which fixtures are created behind the scenes, and also to decorate the fixture functions before they are created. For example you can use `hook=saved_fixture` (from [`pytest-harvest`](https://smarie.github.io/python-pytest-harvest/)) in order to save the created fixtures in the fixture store.  
+
 ## Main features / benefits
 
  * **Separation of concerns**: test code on one hand, test cases data on the other hand. This is particularly relevant for data science projects where a lot of test datasets are used on the same block of test code.
