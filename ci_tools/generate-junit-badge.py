@@ -1,4 +1,6 @@
 import sys
+from math import floor
+
 try:
     # python 3
     from urllib.parse import quote_plus
@@ -34,7 +36,7 @@ def get_test_stats(junit_xml='reports/junit/junit.xml'  # type: str
     failed = len(tr.failures)
     success = runned - failed
 
-    success_percentage = round(success * 100 / runned)
+    success_percentage = floor(success * 100 / runned)
 
     return TestStats(success_percentage, success, runned, skipped)
 
