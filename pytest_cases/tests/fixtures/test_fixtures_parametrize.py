@@ -67,6 +67,6 @@ def test_synthesis(module_results_dct):
                                         'test_one[one-two]',
                                         'test_one[two-one]',
                                         'test_one[two-two]',
-                                        'test_two[1-2-a]',
-                                        'test_two[%s-a]' % id_of_last_tests[0],
+                                        'test_two[1-2-!0!-a]',
+                                        'test_two[%s-!0!-a]' % id_of_last_tests[0],
                                         ] + extra_test
