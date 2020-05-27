@@ -313,8 +313,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1132-in-progress-bugfixes-and-hook-feature" class="md-nav__link">
-    1.13.2 - in progress - bugfixes and hook feature
+  <a href="#1140-bugfixes-and-hook-feature" class="md-nav__link">
+    1.14.0 - bugfixes and hook feature
   </a>
   
 </li>
@@ -751,8 +751,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1132-in-progress-bugfixes-and-hook-feature" class="md-nav__link">
-    1.13.2 - in progress - bugfixes and hook feature
+  <a href="#1140-bugfixes-and-hook-feature" class="md-nav__link">
+    1.14.0 - bugfixes and hook feature
   </a>
   
 </li>
@@ -1177,8 +1177,14 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="1132-in-progress-bugfixes-and-hook-feature">1.13.2 - in progress - bugfixes and hook feature<a class="headerlink" href="#1132-in-progress-bugfixes-and-hook-feature" title="Permanent link">&para;</a></h3>
+<h3 id="1140-bugfixes-and-hook-feature">1.14.0 - bugfixes and hook feature<a class="headerlink" href="#1140-bugfixes-and-hook-feature" title="Permanent link">&para;</a></h3>
 <ul>
+<li>
+<p>Fixed <code>ids</code> precedence order when using <code>pytest.mark.parametrize</code> in a <code>fixture_plus</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/87">#87</a></p>
+</li>
+<li>
+<p>Fixed issue with <code>fixture_union</code> when using the same fixture twice in it. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/85">#85</a></p>
+</li>
 <li>
 <p>Added the possibility to pass a <code>hook</code> function in all API where fixtures are created behind the scenes, so as to ease debugging and/or save fixtures (with <code>stored_fixture</code> from pytest harvest). Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/83">#83</a></p>
 </li>
@@ -1457,7 +1463,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"search.config.pipeline": "trimmer, stopWordFilter", "search.config.lang": "en", "search.config.separator": "[\\s\\-]+", "search.result.other": "# matching documents", "search.result.one": "1 matching document", "clipboard.copied": "Copied to clipboard", "search.result.none": "No matching documents", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching"}</script>
+      <script src="../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.other": "# matching documents", "search.config.lang": "en"}</script>
       
       <script>
         app = initialize({
