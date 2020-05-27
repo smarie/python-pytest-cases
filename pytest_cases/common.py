@@ -232,12 +232,15 @@ def get_pytest_parametrize_marks(f):
             # mark_info.args contains a list of (name, values)
             if len(mark_info.args) % 2 != 0:
                 raise ValueError("internal pytest compatibility error - please report")
-            nb_parameters = len(mark_info.args) // 2
-            if nb_parameters > 1 and len(mark_info.kwargs) > 0:
+            nb_parametrize_decorations = len(mark_info.args) // 2
+            if nb_parametrize_decorations > 1 and len(mark_info.kwargs) > 0:
                 raise ValueError("Unfortunately with this old pytest version it is not possible to have several "
-                                 "parametrization decorators")
+                                 "parametrization decorators while specifying **kwargs, as all **kwargs are "
+                                 "merged, leading to inconsistent results. Either upgrade pytest, remove the **kwargs,"
+                                 "or merge all the @parametrize decorators into a single one. **kwargs: %s"
+                                 % mark_info.kwargs)
             res = []
-            for i in range(nb_parameters):
+            for i in range(nb_parametrize_decorations):
                 param_name, param_values = mark_info.args[2*i:2*(i+1)]
                 res.append(_ParametrizationMark(_LegacyMark(param_name, param_values, **mark_info.kwargs)))
             return tuple(res)
@@ -259,6 +262,18 @@ def get_parametrize_signature():
 
 
 # ---------- test ids utils ---------
+def combine_ids(paramid_tuples):
+    """
+    Receives a list of tuples containing ids for each parameterset.
+    Returns the final ids, that are obtained by joining the various param ids by '-' for each test node
+
+    :param paramid_tuples:
+    :return:
+    """
+    #
+    return ['-'.join(pid for pid in testid) for testid in paramid_tuples]
+
+
 def get_test_ids_from_param_values(param_names,
                                    param_values,
                                    ):
@@ -285,43 +300,81 @@ def get_test_ids_from_param_values(param_names,
 
 
 # ---- ParameterSet api ---
-def extract_parameterset_info(pnames, pmark):
+def analyze_parameter_set(pmark=None, argnames=None, argvalues=None, ids=None):
+    """
+    analyzes a parameter set passed either as a pmark or as distinct
+    (argnames, argvalues, ids) to extract/construct the various ids, marks, and
+    values
+
+    :return: ids, marks, values
+    """
+    if pmark is not None:
+        if any(a is not None for a in (argnames, argvalues, ids)):
+            raise ValueError("Either provide a pmark OR the details")
+        argnames = pmark.param_names
+        argvalues = pmark.param_values
+        ids = pmark.param_ids
+
+    # extract all parameters that have a specific configuration (pytest.param())
+    custom_pids, p_marks, p_values = extract_parameterset_info(argnames, argvalues)
+
+    # Create the proper id for each test
+    if ids is not None:
+        # overridden at global pytest.mark.parametrize level - this takes precedence.
+        try:  # an explicit list of ids ?
+            p_ids = list(ids)
+        except TypeError:  # a callable to apply on the values
+            p_ids = list(ids(v) for v in p_values)
+    else:
+        # default: values-based
+        p_ids = get_test_ids_from_param_values(argnames, p_values)
+
+    # Finally, local pytest.param takes precedence over everything else
+    for i, _id in enumerate(custom_pids):
+        if _id is not None:
+            p_ids[i] = _id
+
+    return p_ids, p_marks, p_values
+
+
+def extract_parameterset_info(argnames, argvalues):
     """
 
-    :param pnames: the names in this parameterset
-    :param pmark: the parametrization mark (a _ParametrizationMark)
+    :param argnames: the names in this parameterset
+    :param argvalues: the values in this parameterset
     :return:
     """
-    _pids = []
-    _pmarks = []
-    _pvalues = []
-    for v in pmark.param_values:
+    pids = []
+    pmarks = []
+    pvalues = []
+    for v in argvalues:
         if is_marked_parameter_value(v):
             # --id
             id = get_marked_parameter_id(v)
-            _pids.append(id)
+            pids.append(id)
             # --marks
             marks = get_marked_parameter_marks(v)
-            _pmarks.append(marks)  # note: there might be several
+            pmarks.append(marks)  # note: there might be several
             # --value(a tuple if this is a tuple parameter)
             vals = get_marked_parameter_values(v)
-            if len(vals) != len(pnames):
+            if len(vals) != len(argnames):
                 raise ValueError("Internal error - unsupported pytest parametrization+mark combination. Please "
                                  "report this issue")
             if len(vals) == 1:
-                _pvalues.append(vals[0])
+                pvalues.append(vals[0])
             else:
-                _pvalues.append(vals)
+                pvalues.append(vals)
         else:
-            _pids.append(None)
-            _pmarks.append(None)
-            _pvalues.append(v)
+            pids.append(None)
+            pmarks.append(None)
+            pvalues.append(v)
 
-    return _pids, _pmarks, _pvalues
+    return pids, pmarks, pvalues
 
 
 try:  # pytest 3.x+
     from _pytest.mark import ParameterSet
+
     def is_marked_parameter_value(v):
         return isinstance(v, ParameterSet)
 

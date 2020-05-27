@@ -1,6 +1,10 @@
 # Changelog
 
-### 1.13.2 - in progress - bugfixes and hook feature
+### 1.14.0 - bugfixes and hook feature
+
+ - Fixed `ids` precedence order when using `pytest.mark.parametrize` in a `fixture_plus`. Fixed [#87](https://github.com/smarie/python-pytest-cases/issues/87)
+
+ - Fixed issue with `fixture_union` when using the same fixture twice in it. Fixes [#85](https://github.com/smarie/python-pytest-cases/issues/85)
 
  - Added the possibility to pass a `hook` function in all API where fixtures are created behind the scenes, so as to ease debugging and/or save fixtures (with `stored_fixture` from pytest harvest). Fixes [#83](https://github.com/smarie/python-pytest-cases/issues/83)
  

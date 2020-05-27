@@ -982,8 +982,11 @@ class CallsReactor:
                                                     ids=p_to_apply.ids,
                                                     scope=p_to_apply.scope, **p_to_apply.kwargs)
 
-                    # Change the ids
+                    # Change the ids by applying the style defined in the corresponding alternative
                     for callspec in calls:
+                        # TODO right now only the idstyle defined in the first alternative is used. But it cant be
+                        #  different from the other ones for now because of the way fixture_union is built.
+                        #  Maybe the best would be to remove this and apply the id style when fixture is created.
                         callspec._idlist[-1] = apply_id_style(callspec._idlist[-1],
                                                               p_to_apply.union_fixture_name,
                                                               p_to_apply.alternative_names[0].idstyle)
