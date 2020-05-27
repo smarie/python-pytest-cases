@@ -3,13 +3,6 @@ from distutils.version import LooseVersion
 from pytest_cases import pytest_fixture_plus
 import pytest
 
-# pytest.param - not available in all versions
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-    pytest_param = pytest.param
-else:
-    def pytest_param(*args, **kwargs):
-        return args
-
 
 @pytest_fixture_plus(scope="module")
 @pytest.mark.parametrize("arg1", ["one", "two"])
@@ -24,49 +17,59 @@ def test_one(myfix):
     print(myfix)
 
 
-@pytest_fixture_plus
-@pytest.mark.parametrize("arg3", [pytest_param(0, id='!0!')], ids=str)
-@pytest.mark.parametrize("arg1, arg2", [
-    (1, 2),
-    pytest_param(3, 4, id="p_a"),
-    pytest_param(5, 6, id="skipped", marks=pytest.mark.skip)
-])
-def myfix2(arg1, arg2, arg3):
-    return arg1, arg2, arg3
-
-
-def test_two(myfix2):
-    assert myfix2 in {(1, 2, 0), (3, 4, 0), (5, 6, 0)}
-    print(myfix2)
-
-
-@pytest_fixture_plus
-@pytest.mark.parametrize("arg1, arg2", [
-    pytest_param(5, 6, id="a")
-], ids=['ignored_id'])
-def myfix3(arg1, arg2):
-    return arg1, arg2
-
-
-def test_two(myfix2, myfix3):
-    assert myfix2 in {(1, 2, 0), (3, 4, 0), (5, 6, 0)}
-    print(myfix2)
-
-
 def test_synthesis(module_results_dct):
     """Use pytest-harvest to check that the list of executed tests is correct """
-
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-        id_of_last_tests = ['p_a', 'skipped']
-        extra_test = []
-    else:
-        id_of_last_tests = ['3-4', '5-6']
-        extra_test = ['test_two[%s-a]' % id_of_last_tests[1]]
 
     assert list(module_results_dct) == ['test_one[one-one]',
                                         'test_one[one-two]',
                                         'test_one[two-one]',
-                                        'test_one[two-two]',
-                                        'test_two[1-2-!0!-a]',
-                                        'test_two[%s-!0!-a]' % id_of_last_tests[0],
-                                        ] + extra_test
+                                        'test_one[two-two]']
+
+
+# pytest.param - not available in all versions
+if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+    # with pytest < 3.2.0 we
+    # - would have to merge all parametrize marks if we wish to pass a kwarg (here, ids)
+    # - cannot use pytest.param as it is not taken into account
+    # > no go
+
+    @pytest_fixture_plus
+    @pytest.mark.parametrize("arg3", [pytest.param(0, id='!0!')], ids=str)
+    @pytest.mark.parametrize("arg1, arg2", [
+        (1, 2),
+        pytest.param(3, 4, id="p_a"),
+        pytest.param(5, 6, id="skipped", marks=pytest.mark.skip)
+    ])
+    def myfix2(arg1, arg2, arg3):
+        return arg1, arg2, arg3
+
+
+    def test_two(myfix2):
+        assert myfix2 in {(1, 2, 0), (3, 4, 0), (5, 6, 0)}
+        print(myfix2)
+
+
+    @pytest_fixture_plus
+    @pytest.mark.parametrize("arg1, arg2", [
+        pytest.param(5, 6, id="a")
+    ], ids=['ignored_id'])
+    def myfix3(arg1, arg2):
+        return arg1, arg2
+
+
+    def test_three(myfix2, myfix3):
+        assert myfix2 in {(1, 2, 0), (3, 4, 0), (5, 6, 0)}
+        print(myfix2)
+
+
+    def test_synthesis(module_results_dct):
+        """Use pytest-harvest to check that the list of executed tests is correct """
+
+        assert list(module_results_dct) == ['test_one[one-one]',
+                                            'test_one[one-two]',
+                                            'test_one[two-one]',
+                                            'test_one[two-two]',
+                                            'test_two[1-2-!0!]',
+                                            'test_two[p_a-!0!]',
+                                            'test_three[1-2-!0!-a]',
+                                            'test_three[p_a-!0!-a]']
