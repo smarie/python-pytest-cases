@@ -335,6 +335,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#passing-a-hook" class="md-nav__link">
+    passing a hook
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -629,6 +636,13 @@
           <li class="md-nav__item">
   <a href="#parametrize_plus" class="md-nav__link">
     @parametrize_plus
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-a-hook" class="md-nav__link">
+    passing a hook
   </a>
   
 </li>
@@ -1036,6 +1050,9 @@ test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_w
 
 <p>As you can see, the ids are a bit more explicit than usual. As opposed to <code>fixture_union</code>, the style of these ids is not configurable for now but feel free to propose alternatives in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues page</a>.</p>
 <p>Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your mark parameters with <code>param_fixture</code>s (see <a href="#param_fixtures">above</a>.)</p>
+<h3 id="passing-a-hook">passing a <code>hook</code><a class="headerlink" href="#passing-a-hook" title="Permanent link">&para;</a></h3>
+<p>As per version <code>1.14</code>, all the above functions now support passing a <code>hook</code> argument. This argument should be a callable. It will be called everytime a fixture is about to be created by <code>pytest_cases</code> on your behalf. The fixture function is passed as the argument of the hook, and the hook should return it as the result.</p>
+<p>You can use this fixture to better understand which fixtures are created behind the scenes, and also to decorate the fixture functions before they are created. For example you can use <code>hook=saved_fixture</code> (from <a href="https://smarie.github.io/python-pytest-harvest/"><code>pytest-harvest</code></a>) in order to save the created fixtures in the fixture store.  </p>
 <h2 id="main-features-benefits">Main features / benefits<a class="headerlink" href="#main-features-benefits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -1115,7 +1132,7 @@ test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_w
     </div>
     
       <script src="assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.one": "1 matching document", "search.config.lang": "en"}</script>
+      <script src="assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.config.lang": "en", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "clipboard.copy": "Copy to clipboard", "search.result.none": "No matching documents", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
