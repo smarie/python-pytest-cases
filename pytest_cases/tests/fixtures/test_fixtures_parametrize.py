@@ -25,30 +25,31 @@ def test_one(myfix):
 
 
 @pytest_fixture_plus
+@pytest.mark.parametrize("arg3", [pytest_param(0, id='!0!')], ids=str)
 @pytest.mark.parametrize("arg1, arg2", [
     (1, 2),
     pytest_param(3, 4, id="p_a"),
     pytest_param(5, 6, id="skipped", marks=pytest.mark.skip)
 ])
-def myfix2(arg1, arg2):
-    return arg1, arg2
+def myfix2(arg1, arg2, arg3):
+    return arg1, arg2, arg3
 
 
 def test_two(myfix2):
-    assert myfix2 in {(1, 2), (3, 4), (5, 6)}
+    assert myfix2 in {(1, 2, 0), (3, 4, 0), (5, 6, 0)}
     print(myfix2)
 
 
 @pytest_fixture_plus
 @pytest.mark.parametrize("arg1, arg2", [
-    pytest_param(5, 6, id="ignored_id")
-], ids=['a'])
+    pytest_param(5, 6, id="a")
+], ids=['ignored_id'])
 def myfix3(arg1, arg2):
     return arg1, arg2
 
 
 def test_two(myfix2, myfix3):
-    assert myfix2 in {(1, 2), (3, 4), (5, 6)}
+    assert myfix2 in {(1, 2, 0), (3, 4, 0), (5, 6, 0)}
     print(myfix2)
 
 

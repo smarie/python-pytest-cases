@@ -40,7 +40,7 @@ except ImportError:
     pass
 
 from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get_test_ids_from_param_values, \
-    make_marked_parameter_value, extract_parameterset_info, get_fixture_name, get_param_argnames_as_list, \
+    make_marked_parameter_value, get_fixture_name, get_param_argnames_as_list, analyze_parameter_set, combine_ids, \
     get_fixture_scope, remove_duplicates
 from pytest_cases.main_params import cases_data
 
@@ -579,34 +579,21 @@ def _decorate_fixture_plus(fixture_func,
     params_ids = []
     params_marks = []
     for pmark in parametrizer_marks:
+        # -- pmark is a single @pytest.parametrize mark. --
+
         # check number of parameter names in this parameterset
         if len(pmark.param_names) < 1:
             raise ValueError("Fixture function '%s' decorated with '@fixture_plus' has an empty parameter "
                              "name in a @pytest.mark.parametrize mark")
 
-        # remember
+        # remember the argnames
         params_names_or_name_combinations.append(pmark.param_names)
 
-        # extract all parameters that have a specific configuration (pytest.param())
-        _pids, _pmarks, _pvalues = extract_parameterset_info(pmark.param_names, pmark)
-
-        # Create the proper id for each test
-        if pmark.param_ids is not None:
-            # overridden at global pytest.mark.parametrize level - this takes precedence.
-            try:  # an explicit list of ids ?
-                paramids = list(pmark.param_ids)
-            except TypeError:  # a callable to apply on the values
-                paramids = list(pmark.param_ids(v) for v in _pvalues)
-        else:
-            # default: values-based...
-            paramids = get_test_ids_from_param_values(pmark.param_names, _pvalues)
-            # ...but local pytest.param takes precedence
-            for i, _id in enumerate(_pids):
-                if _id is not None:
-                    paramids[i] = _id
+        # analyse contents, extract marks and custom ids, apply custom ids
+        _paramids, _pmarks, _pvalues = analyze_parameter_set(pmark)
 
         # Finally store the ids, marks, and values for this parameterset
-        params_ids.append(paramids)
+        params_ids.append(_paramids)
         params_marks.append(tuple(_pmarks))
         params_values.append(tuple(_pvalues))
 
@@ -623,7 +610,7 @@ def _decorate_fixture_plus(fixture_func,
                 final_values[i] = make_marked_parameter_value(final_values[i], marks=marks)
     else:
         final_values = list(product(*params_values))
-        final_ids = get_test_ids_from_param_values(params_names_or_name_combinations, product(*params_ids))
+        final_ids = combine_ids(product(*params_ids))
         final_marks = tuple(product(*params_marks))
 
         # reapply the marks
