@@ -27,12 +27,22 @@ def test_synthesis(module_results_dct):
 
 
 # pytest.param - not available in all versions
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+if LooseVersion(pytest.__version__) < LooseVersion('3.2.0'):
     # with pytest < 3.2.0 we
     # - would have to merge all parametrize marks if we wish to pass a kwarg (here, ids)
     # - cannot use pytest.param as it is not taken into account
     # > no go
 
+    def test_warning_pytest2():
+        with pytest.raises(ValueError) as exc_info:
+            @pytest_fixture_plus
+            @pytest.mark.parametrize("arg2", [0], ids=str)
+            @pytest.mark.parametrize("arg1", [1])
+            def a(arg1, arg2):
+                return arg1, arg2
+        assert "Unfortunately with this old pytest version it" in str(exc_info.value)
+
+else:
     @pytest_fixture_plus
     @pytest.mark.parametrize("arg3", [pytest.param(0, id='!0!')], ids=str)
     @pytest.mark.parametrize("arg1, arg2", [

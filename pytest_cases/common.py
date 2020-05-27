@@ -232,12 +232,15 @@ def get_pytest_parametrize_marks(f):
             # mark_info.args contains a list of (name, values)
             if len(mark_info.args) % 2 != 0:
                 raise ValueError("internal pytest compatibility error - please report")
-            nb_parameters = len(mark_info.args) // 2
-            if nb_parameters > 1 and len(mark_info.kwargs) > 0:
+            nb_parametrize_decorations = len(mark_info.args) // 2
+            if nb_parametrize_decorations > 1 and len(mark_info.kwargs) > 0:
                 raise ValueError("Unfortunately with this old pytest version it is not possible to have several "
-                                 "parametrization decorators")
+                                 "parametrization decorators while specifying **kwargs, as all **kwargs are "
+                                 "merged, leading to inconsistent results. Either upgrade pytest, remove the **kwargs,"
+                                 "or merge all the @parametrize decorators into a single one. **kwargs: %s"
+                                 % mark_info.kwargs)
             res = []
-            for i in range(nb_parameters):
+            for i in range(nb_parametrize_decorations):
                 param_name, param_values = mark_info.args[2*i:2*(i+1)]
                 res.append(_ParametrizationMark(_LegacyMark(param_name, param_values, **mark_info.kwargs)))
             return tuple(res)
