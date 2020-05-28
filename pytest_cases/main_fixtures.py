@@ -45,7 +45,10 @@ from pytest_cases.common import yield_fixture, get_pytest_parametrize_marks, get
 from pytest_cases.main_params import cases_data
 
 
-def unpack_fixture(argnames, fixture, hook=None):
+def unpack_fixture(argnames,
+                   fixture,
+                   hook=None  # type: Callable[[Callable], Callable]
+                   ):
     """
     Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to
     elements unpacked from `fixture` in order. For example if `fixture` is a tuple of length 2, `argnames="a,b"` will
@@ -135,7 +138,13 @@ def _unpack_fixture(caller_module, argnames, fixture, hook):
     return created_fixtures
 
 
-def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function", hook=None, **kwargs):
+def param_fixture(argname,
+                  argvalues,
+                  autouse=False,     # type: bool
+                  ids=None,          # type: Union[Callable, List[str]]
+                  scope="function",  # type: str
+                  hook=None,         # type: Callable[[Callable], Callable]
+                  **kwargs):
     """
     Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single
     variable.
@@ -179,7 +188,13 @@ def param_fixture(argname, argvalues, autouse=False, ids=None, scope="function",
                           hook=hook, **kwargs)
 
 
-def _param_fixture(caller_module, argname, argvalues, autouse=False, ids=None, scope="function", hook=None,
+def _param_fixture(caller_module,
+                   argname,
+                   argvalues,
+                   autouse=False,     # type: bool
+                   ids=None,          # type: Union[Callable, List[str]]
+                   scope="function",  # type: str
+                   hook=None,         # type: Callable[[Callable], Callable]
                    **kwargs):
     """ Internal method shared with param_fixture and param_fixtures """
 
@@ -262,7 +277,13 @@ def check_name_available(module,
     return name
 
 
-def param_fixtures(argnames, argvalues, autouse=False, ids=None, scope="function", hook=None, **kwargs):
+def param_fixtures(argnames,
+                   argvalues,
+                   autouse=False,     # type: bool
+                   ids=None,          # type: Union[Callable, List[str]]
+                   scope="function",  # type: str
+                   hook=None,         # type: Callable[[Callable], Callable]
+                   **kwargs):
     """
     Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`. The
     created fixtures are automatically registered into the callers' module, but you may wish to assign them to
@@ -461,11 +482,11 @@ def pytest_fixture_plus(*args,
 
 
 @function_decorator
-def fixture_plus(scope="function",
-                 autouse=False,
-                 name=None,
-                 unpack_into=None,
-                 hook=None,
+def fixture_plus(scope="function",  # type: str
+                 autouse=False,     # type: bool
+                 name=None,         # type: str
+                 unpack_into=None,  # type: Iterable[str]
+                 hook=None,         # type: Callable[[Callable], Callable]
                  fixture_func=DECORATED,
                  **kwargs):
     """ decorator to mark a fixture factory function.
@@ -1000,9 +1021,16 @@ def _fixture_union(caller_module,
     return fix
 
 
-def _fixture_product(caller_module, name, fixtures_or_values, fixture_positions,
-                     scope="function", ids=fixture_alternative_to_str,
-                     unpack_into=None, autouse=False, hook=None, **kwargs):
+def _fixture_product(caller_module,
+                     name,                             # type: str
+                     fixtures_or_values,
+                     fixture_positions,
+                     scope="function",                 # type: str
+                     ids=fixture_alternative_to_str,   # type: Union[Callable, List[str]]
+                     unpack_into=None,                 # type: Iterable[str]
+                     autouse=False,                    # type: bool
+                     hook=None,                        # type: Callable[[Callable], Callable]
+                     **kwargs):
     """
     Internal implementation for fixture products created by pytest parametrize plus.
 
@@ -1094,7 +1122,13 @@ def pytest_parametrize_plus(*args,
     return _parametrize_plus(*args, **kwargs)
 
 
-def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, hook=None, **kwargs):
+def parametrize_plus(argnames,
+                     argvalues,
+                     indirect=False,  # type: bool
+                     ids=None,        # type: Union[Callable, List[str]]
+                     scope=None,      # type: str
+                     hook=None,       # type: Callable[[Callable], Callable]
+                     **kwargs):
     """
     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to
     fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
@@ -1119,8 +1153,14 @@ def parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, 
                              **kwargs)
 
 
-def _parametrize_plus(argnames, argvalues, indirect=False, ids=None, scope=None, hook=None,
-                      _frame_offset=2, **kwargs):
+def _parametrize_plus(argnames,
+                      argvalues,
+                      indirect=False,  # type: bool
+                      ids=None,        # type: Union[Callable, List[str]]
+                      scope=None,      # type: str
+                      hook=None,       # type: Callable[[Callable], Callable]
+                      _frame_offset=2,
+                      **kwargs):
     # make sure that we do not destroy the argvalues if it is provided as an iterator
     try:
         argvalues = list(argvalues)
