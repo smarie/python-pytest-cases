@@ -274,21 +274,66 @@ def combine_ids(paramid_tuples):
     return ['-'.join(pid for pid in testid) for testid in paramid_tuples]
 
 
-def get_test_ids_from_param_values(param_names,
-                                   param_values,
-                                   ):
+def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomputed_ids=None):
     """
-    Replicates pytest behaviour to generate the ids when there are several parameters in a single `parametrize`
+    Creates the proper id for each test based on (higher precedence first)
+
+     - any specific id mark from a `pytest.param` (`id_marks`)
+     - the global `ids` argument of pytest parametrize (`global_ids`)
+     - the name and value of parameters (`argnames`, `argvalues`) or the precomputed ids(`precomputed_ids`)
+
+    See also _pytest.python._idvalset method
+
+    :param global_ids:
+    :param id_marks:
+    :param argnames:
+    :param argvalues:
+    :param precomputed_ids:
+    :return:
+    """
+    if global_ids is not None:
+        # overridden at global pytest.mark.parametrize level - this takes precedence.
+        try:  # an explicit list of ids ?
+            p_ids = list(global_ids)
+        except TypeError:  # a callable to apply on the values
+            p_ids = list(global_ids(v) for v in argvalues)
+    else:
+        # default: values-based
+        if precomputed_ids is not None:
+            if argnames is not None or argvalues is not None:
+                raise ValueError("Only one of `precomputed_ids` or argnames/argvalues should be provided.")
+            p_ids = precomputed_ids
+        else:
+            p_ids = make_test_ids_from_param_values(argnames, argvalues)
+
+    # Finally, local pytest.param takes precedence over everything else
+    for i, _id in enumerate(id_marks):
+        if _id is not None:
+            p_ids[i] = _id
+    return p_ids
+
+
+def make_test_ids_from_param_values(param_names,
+                                    param_values,
+                                    ):
+    """
+    Replicates pytest behaviour to generate the ids when there are several parameters in a single `parametrize.
+    Note that param_values should not contain marks.
 
     :param param_names:
     :param param_values:
     :return: a list of param ids
     """
+    if isinstance(param_names, string_types):
+        raise TypeError("param_names must be an iterable. Found %r" % param_names)
+
     nb_params = len(param_names)
     if nb_params == 0:
         raise ValueError("empty list provided")
     elif nb_params == 1:
-        paramids = list(str(v) for v in param_values)
+        paramids = []
+        for v in param_values:
+            paramids.append(str(v))
     else:
         paramids = []
         for vv in param_values:
@@ -300,12 +345,17 @@ def get_test_ids_from_param_values(param_names,
 
 
 # ---- ParameterSet api ---
-def analyze_parameter_set(pmark=None, argnames=None, argvalues=None, ids=None):
+def analyze_parameter_set(pmark=None, argnames=None, argvalues=None, ids=None, check_nb=True):
     """
     analyzes a parameter set passed either as a pmark or as distinct
     (argnames, argvalues, ids) to extract/construct the various ids, marks, and
     values
 
+    See also pytest.Metafunc.parametrize method, that calls in particular
+    pytest.ParameterSet._for_parametrize and _pytest.python._idvalset
+
+    :param check_nb: a bool indicating if we should raise an error if len(argnames) > 1 and any argvalue has
+         a different length than len(argnames)
     :return: ids, marks, values
     """
     if pmark is not None:
@@ -316,38 +366,31 @@ def analyze_parameter_set(pmark=None, argnames=None, argvalues=None, ids=None):
         ids = pmark.param_ids
 
     # extract all parameters that have a specific configuration (pytest.param())
-    custom_pids, p_marks, p_values = extract_parameterset_info(argnames, argvalues)
+    custom_pids, p_marks, p_values = extract_parameterset_info(argnames, argvalues, check_nb=check_nb)
 
-    # Create the proper id for each test
-    if ids is not None:
-        # overridden at global pytest.mark.parametrize level - this takes precedence.
-        try:  # an explicit list of ids ?
-            p_ids = list(ids)
-        except TypeError:  # a callable to apply on the values
-            p_ids = list(ids(v) for v in p_values)
-    else:
-        # default: values-based
-        p_ids = get_test_ids_from_param_values(argnames, p_values)
-
-    # Finally, local pytest.param takes precedence over everything else
-    for i, _id in enumerate(custom_pids):
-        if _id is not None:
-            p_ids[i] = _id
+    # get the ids by merging/creating the various possibilities
+    p_ids = make_test_ids(argnames=argnames, argvalues=p_values, global_ids=ids, id_marks=custom_pids)
 
     return p_ids, p_marks, p_values
 
 
-def extract_parameterset_info(argnames, argvalues):
+def extract_parameterset_info(argnames, argvalues, check_nb=True):
     """
 
     :param argnames: the names in this parameterset
     :param argvalues: the values in this parameterset
+    :param check_nb: a bool indicating if we should raise an error if len(argnames) > 1 and any argvalue has
+         a different length than len(argnames)
     :return:
     """
     pids = []
     pmarks = []
     pvalues = []
+    if isinstance(argnames, string_types):
+        raise TypeError("argnames must be an iterable. Found %r" % argnames)
+    nbnames = len(argnames)
     for v in argvalues:
+        # is this a pytest.param() ?
         if is_marked_parameter_value(v):
             # --id
             id = get_marked_parameter_id(v)
@@ -356,18 +399,20 @@ def extract_parameterset_info(argnames, argvalues):
             marks = get_marked_parameter_marks(v)
             pmarks.append(marks)  # note: there might be several
             # --value(a tuple if this is a tuple parameter)
-            vals = get_marked_parameter_values(v)
-            if len(vals) != len(argnames):
-                raise ValueError("Internal error - unsupported pytest parametrization+mark combination. Please "
-                                 "report this issue")
-            if len(vals) == 1:
-                pvalues.append(vals[0])
+            v = get_marked_parameter_values(v)
+            if nbnames == 1:
+                pvalues.append(v[0])
             else:
-                pvalues.append(vals)
+                pvalues.append(v)
         else:
+            # normal argvalue
             pids.append(None)
             pmarks.append(None)
             pvalues.append(v)
+
+        if check_nb and nbnames > 1 and (len(v) != nbnames):
+            raise ValueError("Inconsistent number of values in pytest parametrize: %s items found while the "
+                             "number of parameters is %s: %s." % (len(v), nbnames, v))
 
     return pids, pmarks, pvalues
 
