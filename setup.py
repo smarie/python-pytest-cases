@@ -13,7 +13,7 @@ pkg_resources.require("setuptools_scm")
 from setuptools_scm import get_version  # noqa: E402
 
 # *************** Dependencies *********
-INSTALL_REQUIRES = ['decopatch', 'makefun>=1.7', 'six'
+INSTALL_REQUIRES = ['decopatch', 'makefun>=1.7',
                     'functools32;python_version<"3.2"', 'funcsigs;python_version<"3.3"',
                     ]
 DEPENDENCY_LINKS = []
