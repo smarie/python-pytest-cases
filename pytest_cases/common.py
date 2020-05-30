@@ -11,7 +11,7 @@ except ImportError:
 from distutils.version import LooseVersion
 from warnings import warn
 
-from six import string_types
+from .mini_six import string_types
 import pytest
 
 

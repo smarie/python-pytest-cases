@@ -4,7 +4,7 @@ from distutils.version import LooseVersion
 from warnings import warn
 
 from functools import partial
-from six import string_types
+from .mini_six import string_types
 
 import pytest
 

@@ -8,7 +8,7 @@ from warnings import warn
 
 from decopatch import function_decorator, DECORATED, with_parenthesis
 
-from six import with_metaclass, string_types
+from .mini_six import with_metaclass, string_types
 import pytest
 
 try:  # python 3.3+

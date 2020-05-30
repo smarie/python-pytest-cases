@@ -9,7 +9,7 @@ from warnings import warn
 from decopatch import function_decorator, DECORATED
 from makefun import with_signature, add_signature_parameters, remove_signature_parameters, wraps
 
-from six import string_types
+from .mini_six import string_types
 import pytest
 
 try:  # python 3.3+
