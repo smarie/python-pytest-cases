@@ -21,7 +21,7 @@ if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
                               3,
                               pytest.param(fixture_ref(a)),
                               fixture_ref(a)
-                              ], ids=range(7))
+                              ], ids=[str(i) for i in range(7)])
     def test_id(foo):
         pass
 
