@@ -31,15 +31,15 @@ def test_prints(p, q):
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == ['test_prints[p_q_is_0-a-1]',
-                                        'test_prints[p_q_is_fixtureproduct__1-b]',
-                                        'test_prints[p_q_is_fixtureproduct__1-c]',
-                                        'test_prints[p_q_is_fixtureproduct__2-b-0]',
-                                        'test_prints[p_q_is_fixtureproduct__2-b--1]',
-                                        'test_prints[p_q_is_fixtureproduct__2-c-0]',
-                                        'test_prints[p_q_is_fixtureproduct__2-c--1]',
-                                        'test_prints[p_q_is_fixtureproduct__3-b]',
-                                        'test_prints[p_q_is_fixtureproduct__3-c]',
-                                        "test_prints[p_q_is_my_tuple-('d', 3)]",
-                                        "test_prints[p_q_is_my_tuple-('e', 4)]"
+    assert list(module_results_dct) == ['test_prints[p_q_is_a-1]',
+                                        'test_prints[p_q_is_P1-b]',
+                                        'test_prints[p_q_is_P1-c]',
+                                        'test_prints[p_q_is_P2-b-0]',
+                                        'test_prints[p_q_is_P2-b--1]',
+                                        'test_prints[p_q_is_P2-c-0]',
+                                        'test_prints[p_q_is_P2-c--1]',
+                                        'test_prints[p_q_is_P3-b]',
+                                        'test_prints[p_q_is_P3-c]',
+                                        "test_prints[p_q_is_my_tuple-val0]",
+                                        "test_prints[p_q_is_my_tuple-val1]"
                                         ]

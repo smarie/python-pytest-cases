@@ -30,10 +30,7 @@ if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
     def test_synthesis(module_results_dct):
         # make sure the id was taken into account
         assert list(module_results_dct) == [
-            'test_mark[arg_is_a]',
             'test_mark[arg_is_b]',
             'test_id[testID]',
             'test_id[arg_is_b]'
         ]
-        # make sure the mark was taken into account
-        assert module_results_dct['test_mark[arg_is_a]']['status'] == 'skipped'
