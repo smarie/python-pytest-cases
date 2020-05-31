@@ -539,105 +539,41 @@ def get_pytest_function_scopenum():
     return pt_scopes.index("function")
 
 
-try:
-    from _pytest.python import _idval
-except ImportError:
-    try:
-        from _pytest.config import Config
-    except ImportError:
-        pass
-
-    import re
-    try:
-        from enum import Enum
-        hasenum = True
-    except ImportError:
-        hasenum = False
-
-    from _pytest.compat import ascii_escaped, STRING_TYPES, REGEX_TYPE
+from _pytest.python import _idval
 
 
-    def _ascii_escaped_by_config(val,    # type: Union[str, bytes]
-                                 config  # type: Optional[Config]
-        ):
-        # type: (...) -> str
-        if config is None:
-            escape_option = False
-        else:
-            escape_option = config.getini(
-                "disable_test_id_escaping_and_forfeit_all_rights_to_community_support"
-            )
-        # TODO: If escaping is turned off and the user passes bytes,
-        #       will return a bytes. For now we ignore this but the
-        #       code *probably* doesn't handle this case.
-        return val if escape_option else ascii_escaped(val)  # type: ignore
-
-    def _idval(
-            val,      # type: object
-            argname,  # type: str
-            idx,      # type: int
-            idfn,     # type: Optional[Callable[[object], Optional[object]]]
-            item,
-            config,   # type: Optional[Config]
-    ):
-        # type: (...) -> str
-        if idfn:
-            try:
-                generated_id = idfn(val)
-                if generated_id is not None:
-                    val = generated_id
-            except Exception as e:
-                msg = "{}: error raised while trying to determine id of parameter '{}' at position {}"
-                msg = msg.format(item.nodeid, argname, idx)
-                raise ValueError(msg)  # from e
-        elif config:
-            hook_id = config.hook.pytest_make_parametrize_id(
-                config=config, val=val, argname=argname
-            )  # type: Optional[str]
-            if hook_id:
-                return hook_id
-
-        if isinstance(val, STRING_TYPES):
-            return _ascii_escaped_by_config(val, config)
-        elif val is None or isinstance(val, (float, int, bool)):
-            return str(val)
-        elif isinstance(val, REGEX_TYPE):
-            return ascii_escaped(val.pattern)
-        elif hasenum and isinstance(val, Enum):
-            return str(val)
-        elif isinstance(getattr(val, "__name__", None), str):
-            # name of a class, function, module, etc.
-            name = getattr(val, "__name__")  # type: str
-            return name
-        return str(argname) + str(idx)
+if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+    _idval_kwargs = dict(idfn=None,
+                         item=None,  # item is only used by idfn
+                         config=None  # if a config hook was available it would be used before this is called)
+                         )
+else:
+    _idval_kwargs = dict(idfn=None,
+                         # item=None,  # item is only used by idfn
+                         # config=None  # if a config hook was available it would be used before this is called)
+                         )
 
 
 def mini_idval(
-            val,      # type: object
-            argname,  # type: str
-            idx,      # type: int
+        val,      # type: object
+        argname,  # type: str
+        idx,      # type: int
     ):
     """
-    A simplified version of idval
+    A simplified version of idval where idfn, item and config do not need to be passed.
 
     :param val:
     :param argname:
     :param idx:
     :return:
     """
-    return _idval(val=val, argname=argname, idx=idx,
-                  idfn=None, item=None,  # item is only used by idfn
-                  config=None  # if a config hook was available it would be used before this is called
-                  )
+    return _idval(val=val, argname=argname, idx=idx, **_idval_kwargs)
 
 
 def mini_idvalset(argnames, argvalues, idx):
     """ mimic _pytest.python._idvalset """
     this_id = [
-        _idval(val, argname, idx=idx,
-               idfn=None, item=None,  # item is only used by idfn
-               config=None  # if a config hook was available it would be used before this is called
-               )
+        _idval(val, argname, idx=idx,**_idval_kwargs)
         for val, argname in zip(argvalues, argnames)
     ]
     return "-".join(this_id)

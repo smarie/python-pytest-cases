@@ -1523,6 +1523,15 @@ def _parametrize_plus(argnames,
             """
             test_func_name = test_func.__name__
 
+            # Are there explicit ids provided ?
+            try:
+                if len(ids) != len(argvalues):
+                    raise ValueError("Explicit list of `ids` provided has a different length (%s) than the number of "
+                                     "parameter sets (%s)" % (len(ids), len(argvalues)))
+                explicit_ids_to_use = []
+            except TypeError:
+                explicit_ids_to_use = None
+
             # first check if the test function has the parameters as arguments
             old_sig = signature(test_func)
             for p in argnames:
@@ -1551,12 +1560,20 @@ def _parametrize_plus(argnames,
                     p_fix_name, p_fix_alt = _create_params_alt(test_func_name=test_func_name, hook=hook,
                                                                union_name=fixture_union_name, from_i=prev_i + 1, to_i=i)
                     fixture_alternatives.append((p_fix_name, p_fix_alt))
+                    if explicit_ids_to_use is not None:
+                        if isinstance(p_fix_alt, SingleParamAlternative):
+                            explicit_ids_to_use.append(ids[prev_i + 1])
+                        else:
+                            # the ids provided by the user are propagated to the params of this fix, so we need an id
+                            explicit_ids_to_use.append(ParamIdMakers.explicit(p_fix_alt))
 
                 # B/ Now handle the fixture ref at position <i>
                 if j_list is None:
                     # argvalues[i] contains a single argvalue that is a fixture_ref : add the referenced fixture
                     f_fix_name, f_fix_alt = _create_fixture_ref_alt(union_name=fixture_union_name, i=i)
                     fixture_alternatives.append((f_fix_name, f_fix_alt))
+                    if explicit_ids_to_use is not None:
+                        explicit_ids_to_use.append(ids[i])
 
                 else:
                     # argvalues[i] is a tuple, some of them being fixture_ref. create a fixture refering to all of them
@@ -1564,6 +1581,8 @@ def _parametrize_plus(argnames,
                                                                               fixture_ref_positions=j_list,
                                                                               test_func_name=test_func_name, hook=hook)
                     fixture_alternatives.append((prod_fix_name, prod_fix_alt))
+                    if explicit_ids_to_use is not None:
+                        explicit_ids_to_use.append(ids[i])
 
                 prev_i = i
 
@@ -1573,6 +1592,12 @@ def _parametrize_plus(argnames,
                 p_fix_name, p_fix_alt = _create_params_alt(test_func_name=test_func_name, union_name=fixture_union_name,
                                                            from_i=prev_i + 1, to_i=i, hook=hook)
                 fixture_alternatives.append((p_fix_name, p_fix_alt))
+                if explicit_ids_to_use is not None:
+                    if isinstance(p_fix_alt, SingleParamAlternative):
+                        explicit_ids_to_use.append(ids[prev_i + 1])
+                    else:
+                        # the ids provided by the user are propagated to the params of this fix, so we need an id
+                        explicit_ids_to_use.append(ParamIdMakers.explicit(p_fix_alt))
 
             # TO DO if fixtures_to_union has length 1, simplify ? >> No, we leave such "optimization" to the end user
 
@@ -1590,12 +1615,11 @@ def _parametrize_plus(argnames,
                         "Created fixture names are not unique, please report"
 
             # Finally create a "main" fixture with a unique name for this test function
-            # TODO if `ids` were provided, we have to "cut the part where the product params appear
 
             # note: the function automatically registers it in the module
             big_param_fixture = _fixture_union(caller_module, name=fixture_union_name,
                                                fix_alternatives=fix_alternatives, unique_fix_alt_names=fix_alt_names,
-                                               ids=ids or ParamIdMakers.get(idstyle), hook=hook)
+                                               ids=explicit_ids_to_use or ids or ParamIdMakers.get(idstyle), hook=hook)
 
             # --create the new test function's signature that we want to expose to pytest
             # it is the same than existing, except that we want to replace all parameters with the new fixture
