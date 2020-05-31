@@ -26,6 +26,6 @@ def test_get_or_create_book(name):
 def test_synthesis(module_results_dct):
     assert list(module_results_dct) == ['test_get_or_create_book[name_is_book1-A]',
                                         'test_get_or_create_book[name_is_book1-B]',
-                                        'test_get_or_create_book[name_is_1to2-hi]',
-                                        'test_get_or_create_book[name_is_1to2-ih]',
+                                        'test_get_or_create_book[name_is_P1toP2-hi]',
+                                        'test_get_or_create_book[name_is_P1toP2-ih]',
                                         'test_get_or_create_book[name_is_book2]']

@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.15.0 - better `parametrize_plus` and smaller dependencies
+
+ - Better support for `pytest.param` in `parametrize_plus` and also in `fixture_union` and `fixture_param[s]`. Improved corresponding ids. Fixed [#79](https://github.com/smarie/python-pytest-cases/issues/79) and [#86](https://github.com/smarie/python-pytest-cases/issues/86)
+ 
+ - Removed `six`, `wrapt` and `enum34` dependencies
+
 ### 1.14.0 - bugfixes and hook feature
 
  - Fixed `ids` precedence order when using `pytest.mark.parametrize` in a `fixture_plus`. Fixed [#87](https://github.com/smarie/python-pytest-cases/issues/87)

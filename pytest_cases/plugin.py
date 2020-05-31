@@ -4,13 +4,13 @@ from distutils.version import LooseVersion
 from warnings import warn
 
 from functools import partial
-from six import string_types
+from .mini_six import string_types
 
 import pytest
 
 from pytest_cases.common import get_pytest_nodeid, get_pytest_function_scopenum, \
     is_function_node, get_param_names, get_pytest_scopenum, get_param_argnames_as_list
-from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params, UnionFixtureAlternative, apply_id_style
+from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
 
 try:  # python 3.3+
     from inspect import signature
@@ -329,6 +329,7 @@ class FixtureClosureNode(object):
             if not fixturedefs:
                 # fixture without definition: add it
                 self.add_required_fixture(fixname, None)
+                continue
             else:
                 # the actual definition is the last one
                 _fixdef = fixturedefs[-1]
@@ -352,6 +353,7 @@ class FixtureClosureNode(object):
 
                     # empty the pending because all of them have been propagated on all children with their dependencies
                     pending_fixture_names = []
+                    continue
 
                 else:
                     # normal fixture
@@ -363,6 +365,7 @@ class FixtureClosureNode(object):
                     # pending_fixture_names += dependencies
                     # - prepend: makes much more sense
                     pending_fixture_names = list(dependencies) + pending_fixture_names
+                    continue
 
     # ------ tools to add new fixture names during closure construction
 
@@ -982,20 +985,11 @@ class CallsReactor:
                                                     ids=p_to_apply.ids,
                                                     scope=p_to_apply.scope, **p_to_apply.kwargs)
 
-                    # Change the ids by applying the style defined in the corresponding alternative
-                    for callspec in calls:
-                        # TODO right now only the idstyle defined in the first alternative is used. But it cant be
-                        #  different from the other ones for now because of the way fixture_union is built.
-                        #  Maybe the best would be to remove this and apply the id style when fixture is created.
-                        callspec._idlist[-1] = apply_id_style(callspec._idlist[-1],
-                                                              p_to_apply.union_fixture_name,
-                                                              p_to_apply.alternative_names[0].idstyle)
-
                     # now move to the children
                     nodes_children = [None] * len(calls)
                     for i in range(len(calls)):
                         active_alternative = calls[i].params[p_to_apply.union_fixture_name]
-                        child_node = current_node.children[active_alternative.fixture_name]
+                        child_node = current_node.children[active_alternative.alternative_name]
                         child_pending = pending.copy()
 
                         # place the childs parameter in the first position if it is in the list
