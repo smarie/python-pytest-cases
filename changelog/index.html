@@ -1197,8 +1197,15 @@
 <p>Better support for <code>pytest.param</code> in <code>parametrize_plus</code> and also in <code>fixture_union</code> and <code>fixture_param[s]</code>. Improved corresponding ids. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/79">#79</a> and <a href="https://github.com/smarie/python-pytest-cases/issues/86">#86</a></p>
 </li>
 <li>
+<p>New <code>@ignore_unused</code> decorator to protect a fixture function from the "NOT_USED" case happening when the fixture is used in a fixture union.</p>
+</li>
+<li>
 <p>Removed <code>six</code>, <code>wrapt</code> and <code>enum34</code> dependencies</p>
 </li>
+<li>
+<p>(Internal) submodules reorganization for readability</p>
+</li>
+<li>(Internal) suppressed a lot of code quality warnings</li>
 </ul>
 <h3 id="1140-bugfixes-and-hook-feature">1.14.0 - bugfixes and hook feature<a class="headerlink" href="#1140-bugfixes-and-hook-feature" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1486,7 +1493,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"search.result.one": "1 matching document", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "search.config.separator": "[\\s\\-]+", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en"}</script>
+      <script src="../assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copy": "Copy to clipboard", "search.result.other": "# matching documents", "search.result.one": "1 matching document", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "search.config.lang": "en", "clipboard.copied": "Copied to clipboard", "search.result.placeholder": "Type to start searching"}</script>
       
       <script>
         app = initialize({

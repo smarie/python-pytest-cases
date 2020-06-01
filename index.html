@@ -711,7 +711,7 @@
 <p><a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/pytest-cases.svg" /></a> <a href="https://travis-ci.org/smarie/python-pytest-cases"><img alt="Build Status" src="https://travis-ci.org/smarie/python-pytest-cases.svg?branch=master" /></a> <a href="https://smarie.github.io/python-pytest-cases/junit/report.html"><img alt="Tests Status" src="https://smarie.github.io/python-pytest-cases/junit/junit-badge.svg?dummy=8484744" /></a> <a href="https://codecov.io/gh/smarie/python-pytest-cases"><img alt="codecov" src="https://codecov.io/gh/smarie/python-pytest-cases/branch/master/graph/badge.svg" /></a></p>
 <p><a href="https://smarie.github.io/python-pytest-cases/"><img alt="Documentation" src="https://img.shields.io/badge/doc-latest-blue.svg" /></a> <a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pytest-cases.svg" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads" src="https://pepy.tech/badge/pytest-cases" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads per week" src="https://pepy.tech/badge/pytest-cases/week" /></a> <a href="https://github.com/smarie/python-pytest-cases/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/smarie/python-pytest-cases.svg" /></a></p>
 <div class="admonition success">
-<p class="admonition-title">New <code>unpacking feature</code>, <a href="#unpack_fixture-unpack_into">check it out</a> !</p>
+<p class="admonition-title">You can now use <code>pytest.param</code> in the argvalues provided to <code>fixture_union</code>, <code>param_fixture[s]</code> and <code>parametrize_plus</code>, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a></p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Test execution order</p>
@@ -728,6 +728,7 @@
 <li>on the other hand, a new <code>test_xxxx_cases.py</code> containing your cases functions</li>
 </ul>
 <p><code>pytest-cases</code> is fully compliant with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a> so you can create test suites with several steps and send each case on the full suite. See <a href="./usage/advanced/#test-suites-several-steps-on-each-case">usage page for details</a>.</p>
+<p>In addition, <code>pytest-cases</code> improves <code>pytest</code>'s fixture mechanism to support "fixture unions". This is a <strong>major change</strong> in the internal <code>pytest</code> engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See <a href="#fixture_union">below</a>.</p>
 <h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><code>&gt; pip install pytest_cases
 </code></pre></div>
@@ -972,10 +973,11 @@
 </code></pre></div>
 
 
+<p>You can mark any of the argvalues with <code>pytest.mark</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
 <h3 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h3>
-<p>As of <code>pytest</code> 4, it is not possible to create a "union" fixture, i.e. a parametrized fixture that will first take all the possible values of fixture A, then all possible values of fixture B, etc. </p>
+<p>As of <code>pytest</code> 5, it is not possible to create a "union" fixture, i.e. a parametrized fixture that would first take all the possible values of fixture A, then all possible values of fixture B, etc. Indeed all fixture dependencies (a.k.a. "closure") of each test node are grouped together, and if they have parameters a big "cross-product" of the parameters is done by <code>pytest</code>.</p>
 <p>The topic has been largely discussed in <a href="https://github.com/pytest-dev/pytest/issues/349">pytest-dev#349</a> and a <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">request for proposal</a> has been finally made.</p>
-<p><code>fixture_union</code> is an implementation of this proposal.</p>
+<p><code>fixture_union</code> is an implementation of this proposal. It is also used by <code>parametrize_plus</code> to support <code>fixture_ref</code> in parameter values, see <a href="#parametrize_plus">below</a>.</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture_plus</span><span class="p">,</span> <span class="n">fixture_union</span>
 
 <span class="nd">@fixture_plus</span>
@@ -1002,13 +1004,14 @@
 
 
 <p>As you can see the ids of union fixtures are slightly different from standard ids, so that you can easily understand what is going on. You can change this feature with <code>ìdstyle</code>, see <a href="api_reference/#fixture_union">API documentation</a> for details.</p>
-<p>This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues</a> page !</p>
-<p><strong>IMPORTANT</strong> if you do not use <code>@fixture_plus</code> but only <code>@pytest.fixture</code>, then you will see that your fixtures are called even when they are not used, with a parameter <code>NOT_USED</code>. This symbol is automatically ignored if you use <code>@fixture_plus</code>, otherwise you have to handle it.</p>
+<p>You can mark any of the alternatives with <code>pytest.mark</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
+<p>Fixture unions also support unpacking with the <code>unpack_into</code> argument, see <a href="#unpack_fixture-unpack_into">unpacking feature</a>.</p>
+<p>Fixture unions are a <strong>major change</strong> in the internal pytest engine, as fixture closures (the ordered set of all fixtures required by a test node to run - directly or indirectly) now become trees where branches correspond to alternative paths taken in the "unions", and leafs are the alternative fixture closures. This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues</a> page !</p>
+<p><strong>IMPORTANT</strong> if you do not use <code>@fixture_plus</code> but only <code>@pytest.fixture</code>, then you will see that your fixtures are called even when they are not used, with a parameter <code>NOT_USED</code>. This symbol is automatically ignored if you use <code>@fixture_plus</code>, otherwise you have to handle it. Alternatively you can use <code>@ignore_unused</code> on your fixture function.</p>
 <div class="admonition note">
 <p class="admonition-title">fixture unions vs. cases</p>
-<p>If you're familiar with <code>pytest-cases</code> already, you might note <code>@cases_data</code> is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by <code>pytest</code>, we will probably refactor this lib to align all the concepts.</p>
+<p>If you're familiar with <code>pytest-cases</code> already, you might note that <code>@cases_data</code> is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by <code>pytest</code>, we will probably refactor this lib to align all the concepts.</p>
 </div>
-<p>Finally fixture unions now supports unpacking, see <a href="#unpack_fixture-unpack_into">unpacking feature</a>.</p>
 <h3 id="parametrize_plus"><code>@parametrize_plus</code><a class="headerlink" href="#parametrize_plus" title="Permanent link">&para;</a></h3>
 <p><code>@parametrize_plus</code> is a replacement for <code>@pytest.mark.parametrize</code> that allows you to include references to fixtures in the parameter values. Simply use <code>fixture_ref(&lt;fixture&gt;)</code> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function.</p>
 <p>For example:</p>
@@ -1048,8 +1051,9 @@ test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_w
 </code></pre></div>
 
 
-<p>As you can see, the ids are a bit more explicit than usual. As opposed to <code>fixture_union</code>, the style of these ids is not configurable for now but feel free to propose alternatives in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues page</a>.</p>
-<p>Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your mark parameters with <code>param_fixture</code>s (see <a href="#param_fixtures">above</a>.)</p>
+<p>As you can see, the ids are a bit more explicit than usual. As opposed to <code>fixture_union</code>, the style of these ids is not configurable for now but feel free to propose alternatives in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues page</a>. </p>
+<p>You can also mark any of the argvalues with <code>pytest.mark</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
+<p>Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your other <code>@pytest.mark.parametrize</code> calls with <code>param_fixture</code>s (see <a href="#param_fixtures">above</a>.)</p>
 <h3 id="passing-a-hook">passing a <code>hook</code><a class="headerlink" href="#passing-a-hook" title="Permanent link">&para;</a></h3>
 <p>As per version <code>1.14</code>, all the above functions now support passing a <code>hook</code> argument. This argument should be a callable. It will be called everytime a fixture is about to be created by <code>pytest_cases</code> on your behalf. The fixture function is passed as the argument of the hook, and the hook should return it as the result.</p>
 <p>You can use this fixture to better understand which fixtures are created behind the scenes, and also to decorate the fixture functions before they are created. For example you can use <code>hook=saved_fixture</code> (from <a href="https://smarie.github.io/python-pytest-harvest/"><code>pytest-harvest</code></a>) in order to save the created fixtures in the fixture store.  </p>
@@ -1132,7 +1136,7 @@ test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_w
     </div>
     
       <script src="assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"search.result.one": "1 matching document", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "search.config.separator": "[\\s\\-]+", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en"}</script>
+      <script src="assets/javascripts/bundle.5f27aba8.min.js"></script><script id="__lang" type="application/json">{"search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copy": "Copy to clipboard", "search.result.other": "# matching documents", "search.result.one": "1 matching document", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "search.config.lang": "en", "clipboard.copied": "Copied to clipboard", "search.result.placeholder": "Type to start searching"}</script>
       
       <script>
         app = initialize({
