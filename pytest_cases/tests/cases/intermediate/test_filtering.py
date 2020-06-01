@@ -1,4 +1,4 @@
-from pytest_cases.tests.example_code import super_function_i_want_to_test
+from pytest_cases.tests.cases.example_code import super_function_i_want_to_test
 
 from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, case_tags
 try:  # python 3.5+
