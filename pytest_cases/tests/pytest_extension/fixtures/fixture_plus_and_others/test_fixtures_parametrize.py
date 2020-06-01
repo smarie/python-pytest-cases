@@ -1,7 +1,8 @@
-from distutils.version import LooseVersion
-
-from pytest_cases import pytest_fixture_plus
 import pytest
+from pytest_cases import pytest_fixture_plus
+
+
+has_pytest_param = hasattr(pytest, 'param')
 
 
 @pytest_fixture_plus(scope="module")
@@ -27,7 +28,7 @@ def test_synthesis(module_results_dct):
 
 
 # pytest.param - not available in all versions
-if LooseVersion(pytest.__version__) < LooseVersion('3.2.0'):
+if not has_pytest_param:
     # with pytest < 3.2.0 we
     # - would have to merge all parametrize marks if we wish to pass a kwarg (here, ids)
     # - cannot use pytest.param as it is not taken into account

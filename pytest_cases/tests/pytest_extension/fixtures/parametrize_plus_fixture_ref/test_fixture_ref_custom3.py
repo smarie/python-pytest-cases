@@ -1,10 +1,12 @@
-from distutils.version import LooseVersion
-
 import pytest
 from pytest_cases import parametrize_plus, fixture_ref
 
+
+has_pytest_param = hasattr(pytest, 'param')
+
+
 # pytest.param is not available in all versions
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+if has_pytest_param:
     @pytest.fixture
     def a():
         return 'a'

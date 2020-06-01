@@ -1,11 +1,10 @@
-from distutils.version import LooseVersion
-
 import pytest
 from pytest_cases import param_fixture, param_fixtures, pytest_fixture_plus
 
 
 # pytest.param - not available in all versions
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+has_pytest_param = hasattr(pytest, 'param')
+if has_pytest_param:
     pytest_param = pytest.param
 else:
     def pytest_param(*args, **kwargs):
@@ -71,7 +70,7 @@ def test_custom_parameters(myfix, arg3, arg4, parg1, parg2, request):
     """"""
     assert myfix[2] == parg1
     paramvalues = request.node.nodeid.split('[')[1][:-1]
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+    if has_pytest_param:
         arg1arg2id = "f_a" if myfix[:-1] == (1, 2) else "f_b"
         arg3arg4id = "t_a" if (arg3, arg4) == (10, 20) else "t_b"
     else:
@@ -94,7 +93,7 @@ def test_synthesis(module_results_dct):
                 'test_custom_parameters[f_b-c-d-t_a]',
                 'test_custom_parameters[f_b-c-d-t_b]']
 
-    if LooseVersion(pytest.__version__) < LooseVersion('3.0.0'):
+    if not has_pytest_param:
         end_list = [s.replace('t_a', '10-20')
                         .replace('t_b', '30-40')
                         .replace('f_a', '1-2')

@@ -1,13 +1,14 @@
-from distutils.version import LooseVersion
-
 import pytest
 
 from pytest_harvest import saved_fixture, get_session_synthesis_dct
 from pytest_cases import parametrize_plus, fixture_ref, pytest_fixture_plus
 
 
+has_pytest_param = hasattr(pytest, 'param')
+
+
 # pytest.param is not available in all versions
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+if has_pytest_param:
 
     @pytest.fixture
     @saved_fixture
