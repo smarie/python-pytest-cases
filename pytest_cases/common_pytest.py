@@ -485,10 +485,11 @@ except ImportError:  # pytest 2.x
 # Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
 # see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize
 
-try:
-    # check if pytest.param exists
-    _ = pytest.param
-except AttributeError:
+# check if pytest.param exists
+has_pytest_param = hasattr(pytest, 'param')
+
+
+if not has_pytest_param:
     # if not this is how it was done
     # see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize
     def make_marked_parameter_value(c, marks):
