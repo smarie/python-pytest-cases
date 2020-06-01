@@ -4,7 +4,12 @@
 
  - Better support for `pytest.param` in `parametrize_plus` and also in `fixture_union` and `fixture_param[s]`. Improved corresponding ids. Fixed [#79](https://github.com/smarie/python-pytest-cases/issues/79) and [#86](https://github.com/smarie/python-pytest-cases/issues/86)
  
+ - New `@ignore_unused` decorator to protect a fixture function from the "NOT_USED" case happening when the fixture is used in a fixture union.
+  
  - Removed `six`, `wrapt` and `enum34` dependencies
+
+ - (Internal) submodules reorganization for readability
+ - (Internal) suppressed a lot of code quality warnings
 
 ### 1.14.0 - bugfixes and hook feature
 
