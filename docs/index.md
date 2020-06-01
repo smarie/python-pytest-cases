@@ -6,7 +6,7 @@
 
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 
-!!! success "New `unpacking feature`, [check it out](#unpack_fixture-unpack_into) !"
+!!! success "You can now use `pytest.param` in the argvalues provided to `fixture_union`, `param_fixture[s]` and `parametrize_plus`, just as you do in `pytest`. See [pytest documentation](https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test)"
 
 !!! warning "Test execution order"
     Installing pytest-cases now has effects on the order of `pytest` tests execution, even if you do not use its features. One positive side effect is that it fixed [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054). But if you see less desirable ordering please [report it](https://github.com/smarie/python-pytest-cases/issues).
@@ -22,6 +22,8 @@ Did you ever think that most of your test functions were actually *the same test
  * on the other hand, a new `test_xxxx_cases.py` containing your cases functions
 
 `pytest-cases` is fully compliant with [pytest-steps](https://smarie.github.io/python-pytest-steps/) so you can create test suites with several steps and send each case on the full suite. See [usage page for details](./usage/advanced/#test-suites-several-steps-on-each-case).
+
+In addition, `pytest-cases` improves `pytest`'s fixture mechanism to support "fixture unions". This is a **major change** in the internal `pytest` engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See [below](#fixture_union).
 
 
 ## Installing
@@ -309,13 +311,15 @@ def test_uses_param2(arg1, arg2, fixture_uses_param2):
     ...
 ```
 
+You can mark any of the argvalues with `pytest.mark` to pass a custom id or a custom "skip" or "fail" mark, just as you do in `pytest`. See [pytest documentation](https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test).
+
 ### `fixture_union`
 
-As of `pytest` 4, it is not possible to create a "union" fixture, i.e. a parametrized fixture that will first take all the possible values of fixture A, then all possible values of fixture B, etc. 
+As of `pytest` 5, it is not possible to create a "union" fixture, i.e. a parametrized fixture that would first take all the possible values of fixture A, then all possible values of fixture B, etc. Indeed all fixture dependencies (a.k.a. "closure") of each test node are grouped together, and if they have parameters a big "cross-product" of the parameters is done by `pytest`.
 
 The topic has been largely discussed in [pytest-dev#349](https://github.com/pytest-dev/pytest/issues/349) and a [request for proposal](https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html) has been finally made.
 
-`fixture_union` is an implementation of this proposal.
+`fixture_union` is an implementation of this proposal. It is also used by `parametrize_plus` to support `fixture_ref` in parameter values, see [below](#parametrize_plus).
 
 ```python
 from pytest_cases import fixture_plus, fixture_union
@@ -345,14 +349,17 @@ yields
 
 As you can see the ids of union fixtures are slightly different from standard ids, so that you can easily understand what is going on. You can change this feature with `ìdstyle`, see [API documentation](./api_reference.md#fixture_union) for details.
 
-This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the [issues](https://github.com/smarie/python-pytest-cases/issues) page !
+You can mark any of the alternatives with `pytest.mark` to pass a custom id or a custom "skip" or "fail" mark, just as you do in `pytest`. See [pytest documentation](https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test).
 
-**IMPORTANT** if you do not use `@fixture_plus` but only `@pytest.fixture`, then you will see that your fixtures are called even when they are not used, with a parameter `NOT_USED`. This symbol is automatically ignored if you use `@fixture_plus`, otherwise you have to handle it.
+Fixture unions also support unpacking with the `unpack_into` argument, see [unpacking feature](#unpack_fixture-unpack_into).
+
+Fixture unions are a **major change** in the internal pytest engine, as fixture closures (the ordered set of all fixtures required by a test node to run - directly or indirectly) now become trees where branches correspond to alternative paths taken in the "unions", and leafs are the alternative fixture closures. This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the [issues](https://github.com/smarie/python-pytest-cases/issues) page !
+
+**IMPORTANT** if you do not use `@fixture_plus` but only `@pytest.fixture`, then you will see that your fixtures are called even when they are not used, with a parameter `NOT_USED`. This symbol is automatically ignored if you use `@fixture_plus`, otherwise you have to handle it. Alternatively you can use `@ignore_unused` on your fixture function.
 
 !!! note "fixture unions vs. cases" 
-    If you're familiar with `pytest-cases` already, you might note `@cases_data` is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by `pytest`, we will probably refactor this lib to align all the concepts.
+    If you're familiar with `pytest-cases` already, you might note that `@cases_data` is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by `pytest`, we will probably refactor this lib to align all the concepts.
 
-Finally fixture unions now supports unpacking, see [unpacking feature](#unpack_fixture-unpack_into).
 
 ### `@parametrize_plus`
 
@@ -397,9 +404,11 @@ test_prints[test_prints_main_msg_is_greetings-greetings_who_is_1-you-?] hello yo
 test_prints[test_prints_main_msg_is_greetings-greetings_who_is_1-you-!] hello you!        PASSED
 ```
 
-As you can see, the ids are a bit more explicit than usual. As opposed to `fixture_union`, the style of these ids is not configurable for now but feel free to propose alternatives in the [issues page](https://github.com/smarie/python-pytest-cases/issues).
+As you can see, the ids are a bit more explicit than usual. As opposed to `fixture_union`, the style of these ids is not configurable for now but feel free to propose alternatives in the [issues page](https://github.com/smarie/python-pytest-cases/issues). 
 
-Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard `pytest.mark.parametrize` parameters that you would place on the same function, will get impacted. You may solve this by replacing your mark parameters with `param_fixture`s (see [above](#param_fixtures).)
+You can also mark any of the argvalues with `pytest.mark` to pass a custom id or a custom "skip" or "fail" mark, just as you do in `pytest`. See [pytest documentation](https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test).
+
+Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard `pytest.mark.parametrize` parameters that you would place on the same function, will get impacted. You may solve this by replacing your other `@pytest.mark.parametrize` calls with `param_fixture`s (see [above](#param_fixtures).)
 
 ### passing a `hook`
 
