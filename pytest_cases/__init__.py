@@ -1,5 +1,5 @@
-from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture
-from .fixture_core2 import fixture_plus, param_fixtures, param_fixture, pytest_fixture_plus
+from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
+from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture
 from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref
 
 from .case_funcs import case_name, test_target, case_tags, cases_generator
@@ -26,7 +26,7 @@ __all__ = [
     # --cases_funcs
     'case_name',  'test_target', 'case_tags', 'cases_generator',
     # --main_fixtures
-    'cases_fixture', 'pytest_fixture_plus', 'fixture_plus', 'param_fixtures', 'param_fixture',
+    'cases_fixture', 'pytest_fixture_plus', 'fixture_plus', 'param_fixtures', 'param_fixture', 'ignore_unused',
     'fixture_union', 'NOT_USED', 'pytest_parametrize_plus', 'parametrize_plus', 'fixture_ref', 'unpack_fixture',
     # --main params
     'cases_data', 'CaseDataGetter', 'THIS_MODULE', 'unfold_expected_err', 'get_all_cases',
