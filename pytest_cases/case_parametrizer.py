@@ -3,31 +3,21 @@ from __future__ import division
 
 import sys
 from abc import abstractmethod, ABCMeta
+from decopatch import function_decorator, DECORATED, with_parenthesis
 from inspect import getmembers
 from warnings import warn
-
-from decopatch import function_decorator, DECORATED, with_parenthesis
-
-from .mini_six import with_metaclass, string_types
-import pytest
 
 try:  # python 3.3+
     from inspect import signature, Parameter
 except ImportError:
-    from funcsigs import signature, Parameter
+    from funcsigs import signature, Parameter  # noqa
 
-try:
-    from typing import Type
-except ImportError:
-    # on old versions of typing module the above does not work. Since our code below has all Type hints quoted it's ok
-    pass
+import pytest
 
 try:  # type hints, python 3+
-    from typing import Callable, Union, Optional, Any, Tuple, List, Dict, Iterable
-
-    from pytest_cases.case_funcs import CaseData, ExpectedError
-
-    from types import ModuleType
+    from typing import Type, Callable, Union, Optional, Any, Tuple, List, Dict, Iterable  # noqa
+    from pytest_cases.case_funcs import CaseData, ExpectedError  # noqa
+    from types import ModuleType  # noqa
 
     # Type hint for the simple functions
     CaseFunc = Callable[[], CaseData]
@@ -37,8 +27,11 @@ try:  # type hints, python 3+
 except ImportError:
     pass
 
-from pytest_cases.case_funcs import _GENERATOR_FIELD, CASE_TAGS_FIELD
-from pytest_cases.common import make_marked_parameter_value, get_pytest_marks_on_function
+from .common_mini_six import with_metaclass, string_types
+from .common_pytest import make_marked_parameter_value, get_pytest_marks_on_function
+
+from .case_funcs import _GENERATOR_FIELD, CASE_TAGS_FIELD
+from .fixture_core2 import fixture_plus
 
 
 class CaseDataGetter(with_metaclass(ABCMeta)):
@@ -147,8 +140,8 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
                module=None,                      # type: Union[ModuleType, Iterable[ModuleType]]
                case_data_argname='case_data',    # type: str
                has_tag=None,                     # type: Any
-               filter=None,                      # type: Callable[[List[Any]], bool]
-               test_func=DECORATED,
+               filter=None,                      # type: Callable[[List[Any]], bool]  # noqa
+               test_func=DECORATED,  # noqa
                ):
     """
     Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with
@@ -244,7 +237,7 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
                   module=None,              # type: Union[ModuleType, Iterable[ModuleType]]
                   this_module_object=None,  # type: Any
                   has_tag=None,             # type: Any
-                  filter=None               # type: Callable[[List[Any]], bool]
+                  filter=None               # type: Callable[[List[Any]], bool]  # noqa
                   ):
     # type: (...) -> List[CaseDataGetter]
     """
@@ -262,8 +255,11 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
         `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
+    _cases = None
+
     if module is not None and cases is not None:
         raise ValueError("Only one of module and cases should be provided")
+
     elif module is None:
         # Hardcoded sequence of cases, or single case
         if callable(cases):
@@ -278,7 +274,7 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
         # Gather all cases from the reference module(s)
         try:
             _cases = []
-            for m in module:
+            for m in module:  # noqa
                 m = sys.modules[this_module_object.__module__] if m is THIS_MODULE else m
                 _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter)
             success = True
@@ -309,7 +305,7 @@ def _get_code(f):
 
 def extract_cases_from_module(module,        # type: ModuleType
                               has_tag=None,  # type: Any
-                              filter=None    # type: Callable[[List[Any]], bool]
+                              filter=None    # type: Callable[[List[Any]], bool]  # noqa
                               ):
     # type: (...) -> List[CaseDataGetter]
     """
@@ -409,6 +405,7 @@ def _get_case_getter_s(f,
         if isinstance(names, string_types):
             # then this is a string formatter creating the names. Create the corresponding callable
             _formatter = names
+
             def names(**params):
                 try:
                     return _formatter.format(**params)
@@ -489,3 +486,84 @@ def unfold_expected_err(expected_e  # type: ExpectedError
 
     raise ValueError("ExpectedNormal error should either be an exception type, an exception instance, or an exception "
                      "validation callable")
+
+
+@function_decorator
+def cases_fixture(cases=None,                       # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
+                  module=None,                      # type: Union[ModuleType, Iterable[ModuleType]]
+                  case_data_argname='case_data',    # type: str
+                  has_tag=None,                     # type: Any
+                  filter=None,                      # type: Callable[[List[Any]], bool] # noqa
+                  f=DECORATED,  # noqa
+                  **kwargs
+                  ):
+    """
+    DEPRECATED - use double annotation `@fixture_plus` + `@cases_data` instead
+
+    ```python
+    @fixture_plus
+    @cases_data(module=xxx)
+    def my_fixture(case_data)
+    ```
+
+    Decorates a function so that it becomes a parametrized fixture.
+
+    The fixture will be automatically parametrized with all cases listed in module `module`, or with
+    all cases listed explicitly in `cases`.
+
+    Using it with a non-None `module` argument is equivalent to
+     * extracting all cases from `module`
+     * then decorating your function with @pytest.fixture(params=cases) with all the cases
+
+    So
+
+    ```python
+    from pytest_cases import cases_fixture, CaseData
+
+    # import the module containing the test cases
+    import test_foo_cases
+
+    @cases_fixture(module=test_foo_cases)
+    def foo_fixture(case_data: CaseData):
+        ...
+    ```
+
+    is equivalent to:
+
+    ```python
+    import pytest
+    from pytest_cases import get_all_cases, CaseData
+
+    # import the module containing the test cases
+    import test_foo_cases
+
+    # manually list the available cases
+    cases = get_all_cases(module=test_foo_cases)
+
+    # parametrize the fixture manually
+    @pytest.fixture(params=cases)
+    def foo_fixture(request):
+        case_data = request.param  # type: CaseData
+        ...
+    ```
+
+    Parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering. See
+    `get_all_cases()` for details.
+
+    :param cases: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
+    :param module: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the
+        module is the current one. Only one of `cases` and `module` should be set.
+    :param case_data_argname: the optional name of the function parameter that should receive the `CaseDataGetter`
+        object. Default is 'case_data'.
+    :param has_tag: an optional tag used to filter the cases. Only cases with the given tag will be selected. Only
+        cases with the given tag will be selected.
+    :param filter: an optional filtering function taking as an input a list of tags associated with a case, and
+        returning a boolean indicating if the case should be selected. It will be used to filter the cases in the
+        `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
+    :return:
+    """
+    # apply @cases_data (that will translate to a @pytest.mark.parametrize)
+    parametrized_f = cases_data(cases=cases, module=module,
+                                case_data_argname=case_data_argname, has_tag=has_tag, filter=filter)(f)
+    # apply @fixture_plus
+    return fixture_plus(**kwargs)(parametrized_f)

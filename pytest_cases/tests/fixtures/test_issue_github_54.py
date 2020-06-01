@@ -1,6 +1,6 @@
 import pytest
 
-from pytest_cases.main_fixtures import InvalidParamsList
+from pytest_cases.fixture_core1_unions import InvalidParamsList
 from pytest_cases import parametrize_plus, fixture_ref
 
 

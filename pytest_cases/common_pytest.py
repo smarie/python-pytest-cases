@@ -1,26 +1,52 @@
+from __future__ import division
+
 try:  # python 3.3+
     from inspect import signature
 except ImportError:
-    from funcsigs import signature
+    from funcsigs import signature  # noqa
+
+from distutils.version import LooseVersion
+from inspect import isgeneratorfunction
+from warnings import warn
 
 try:
-    from typing import Union, Callable, Any, Optional
+    from typing import Union, Callable, Any, Optional  # noqa
 except ImportError:
     pass
 
-from distutils.version import LooseVersion
-from warnings import warn
-
-from .mini_six import string_types
 import pytest
+from .common_mini_six import string_types
 
 
-# Create a symbol that will work to create a fixture containing 'yield', whatever the pytest version
-# Note: if more prevision is needed, use    if LooseVersion(pytest.__version__) < LooseVersion('3.0.0')
-if int(pytest.__version__.split('.', 1)[0]) < 3:
-    yield_fixture = pytest.yield_fixture
+# A decorator that will work to create a fixture containing 'yield', whatever the pytest version, and supports hooks
+if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+    def pytest_fixture(hook=None, **kwargs):
+        def _decorate(f):
+            # call hook if needed
+            if hook is not None:
+                f = hook(f)
+
+            # create the fixture
+            return pytest.fixture(**kwargs)(f)
+        return _decorate
 else:
-    yield_fixture = pytest.fixture
+    def pytest_fixture(hook=None, name=None, **kwargs):
+        """Generator-aware pytest.fixture decorator for legacy pytest versions"""
+        def _decorate(f):
+            if name is not None:
+                # 'name' argument is not supported in this old version, use the __name__ trick.
+                f.__name__ = name
+
+            # call hook if needed
+            if hook is not None:
+                f = hook(f)
+
+            # create the fixture
+            if isgeneratorfunction(f):
+                return pytest.yield_fixture(**kwargs)(f)
+            else:
+                return pytest.fixture(**kwargs)(f)
+        return _decorate
 
 
 def remove_duplicates(lst):
@@ -39,8 +65,7 @@ def is_fixture(fixture_fun  # type: Any
     :return:
     """
     try:
-        # noinspection PyStatementEffect
-        fixture_fun._pytestfixturefunction
+        fixture_fun._pytestfixturefunction  # noqa
         return True
     except AttributeError:
         # not a fixture ?
@@ -75,10 +100,10 @@ def get_fixture_name(fixture_fun  # type: Union[str, Callable]
         return fixture_fun
     assert_is_fixture(fixture_fun)
     try:  # pytest 3
-        custom_fixture_name = fixture_fun._pytestfixturefunction.name
+        custom_fixture_name = fixture_fun._pytestfixturefunction.name  # noqa
     except AttributeError:
         try:  # pytest 2
-            custom_fixture_name = fixture_fun.func_name
+            custom_fixture_name = fixture_fun.func_name  # noqa
         except AttributeError:
             custom_fixture_name = None
 
@@ -104,7 +129,7 @@ def get_fixture_scope(fixture_fun):
     :return:
     """
     assert_is_fixture(fixture_fun)
-    return fixture_fun._pytestfixturefunction.scope
+    return fixture_fun._pytestfixturefunction.scope  # noqa
     # except AttributeError:
     #     # pytest 2
     #     return fixture_fun.func_scope
@@ -162,7 +187,7 @@ class _LegacyMark:
 
 def is_function_node(node):
     try:
-        node.function
+        node.function  # noqa
         return True
     except AttributeError:
         return False
@@ -185,7 +210,7 @@ def get_param_names(fnode):
     Returns a list of parameter names for the given pytest Function node.
     parameterization marks containing several names are split
 
-    :param parentnode:
+    :param fnode:
     :return:
     """
     p_markers = get_parametrization_markers(fnode)
@@ -248,6 +273,7 @@ def get_pytest_parametrize_marks(f):
             return ()
 
 
+# noinspection PyUnusedLocal
 def _pytest_mark_parametrize(argnames, argvalues, ids=None, indirect=False, scope=None, **kwargs):
     """ Fake method to have a reference signature of pytest.mark.parametrize"""
     pass
@@ -356,6 +382,10 @@ def analyze_parameter_set(pmark=None, argnames=None, argvalues=None, ids=None, c
     See also pytest.Metafunc.parametrize method, that calls in particular
     pytest.ParameterSet._for_parametrize and _pytest.python._idvalset
 
+    :param pmark:
+    :param argnames:
+    :param argvalues:
+    :param ids:
     :param check_nb: a bool indicating if we should raise an error if len(argnames) > 1 and any argvalue has
          a different length than len(argnames)
     :return: ids, marks, values
@@ -395,8 +425,8 @@ def extract_parameterset_info(argnames, argvalues, check_nb=True):
         # is this a pytest.param() ?
         if is_marked_parameter_value(v):
             # --id
-            id = get_marked_parameter_id(v)
-            pids.append(id)
+            _id = get_marked_parameter_id(v)
+            pids.append(_id)
             # --marks
             marks = get_marked_parameter_marks(v)
             pmarks.append(marks)  # note: there might be several
@@ -420,7 +450,7 @@ def extract_parameterset_info(argnames, argvalues, check_nb=True):
 
 
 try:  # pytest 3.x+
-    from _pytest.mark import ParameterSet
+    from _pytest.mark import ParameterSet  # noqa
 
     def is_marked_parameter_value(v):
         return isinstance(v, ParameterSet)
@@ -528,7 +558,7 @@ try:
     from _pytest.fixtures import scopes as pt_scopes
 except ImportError:
     # pytest 2
-    from _pytest.python import scopes as pt_scopes
+    from _pytest.python import scopes as pt_scopes  # noqa
 
 
 def get_pytest_scopenum(scope_str):
@@ -539,7 +569,7 @@ def get_pytest_function_scopenum():
     return pt_scopes.index("function")
 
 
-from _pytest.python import _idval
+from _pytest.python import _idval  # noqa
 
 
 if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
@@ -558,7 +588,7 @@ def mini_idval(
         val,      # type: object
         argname,  # type: str
         idx,      # type: int
-    ):
+):
     """
     A simplified version of idval where idfn, item and config do not need to be passed.
 
@@ -573,7 +603,7 @@ def mini_idval(
 def mini_idvalset(argnames, argvalues, idx):
     """ mimic _pytest.python._idvalset """
     this_id = [
-        _idval(val, argname, idx=idx,**_idval_kwargs)
+        _idval(val, argname, idx=idx, **_idval_kwargs)
         for val, argname in zip(argvalues, argnames)
     ]
     return "-".join(this_id)

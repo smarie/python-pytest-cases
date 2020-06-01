@@ -1,28 +1,26 @@
 from collections import OrderedDict, namedtuple
 from copy import copy
 from distutils.version import LooseVersion
+from functools import partial
 from warnings import warn
 
-from functools import partial
-from .mini_six import string_types
-
 import pytest
-
-from pytest_cases.common import get_pytest_nodeid, get_pytest_function_scopenum, \
-    is_function_node, get_param_names, get_pytest_scopenum, get_param_argnames_as_list
-from pytest_cases.main_fixtures import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
 
 try:  # python 3.3+
     from inspect import signature
 except ImportError:
-    from funcsigs import signature
-
+    from funcsigs import signature  # noqa
 
 try:  # python 3.3+ type hints
-    from typing import Optional, List, Tuple, Union, Iterable
+    from typing import List, Tuple, Union, Iterable, MutableMapping  # noqa
     from _pytest.python import CallSpec2
 except ImportError:
     pass
+
+from .common_mini_six import string_types
+from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
+    get_pytest_scopenum, get_param_argnames_as_list
+from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
 
 
 _DEBUG = False
@@ -32,7 +30,7 @@ _DEBUG = False
 # @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_collection(session):
     # override the fixture manager's method
-    session._fixturemanager.getfixtureclosure = partial(getfixtureclosure, session._fixturemanager)
+    session._fixturemanager.getfixtureclosure = partial(getfixtureclosure, session._fixturemanager)  # noqa
 
 
 class FixtureDefsCache(object):
@@ -81,7 +79,7 @@ class FixtureClosureNode(object):
         self.fixture_defs = None
         self.split_fixture_name = None
         self.split_fixture_discarded_names = []
-        self.children = OrderedDict()
+        self.children = OrderedDict()  # type: MutableMapping[str, FixtureClosureNode]
 
         # this will be created after the first time the object is converted to a list (cache)
         self._as_list = None
@@ -154,14 +152,14 @@ class FixtureClosureNode(object):
         """
         self.build_closure((item, ))
 
-    def insert(self, index, object):
+    def insert(self, index, object):  # noqa
         warn("WARNING some code tries to insert an item in the fixture tree, this will be IGNORED !! "
              "Item: %s, Index: %s" % (index, object))
 
-    def pop(self, index):
+    def pop(self, index):  # noqa
         warn("WARNING some code tries to pop an item from the fixture tree, this will be IGNORED !! Index: %s" % index)
 
-    def extend(self, iterable):
+    def extend(self, iterable):  # noqa
         if len(iterable) > 0:
             warn("WARNING some code tries to extend the fixture tree, this will be IGNORED !! Iterable: %s" % iterable)
 
@@ -171,12 +169,6 @@ class FixtureClosureNode(object):
     def to_list(self):
         """
         Converts self to a list to get all fixture names, and caches the result.
-        The first time this is called, a non-none arg2fixturedefs object Must be provided to sort the fixture names
-        according to scope.
-
-        TODO maybe this sorting should actually be propagated down the tree so that it is done per branch
-
-        :param arg2fixturedefs:
         :return:
         """
         if self._as_list is None:
@@ -236,13 +228,13 @@ class FixtureClosureNode(object):
         return self.all_fixture_defs
 
     def _get_all_fixture_defs(self):
-        all = OrderedDict()
+        all_fix_defs = OrderedDict()
         for k, v in self.fixture_defs.items():
             if v is not None:
-                all[k] = v
+                all_fix_defs[k] = v
         for c in self.children.values():
-            all.update(c.get_all_fixture_defs())
-        return all
+            all_fix_defs.update(c.get_all_fixture_defs())
+        return all_fix_defs
 
     # ---- utils to build the closure
 
@@ -370,7 +362,7 @@ class FixtureClosureNode(object):
     # ------ tools to add new fixture names during closure construction
 
     def add_required_fixture(self, new_fixture_name, new_fixture_defs):
-        """ Adds some required fixture names to this node. Returns True if new fixtures were added here (not in child)"""
+        """Add some required fixture names to this node. Returns True if new fixtures were added here (not in child)"""
         if self.already_knows_fixture(new_fixture_name):
             return
         elif not self.has_split():
@@ -385,7 +377,7 @@ class FixtureClosureNode(object):
     def split_and_build(self,
                         fixture_defs_mgr,           # type: FixtureDefsCache
                         split_fixture_name,         # type: str
-                        split_fixture_defs,         # type: Tuple[FixtureDefinition]
+                        split_fixture_defs,         # type: Tuple[FixtureDefinition]  # noqa
                         alternative_fixture_names,  # type: List[str]
                         pending_fixtures_list,      #
                         ignore_args
@@ -444,7 +436,9 @@ class FixtureClosureNode(object):
     def gather_all_required(self, include_children=True, include_parents=True):
         """
         Returns a list of all fixtures required by the subtree at this node
+
         :param include_children:
+        :param include_parents:
         :return:
         """
         # first the fixtures required by this node
@@ -531,9 +525,9 @@ def merge(new_items, into_list):
     :return:
     """
     at_least_one_added = False
-    for l in new_items:
-        if l not in into_list:
-            into_list.append(l)
+    for item in new_items:
+        if item not in into_list:
+            into_list.append(item)
             at_least_one_added = True
     return at_least_one_added
 
@@ -559,7 +553,7 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
 
     # Create closure
     # -- auto-use fixtures
-    _init_fixnames = fm._getautousenames(parentid)
+    _init_fixnames = fm._getautousenames(parentid)  # noqa
 
     # -- required fixtures/params.
     # ********* fix the order of initial fixtures: indeed this order may not be the right one ************
@@ -675,21 +669,21 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
 
     Instead, it offers an alternate list of calls takinginto account all union fixtures.
 
-    For this, it replaces the `metafunc._calls` attribute with a `CallsReactor` instance, and feeds it with all parameters
-    and parametrized fixtures independently (not doing any cross-product).
+    For this, it replaces the `metafunc._calls` attribute with a `CallsReactor` instance, and feeds it with all
+    parameters and parametrized fixtures independently (not doing any cross-product).
 
-    The resulting `CallsReactor` instance is then able to dynamically behave like the correct list of calls, lazy-creating
-    that list when it is used.
+    The resulting `CallsReactor` instance is then able to dynamically behave like the correct list of calls,
+    lazy-creating that list when it is used.
     """
     # create our special container object if needed
-    if not isinstance(metafunc._calls, CallsReactor):
+    if not isinstance(metafunc._calls, CallsReactor):  # noqa
         # first call: should be an empty list
-        if len(metafunc._calls) > 0:
+        if len(metafunc._calls) > 0:  # noqa
             raise ValueError("This should not happen - please file an issue")
         metafunc._calls = CallsReactor(metafunc)
 
     # grab it
-    calls_reactor = metafunc._calls
+    calls_reactor = metafunc._calls  # noqa
 
     # detect union fixtures
     if is_fixture_union_params(argvalues):
@@ -865,7 +859,7 @@ class CallsReactor:
             # for fixture_name, fixdef in self.metafunc._arg2fixturedefs.items():
             for fixture_name in fix_closure_tree.get_not_always_used():
                 try:
-                    fixdef = self.metafunc._arg2fixturedefs[fixture_name]
+                    fixdef = self.metafunc._arg2fixturedefs[fixture_name]  # noqa
                 except KeyError:
                     continue  # dont raise any error here and let pytest say "not found"
                     
@@ -874,12 +868,12 @@ class CallsReactor:
                         # explicitly add it as discarded by creating a parameter value for it.
                         c.params[fixture_name] = NOT_USED
                         c.indices[fixture_name] = 1
-                        c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)
+                        c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
                     else:
                         # explicitly add it as active
                         c.params[fixture_name] = 'used'
                         c.indices[fixture_name] = 0
-                        c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)
+                        c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
 
     def _parametrize_calls(self, init_calls, argnames, argvalues, discard_id=False, indirect=False, ids=None,
                            scope=None, **kwargs):
@@ -901,7 +895,7 @@ class CallsReactor:
         # If the user wants to discard the newly created id, remove the last id in all these callspecs in this node
         if discard_id:
             for callspec in new_calls:
-                callspec._idlist.pop(-1)
+                callspec._idlist.pop(-1)  # noqa
 
         # restore the metafunc and return the new calls
         self.metafunc._calls = bak
@@ -1060,6 +1054,7 @@ _OPTIONS = {
 (e.g. pytest-reorder)"""
 }
 
+
 # @hookspec(historic=True)
 def pytest_addoption(parser):
     group = parser.getgroup('pytest-cases ordering', 'pytest-cases reordering options', after='general')
@@ -1081,7 +1076,7 @@ def pytest_configure(config):
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_collection_modifyitems(session, config, items):
+def pytest_collection_modifyitems(session, config, items):  # noqa
     """
     An alternative to the `reorder_items` function in fixtures.py
     (https://github.com/pytest-dev/pytest/blob/master/src/_pytest/fixtures.py#L209)
@@ -1104,7 +1099,7 @@ def pytest_collection_modifyitems(session, config, items):
         yield
         # put back the initial order but keep the filter
         to_return = [None] * len(items)
-        i=0
+        i = 0
         for item in initial_order:
             if item in items:
                 to_return[i] = item
