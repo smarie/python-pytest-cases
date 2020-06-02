@@ -108,7 +108,7 @@ _make_fixture_product = _fixture_product
 """A readable alias for callers not using the returned symbol"""
 
 
-class fixture_ref:  # noqa
+class fixture_ref(object):  # noqa
     """
     A reference to a fixture, to be used in `parametrize_plus`.
     You can create it from a fixture name or a fixture object (function).
