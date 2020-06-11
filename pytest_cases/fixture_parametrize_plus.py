@@ -850,7 +850,8 @@ def _parametrize_plus(argnames,
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):  # noqa
                     if kwargs.get(fixture_union_name, None) is NOT_USED:
-                        # TODO why this ?
+                        # TODO why this ? it is probably useless: this fixture
+                        #  is private and will never end up in another union
                         return NOT_USED
                     else:
                         replace_paramfixture_with_values(kwargs)
@@ -861,7 +862,8 @@ def _parametrize_plus(argnames,
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):  # noqa
                     if kwargs.get(fixture_union_name, None) is NOT_USED:
-                        # TODO why this ?
+                        # TODO why this ? it is probably useless: this fixture
+                        #  is private and will never end up in another union
                         yield NOT_USED
                     else:
                         replace_paramfixture_with_values(kwargs)

@@ -440,6 +440,8 @@ def _decorate_fixture_plus(fixture_func,
 
     # --common routine used below. Fills kwargs with the appropriate names and values from fixture_params
     def _map_arguments(*_args, **_kwargs):
+        # todo better...
+        from .fixture_parametrize_plus import handle_lazy_args
         request = _kwargs['request'] if func_needs_request else _kwargs.pop('request')
 
         # populate the parameters
@@ -450,12 +452,12 @@ def _decorate_fixture_plus(fixture_func,
         for p_names, fixture_param_value in zip(params_names_or_name_combinations, _params):
             if len(p_names) == 1:
                 # a single parameter for that generated fixture (@pytest.mark.parametrize with a single name)
-                _kwargs[p_names[0]] = fixture_param_value
+                _kwargs[p_names[0]] = handle_lazy_args(fixture_param_value)
             else:
                 # several parameters for that generated fixture (@pytest.mark.parametrize with several names)
                 # unpack all of them and inject them in the kwargs
                 for old_p_name, old_p_value in zip(p_names, fixture_param_value):
-                    _kwargs[old_p_name] = old_p_value
+                    _kwargs[old_p_name] = handle_lazy_args(old_p_value)
 
         return _args, _kwargs
 

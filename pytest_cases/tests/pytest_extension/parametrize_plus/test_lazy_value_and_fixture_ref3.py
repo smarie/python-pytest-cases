@@ -3,24 +3,24 @@ import pytest
 from pytest_cases import parametrize_plus, lazy_value, fixture_plus, fixture_ref
 
 
-@fixture_plus
-@parametrize_plus("i", [13, 11])
-def tfix(i):
-    return i, i+2
-
-
-@fixture_plus
-@parametrize_plus("i", [5, 7])
-def vfix(i):
-    return -i
-
-
 def valtuple():
     return 1, 2
 
 
 def val():
     return 1
+
+
+@fixture_plus
+@parametrize_plus("i", [lazy_value(val), 11])
+def tfix(i):
+    return i, i+2
+
+
+@fixture_plus
+@parametrize_plus("i", [5, lazy_value(val)])
+def vfix(i):
+    return -i
 
 
 flag = False
@@ -51,20 +51,20 @@ if not has_pytest_param:
         """here the fixture is used for both parameters at the same time"""
         global flag
         flag = True
-        assert (a, b) in ((1, 2), (1, 1), (13, 15), (11, 13), (-5, 1), (-7, 1), (1, -5), (1, -7), (-5, -5), (-7, -7))
+        assert (a, b) in ((1, 2), (1, 1), (1, 3), (-5, 1), (11, 13), (-1, 1), (1, -5), (1, -1), (-5, -5), (-1, -1))
 
 
     def test_synthesis2(module_results_dct):
         assert list(module_results_dct) == ['test_foo_multi[a_b_is_P0toP1-valtuple]',
                                             'test_foo_multi[a_b_is_P0toP1-A]',
-                                            'test_foo_multi[a_b_is_tfix-13]',
+                                            'test_foo_multi[a_b_is_tfix-val]',
                                             'test_foo_multi[a_b_is_tfix-11]',
                                             'test_foo_multi[a_b_is_P3-5]',
-                                            'test_foo_multi[a_b_is_P3-7]',
+                                            'test_foo_multi[a_b_is_P3-val]',
                                             'test_foo_multi[a_b_is_P4-5]',
-                                            'test_foo_multi[a_b_is_P4-7]',
+                                            'test_foo_multi[a_b_is_P4-val]',
                                             'test_foo_multi[a_b_is_P5-5]',
-                                            'test_foo_multi[a_b_is_P5-7]'
+                                            'test_foo_multi[a_b_is_P5-val]'
                                             ]
 
 else:
@@ -80,18 +80,18 @@ else:
         """here the fixture is used for both parameters at the same time"""
         global flag
         flag = True
-        assert (a, b) in ((1, 2), (1, 1), (13, 15), (11, 13), (-5, 1), (-7, 1), (1, -5), (1, -7), (-5, -5), (-7, -7))
+        assert (a, b) in ((1, 2), (1, 1), (1, 3), (-5, 1), (11, 13), (-1, 1), (1, -5), (1, -1), (-5, -5), (-1, -1))
 
 
     def test_synthesis2(module_results_dct):
         assert list(module_results_dct) == ['test_foo_multi[a_b_is_P0toP2-valtuple]',
                                             'test_foo_multi[a_b_is_P0toP2-A]',
-                                            'test_foo_multi[a_b_is_tfix-13]',
+                                            'test_foo_multi[a_b_is_tfix-val]',
                                             'test_foo_multi[a_b_is_tfix-11]',
                                             'test_foo_multi[a_b_is_P4-5]',
-                                            'test_foo_multi[a_b_is_P4-7]',
+                                            'test_foo_multi[a_b_is_P4-val]',
                                             'test_foo_multi[B-5]',
-                                            'test_foo_multi[B-7]',
+                                            'test_foo_multi[B-val]',
                                             'test_foo_multi[a_b_is_P6-5]',
-                                            'test_foo_multi[a_b_is_P6-7]'
+                                            'test_foo_multi[a_b_is_P6-val]'
                                             ]
