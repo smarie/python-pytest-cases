@@ -713,6 +713,9 @@
 <div class="admonition success">
 <p class="admonition-title">You can now use <code>pytest.param</code> in the argvalues provided to <code>fixture_union</code>, <code>param_fixture[s]</code> and <code>parametrize_plus</code>, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a></p>
 </div>
+<div class="admonition success">
+<p class="admonition-title">New <code>lazy_value</code> feature for parametrize, <a href="#parametrize_plus">check it out</a> !</p>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Test execution order</p>
 <p>Installing pytest-cases now has effects on the order of <code>pytest</code> tests execution, even if you do not use its features. One positive side effect is that it fixed <a href="https://github.com/pytest-dev/pytest/issues/5054">pytest#5054</a>. But if you see less desirable ordering please <a href="https://github.com/smarie/python-pytest-cases/issues">report it</a>.</p>
@@ -1013,24 +1016,33 @@
 <p>If you're familiar with <code>pytest-cases</code> already, you might note that <code>@cases_data</code> is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by <code>pytest</code>, we will probably refactor this lib to align all the concepts.</p>
 </div>
 <h3 id="parametrize_plus"><code>@parametrize_plus</code><a class="headerlink" href="#parametrize_plus" title="Permanent link">&para;</a></h3>
-<p><code>@parametrize_plus</code> is a replacement for <code>@pytest.mark.parametrize</code> that allows you to include references to fixtures in the parameter values. Simply use <code>fixture_ref(&lt;fixture&gt;)</code> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function.</p>
-<p>For example:</p>
+<p><code>@parametrize_plus</code> is a replacement for <code>@pytest.mark.parametrize</code> that allows you to include references to fixtures and to value-generating functions in the parameter values. </p>
+<ul>
+<li>Simply use <code>fixture_ref(&lt;fixture&gt;)</code> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function.</li>
+<li>if you do not wish to create a fixture, you can also use <code>lazy_value(&lt;function&gt;)</code></li>
+<li>Note that when parametrizing several argnames, both <code>fixture_ref</code> and <code>lazy_value</code> can be used <em>as</em> the tuple, or <em>in</em> the tuple. Several <code>fixture_ref</code> and/or <code>lazy_value</code> can be used in the same tuple, too. </li>
+</ul>
+<p>For example, with a single argument:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize_plus</span><span class="p">,</span> <span class="n">fixture_plus</span><span class="p">,</span> <span class="n">fixture_ref</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize_plus</span><span class="p">,</span> <span class="n">fixture_plus</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">,</span> <span class="n">lazy_value</span>
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span> <span class="nf">world_str</span><span class="p">():</span>
     <span class="k">return</span> <span class="s1">&#39;world&#39;</span>
 
+<span class="k">def</span> <span class="nf">whatfun</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;what&#39;</span>
+
 <span class="nd">@fixture_plus</span>
 <span class="nd">@parametrize_plus</span><span class="p">(</span><span class="s1">&#39;who&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">fixture_ref</span><span class="p">(</span><span class="n">world_str</span><span class="p">),</span> 
-                                 <span class="s1">&#39;you&#39;</span><span class="p">])</span>
+                          <span class="s1">&#39;you&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">greetings</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
     <span class="k">return</span> <span class="s1">&#39;hello &#39;</span> <span class="o">+</span> <span class="n">who</span>
 
 <span class="nd">@parametrize_plus</span><span class="p">(</span><span class="s1">&#39;main_msg&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nothing&#39;</span><span class="p">,</span> 
-                                      <span class="n">fixture_ref</span><span class="p">(</span><span class="n">world_str</span><span class="p">),</span> 
-                                      <span class="n">fixture_ref</span><span class="p">(</span><span class="n">greetings</span><span class="p">)])</span>
+                               <span class="n">fixture_ref</span><span class="p">(</span><span class="n">world_str</span><span class="p">),</span>
+                               <span class="n">lazy_value</span><span class="p">(</span><span class="n">whatfun</span><span class="p">),</span> 
+                               <span class="n">fixture_ref</span><span class="p">(</span><span class="n">greetings</span><span class="p">)])</span>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;ending&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">test_prints</span><span class="p">(</span><span class="n">main_msg</span><span class="p">,</span> <span class="n">ending</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">main_msg</span> <span class="o">+</span> <span class="n">ending</span><span class="p">)</span>
@@ -1039,21 +1051,23 @@
 
 <p>yields the following</p>
 <div class="codehilite"><pre><span></span><code>&gt; pytest -s -v
-collected <span class="m">9</span> items
-test_prints<span class="o">[</span>test_prints_main_msg_is_0-nothing-?<span class="o">]</span> nothing?                                 PASSED
-test_prints<span class="o">[</span>test_prints_main_msg_is_0-nothing-!<span class="o">]</span> nothing!                                 PASSED
-test_prints<span class="o">[</span>test_prints_main_msg_is_world_str-?<span class="o">]</span> world?                                   PASSED
-test_prints<span class="o">[</span>test_prints_main_msg_is_world_str-!<span class="o">]</span> world!                                   PASSED
-test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_who_is_world_str-?<span class="o">]</span> hello world?  PASSED
-test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_who_is_world_str-!<span class="o">]</span> hello world!  PASSED
-test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_who_is_1-you-?<span class="o">]</span> hello you?        PASSED
-test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_who_is_1-you-!<span class="o">]</span> hello you!        PASSED
+collected <span class="m">10</span> items
+test_prints<span class="o">[</span>main_msg_is_nothing-?<span class="o">]</span> PASSED       <span class="o">[</span> <span class="m">10</span>%<span class="o">]</span>nothing?
+test_prints<span class="o">[</span>main_msg_is_nothing-!<span class="o">]</span> PASSED       <span class="o">[</span> <span class="m">20</span>%<span class="o">]</span>nothing!
+test_prints<span class="o">[</span>main_msg_is_world_str-?<span class="o">]</span> PASSED     <span class="o">[</span> <span class="m">30</span>%<span class="o">]</span>world?
+test_prints<span class="o">[</span>main_msg_is_world_str-!<span class="o">]</span> PASSED     <span class="o">[</span> <span class="m">40</span>%<span class="o">]</span>world!
+test_prints<span class="o">[</span>main_msg_is_whatfun-?<span class="o">]</span> PASSED       <span class="o">[</span> <span class="m">50</span>%<span class="o">]</span>what?
+test_prints<span class="o">[</span>main_msg_is_whatfun-!<span class="o">]</span> PASSED       <span class="o">[</span> <span class="m">60</span>%<span class="o">]</span>what!
+test_prints<span class="o">[</span>main_msg_is_greetings-who_is_world_str-?<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">70</span>%<span class="o">]</span>hello world?
+test_prints<span class="o">[</span>main_msg_is_greetings-who_is_world_str-!<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">80</span>%<span class="o">]</span>hello world!
+test_prints<span class="o">[</span>main_msg_is_greetings-who_is_you-?<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">90</span>%<span class="o">]</span>hello you?
+test_prints<span class="o">[</span>main_msg_is_greetings-who_is_you-!<span class="o">]</span> PASSED <span class="o">[</span><span class="m">100</span>%<span class="o">]</span>hello you!
 </code></pre></div>
 
 
-<p>As you can see, the ids are a bit more explicit than usual. As opposed to <code>fixture_union</code>, the style of these ids is not configurable for now but feel free to propose alternatives in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues page</a>. </p>
 <p>You can also mark any of the argvalues with <code>pytest.mark</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
-<p>Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your other <code>@pytest.mark.parametrize</code> calls with <code>param_fixture</code>s (see <a href="#param_fixtures">above</a>.)</p>
+<p>As you can see in the example above, the default ids are a bit more explicit than usual when you use at least one <code>fixture_ref</code>. This is because the parameters need to be replaced with a fixture union that will "switch" between alternative groups of parameters, and the appropriate fixtures referenced. As opposed to <code>fixture_union</code>, the style of these ids is not configurable for now, but feel free to propose alternatives in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues page</a>. Note that this does not happen if you only use <code>lazy_value</code>s, as they do not require to create a fixture union behind the scenes.</p>
+<p>Another consequence of using <code>fixture_ref</code> is that the priority order of the parameters, relative to other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your other <code>@pytest.mark.parametrize</code> calls with <code>param_fixture</code>s so that all the parameters are fixtures (see <a href="#param_fixtures">above</a>.)</p>
 <h3 id="passing-a-hook">passing a <code>hook</code><a class="headerlink" href="#passing-a-hook" title="Permanent link">&para;</a></h3>
 <p>As per version <code>1.14</code>, all the above functions now support passing a <code>hook</code> argument. This argument should be a callable. It will be called everytime a fixture is about to be created by <code>pytest_cases</code> on your behalf. The fixture function is passed as the argument of the hook, and the hook should return it as the result.</p>
 <p>You can use this fixture to better understand which fixtures are created behind the scenes, and also to decorate the fixture functions before they are created. For example you can use <code>hook=saved_fixture</code> (from <a href="https://smarie.github.io/python-pytest-harvest/"><code>pytest-harvest</code></a>) in order to save the created fixtures in the fixture store.  </p>
@@ -1136,7 +1150,7 @@ test_prints<span class="o">[</span>test_prints_main_msg_is_greetings-greetings_w
     </div>
     
       <script src="assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="assets/javascripts/bundle.a45f732b.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "search.result.other": "# matching documents", "search.config.lang": "en", "search.result.one": "1 matching document", "search.config.separator": "[\\s\\-]+", "clipboard.copied": "Copied to clipboard", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.none": "No matching documents"}</script>
+      <script src="assets/javascripts/bundle.a45f732b.min.js"></script><script id="__lang" type="application/json">{"search.result.one": "1 matching document", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.placeholder": "Type to start searching", "search.result.other": "# matching documents", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard"}</script>
       
       <script>
         app = initialize({
