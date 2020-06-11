@@ -1,6 +1,6 @@
 from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
 from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture
-from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref
+from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref, lazy_value
 
 from .case_funcs import case_name, test_target, case_tags, cases_generator
 from .case_parametrizer import cases_data, CaseDataGetter, unfold_expected_err, get_all_cases, THIS_MODULE, \
@@ -24,6 +24,7 @@ __all__ = [
     'case_funcs', 'case_parametrizer', 'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
     # all symbols imported above
     # --cases_funcs
+    'lazy_value',
     'case_name',  'test_target', 'case_tags', 'cases_generator',
     # --main_fixtures
     'cases_fixture', 'pytest_fixture_plus', 'fixture_plus', 'param_fixtures', 'param_fixture', 'ignore_unused',

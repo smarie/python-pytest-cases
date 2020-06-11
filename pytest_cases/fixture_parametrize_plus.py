@@ -1,4 +1,5 @@
-from collections import Iterable
+from collections import Iterable, namedtuple
+from distutils.version import LooseVersion
 from inspect import isgeneratorfunction
 from warnings import warn
 
@@ -8,7 +9,7 @@ except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
 try:
-    from typing import Union, Callable, List, Any  # noqa
+    from typing import Union, Callable, List, Any, Sequence, Optional  # noqa
 except ImportError:
     pass
 
@@ -16,7 +17,7 @@ import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
 from .common_pytest import get_fixture_name, remove_duplicates, is_marked_parameter_value, mini_idvalset, \
-    get_param_argnames_as_list, extract_parameterset_info
+    get_param_argnames_as_list, extract_parameterset_info, ParameterSet, has_pytest_param
 
 from .fixture__creation import check_name_available, CHANGE, WARN, get_caller_module
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
@@ -53,6 +54,8 @@ def _fixture_product(caller_module,
     # test the `fixtures` argument to avoid common mistakes
     if not isinstance(fixtures_or_values, (tuple, set, list)):
         raise TypeError("fixture_product: the `fixtures_or_values` argument should be a tuple, set or list")
+    else:
+        has_lazy_vals = any(isinstance(v, lazy_value) for v in fixtures_or_values)
 
     _tuple_size = len(fixtures_or_values)
 
@@ -76,7 +79,8 @@ def _fixture_product(caller_module,
             fix_at_pos_i = f_names[i]
             if fix_at_pos_i is None:
                 # fixed value
-                yield fixtures_or_values[i]
+                # note: wouldnt it be almost as efficient but more readable to *always* call handle_lazy_args?
+                yield handle_lazy_args(fixtures_or_values[i]) if has_lazy_vals else fixtures_or_values[i]
             else:
                 # fixture value
                 yield all_fixtures[fix_at_pos_i]
@@ -117,6 +121,79 @@ class fixture_ref(object):  # noqa
 
     def __init__(self, fixture):
         self.fixture = fixture
+
+
+pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
+if pytest53:
+    # in the latest versions of pytest, the default _idmaker returns the value of __name__ if it is available,
+    # even if an object is not a class nor a function. So we do not need to use any special trick.
+    _LazyValueBase = object
+else:
+    fake_base = int
+
+    class _LazyValueBase(int, object):
+        """
+        in this older version of pytest, the default _idmaker does *not* return the value of __name__ for
+        objects that are not functions not classes. However it *does* return str(obj) for objects that are
+        instances of bool, int or float. So that's why lazy_value inherits from int.
+        """
+        __slots__ = ()
+
+        def __new__(cls,
+                    valuegetter,  # type: Callable[[], Any]
+                    id=None,      # type: str
+                    marks=()      # type: Sequence
+                    ):
+            """ Inheriting from int is a bit hard in python: we have to override __new__ """
+            obj = fake_base.__new__(cls, 111111)
+            cls.__init__(obj, valuegetter=valuegetter, id=id, marks=marks)
+            return obj
+
+        def __getattribute__(self, item):
+            """Map all default attribute and method access to the ones in object, not in int"""
+            return object.__getattribute__(self, item)
+
+        def __repr__(self):
+            """Magic methods are not intercepted by __getattribute__ and need to be overridden manually.
+            We do not need all of them by at least override this one for easier debugging"""
+            return object.__repr__(self)
+
+
+# noinspection PyPep8Naming
+class lazy_value(_LazyValueBase):
+    """
+    A reference to a value getter, to be used in `parametrize_plus`.
+    Its argument should be a callable without mandatory arguments.
+    """
+    if pytest53:
+        __slots__ = 'valuegetter', '_id', '_marks'
+    else:
+        # we can not define __slots__ since we extend int,
+        # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
+        pass
+
+    def __init__(self,
+                 valuegetter,  # type: Callable[[], Any]
+                 id=None,      # type: str
+                 marks=()      # type: Sequence
+                 ):
+        self.valuegetter = valuegetter
+        self._id = id
+        self._marks = marks
+
+    def get_id(self):
+        """The id to use in pytest"""
+        return self._id or self.valuegetter.__name__
+
+    if not pytest53:
+        def __str__(self):
+            """in pytest<5.3 we inherit from int so that str(v) is called by pytest _idmaker to get the id"""
+            return self.get_id()
+
+    @property
+    def __name__(self):
+        """for pytest >= 5.3 we override this so that pytest uses it for id"""
+        return self.get_id()
 
 
 # Fix for https://github.com/smarie/python-pytest-cases/issues/71
@@ -294,6 +371,97 @@ def parametrize_plus(argnames,
                              **kwargs)
 
 
+class LazyFuncArgs(object):
+    """
+    Called in our `plugin.pytest_pyfunc_call` hook, before a test function is actually called.
+    We replace the funcargs dictionary with a lazy facade
+    """
+    __slots__ = 'funcargs_dict'
+
+    def __init__(self, funcargs_dict):
+        self.funcargs_dict = funcargs_dict
+
+    def __getitem__(self, item):
+        argval = self.funcargs_dict[item]
+        return handle_lazy_args(argval)
+
+
+def handle_lazy_args(argval):
+    """ Possibly calls the lazy values contained in argval if needed, before returning it"""
+
+    # First handle the general case
+    try:
+        if not isinstance(argval, (lazy_value, LazyTuple, LazyTuple.LazyItem)):
+            return argval
+    except:  # noqa
+        return argval
+
+    # Now the lazy ones
+    if isinstance(argval, lazy_value):
+        return argval.valuegetter()
+    elif isinstance(argval, LazyTuple):
+        return argval.get()
+    elif isinstance(argval, LazyTuple.LazyItem):
+        return argval.get()
+    else:
+        return argval
+
+
+class LazyTuple(object):
+    """
+    A wrapper representing a lazy_value used as a tuple = for several argvalues at once.
+
+     -
+       while not calling the lazy value
+     -
+    """
+    __slots__ = ('value', 'theoretical_size', 'retrieved')
+
+    def __init__(self,
+                 valueref,        # type: Union[lazy_value, Sequence]
+                 theoretical_size  # type: int
+                 ):
+        self.value = valueref
+        self.theoretical_size = theoretical_size
+        self.retrieved = False
+
+    def __len__(self):
+        return self.theoretical_size
+
+    def get_id(self):
+        """return the id to use by pytest"""
+        return self.value.get_id()
+
+    class LazyItem(namedtuple('LazyItem', ('host', 'item'))):
+        def get(self):
+            return self.host.force_getitem(self.item)
+
+    def __getitem__(self, item):
+        """
+        Getting an item in the tuple with self[i] does *not* retrieve the value automatically, but returns
+        a facade (a LazyItem), so that pytest can store this item independently wherever needed, without
+        yet calling the value getter.
+        """
+        if self.retrieved:
+            # this is never called by pytest, but keep it for debugging
+            return self.value[item]
+        else:
+            # do not retrieve yet: return a facade
+            return LazyTuple.LazyItem(self, item)
+
+    def force_getitem(self, item):
+        """ Call the underlying value getter, then return self[i]. """
+        return self.get()[item]
+
+    def get(self):
+        """ Call the underlying value getter, then return the tuple (not self) """
+        if not self.retrieved:
+            # retrieve
+            self.value = self.value.valuegetter()
+            self.retrieved = True
+        return self.value
+
+
 def _parametrize_plus(argnames,
                       argvalues,
                       indirect=False,      # type: bool
@@ -323,19 +491,41 @@ def _parametrize_plus(argnames,
     fixture_indices = []
     if nb_params == 1:
         for i, v in enumerate(argvalues):
+            # if isinstance(v, lazy_value):
+            #   TODO handle if marks
+            #   no need to handle if no marks, the id will be ok thanks to the lazy_value class design
             if isinstance(v, fixture_ref):
                 fixture_indices.append((i, None))
     elif nb_params > 1:
         for i, v in enumerate(argvalues):
-            if isinstance(v, fixture_ref):
+            if isinstance(v, lazy_value):
+                # a lazy value is used for several parameters at the same time
+                argvalues[i] = LazyTuple(v, nb_params)
+                assert custom_pids[i] is None
+                # TUPLE usage: we HAVE to set an id to prevent too early access to the value by _idmaker
+                # note that on pytest 2 we cannot set an id here, so the lazy value wont be too lazy
+                _id = v.get_id() if has_pytest_param else None
+                # todo marks
+                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=_id, marks=())
+                custom_pids[i] = _id
+
+            elif isinstance(v, fixture_ref):
                 # a fixture ref is used for several parameters at the same time
                 fixture_indices.append((i, None))
+
+            elif len(v) == 1 and isinstance(v[0], lazy_value):
+                # same than above but it was in a pytest.mark
+                # valueref_indices.append((i, None))
+                argvalues[i] = LazyTuple(v[0], nb_params)  # unpack it
+                if custom_pids[i] is None:
+                    # use the id (and TODO marks)
+                    custom_pids[i] = v[0].get_id()
+                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=custom_pids[i], marks=p_marks[i])
+
             elif len(v) == 1 and isinstance(v[0], fixture_ref):
                 # same than above but it was in a pytest.mark
-                # a fixture ref is used for several parameters at the same time
                 fixture_indices.append((i, None))
-                # unpack it
-                argvalues[i] = v[0]
+                argvalues[i] = v[0]  # unpack it
             else:
                 # check for consistency
                 if len(v) != len(argnames):
@@ -347,6 +537,13 @@ def _parametrize_plus(argnames,
                 if len(fix_pos_list) > 0:
                     # there is at least one fixture ref inside the tuple
                     fixture_indices.append((i, fix_pos_list))
+
+                # let's dig into the tuple
+                # has_val_ref = any(isinstance(_pval, lazy_value) for _pval in v)
+                # val_pos_list = [j for j, _pval in enumerate(v) if isinstance(_pval, lazy_value)]
+                # if len(val_pos_list) > 0:
+                #     # there is at least one value ref inside the tuple
+                #     argvalues[i] = tuple_with_value_refs(v, theoreticalsize=nb_params, positions=val_pos_list)
     del i
 
     if len(fixture_indices) == 0:
@@ -375,7 +572,10 @@ def _parametrize_plus(argnames,
                 _tmp_make_id.i += 1
                 if _tmp_make_id.i >= nb_positions:
                     raise ValueError("Internal error, please report")
-                argvals = argvals if len(argnames) > 1 else (argvals,)
+                if len(argnames) <= 1:
+                    argvals = (argvals,)
+                elif isinstance(argvals, LazyTuple):
+                    return argvals.get_id()
                 return mini_idvalset(argnames, argvals, idx=_tmp_make_id.i)
 
             # init its positions counter
@@ -385,9 +585,10 @@ def _parametrize_plus(argnames,
         def _create_params_alt(test_func_name, union_name, from_i, to_i, hook):  # noqa
             """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
 
-            single_param = (to_i == from_i + 1)
+            # check if this is about a single value or several values
+            single_param_val = (to_i == from_i + 1)
 
-            if single_param:
+            if single_param_val:
                 i = from_i  # noqa
 
                 # Create a unique fixture name
@@ -421,10 +622,18 @@ def _parametrize_plus(argnames,
                     # that we use (p_fix_name) with a simpler name in the ids (just the argnames)
                     p_ids = ids or _make_idfun_for_params(argnames=argnames, nb_positions=(to_i - from_i))
 
-                # Create the fixture that will take all these parameter values
+                # Create the fixture that will take ALL these parameter values (in a single parameter)
                 # That fixture WILL be parametrized, this is why we propagate the p_ids and use the marked values
-                _create_param_fixture(caller_module, argname=p_fix_name, argvalues=marked_argvalues[from_i:to_i],
-                                      ids=p_ids, hook=hook)
+                if nb_params == 1:
+                    _argvals = marked_argvalues[from_i:to_i]
+                else:
+                    # we have to create a tuple around the vals because we have a SINGLE parameter that is a tuple
+                    _argvals = tuple(ParameterSet((vals, ), id=id, marks=marks or ())
+                                     for vals, id, marks in zip(argvalues[from_i:to_i],
+                                                                custom_pids[from_i:to_i], p_marks[from_i:to_i]))
+                _create_param_fixture(caller_module, argname=p_fix_name, argvalues=_argvals, ids=p_ids, hook=hook)
+
+                # todo put back debug=debug above
 
                 # Create the corresponding alternative
                 p_fix_alt = MultiParamAlternative(union_name=union_name, alternative_name=p_fix_name, argnames=argnames,
