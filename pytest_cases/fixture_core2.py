@@ -33,6 +33,7 @@ def param_fixture(argname,           # type: str
                   ids=None,          # type: Union[Callable, List[str]]
                   scope="function",  # type: str
                   hook=None,         # type: Callable[[Callable], Callable]
+                  debug=False,       # type: bool
                   **kwargs):
     """
     Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single
@@ -62,6 +63,7 @@ def param_fixture(argname,           # type: str
         will be called everytime a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+    :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
     :param kwargs: any other argument for 'fixture'
     :return: the create fixture
     """
@@ -74,7 +76,7 @@ def param_fixture(argname,           # type: str
     caller_module = get_caller_module()
 
     return _create_param_fixture(caller_module, argname, argvalues, autouse=autouse, ids=ids, scope=scope,
-                                 hook=hook, **kwargs)
+                                 hook=hook, debug=debug, **kwargs)
 
 
 def _create_param_fixture(caller_module,
@@ -129,6 +131,7 @@ def param_fixtures(argnames,
                    ids=None,          # type: Union[Callable, List[str]]
                    scope="function",  # type: str
                    hook=None,         # type: Callable[[Callable], Callable]
+                   debug=False,       # type: bool
                    **kwargs):
     """
     Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`. The
@@ -163,17 +166,33 @@ def param_fixtures(argnames,
         will be called everytime a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+    :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
     :param kwargs: any other argument for the created 'fixtures'
     :return: the created fixtures
     """
-    created_fixtures = []
     argnames_lst = get_param_argnames_as_list(argnames)
 
     caller_module = get_caller_module()
 
     if len(argnames_lst) < 2:
         return _create_param_fixture(caller_module, argnames, argvalues, autouse=autouse, ids=ids, scope=scope,
-                                     hook=hook, **kwargs)
+                                     hook=hook, debug=debug, **kwargs)
+    else:
+        return _create_params_fixture(caller_module, argnames_lst, argvalues, autouse=autouse, ids=ids, scope=scope,
+                                      hook=hook, debug=debug, **kwargs)
+
+
+def _create_params_fixture(caller_module,
+                           argnames_lst,      # type: Sequence[str]
+                           argvalues,         # type: Sequence[Any]
+                           autouse=False,     # type: bool
+                           ids=None,          # type: Union[Callable, List[str]]
+                           scope="function",  # type: str
+                           hook=None,         # type: Callable[[Callable], Callable]
+                           debug=False,       # type: bool
+                           **kwargs):
+    argnames = ','.join(argnames_lst)
+    created_fixtures = []
 
     # create the root fixture that will contain all parameter values
     # note: we sort the list so that the first in alphabetical order appears first. Indeed pytest uses this order.
@@ -182,6 +201,9 @@ def param_fixtures(argnames,
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
     root_fixture_name = check_name_available(caller_module, root_fixture_name, if_name_exists=CHANGE,
                                              caller=param_fixtures)
+
+    if debug:
+        print("Creating parametrized 'root' fixture %r returning %r" % (root_fixture_name, argvalues))
 
     @fixture_plus(name=root_fixture_name, autouse=autouse, scope=scope, hook=hook, **kwargs)
     @pytest.mark.parametrize(argnames, argvalues, ids=ids)
@@ -198,11 +220,16 @@ def param_fixtures(argnames,
         # To fix late binding issue with `param_idx` we add an extra layer of scope: a factory function
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(_param_idx):
+
+            if debug:
+                print("Creating nonparametrized 'view' fixture %r returning %r[%s]" % (argname, root_fixture_name, _param_idx))
+
             @fixture_plus(name=argname, scope=scope, autouse=autouse, hook=hook, **kwargs)
             @with_signature("%s(%s)" % (argname, root_fixture_name))
             def _param_fixture(**_kwargs):
                 params = _kwargs.pop(root_fixture_name)
                 return params[_param_idx]
+
             return _param_fixture
 
         # create it
