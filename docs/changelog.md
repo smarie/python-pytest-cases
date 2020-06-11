@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.16.0 - New `lazy_value` for parameters
+
+ - New marker `lazy_value` for `parametrize_plus`. Fixes [#92](https://github.com/smarie/python-pytest-cases/issues/92)
+
 ### 1.15.0 - better `parametrize_plus` and smaller dependencies
 
  - Better support for `pytest.param` in `parametrize_plus` and also in `fixture_union` and `fixture_param[s]`. Improved corresponding ids. Fixed [#79](https://github.com/smarie/python-pytest-cases/issues/79) and [#86](https://github.com/smarie/python-pytest-cases/issues/86)
