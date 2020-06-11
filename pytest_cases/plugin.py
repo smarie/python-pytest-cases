@@ -13,17 +13,29 @@ except ImportError:
 
 try:  # python 3.3+ type hints
     from typing import List, Tuple, Union, Iterable, MutableMapping  # noqa
-    from _pytest.python import CallSpec2
+    from _pytest.python import CallSpec2, Function
 except ImportError:
     pass
 
 from .common_mini_six import string_types
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
     get_pytest_scopenum, get_param_argnames_as_list
+
 from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
+from .fixture_parametrize_plus import LazyFuncArgs
 
 
 _DEBUG = False
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_pyfunc_call(pyfuncitem  # type: Function
+                       ):
+    """
+    Replace the dictionary of function args with our facade able to handle
+    `lazy_value`
+    """
+    pyfuncitem.funcargs = LazyFuncArgs(pyfuncitem.funcargs)
 
 
 # @hookspec(firstresult=True)

@@ -122,6 +122,9 @@ def is_fixture_union_params(params):
         if len(params) < 1:
             return False
         else:
+            if getattr(params, '__module__', '').startswith('pytest_cases'):
+                # a value_ref_tuple or another proxy object created somewhere in our code, not a list
+                return False
             p0 = params[0]
             if is_marked_parameter_value(p0):
                 p0 = get_marked_parameter_values(p0)[0]

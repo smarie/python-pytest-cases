@@ -8,11 +8,10 @@
 
 !!! success "You can now use `pytest.param` in the argvalues provided to `fixture_union`, `param_fixture[s]` and `parametrize_plus`, just as you do in `pytest`. See [pytest documentation](https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test)"
 
+!!! success "New `lazy_value` feature for parametrize, [check it out](#parametrize_plus) !"
+
 !!! warning "Test execution order"
     Installing pytest-cases now has effects on the order of `pytest` tests execution, even if you do not use its features. One positive side effect is that it fixed [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054). But if you see less desirable ordering please [report it](https://github.com/smarie/python-pytest-cases/issues).
-
-!!! warning "New aliases"
-    `pytest_fixture_plus` and `pytest_parametrize_plus` were renamed to `fixture_plus` and `parametrize_plus` in order for pytest (pluggy) not to think they were hooks. Old aliases will stay around for a few versions, with a deprecation warning. See [#71](https://github.com/smarie/python-pytest-cases/issues/71).
 
 Did you ever think that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
@@ -21,10 +20,9 @@ Did you ever think that most of your test functions were actually *the same test
  * on one hand, the usual `test_xxxx.py` file containing your test functions
  * on the other hand, a new `test_xxxx_cases.py` containing your cases functions
 
-`pytest-cases` is fully compliant with [pytest-steps](https://smarie.github.io/python-pytest-steps/) so you can create test suites with several steps and send each case on the full suite. See [usage page for details](./usage/advanced/#test-suites-several-steps-on-each-case).
-
 In addition, `pytest-cases` improves `pytest`'s fixture mechanism to support "fixture unions". This is a **major change** in the internal `pytest` engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See [below](#fixture_union).
 
+`pytest-cases` is fully compliant with [pytest-steps](https://smarie.github.io/python-pytest-steps/) so you can create test suites with several steps and send each case on the full suite. See [usage page for details](./usage/advanced/#test-suites-several-steps-on-each-case).
 
 ## Installing
 
@@ -363,27 +361,35 @@ Fixture unions are a **major change** in the internal pytest engine, as fixture 
 
 ### `@parametrize_plus`
 
-`@parametrize_plus` is a replacement for `@pytest.mark.parametrize` that allows you to include references to fixtures in the parameter values. Simply use `fixture_ref(<fixture>)` in the parameter values, where `<fixture>` can be the fixture name or fixture function.
+`@parametrize_plus` is a replacement for `@pytest.mark.parametrize` that allows you to include references to fixtures and to value-generating functions in the parameter values. 
 
-For example:
+ - Simply use `fixture_ref(<fixture>)` in the parameter values, where `<fixture>` can be the fixture name or fixture function.
+ - if you do not wish to create a fixture, you can also use `lazy_value(<function>)`
+ - Note that when parametrizing several argnames, both `fixture_ref` and `lazy_value` can be used *as* the tuple, or *in* the tuple. Several `fixture_ref` and/or `lazy_value` can be used in the same tuple, too. 
+
+For example, with a single argument:
 
 ```python
 import pytest
-from pytest_cases import parametrize_plus, fixture_plus, fixture_ref
+from pytest_cases import parametrize_plus, fixture_plus, fixture_ref, lazy_value
 
 @pytest.fixture
 def world_str():
     return 'world'
 
+def whatfun():
+    return 'what'
+
 @fixture_plus
 @parametrize_plus('who', [fixture_ref(world_str), 
-                                 'you'])
+                          'you'])
 def greetings(who):
     return 'hello ' + who
 
 @parametrize_plus('main_msg', ['nothing', 
-                                      fixture_ref(world_str), 
-                                      fixture_ref(greetings)])
+                               fixture_ref(world_str),
+                               lazy_value(whatfun), 
+                               fixture_ref(greetings)])
 @pytest.mark.parametrize('ending', ['?', '!'])
 def test_prints(main_msg, ending):
     print(main_msg + ending)
@@ -393,22 +399,24 @@ yields the following
 
 ```bash
 > pytest -s -v
-collected 9 items
-test_prints[test_prints_main_msg_is_0-nothing-?] nothing?                                 PASSED
-test_prints[test_prints_main_msg_is_0-nothing-!] nothing!                                 PASSED
-test_prints[test_prints_main_msg_is_world_str-?] world?                                   PASSED
-test_prints[test_prints_main_msg_is_world_str-!] world!                                   PASSED
-test_prints[test_prints_main_msg_is_greetings-greetings_who_is_world_str-?] hello world?  PASSED
-test_prints[test_prints_main_msg_is_greetings-greetings_who_is_world_str-!] hello world!  PASSED
-test_prints[test_prints_main_msg_is_greetings-greetings_who_is_1-you-?] hello you?        PASSED
-test_prints[test_prints_main_msg_is_greetings-greetings_who_is_1-you-!] hello you!        PASSED
+collected 10 items
+test_prints[main_msg_is_nothing-?] PASSED       [ 10%]nothing?
+test_prints[main_msg_is_nothing-!] PASSED       [ 20%]nothing!
+test_prints[main_msg_is_world_str-?] PASSED     [ 30%]world?
+test_prints[main_msg_is_world_str-!] PASSED     [ 40%]world!
+test_prints[main_msg_is_whatfun-?] PASSED       [ 50%]what?
+test_prints[main_msg_is_whatfun-!] PASSED       [ 60%]what!
+test_prints[main_msg_is_greetings-who_is_world_str-?] PASSED [ 70%]hello world?
+test_prints[main_msg_is_greetings-who_is_world_str-!] PASSED [ 80%]hello world!
+test_prints[main_msg_is_greetings-who_is_you-?] PASSED [ 90%]hello you?
+test_prints[main_msg_is_greetings-who_is_you-!] PASSED [100%]hello you!
 ```
-
-As you can see, the ids are a bit more explicit than usual. As opposed to `fixture_union`, the style of these ids is not configurable for now but feel free to propose alternatives in the [issues page](https://github.com/smarie/python-pytest-cases/issues). 
 
 You can also mark any of the argvalues with `pytest.mark` to pass a custom id or a custom "skip" or "fail" mark, just as you do in `pytest`. See [pytest documentation](https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test).
 
-Note: for this to be performed, the parameters are replaced with a union fixture. Therefore the relative priority order of these parameters with other standard `pytest.mark.parametrize` parameters that you would place on the same function, will get impacted. You may solve this by replacing your other `@pytest.mark.parametrize` calls with `param_fixture`s (see [above](#param_fixtures).)
+As you can see in the example above, the default ids are a bit more explicit than usual when you use at least one `fixture_ref`. This is because the parameters need to be replaced with a fixture union that will "switch" between alternative groups of parameters, and the appropriate fixtures referenced. As opposed to `fixture_union`, the style of these ids is not configurable for now, but feel free to propose alternatives in the [issues page](https://github.com/smarie/python-pytest-cases/issues). Note that this does not happen if you only use `lazy_value`s, as they do not require to create a fixture union behind the scenes.
+
+Another consequence of using `fixture_ref` is that the priority order of the parameters, relative to other standard `pytest.mark.parametrize` parameters that you would place on the same function, will get impacted. You may solve this by replacing your other `@pytest.mark.parametrize` calls with `param_fixture`s so that all the parameters are fixtures (see [above](#param_fixtures).)
 
 ### passing a `hook`
 

@@ -467,6 +467,17 @@ try:  # pytest 3.x+
 except ImportError:  # pytest 2.x
     from _pytest.mark import MarkDecorator
 
+    def ParameterSet(values, id, marks):
+        """ Dummy function (not a class) used only by parametrize_plus """
+        if id is not None:
+            raise ValueError("This should not happen as `pytest.param` does not exist in pytest 2")
+        for m in marks:
+            values = pytest.mark()
+            raise ValueError("TODO")
+
+        # smart unpack is required for compatibility
+        return values[0] if len(values) == 1 else values
+
     def is_marked_parameter_value(v):
         return isinstance(v, MarkDecorator)
 
