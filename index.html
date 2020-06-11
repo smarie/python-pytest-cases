@@ -720,18 +720,14 @@
 <p class="admonition-title">Test execution order</p>
 <p>Installing pytest-cases now has effects on the order of <code>pytest</code> tests execution, even if you do not use its features. One positive side effect is that it fixed <a href="https://github.com/pytest-dev/pytest/issues/5054">pytest#5054</a>. But if you see less desirable ordering please <a href="https://github.com/smarie/python-pytest-cases/issues">report it</a>.</p>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">New aliases</p>
-<p><code>pytest_fixture_plus</code> and <code>pytest_parametrize_plus</code> were renamed to <code>fixture_plus</code> and <code>parametrize_plus</code> in order for pytest (pluggy) not to think they were hooks. Old aliases will stay around for a few versions, with a deprecation warning. See <a href="https://github.com/smarie/python-pytest-cases/issues/71">#71</a>.</p>
-</div>
 <p>Did you ever think that most of your test functions were actually <em>the same test code</em>, but with <em>different data inputs</em> and expected results/exceptions ?</p>
 <p><code>pytest-cases</code> leverages <code>pytest</code> and its great <code>@pytest.mark.parametrize</code> decorator, so that you can <strong>separate your test cases from your test functions</strong>. For example with <code>pytest-cases</code> you can now write your tests with the following pattern:</p>
 <ul>
 <li>on one hand, the usual <code>test_xxxx.py</code> file containing your test functions</li>
 <li>on the other hand, a new <code>test_xxxx_cases.py</code> containing your cases functions</li>
 </ul>
-<p><code>pytest-cases</code> is fully compliant with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a> so you can create test suites with several steps and send each case on the full suite. See <a href="./usage/advanced/#test-suites-several-steps-on-each-case">usage page for details</a>.</p>
 <p>In addition, <code>pytest-cases</code> improves <code>pytest</code>'s fixture mechanism to support "fixture unions". This is a <strong>major change</strong> in the internal <code>pytest</code> engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See <a href="#fixture_union">below</a>.</p>
+<p><code>pytest-cases</code> is fully compliant with <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a> so you can create test suites with several steps and send each case on the full suite. See <a href="./usage/advanced/#test-suites-several-steps-on-each-case">usage page for details</a>.</p>
 <h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><code>&gt; pip install pytest_cases
 </code></pre></div>
@@ -1150,7 +1146,7 @@ test_prints<span class="o">[</span>main_msg_is_greetings-who_is_you-!<span class
     </div>
     
       <script src="assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="assets/javascripts/bundle.a45f732b.min.js"></script><script id="__lang" type="application/json">{"search.result.one": "1 matching document", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.placeholder": "Type to start searching", "search.result.other": "# matching documents", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard"}</script>
+      <script src="assets/javascripts/bundle.a45f732b.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "clipboard.copied": "Copied to clipboard", "search.result.other": "# matching documents", "clipboard.copy": "Copy to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.one": "1 matching document", "search.config.lang": "en"}</script>
       
       <script>
         app = initialize({
