@@ -85,6 +85,7 @@ def _create_param_fixture(caller_module,
                           scope="function",  # type: str
                           hook=None,         # type: Callable[[Callable], Callable]
                           auto_simplify=False,
+                          debug=False,
                           **kwargs):
     """ Internal method shared with param_fixture and param_fixtures """
 
@@ -99,12 +100,18 @@ def _create_param_fixture(caller_module,
         def __param_fixture():
             return argvalue_to_return
 
+        if debug:
+            print("Creating unparametrized fixture %r returning %r" % (argname, argvalue_to_return))
+
         fix = fixture_plus(name=argname, scope=scope, autouse=autouse, ids=ids, hook=hook, **kwargs)(__param_fixture)
     else:
         # create the fixture - set its name so that the optional hook can read it easily
         @with_signature("%s(request)" % argname)
         def __param_fixture(request):
             return request.param
+
+        if debug:
+            print("Creating parametrized fixture %r returning %r" % (argname, argvalues))
 
         fix = fixture_plus(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
                            hook=hook, **kwargs)(__param_fixture)

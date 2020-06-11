@@ -345,6 +345,7 @@ def parametrize_plus(argnames,
                      idstyle='explicit',  # type: str
                      scope=None,          # type: str
                      hook=None,           # type: Callable[[Callable], Callable]
+                     debug=False,         # type: bool
                      **kwargs):
     """
     Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to
@@ -364,11 +365,12 @@ def parametrize_plus(argnames,
         will be called everytime a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+    :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
     :param kwargs:
     :return:
     """
     return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, idstyle=idstyle, scope=scope, hook=hook,
-                             **kwargs)
+                             debug=debug, **kwargs)
 
 
 class LazyFuncArgs(object):
@@ -470,6 +472,7 @@ def _parametrize_plus(argnames,
                       scope=None,          # type: str
                       hook=None,           # type: Callable[[Callable], Callable]
                       _frame_offset=2,
+                      debug=False,         # type: bool
                       **kwargs):
     # make sure that we do not destroy the argvalues if it is provided as an iterator
     try:
@@ -547,10 +550,14 @@ def _parametrize_plus(argnames,
     del i
 
     if len(fixture_indices) == 0:
+        if debug:
+            print("No fixture reference found. Calling @pytest.mark.parametrize...")
         # no fixture reference: shortcut, do as usual (note that the hook wont be called since no fixture is created)
         return pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
                                        ids=ids, scope=scope, **kwargs)
     else:
+        if debug:
+            print("Fixture references found. Creating fixtures...")
         # there are fixture references: we have to create a specific decorator
         caller_module = get_caller_module(frame_offset=_frame_offset)
         param_names_str = '_'.join(argnames).replace(' ', '')
@@ -595,6 +602,10 @@ def _parametrize_plus(argnames,
                 p_fix_name = "%s_%s_P%s" % (test_func_name, param_names_str, i)
                 p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
                                                   caller=parametrize_plus)
+
+                if debug:
+                    print("Creating fixture %r to handle parameter %s" % (p_fix_name, i))
+
                 # Create the fixture that will return the unique parameter value ("auto-simplify" flag)
                 # IMPORTANT that fixture is NOT parametrized so has no id nor marks: use argvalues not marked_argvalues
                 _create_param_fixture(caller_module, argname=p_fix_name, argvalues=argvalues[i:i+1], hook=hook,
@@ -613,6 +624,9 @@ def _parametrize_plus(argnames,
                 p_fix_name = "%s_%s_is_P%stoP%s" % (test_func_name, param_names_str, from_i, to_i - 1)
                 p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
                                                   caller=parametrize_plus)
+
+                if debug:
+                    print("Creating fixture %r to handle parameters %s to %s" % (p_fix_name, from_i, to_i - 1))
 
                 # If an explicit list of ids was provided, slice it. Otherwise use the provided callable
                 try:
@@ -646,6 +660,9 @@ def _parametrize_plus(argnames,
             # Get the referenced fixture name
             f_fix_name = get_fixture_name(argvalues[i].fixture)
 
+            if debug:
+                print("Creating reference to fixture %r" % (f_fix_name,))
+
             # Create the alternative
             f_fix_alt = FixtureParamAlternative(union_name=union_name, alternative_name=f_fix_name,
                                                 argnames=argnames, argvalues_index=i)
@@ -669,6 +686,9 @@ def _parametrize_plus(argnames,
             # Create a unique fixture name
             p_fix_name = "%s_%s_P%s" % (test_func_name, param_names_str, i)
             p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE, caller=parametrize_plus)
+
+            if debug:
+                print("Creating fixture %r to handle parameter %s that is a cross-product" % (p_fix_name, i))
 
             # Create the fixture
             _make_fixture_product(caller_module, name=p_fix_name, hook=hook, ids=p_ids, fixtures_or_values=p_values,
@@ -786,6 +806,8 @@ def _parametrize_plus(argnames,
                         "Created fixture names are not unique, please report"
 
             # Finally create a "main" fixture with a unique name for this test function
+            if debug:
+                print("Creating final union fixture %r with alternatives %r" % (fixture_union_name, fix_alternatives))
 
             # note: the function automatically registers it in the module
             _make_fixture_union(caller_module, name=fixture_union_name, hook=hook, caller=parametrize_plus,
@@ -806,6 +828,9 @@ def _parametrize_plus(argnames,
             new_sig = add_signature_parameters(new_sig, custom_idx=_first_idx,
                                                custom=Parameter(fixture_union_name,
                                                                 kind=Parameter.POSITIONAL_OR_KEYWORD))
+
+            if debug:
+                print("Creating final test function wrapper with signature %s%s" % (test_func_name, new_sig))
 
             # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
             def replace_paramfixture_with_values(kwargs):  # noqa
