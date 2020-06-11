@@ -13,9 +13,6 @@
 !!! warning "Test execution order"
     Installing pytest-cases now has effects on the order of `pytest` tests execution, even if you do not use its features. One positive side effect is that it fixed [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054). But if you see less desirable ordering please [report it](https://github.com/smarie/python-pytest-cases/issues).
 
-!!! warning "New aliases"
-    `pytest_fixture_plus` and `pytest_parametrize_plus` were renamed to `fixture_plus` and `parametrize_plus` in order for pytest (pluggy) not to think they were hooks. Old aliases will stay around for a few versions, with a deprecation warning. See [#71](https://github.com/smarie/python-pytest-cases/issues/71).
-
 Did you ever think that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
 `pytest-cases` leverages `pytest` and its great `@pytest.mark.parametrize` decorator, so that you can **separate your test cases from your test functions**. For example with `pytest-cases` you can now write your tests with the following pattern:
@@ -23,10 +20,9 @@ Did you ever think that most of your test functions were actually *the same test
  * on one hand, the usual `test_xxxx.py` file containing your test functions
  * on the other hand, a new `test_xxxx_cases.py` containing your cases functions
 
-`pytest-cases` is fully compliant with [pytest-steps](https://smarie.github.io/python-pytest-steps/) so you can create test suites with several steps and send each case on the full suite. See [usage page for details](./usage/advanced/#test-suites-several-steps-on-each-case).
-
 In addition, `pytest-cases` improves `pytest`'s fixture mechanism to support "fixture unions". This is a **major change** in the internal `pytest` engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See [below](#fixture_union).
 
+`pytest-cases` is fully compliant with [pytest-steps](https://smarie.github.io/python-pytest-steps/) so you can create test suites with several steps and send each case on the full suite. See [usage page for details](./usage/advanced/#test-suites-several-steps-on-each-case).
 
 ## Installing
 
