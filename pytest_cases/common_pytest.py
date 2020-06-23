@@ -1,5 +1,7 @@
 from __future__ import division
 
+import warnings
+
 try:  # python 3.3+
     from inspect import signature
 except ImportError:
@@ -532,27 +534,30 @@ def transform_marks_into_decorators(marks):
     """
     marks_mod = []
     try:
-        for m in marks:
-            md = pytest.mark.MarkDecorator()
+        # suppress the warning message that pytest generates when calling pytest.mark.MarkDecorator() directly
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            for m in marks:
+                md = pytest.mark.MarkDecorator()
 
-            if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-                if isinstance(m, type(md)):
-                    # already a decorator, we can use it
-                    marks_mod.append(m)
+                if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+                    if isinstance(m, type(md)):
+                        # already a decorator, we can use it
+                        marks_mod.append(m)
+                    else:
+                        md.mark = m
+                        marks_mod.append(md)
                 else:
-                    md.mark = m
+                    # always recreate one, type comparison does not work (all generic stuff)
+                    md.name = m.name
+                    # md.markname = m.name
+                    md.args = m.args
+                    md.kwargs = m.kwargs
+
+                    # markinfodecorator = getattr(pytest.mark, markinfo.name)
+                    # markinfodecorator(*markinfo.args)
+
                     marks_mod.append(md)
-            else:
-                # always recreate one, type comparison does not work (all generic stuff)
-                md.name = m.name
-                # md.markname = m.name
-                md.args = m.args
-                md.kwargs = m.kwargs
-
-                # markinfodecorator = getattr(pytest.mark, markinfo.name)
-                # markinfodecorator(*markinfo.args)
-
-                marks_mod.append(md)
 
     except Exception as e:
         warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))
