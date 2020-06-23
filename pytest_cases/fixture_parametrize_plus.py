@@ -1,5 +1,6 @@
 from collections import Iterable, namedtuple
 from distutils.version import LooseVersion
+from functools import partial
 from inspect import isgeneratorfunction
 from warnings import warn
 
@@ -159,6 +160,42 @@ else:
             return object.__repr__(self)
 
 
+def _unwrap(obj):
+    """A light copy of _pytest.compat.get_real_func. In our case
+    we do not wish to unwrap the partial nor handle pytest fixture """
+    start_obj = obj
+    for i in range(100):
+        # __pytest_wrapped__ is set by @pytest.fixture when wrapping the fixture function
+        # to trigger a warning if it gets called directly instead of by pytest: we don't
+        # want to unwrap further than this otherwise we lose useful wrappings like @mock.patch (#3774)
+        # new_obj = getattr(obj, "__pytest_wrapped__", None)
+        # if isinstance(new_obj, _PytestWrapper):
+        #     obj = new_obj.obj
+        #     break
+        new_obj = getattr(obj, "__wrapped__", None)
+        if new_obj is None:
+            break
+        obj = new_obj
+    else:
+        raise ValueError("could not find real function of {start}\nstopped at {current}".format(
+                start=repr(start_obj), current=repr(obj)
+            )
+        )
+    return obj
+
+
+def partial_to_str(partialfun):
+    """Return a string representation of a partial function, to use in lazy_value ids"""
+    strwds = ", ".join("%s=%s" % (k, v) for k, v in partialfun.keywords.items())
+    if len(partialfun.args) > 0:
+        strargs = ', '.join(str(i) for i in partialfun.args)
+        if len(partialfun.keywords) > 0:
+            strargs = "%s, %s" % (strargs, strwds)
+    else:
+        strargs = strwds
+    return "%s(%s)" % (partialfun.func.__name__, strargs)
+
+
 # noinspection PyPep8Naming
 class lazy_value(_LazyValueBase):
     """
@@ -183,7 +220,21 @@ class lazy_value(_LazyValueBase):
 
     def get_id(self):
         """The id to use in pytest"""
-        return self._id or self.valuegetter.__name__
+        if self._id is not None:
+            return self._id
+        else:
+            # default is the __name__ of the value getter
+            _id = getattr(self.valuegetter, '__name__', None)
+            if _id is not None:
+                return _id
+
+            # unwrap and handle partial functions
+            vg = _unwrap(self.valuegetter)
+
+            if isinstance(vg, partial):
+                return partial_to_str(vg)
+            else:
+                return vg.__name__
 
     if not pytest53:
         def __str__(self):
