@@ -1,5 +1,15 @@
 # Changelog
 
+### 1.17.0 - `lazy_value` improvements + annoying warnings suppression
+
+ - `lazy_value` are now resolved at pytest `setup` stage, not pytest `call` stage. This is important for execution time recorded in the reports (see also `pytest-harvest` plugin). Fixes [#102](https://github.com/smarie/python-pytest-cases/issues/102) 
+
+ - A function used as a `lazy_value` can now be marked with pytest marks. Fixes [#99](https://github.com/smarie/python-pytest-cases/issues/99)
+
+ - A `lazy_value` now has a nicer id when it is a partial. Fixes [#97](https://github.com/smarie/python-pytest-cases/issues/97)
+ 
+ - Removed annoying `PytestUnknownMarkWarning` warning message when a mark was used on a case. Fixes [#100](https://github.com/smarie/python-pytest-cases/issues/100)
+
 ### 1.16.0 - New `lazy_value` for parameters
 
  - New marker `lazy_value` for `parametrize_plus`. Fixes [#92](https://github.com/smarie/python-pytest-cases/issues/92)
