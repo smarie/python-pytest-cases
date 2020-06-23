@@ -473,12 +473,18 @@ except ImportError:  # pytest 2.x
         """ Dummy function (not a class) used only by parametrize_plus """
         if id is not None:
             raise ValueError("This should not happen as `pytest.param` does not exist in pytest 2")
-        for m in marks:
-            values = pytest.mark()
-            raise ValueError("TODO")
 
         # smart unpack is required for compatibility
-        return values[0] if len(values) == 1 else values
+        val = values[0] if len(values) == 1 else values
+        nbmarks = len(marks)
+
+        if nbmarks == 0:
+            return val
+        elif nbmarks > 1:
+            raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
+        else:
+            # decorate with the MarkDecorator
+            return marks[0](val)
 
     def is_marked_parameter_value(v):
         return isinstance(v, MarkDecorator)
