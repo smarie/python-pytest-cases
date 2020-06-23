@@ -223,22 +223,28 @@ def get_param_names(fnode):
 
 
 # ---------------- working on functions
-def get_pytest_marks_on_function(f):
+def get_pytest_marks_on_function(f, as_decorators=False):
     """
     Utility to return *ALL* pytest marks (not only parametrization) applied on a function
 
     :param f:
+    :param as_decorators: transforms the marks into decorators before returning them
     :return:
     """
     try:
-        return f.pytestmark
+        mks = f.pytestmark
     except AttributeError:
         try:
             # old pytest < 3: marks are set as fields on the function object
             # but they do not have a particulat type, their type is 'instance'...
-            return [v for v in vars(f).values() if str(v).startswith("<MarkInfo '")]
+            mks = [v for v in vars(f).values() if str(v).startswith("<MarkInfo '")]
         except AttributeError:
-            return []
+            mks = []
+
+    if as_decorators:
+        return transform_marks_into_decorators(mks)
+    else:
+        return mks
 
 
 def get_pytest_parametrize_marks(f):

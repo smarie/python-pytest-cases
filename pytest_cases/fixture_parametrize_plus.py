@@ -219,12 +219,20 @@ class lazy_value(_LazyValueBase):
         self._id = id
         self._marks = marks
 
-    def get_marks(self):
+    def get_marks(self, as_decorators=False):
         """
         Overrides default implementation to return the marks that are on the case function
+
+        :param as_decorators: when True, the marks will be transformed into MarkDecorators before being
+            returned
         :return:
         """
-        return get_pytest_marks_on_function(self.valuegetter)
+        valuegetter_marks = get_pytest_marks_on_function(self.valuegetter, as_decorators=as_decorators)
+
+        if self._marks:
+            return transform_marks_into_decorators(self._marks) + valuegetter_marks
+        else:
+            return valuegetter_marks
 
     def get_id(self):
         """The id to use in pytest"""
@@ -554,21 +562,17 @@ def _parametrize_plus(argnames,
     if nb_params == 1:
         for i, v in enumerate(argvalues):
             if isinstance(v, lazy_value):
+                # Note: no need to modify the id, it will be ok thanks to the lazy_value class design
                 # handle marks
-                _mks = v.get_marks()
+                _mks = v.get_marks(as_decorators=True)
                 if len(_mks) > 0:
-                    # get a decorator for each of the marks
-                    _mk_decos = transform_marks_into_decorators(_mks)
-
                     # merge with the mark decorators possibly already present with pytest.param
                     if p_marks[i] is None:
                         p_marks[i] = []
-                    p_marks[i] = list(p_marks[i]) + _mk_decos
+                    p_marks[i] = list(p_marks[i]) + _mks
 
                     # update the marked_argvalues
-                    # Note: no need to modify the id, it will be ok thanks to the lazy_value class design
                     marked_argvalues[i] = ParameterSet(values=(argvalues[i],), id=custom_pids[i], marks=p_marks[i])
-                    del _mk_decos
                 del _mks
 
             if isinstance(v, fixture_ref):
@@ -582,24 +586,23 @@ def _parametrize_plus(argnames,
                 # TUPLE usage: we HAVE to set an id to prevent too early access to the value by _idmaker
                 # note that on pytest 2 we cannot set an id here, so the lazy value wont be too lazy
                 assert custom_pids[i] is None
-                _id = v.get_id() if has_pytest_param else None
+                _id = v.get_id()
+                if not has_pytest_param:
+                    warn("The custom id %r in `lazy_value` will be ignored as this version of pytest is too old to"
+                         " support `pytest.param`." % _id)
+                    _id = None
 
                 # handle marks
-                _mks = v.get_marks()
+                _mks = v.get_marks(as_decorators=True)
                 if len(_mks) > 0:
-                    # get a decorator for each of the marks
-                    _mk_decos = transform_marks_into_decorators(_mks)
-
                     # merge with the mark decorators possibly already present with pytest.param
                     assert p_marks[i] is None
-                    p_marks[i] = _mk_decos
-                else:
-                    _mk_decos = ()
+                    p_marks[i] = _mks
 
                 # note that here argvalues[i] IS a tuple-like so we do not create a tuple around it
-                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=_id, marks=_mk_decos)
+                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=_id, marks=_mks)
                 custom_pids[i] = _id
-                del _id, _mks, _mk_decos
+                del _id, _mks
 
             elif isinstance(v, fixture_ref):
                 # a fixture ref is used for several parameters at the same time
@@ -613,16 +616,12 @@ def _parametrize_plus(argnames,
                     # force-use the id from the lazy value (do not have pytest request for it, that would unpack it)
                     custom_pids[i] = v[0].get_id()
                 # handle marks
-                _mks = v[0].get_marks()
+                _mks = v[0].get_marks(as_decorators=True)
                 if len(_mks) > 0:
-                    # get a decorator for each of the marks
-                    _mk_decos = transform_marks_into_decorators(_mks)
-
                     # merge with the mark decorators possibly already present with pytest.param
                     if p_marks[i] is None:
                         p_marks[i] = []
-                    p_marks[i] = list(p_marks[i]) + _mk_decos
-                    del _mk_decos
+                    p_marks[i] = list(p_marks[i]) + _mks
                 del _mks
                 marked_argvalues[i] = ParameterSet(values=argvalues[i], id=custom_pids[i], marks=p_marks[i])
 
