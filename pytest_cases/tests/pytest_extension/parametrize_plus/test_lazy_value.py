@@ -3,17 +3,25 @@ import pytest
 from pytest_cases import parametrize_plus, lazy_value
 
 
+has_pytest_param = hasattr(pytest, 'param')
+
+
 def valtuple():
     return 1, 2
+
+
+@pytest.mark.skipif(not has_pytest_param, reason="well")
+def val_skipped_on_old_pytest():
+    return "what"
 
 
 def val():
     return 1
 
 
-has_pytest_param = hasattr(pytest, 'param')
 if not has_pytest_param:
     @parametrize_plus("a", [lazy_value(val),
+                            lazy_value(val_skipped_on_old_pytest),
                             lazy_value(val, id='A')])
     def test_foo_single(a):
         """here the fixture is used for both parameters at the same time"""
@@ -37,6 +45,7 @@ if not has_pytest_param:
 
 else:
     @parametrize_plus("a", [lazy_value(val),
+                            pytest.param(lazy_value(val_skipped_on_old_pytest), marks=pytest.mark.skip),
                             pytest.param(lazy_value(val), id='B'),
                             pytest.param(lazy_value(val, id='ignored'), id='C'),
                             lazy_value(val, id='A')])
