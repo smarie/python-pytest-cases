@@ -967,12 +967,22 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 <p>Identical to <code>param_fixtures</code> but for a single parameter name, so that you can assign its output to a single variable.</p>
 <h3 id="parametrize_plus"><code>@parametrize_plus</code><a class="headerlink" href="#parametrize_plus" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="n">parametrize_plus</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> 
-                 <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                 <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idstyle</span><span class="o">=</span><span class="s1">&#39;explicit&#39;</span><span class="p">,</span>
+                 <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
 
 
-<p>Equivalent to <code>@pytest.mark.parametrize</code> but also supports the fact that in argvalues one can include references to fixtures with <code>fixture_ref(&lt;fixture&gt;)</code> where <fixture> can be the fixture name or fixture function.</p>
-<p>When such a fixture reference is detected in the argvalues, a new function-scope fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters. Special test ids will be created to illustrate the switching between normal parameters and fixtures.</p>
+<p>Equivalent to <code>@pytest.mark.parametrize</code> but also supports new possibilities in argvalues:</p>
+<ul>
+<li>
+<p>one can include references to fixtures with <code>fixture_ref(&lt;fixture&gt;)</code> where <fixture> can be the fixture name or fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters from this fixture. Special test ids will be created to illustrate the switching between the various normal parameters and fixtures. You can see debug print messages about all fixtures created using <code>debug=True</code></p>
+</li>
+<li>
+<p>one can include lazy argvalues with <code>lazy_value(&lt;valuegetter&gt;, [id=..., marks=...])</code>. A <code>lazy_value</code> is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.</p>
+</li>
+</ul>
+<p>Both <code>fixture_ref</code> and <code>lazy_value</code> can be used to represent a single argvalue, or a whole tuple of argvalues when there are several argnames. Several of them can be used in a tuple.</p>
+<p>Finally, <code>pytest.param</code> is supported even when there are <code>fixture_ref</code> and <code>lazy_value</code>. </p>
 <p>Here as for all functions above, an optional <code>hook</code> can be passed, to apply on each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use <code>saved_fixture</code> from <code>pytest-harvest</code> as a hook in order to save all such created fixtures in the fixture store.</p>
                 
               
@@ -1041,7 +1051,7 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.7f4f3c92.min.js"></script><script id="__lang" type="application/json">{"search.config.lang": "en", "search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.result.none": "No matching documents"}</script>
+      <script src="../assets/javascripts/bundle.7f4f3c92.min.js"></script><script id="__lang" type="application/json">{"clipboard.copied": "Copied to clipboard", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.config.lang": "en", "clipboard.copy": "Copy to clipboard", "search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.placeholder": "Type to start searching", "search.config.separator": "[\\s\\-]+"}</script>
       
       <script>
         app = initialize({

@@ -314,6 +314,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#1170-lazy_value-improvements-annoying-warnings-suppression" class="md-nav__link">
+    1.17.0 - lazy_value improvements + annoying warnings suppression
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1160-new-lazy_value-for-parameters" class="md-nav__link">
     1.16.0 - New lazy_value for parameters
   </a>
@@ -766,6 +773,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#1170-lazy_value-improvements-annoying-warnings-suppression" class="md-nav__link">
+    1.17.0 - lazy_value improvements + annoying warnings suppression
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1160-new-lazy_value-for-parameters" class="md-nav__link">
     1.16.0 - New lazy_value for parameters
   </a>
@@ -1206,6 +1220,21 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="1170-lazy_value-improvements-annoying-warnings-suppression">1.17.0 - <code>lazy_value</code> improvements + annoying warnings suppression<a class="headerlink" href="#1170-lazy_value-improvements-annoying-warnings-suppression" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><code>lazy_value</code> are now resolved at pytest <code>setup</code> stage, not pytest <code>call</code> stage. This is important for execution time recorded in the reports (see also <code>pytest-harvest</code> plugin). Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/102">#102</a> </p>
+</li>
+<li>
+<p>A function used as a <code>lazy_value</code> can now be marked with pytest marks. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/99">#99</a></p>
+</li>
+<li>
+<p>A <code>lazy_value</code> now has a nicer id when it is a partial. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/97">#97</a></p>
+</li>
+<li>
+<p>Removed annoying <code>PytestUnknownMarkWarning</code> warning message when a mark was used on a case. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/100">#100</a></p>
+</li>
+</ul>
 <h3 id="1160-new-lazy_value-for-parameters">1.16.0 - New <code>lazy_value</code> for parameters<a class="headerlink" href="#1160-new-lazy_value-for-parameters" title="Permanent link">&para;</a></h3>
 <ul>
 <li>New marker <code>lazy_value</code> for <code>parametrize_plus</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/92">#92</a></li>
@@ -1512,7 +1541,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.7f4f3c92.min.js"></script><script id="__lang" type="application/json">{"search.config.lang": "en", "search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.result.none": "No matching documents"}</script>
+      <script src="../assets/javascripts/bundle.7f4f3c92.min.js"></script><script id="__lang" type="application/json">{"clipboard.copied": "Copied to clipboard", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.config.lang": "en", "clipboard.copy": "Copy to clipboard", "search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.placeholder": "Type to start searching", "search.config.separator": "[\\s\\-]+"}</script>
       
       <script>
         app = initialize({
