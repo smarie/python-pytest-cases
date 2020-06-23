@@ -68,7 +68,7 @@ else:
 
     @parametrize_plus("a,b", [lazy_value(valtuple),
                               pytest.param(lazy_value(valtuple_only_right_when_lazy), id='A'),
-                              pytest.param(lazy_value(valtuple_toskip), id='Wrong', marks=pytest.mark.skip),
+                              pytest.param(lazy_value(valtuple_toskip, marks=(pytest.mark.xfail,)), id='Wrong', marks=pytest.mark.skip),
                               (1, lazy_value(val)),
                               pytest.param(1, lazy_value(val), id='B')])
     def test_foo_multi(a, b):
