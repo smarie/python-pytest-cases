@@ -673,6 +673,9 @@ def _parametrize_plus(argnames,
         return pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
                                        ids=ids, scope=scope, **kwargs)
     else:
+        if len(kwargs) > 0:
+            warn("Unsupported kwargs for `parametrize_plus`: %r" % kwargs)
+
         if debug:
             print("Fixture references found. Creating fixtures...")
         # there are fixture references: we have to create a specific decorator
