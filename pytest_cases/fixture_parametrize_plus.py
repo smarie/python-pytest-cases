@@ -201,7 +201,9 @@ def partial_to_str(partialfun):
 class lazy_value(_LazyValueBase):
     """
     A reference to a value getter, to be used in `parametrize_plus`.
-    Its argument should be a callable without mandatory arguments.
+
+    A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
+    fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
     """
     if pytest53:
         __slots__ = 'valuegetter', '_id', '_marks'
@@ -210,11 +212,26 @@ class lazy_value(_LazyValueBase):
         # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
         pass
 
+    # noinspection PyMissingConstructor
     def __init__(self,
                  valuegetter,  # type: Callable[[], Any]
                  id=None,      # type: str
                  marks=()      # type: Sequence
                  ):
+        """
+        Creates a reference to a value getter, to be used in `parametrize_plus`.
+
+        A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
+        fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+
+        Note that a `lazy_value` can be included in a `pytest.param` without problem. In that case the id defined by
+        `pytest.param` will take precedence over the one defined in `lazy_value` if any. The marks, however,
+        will all be kept wherever they are defined.
+
+        :param valuegetter: a callable without mandatory arguments
+        :param id: an optional id. Otherwise `valuegetter.__name__` will be used by default
+        :param marks: optional marks. `valuegetter` marks will also be preserved.
+        """
         self.valuegetter = valuegetter
         self._id = id
         self._marks = marks
@@ -415,25 +432,40 @@ def parametrize_plus(argnames,
                      debug=False,         # type: bool
                      **kwargs):
     """
-    Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to
-    fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
+    Equivalent to `@pytest.mark.parametrize` but also supports new possibilities in argvalues:
 
-    When such a fixture reference is detected in the argvalues, a new function-scope fixture will be created with a
-    unique name, and the test function will be wrapped so as to be injected with the correct parameters. Special test
-    ids will be created to illustrate the switching between normal parameters and fixtures.
+     - one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or
+       fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture
+       will be created with a unique name, and the test function will be wrapped so as to be injected with the correct
+       parameters from this fixture. Special test ids will be created to illustrate the switching between the various
+       normal parameters and fixtures. You can see debug print messages about all fixtures created using `debug=True`
 
-    :param argnames:
-    :param argvalues:
-    :param indirect:
-    :param ids:
-    :param idstyle:
-    :param scope:
+     - one can include lazy argvalues with `lazy_value(<valuegetter>, [id=..., marks=...])`. A `lazy_value` is the same
+       thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can
+       neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+
+    Both `fixture_ref` and `lazy_value` can be used to represent a single argvalue, or a whole tuple of argvalues when
+    there are several argnames. Several of them can be used in a tuple.
+
+    Finally, `pytest.param` is supported even when there are `fixture_ref` and `lazy_value`.
+
+    An optional `hook` can be passed, to apply on each fixture function that is created during this call. The hook
+    function will be called everytime a fixture is about to be created. It will receive a  single argument (the
+    function implementing the fixture) and should return the function to use. For example you can use `saved_fixture`
+    from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+
+    :param argnames: same as in pytest.mark.parametrize
+    :param argvalues: same as in pytest.mark.parametrize except that `fixture_ref` and `lazy_value` are supported
+    :param indirect: same as in pytest.mark.parametrize
+    :param ids: same as in pytest.mark.parametrize
+    :param idstyle: style of ids to be used in generated "union" fixtures. See `fixture_union` for details.
+    :param scope: same as in pytest.mark.parametrize
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
         will be called everytime a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
-    :param kwargs:
+    :param kwargs: additional arguments for pytest.mark.parametrize
     :return:
     """
     return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, idstyle=idstyle, scope=scope, hook=hook,
