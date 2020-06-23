@@ -1,5 +1,7 @@
 from __future__ import division
 
+import warnings
+
 try:  # python 3.3+
     from inspect import signature
 except ImportError:
@@ -471,12 +473,18 @@ except ImportError:  # pytest 2.x
         """ Dummy function (not a class) used only by parametrize_plus """
         if id is not None:
             raise ValueError("This should not happen as `pytest.param` does not exist in pytest 2")
-        for m in marks:
-            values = pytest.mark()
-            raise ValueError("TODO")
 
         # smart unpack is required for compatibility
-        return values[0] if len(values) == 1 else values
+        val = values[0] if len(values) == 1 else values
+        nbmarks = len(marks)
+
+        if nbmarks == 0:
+            return val
+        elif nbmarks > 1:
+            raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
+        else:
+            # decorate with the MarkDecorator
+            return marks[0](val)
 
     def is_marked_parameter_value(v):
         return isinstance(v, MarkDecorator)
@@ -532,27 +540,30 @@ def transform_marks_into_decorators(marks):
     """
     marks_mod = []
     try:
-        for m in marks:
-            md = pytest.mark.MarkDecorator()
+        # suppress the warning message that pytest generates when calling pytest.mark.MarkDecorator() directly
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            for m in marks:
+                md = pytest.mark.MarkDecorator()
 
-            if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-                if isinstance(m, type(md)):
-                    # already a decorator, we can use it
-                    marks_mod.append(m)
+                if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+                    if isinstance(m, type(md)):
+                        # already a decorator, we can use it
+                        marks_mod.append(m)
+                    else:
+                        md.mark = m
+                        marks_mod.append(md)
                 else:
-                    md.mark = m
+                    # always recreate one, type comparison does not work (all generic stuff)
+                    md.name = m.name
+                    # md.markname = m.name
+                    md.args = m.args
+                    md.kwargs = m.kwargs
+
+                    # markinfodecorator = getattr(pytest.mark, markinfo.name)
+                    # markinfodecorator(*markinfo.args)
+
                     marks_mod.append(md)
-            else:
-                # always recreate one, type comparison does not work (all generic stuff)
-                md.name = m.name
-                # md.markname = m.name
-                md.args = m.args
-                md.kwargs = m.kwargs
-
-                # markinfodecorator = getattr(pytest.mark, markinfo.name)
-                # markinfodecorator(*markinfo.args)
-
-                marks_mod.append(md)
 
     except Exception as e:
         warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))

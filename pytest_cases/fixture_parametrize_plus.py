@@ -1,5 +1,6 @@
 from collections import Iterable, namedtuple
 from distutils.version import LooseVersion
+from functools import partial
 from inspect import isgeneratorfunction
 from warnings import warn
 
@@ -17,7 +18,8 @@ import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
 from .common_pytest import get_fixture_name, remove_duplicates, is_marked_parameter_value, mini_idvalset, \
-    get_param_argnames_as_list, extract_parameterset_info, ParameterSet, has_pytest_param
+    get_param_argnames_as_list, extract_parameterset_info, ParameterSet, has_pytest_param, get_pytest_marks_on_function, \
+    transform_marks_into_decorators
 
 from .fixture__creation import check_name_available, CHANGE, WARN, get_caller_module
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
@@ -159,6 +161,42 @@ else:
             return object.__repr__(self)
 
 
+def _unwrap(obj):
+    """A light copy of _pytest.compat.get_real_func. In our case
+    we do not wish to unwrap the partial nor handle pytest fixture """
+    start_obj = obj
+    for i in range(100):
+        # __pytest_wrapped__ is set by @pytest.fixture when wrapping the fixture function
+        # to trigger a warning if it gets called directly instead of by pytest: we don't
+        # want to unwrap further than this otherwise we lose useful wrappings like @mock.patch (#3774)
+        # new_obj = getattr(obj, "__pytest_wrapped__", None)
+        # if isinstance(new_obj, _PytestWrapper):
+        #     obj = new_obj.obj
+        #     break
+        new_obj = getattr(obj, "__wrapped__", None)
+        if new_obj is None:
+            break
+        obj = new_obj
+    else:
+        raise ValueError("could not find real function of {start}\nstopped at {current}".format(
+                start=repr(start_obj), current=repr(obj)
+            )
+        )
+    return obj
+
+
+def partial_to_str(partialfun):
+    """Return a string representation of a partial function, to use in lazy_value ids"""
+    strwds = ", ".join("%s=%s" % (k, v) for k, v in partialfun.keywords.items())
+    if len(partialfun.args) > 0:
+        strargs = ', '.join(str(i) for i in partialfun.args)
+        if len(partialfun.keywords) > 0:
+            strargs = "%s, %s" % (strargs, strwds)
+    else:
+        strargs = strwds
+    return "%s(%s)" % (partialfun.func.__name__, strargs)
+
+
 # noinspection PyPep8Naming
 class lazy_value(_LazyValueBase):
     """
@@ -181,9 +219,30 @@ class lazy_value(_LazyValueBase):
         self._id = id
         self._marks = marks
 
+    def get_marks(self):
+        """
+        Overrides default implementation to return the marks that are on the case function
+        :return:
+        """
+        return get_pytest_marks_on_function(self.valuegetter)
+
     def get_id(self):
         """The id to use in pytest"""
-        return self._id or self.valuegetter.__name__
+        if self._id is not None:
+            return self._id
+        else:
+            # default is the __name__ of the value getter
+            _id = getattr(self.valuegetter, '__name__', None)
+            if _id is not None:
+                return _id
+
+            # unwrap and handle partial functions
+            vg = _unwrap(self.valuegetter)
+
+            if isinstance(vg, partial):
+                return partial_to_str(vg)
+            else:
+                return vg.__name__
 
     if not pytest53:
         def __str__(self):
@@ -494,23 +553,53 @@ def _parametrize_plus(argnames,
     fixture_indices = []
     if nb_params == 1:
         for i, v in enumerate(argvalues):
-            # if isinstance(v, lazy_value):
-            #   TODO handle if marks
-            #   no need to handle if no marks, the id will be ok thanks to the lazy_value class design
+            if isinstance(v, lazy_value):
+                # handle marks
+                _mks = v.get_marks()
+                if len(_mks) > 0:
+                    # get a decorator for each of the marks
+                    _mk_decos = transform_marks_into_decorators(_mks)
+
+                    # merge with the mark decorators possibly already present with pytest.param
+                    if p_marks[i] is None:
+                        p_marks[i] = []
+                    p_marks[i] = list(p_marks[i]) + _mk_decos
+
+                    # update the marked_argvalues
+                    # Note: no need to modify the id, it will be ok thanks to the lazy_value class design
+                    marked_argvalues[i] = ParameterSet(values=(argvalues[i],), id=custom_pids[i], marks=p_marks[i])
+                    del _mk_decos
+                del _mks
+
             if isinstance(v, fixture_ref):
                 fixture_indices.append((i, None))
     elif nb_params > 1:
         for i, v in enumerate(argvalues):
             if isinstance(v, lazy_value):
-                # a lazy value is used for several parameters at the same time
+                # a lazy value is used for several parameters at the same time, and is NOT between pytest.param()
                 argvalues[i] = LazyTuple(v, nb_params)
-                assert custom_pids[i] is None
+
                 # TUPLE usage: we HAVE to set an id to prevent too early access to the value by _idmaker
                 # note that on pytest 2 we cannot set an id here, so the lazy value wont be too lazy
+                assert custom_pids[i] is None
                 _id = v.get_id() if has_pytest_param else None
-                # todo marks
-                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=_id, marks=())
+
+                # handle marks
+                _mks = v.get_marks()
+                if len(_mks) > 0:
+                    # get a decorator for each of the marks
+                    _mk_decos = transform_marks_into_decorators(_mks)
+
+                    # merge with the mark decorators possibly already present with pytest.param
+                    assert p_marks[i] is None
+                    p_marks[i] = _mk_decos
+                else:
+                    _mk_decos = ()
+
+                # note that here argvalues[i] IS a tuple-like so we do not create a tuple around it
+                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=_id, marks=_mk_decos)
                 custom_pids[i] = _id
+                del _id, _mks, _mk_decos
 
             elif isinstance(v, fixture_ref):
                 # a fixture ref is used for several parameters at the same time
@@ -521,8 +610,20 @@ def _parametrize_plus(argnames,
                 # valueref_indices.append((i, None))
                 argvalues[i] = LazyTuple(v[0], nb_params)  # unpack it
                 if custom_pids[i] is None:
-                    # use the id (and TODO marks)
+                    # force-use the id from the lazy value (do not have pytest request for it, that would unpack it)
                     custom_pids[i] = v[0].get_id()
+                # handle marks
+                _mks = v[0].get_marks()
+                if len(_mks) > 0:
+                    # get a decorator for each of the marks
+                    _mk_decos = transform_marks_into_decorators(_mks)
+
+                    # merge with the mark decorators possibly already present with pytest.param
+                    if p_marks[i] is None:
+                        p_marks[i] = []
+                    p_marks[i] = list(p_marks[i]) + _mk_decos
+                    del _mk_decos
+                del _mks
                 marked_argvalues[i] = ParameterSet(values=argvalues[i], id=custom_pids[i], marks=p_marks[i])
 
             elif len(v) == 1 and isinstance(v[0], fixture_ref):
