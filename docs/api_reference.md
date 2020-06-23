@@ -352,11 +352,18 @@ Identical to `param_fixtures` but for a single parameter name, so that you can a
 
 ```python
 parametrize_plus(argnames, argvalues, 
-                 indirect=False, ids=None, scope=None, hook=None, **kwargs)
+                 indirect=False, ids=None, idstyle='explicit',
+                 scope=None, hook=None, debug=False, **kwargs)
 ```
 
-Equivalent to `@pytest.mark.parametrize` but also supports the fact that in argvalues one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function.
+Equivalent to `@pytest.mark.parametrize` but also supports new possibilities in argvalues:
 
-When such a fixture reference is detected in the argvalues, a new function-scope fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters. Special test ids will be created to illustrate the switching between normal parameters and fixtures.
+ - one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters from this fixture. Special test ids will be created to illustrate the switching between the various normal parameters and fixtures. You can see debug print messages about all fixtures created using `debug=True`
+
+ - one can include lazy argvalues with `lazy_value(<valuegetter>, [id=..., marks=...])`. A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+
+Both `fixture_ref` and `lazy_value` can be used to represent a single argvalue, or a whole tuple of argvalues when there are several argnames. Several of them can be used in a tuple.
+
+Finally, `pytest.param` is supported even when there are `fixture_ref` and `lazy_value`. 
 
 Here as for all functions above, an optional `hook` can be passed, to apply on each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
