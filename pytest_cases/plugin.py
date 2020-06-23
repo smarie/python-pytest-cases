@@ -22,20 +22,24 @@ from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_f
     get_pytest_scopenum, get_param_argnames_as_list
 
 from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
-from .fixture_parametrize_plus import LazyFuncArgs
+from .fixture_parametrize_plus import handle_lazy_args
 
 
 _DEBUG = False
 
 
-@pytest.hookimpl(tryfirst=True)
-def pytest_pyfunc_call(pyfuncitem  # type: Function
-                       ):
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_setup(item  # type: Function
+                         ):
     """
     Replace the dictionary of function args with our facade able to handle
     `lazy_value`
     """
-    pyfuncitem.funcargs = LazyFuncArgs(pyfuncitem.funcargs)
+    # first let all other hooks run, they will do the setup etc.
+    yield
+
+    # now item.funcargs exists so we can handle it
+    item.funcargs = {argname: handle_lazy_args(argvalue) for argname, argvalue in item.funcargs.items()}
 
 
 # @hookspec(firstresult=True)

@@ -440,21 +440,6 @@ def parametrize_plus(argnames,
                              debug=debug, **kwargs)
 
 
-class LazyFuncArgs(object):
-    """
-    Called in our `plugin.pytest_pyfunc_call` hook, before a test function is actually called.
-    We replace the funcargs dictionary with a lazy facade
-    """
-    __slots__ = 'funcargs_dict'
-
-    def __init__(self, funcargs_dict):
-        self.funcargs_dict = funcargs_dict
-
-    def __getitem__(self, item):
-        argval = self.funcargs_dict[item]
-        return handle_lazy_args(argval)
-
-
 def handle_lazy_args(argval):
     """ Possibly calls the lazy values contained in argval if needed, before returning it"""
 
