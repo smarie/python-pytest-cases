@@ -12,7 +12,7 @@ except ImportError:
     pass
 
 
-from pytest_cases.tests.cases.example_code import InfiniteInput
+from ..example_code import InfiniteInput
 
 
 def case_simple():

@@ -1,5 +1,5 @@
 from pytest_cases import cases_data, THIS_MODULE, cases_generator, CaseDataGetter, get_all_cases
-from pytest_cases.tests.cases.utils import nb_pytest_parameters, get_pytest_param
+from ..utils import nb_pytest_parameters, get_pytest_param
 
 try:  # python 3+: type hints
     from pytest_cases import CaseData

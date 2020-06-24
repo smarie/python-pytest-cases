@@ -1,5 +1,5 @@
 from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE, case_tags
-from pytest_cases.tests.cases.utils import nb_pytest_parameters, get_pytest_param
+from ..utils import nb_pytest_parameters, get_pytest_param
 
 try:  # python 3.2+
     from functools import lru_cache

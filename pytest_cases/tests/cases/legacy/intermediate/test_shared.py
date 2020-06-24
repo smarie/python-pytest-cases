@@ -1,6 +1,6 @@
 from pytest_cases import CaseDataGetter, cases_data
 
-from pytest_cases.tests.cases.example_code import super_function_i_want_to_test, super_function_i_want_to_test2
+from ..example_code import super_function_i_want_to_test, super_function_i_want_to_test2
 
 # the file with case functions
 from . import test_shared_cases

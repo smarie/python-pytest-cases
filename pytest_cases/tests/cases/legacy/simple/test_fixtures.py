@@ -4,7 +4,7 @@ from ..simple import test_main_cases
 
 from pytest_cases import unfold_expected_err, cases_fixture, cases_data, pytest_fixture_plus
 
-from pytest_cases.tests.cases.example_code import super_function_i_want_to_test
+from ..example_code import super_function_i_want_to_test
 
 
 @cases_fixture(module=test_main_cases)
