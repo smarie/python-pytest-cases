@@ -2,10 +2,12 @@ from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignor
 from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture
 from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref, lazy_value
 
-from .case_funcs import case_name, test_target, case_tags, cases_generator
-from .case_parametrizer import cases_data, CaseDataGetter, unfold_expected_err, get_all_cases, THIS_MODULE, \
-    get_pytest_parametrize_args, cases_fixture
+from .case_funcs_legacy import case_name, test_target, case_tags, cases_generator
+from .case_funcs_new import case
 
+from .case_parametrizer_legacy import cases_data, CaseDataGetter, unfold_expected_err, get_all_cases, \
+    get_pytest_parametrize_args, cases_fixture
+from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, AUTO, AUTO2
 
 try:
     # -- Distribution mode --
@@ -21,21 +23,30 @@ except ImportError:
 __all__ = [
     '__version__',
     # the submodules
-    'case_funcs', 'case_parametrizer', 'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
+    'case_funcs_legacy', 'case_funcs_new',  'case_parametrizer_legacy', 'case_parametrizer_new',
+    'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
+
     # all symbols imported above
+    # --fixture core1
+    'fixture_union', 'NOT_USED', 'unpack_fixture', 'ignore_unused',
+    # -- fixture core2
+    'pytest_fixture_plus', 'fixture_plus', 'param_fixtures', 'param_fixture',
+    # -- fixture parametrize plus
+    'pytest_parametrize_plus', 'parametrize_plus', 'fixture_ref', 'lazy_value',
+
     # --cases_funcs
-    'lazy_value',
-    'case_name',  'test_target', 'case_tags', 'cases_generator',
-    # --main_fixtures
-    'cases_fixture', 'pytest_fixture_plus', 'fixture_plus', 'param_fixtures', 'param_fixture', 'ignore_unused',
-    'fixture_union', 'NOT_USED', 'pytest_parametrize_plus', 'parametrize_plus', 'fixture_ref', 'unpack_fixture',
+    'case_name',  'test_target', 'case_tags',
+    'case', 'cases_generator',
+
     # --main params
-    'cases_data', 'CaseDataGetter', 'THIS_MODULE', 'unfold_expected_err', 'get_all_cases',
-    'get_pytest_parametrize_args',
+    'cases_data', 'CaseDataGetter', 'THIS_MODULE', 'AUTO', 'AUTO2', 'unfold_expected_err', 'get_all_cases',
+    'get_pytest_parametrize_args', 'cases_fixture',
+    #
+    'parametrize_with_cases', 'THIS_MODULE'
 ]
 
 try:  # python 3.5+ type hints
-    from pytest_cases.case_funcs import CaseData, Given, ExpectedNormal, ExpectedError, MultipleStepsCaseData
+    from pytest_cases.case_funcs_legacy import CaseData, Given, ExpectedNormal, ExpectedError, MultipleStepsCaseData
     __all__ += ['CaseData', 'Given', 'ExpectedNormal', 'ExpectedError', 'MultipleStepsCaseData']
 except ImportError:
     pass

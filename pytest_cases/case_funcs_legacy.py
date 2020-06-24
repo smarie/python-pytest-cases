@@ -1,50 +1,26 @@
 from __future__ import division
 
+from itertools import product
+from warnings import warn
+
 from decopatch import DECORATED, function_decorator, with_parenthesis
 
 try:  # python 3.2+
     from functools import lru_cache as lru
 except ImportError:
-    from functools32 import lru_cache as lru
-
-from itertools import product
+    from functools32 import lru_cache as lru  # noqa
 
 try:  # python 3.5+
-    from typing import Callable, Union, Optional, Any, Tuple, Dict, Iterable
-
-    # Type hints that you can use in your functions
-    Given = Any
-    """The input(s) for the test. It can be anything"""
-
-    ExpectedNormal = Optional[Any]
-    """The expected test results in case success is expected, or None if this test should fail"""
-
-    ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], Optional[bool]]]]
-    """The expected error in case failure is expected, or None if the test should succeed. It is proposed that expected 
-    error can be defined as an exception type, an exception instance, or an exception validation function"""
-
-    CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
-
-    MultipleStepsCaseData = Tuple[Union[Given, Dict[Any, Given]],
-                                  Union[ExpectedNormal, Dict[Any, ExpectedNormal]],
-                                  Union[ExpectedError, Dict[Any, ExpectedError]]]
-except:
+    from typing import Type, Callable, Union, Optional, Any, Tuple, Dict, Iterable
+except:  # noqa
     pass
 
-try:  # python 3.5.4+
-    from typing import Type
-except:
-    # on old versions of typing module the above does not work. Since our code below has all Type hints quoted it's ok
-    pass
-
-
-_GENERATOR_FIELD = '__cases_generator__'
-"""Internal marker used for cases generators"""
+from .case_funcs_new import _add_tags
 
 
 @function_decorator
 def case_name(name,  # type: str
-              test_func=DECORATED
+              case_func=DECORATED  # noqa
               ):
     """
     Decorator to override the name of a case function. The new name will be used instead of the function name,
@@ -59,11 +35,9 @@ def case_name(name,  # type: str
     :param name: the name that will be used in the test case instead of the case function name
     :return:
     """
-    test_func.__name__ = name
-    return test_func
-
-
-CASE_TAGS_FIELD = '__case_tags__'
+    warn("`@case_name` is deprecated. Please use `@case(id=<name>)`.")
+    case_func.__name__ = name
+    return case_func
 
 
 @function_decorator(custom_disambiguator=with_parenthesis)
@@ -77,15 +51,11 @@ def case_tags(*tags  # type: Any
         functions...)
     :return:
     """
+    warn("`@case_tags` is deprecated. Please use `@case(tags=(<tags>,...))`.")
+
     # we have to use "nested" mode for this decorator because in the decorator signature we have a var-positional
     def _apply(case_func):
-        existing_tags = getattr(case_func, CASE_TAGS_FIELD, None)
-        if existing_tags is None:
-            # there are no tags yet. Use the provided
-            setattr(case_func, CASE_TAGS_FIELD, list(tags))
-        else:
-            # there are some tags already, let's try to add the new to the existing
-            setattr(case_func, CASE_TAGS_FIELD, existing_tags + list(tags))
+        _add_tags(case_func, tuple(tags))
         return case_func
 
     return _apply
@@ -105,17 +75,32 @@ def test_target(target  # type: Any
     :param target: for example a function, a class... or a string representing a function, a class...
     :return:
     """
+    warn("`@test_target` is deprecated. Please use `@case(target=<target>)`.")
     return case_tags(target)
 
 
 test_target.__test__ = False  # disable this function in pytest (otherwise name starts with 'test' > it will appear)
 
 
+_GENERATOR_FIELD = '__cases_generator__'
+"""Internal marker used for cases generators"""
+
+
+def is_case_generator(f):
+    return hasattr(f, _GENERATOR_FIELD)
+
+
+def get_case_generator_details(f):
+    return getattr(f, _GENERATOR_FIELD, False)
+
+
 @function_decorator
-def cases_generator(names=None,       # type: Union[str, Callable[[Any], str], Iterable[str]]
-                    lru_cache=False,  # type: bool,
-                    case_func=DECORATED,
-                    **param_ranges    # type: Iterable[Any]
+def cases_generator(names=None,           # type: Union[str, Callable[[Any], str], Iterable[str]]
+                    target=None,          # type: Any
+                    tags=None,            # type: Iterable[Any]
+                    lru_cache=False,      # type: bool,
+                    case_func=DECORATED,  # noqa
+                    **param_ranges        # type: Iterable[Any]
                     ):
     """
     Decorator to declare a case function as being a cases generator. `param_ranges` should be a named list of parameter
@@ -147,9 +132,38 @@ def cases_generator(names=None,       # type: Union[str, Callable[[Any], str], I
     """
     kwarg_values = list(product(*param_ranges.values()))
     setattr(case_func, _GENERATOR_FIELD, (names, param_ranges.keys(), kwarg_values))
+
     if lru_cache:
         nb_cases = len(kwarg_values)
         # decorate the function with the appropriate lru cache size
         case_func = lru(maxsize=nb_cases)(case_func)
 
     return case_func
+
+
+# Optional type hints that you can use in your case functions
+try:
+    from typing import Any
+
+    Given = Any
+    """The input(s) for the test. It can be anything"""
+
+    ExpectedNormal = Optional[Any]
+    """The expected test results in case success is expected, or None if this test should fail"""
+
+    ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], Optional[bool]]]]
+    """The expected error in case failure is expected, or None if the test should succeed. It is proposed that expected 
+    error can be defined as an exception type, an exception instance, or an exception validation function"""
+
+    # ------ The two main symbols ----
+
+    CaseData = Tuple[Given, ExpectedNormal, ExpectedError]
+    """Represents the output of a case function when you choose to use this in/out/err pattern"""
+
+    MultipleStepsCaseData = Tuple[Union[Given, Dict[Any, Given]],
+                                  Union[ExpectedNormal, Dict[Any, ExpectedNormal]],
+                                  Union[ExpectedError, Dict[Any, ExpectedError]]]
+    """Represents the output of a case function when you have a different expected result for each test step"""
+
+except:  # noqa
+    pass

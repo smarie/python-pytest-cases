@@ -8,7 +8,7 @@ except ImportError:
     from funcsigs import signature  # noqa
 
 from distutils.version import LooseVersion
-from inspect import isgeneratorfunction
+from inspect import isgeneratorfunction, isclass
 from warnings import warn
 
 try:
@@ -71,6 +71,16 @@ def is_fixture(fixture_fun  # type: Any
         return True
     except AttributeError:
         # not a fixture ?
+        return False
+
+
+def safe_isclass(obj  # type: object
+                 ):
+    # type: (...) -> bool
+    """Ignore any exception via isinstance on Python 3."""
+    try:
+        return isclass(obj)
+    except Exception:
         return False
 
 
@@ -636,3 +646,26 @@ def mini_idvalset(argnames, argvalues, idx):
         for val, argname in zip(argvalues, argnames)
     ]
     return "-".join(this_id)
+
+
+def get_code(f):
+    """
+    Returns the source code associated to function f. It is robust to wrappers such as @lru_cache
+    :param f:
+    :return:
+    """
+    if hasattr(f, '__wrapped__'):
+        return get_code(f.__wrapped__)
+    elif hasattr(f, '__code__'):
+        return f.__code__
+    else:
+        raise ValueError("Cannot get code information for function " + str(f))
+
+
+# Below is the beginning of a switch from our code scanning tool above to the same one than pytest. See `case_parametrizer_new`
+# from _pytest.compat import get_real_func as compat_get_real_func
+#
+# try:
+#     from _pytest._code.source import getfslineno as compat_getfslineno
+# except ImportError:
+#     from _pytest.compat import getfslineno as compat_getfslineno

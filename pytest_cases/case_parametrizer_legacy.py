@@ -4,7 +4,6 @@ from __future__ import division
 import sys
 from abc import abstractmethod, ABCMeta
 from decopatch import function_decorator, DECORATED, with_parenthesis
-from inspect import getmembers
 from warnings import warn
 
 try:  # python 3.3+
@@ -16,7 +15,7 @@ import pytest
 
 try:  # type hints, python 3+
     from typing import Type, Callable, Union, Optional, Any, Tuple, List, Dict, Iterable  # noqa
-    from pytest_cases.case_funcs import CaseData, ExpectedError  # noqa
+    from pytest_cases.case_funcs_legacy import CaseData, ExpectedError  # noqa
     from types import ModuleType  # noqa
 
     # Type hint for the simple functions
@@ -30,7 +29,9 @@ except ImportError:
 from .common_mini_six import with_metaclass, string_types
 from .common_pytest import make_marked_parameter_value, get_pytest_marks_on_function
 
-from .case_funcs import _GENERATOR_FIELD, CASE_TAGS_FIELD
+from .case_funcs_legacy import is_case_generator, get_case_generator_details
+from .case_parametrizer_new import THIS_MODULE, extract_cases_from_module
+
 from .fixture_core2 import fixture_plus
 
 
@@ -126,13 +127,6 @@ class CaseDataFromFunction(CaseDataGetter):
         """
         kwargs.update(self.function_kwargs)
         return self.f(*args, **kwargs)
-
-
-CASE_PREFIX = 'case_'
-"""Prefix used by default to identify case functions within a module"""
-
-THIS_MODULE = object()
-"""Marker that can be used instead of a module name to indicate that the module is the current one"""
 
 
 @function_decorator(custom_disambiguator=with_parenthesis)
@@ -276,7 +270,8 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
             _cases = []
             for m in module:  # noqa
                 m = sys.modules[this_module_object.__module__] if m is THIS_MODULE else m
-                _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter)
+                _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter,
+                                                    _case_param_factory=_get_case_getter_s)
             success = True
         except TypeError:
             success = False
@@ -284,74 +279,10 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
         if not success:
             # 'module' object is not iterable: a single module was provided
             m = sys.modules[this_module_object.__module__] if module is THIS_MODULE else module
-            _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter)
+            _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter,
+                                               _case_param_factory=_get_case_getter_s)
 
     return _cases
-
-
-def _get_code(f):
-    """
-    Returns the source code associated to function f. It is robust to wrappers such as @lru_cache
-    :param f:
-    :return:
-    """
-    if hasattr(f, '__wrapped__'):
-        return _get_code(f.__wrapped__)
-    elif hasattr(f, '__code__'):
-        return f.__code__
-    else:
-        raise ValueError("Cannot get code information for function " + str(f))
-
-
-def extract_cases_from_module(module,        # type: ModuleType
-                              has_tag=None,  # type: Any
-                              filter=None    # type: Callable[[List[Any]], bool]  # noqa
-                              ):
-    # type: (...) -> List[CaseDataGetter]
-    """
-    Internal method used to create a list of `CaseDataGetter` for all cases available from the given module.
-    See `@cases_data`
-
-    :param module:
-    :param has_tag: a tag used to filter the cases. Only cases with the given tag will be selected
-    :param filter: a function taking as an input a list of tags associated with a case, and returning a boolean
-        indicating if the case should be selected
-    :return:
-    """
-    if filter is not None and not callable(filter):
-        raise ValueError("`filter` should be a callable starting in pytest-cases 0.8.0. If you wish to provide a single"
-                         " tag to match, use `has_tag` instead.")
-
-    # First gather all case data providers in the reference module
-    cases_dct = dict()
-    for f_name, f in getmembers(module, callable):
-        # only keep the functions
-        #  - from the module file (not the imported ones),
-        #  - starting with prefix 'case_'
-        if f_name.startswith(CASE_PREFIX):
-            code = _get_code(f)
-            # check if the function is actually defined in this module (not imported from elsewhere)
-            # Note: we used code.co_filename == module.__file__ in the past
-            # but on some targets the file changes to a cached one so this does not work reliably,
-            # see https://github.com/smarie/python-pytest-cases/issues/72
-            if f.__module__ == module.__name__:
-                #  - with the optional filter/tag
-                _tags = getattr(f, CASE_TAGS_FIELD, ())
-
-                selected = True  # by default select the case, then AND the conditions
-                if has_tag is not None:
-                    selected = selected and (has_tag in _tags)
-                if filter is not None:
-                    selected = selected and filter(_tags)
-
-                if selected:
-                    # update the dictionary with the case getters
-                    _get_case_getter_s(f, code, cases_dct)
-
-    # convert into a list, taking all cases in order of appearance in the code (sort by source code line number)
-    cases = [cases_dct[k] for k in sorted(cases_dct.keys())]
-
-    return cases
 
 
 class InvalidNamesTemplateException(Exception):
@@ -391,11 +322,10 @@ def _get_case_getter_s(f,
         cases_list = None
 
     # Handle case generators
-    gen = getattr(f, _GENERATOR_FIELD, False)
-    if gen:
+    if is_case_generator(f):
         already_used_names = []
 
-        names, param_ids, all_param_values_combinations = gen
+        names, param_ids, all_param_values_combinations = get_case_generator_details(f)
         nb_cases_generated = len(all_param_values_combinations)
 
         if names is None:
