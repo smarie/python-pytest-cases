@@ -8,7 +8,7 @@ except ImportError:
     from funcsigs import signature  # noqa
 
 from distutils.version import LooseVersion
-from inspect import isgeneratorfunction, isclass
+from inspect import isgeneratorfunction, isclass, findsource
 from warnings import warn
 
 try:
@@ -233,6 +233,13 @@ def get_param_names(fnode):
 
 
 # ---------------- working on functions
+def copy_pytest_marks(from_f, to_f, override=False):
+    """Copy all pytest marks from a function to another"""
+    from_marks = get_pytest_marks_on_function(from_f)
+    to_marks = [] if override else get_pytest_marks_on_function(to_f)
+    to_f.pytestmark = to_marks + from_marks
+
+
 def get_pytest_marks_on_function(f, as_decorators=False):
     """
     Utility to return *ALL* pytest marks (not only parametrization) applied on a function
@@ -648,18 +655,25 @@ def mini_idvalset(argnames, argvalues, idx):
     return "-".join(this_id)
 
 
-def get_code(f):
+def get_code_first_line(f):
     """
-    Returns the source code associated to function f. It is robust to wrappers such as @lru_cache
+    Returns the source code associated to function or class f. It is robust to wrappers such as @lru_cache
     :param f:
     :return:
     """
+    # todo maybe use inspect.unwrap instead?
     if hasattr(f, '__wrapped__'):
-        return get_code(f.__wrapped__)
+        return get_code_first_line(f.__wrapped__)
     elif hasattr(f, '__code__'):
-        return f.__code__
+        # a function
+        return f.__code__.co_firstlineno
     else:
-        raise ValueError("Cannot get code information for function " + str(f))
+        # a class ?
+        try:
+            _, lineno = findsource(f)
+            return lineno
+        except:  # noqa
+            raise ValueError("Cannot get code information for function or class %r" % f)
 
 
 # Below is the beginning of a switch from our code scanning tool above to the same one than pytest. See `case_parametrizer_new`

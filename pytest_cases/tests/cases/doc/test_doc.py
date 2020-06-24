@@ -1,7 +1,7 @@
 import pytest
 
 from pytest_harvest import get_session_synthesis_dct
-from pytest_cases import parametrize_with_cases, AUTO2, fixture_plus
+from pytest_cases import parametrize_with_cases, AUTO2, fixture_plus, case
 
 from . import cases_doc
 from .example import foo
@@ -36,8 +36,11 @@ def test_foo_alternate_cases_file_and_one_marked_skip(a, b):
 def test_foo_alternate_cases_file_and_one_marked_skip_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_alternate_cases_file_and_one_marked_skip,
                                             test_id_format='function')
-    assert list(results_dct) == [# 'test_foo_default_cases_file[two_positive_ints]', skipped
-                                 'test_foo_alternate_cases_file_and_one_marked_skip[two_negative_ints]']
+    assert list(results_dct) == [
+        'test_foo_alternate_cases_file_and_one_marked_skip[hello]',
+        'test_foo_alternate_cases_file_and_one_marked_skip[two_negative_ints0]',
+        'test_foo_alternate_cases_file_and_one_marked_skip[two_negative_ints1]'
+    ]
 
 
 def strange_ints():
@@ -75,6 +78,16 @@ class CasesFoo:
     def case_foo():
         return
 
+    @case(id="hello")
+    def blah(self):
+        """a blah"""
+        return 0, 0
+
+    @pytest.mark.skip
+    def case_skipped(self):
+        """skipped case"""
+        return 0
+
     def case_two_negative_ints(self):
         """ Inputs are two negative integers """
         return -1, -2
@@ -87,7 +100,8 @@ def test_foo_cls(a, b):
 
 def test_foo_cls_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_cls, test_id_format='function')
-    assert list(results_dct) == ['test_foo_cls[two_negative_ints]']
+    assert list(results_dct) == ['test_foo_cls[hello]',
+                                 'test_foo_cls[two_negative_ints]']
 
 
 @parametrize_with_cases("a,b", cases=(CasesFoo, strange_ints, cases_doc, CasesFoo, '.test_doc_cases'))
@@ -99,16 +113,20 @@ def test_foo_cls_list_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_cls_list, test_id_format='function')
     assert list(results_dct) == [
         # CasesFoo
+        'test_foo_cls_list[hello0]',
         'test_foo_cls_list[two_negative_ints0]',
         # strange_ints
         'test_foo_cls_list[strange_ints]',
         # cases_doc.py
+        'test_foo_cls_list[hello1]',
         'test_foo_cls_list[two_negative_ints1]',
-        # CasesFoo
         'test_foo_cls_list[two_negative_ints2]',
+        # CasesFoo
+        'test_foo_cls_list[hello2]',
+        'test_foo_cls_list[two_negative_ints3]',
         # test_doc_cases.py
         'test_foo_cls_list[two_positive_ints1]',
-        'test_foo_cls_list[two_negative_ints3]'
+        'test_foo_cls_list[two_negative_ints4]'
     ]
 
 

@@ -301,7 +301,7 @@ class InvalidNamesTemplateException(Exception):
 
 
 def _get_case_getter_s(f,
-                       f_code=None,
+                       co_firstlineno=None,
                        cases_dct=None):
     # type: (...) -> Optional[List[CaseDataFromFunction]]
     """
@@ -310,7 +310,7 @@ def _get_case_getter_s(f,
     For generated cases, a floating line number is created to preserve order.
 
     :param f:
-    :param f_code: should be provided if cases_dct is provided.
+    :param co_firstlineno: should be provided if cases_dct is provided.
     :param cases_dct: an optional dictionary where to store the created function wrappers
     :return:
     """
@@ -372,7 +372,7 @@ def _get_case_getter_s(f,
                 cases_list.append(case_getter)
             else:
                 # with an artificial floating point line number to keep order in dict
-                gen_line_nb = f_code.co_firstlineno + (gen_case_id / nb_cases_generated)
+                gen_line_nb = co_firstlineno + (gen_case_id / nb_cases_generated)
                 cases_dct[gen_line_nb] = case_getter
     else:
         # single case
@@ -382,7 +382,7 @@ def _get_case_getter_s(f,
         if cases_dct is None:
             cases_list.append(case_getter)
         else:
-            cases_dct[f_code.co_firstlineno] = case_getter
+            cases_dct[co_firstlineno] = case_getter
 
     if cases_dct is None:
         return cases_list

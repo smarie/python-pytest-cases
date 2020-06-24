@@ -14,9 +14,9 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
-from .common_pytest import get_code, safe_isclass
+from .common_pytest import get_code_first_line, safe_isclass, copy_pytest_marks
 
-from .case_funcs_new import matches_tag_query, is_case_function, CASE_FIELD, CaseInfo, is_case_class
+from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, get_case_info, copy_case_infos
 
 AUTO = object()
 """Marker that can be used instead of a module name to indicate that the module is the one named `test_*_cases.py`"""
@@ -117,7 +117,7 @@ def case_to_argvalue(f):
     id = None
     marks = ()
 
-    case_info = getattr(f, CASE_FIELD, None)  # type: CaseInfo
+    case_info = get_case_info(f)
     if case_info is not None:
         id = case_info.id
         marks = case_info.marks
@@ -293,30 +293,35 @@ def _extract_cases_from_module_or_class(module=None,   # type: ModuleRef
 
     for m_name, m in getmembers(container, _of_interest):
         if is_case_class(m):
+            co_firstlineno = get_code_first_line(m)
             cls_cases = extract_cases_from_class(m, has_tag=has_tag, filter=filter,
                                                  _case_param_factory=_case_param_factory)
             for _i, _m_item in enumerate(cls_cases):
-                gen_line_nb = code.co_firstlineno + (_i / len(cls_cases))
+                gen_line_nb = co_firstlineno + (_i / len(cls_cases))
                 cases_dct[gen_line_nb] = _m_item
 
         elif is_case_function(m):
-            code = get_code(m)
+            co_firstlineno = get_code_first_line(m)
             if cls is not None:
                 if isinstance(cls.__dict__[m_name], (staticmethod, classmethod)):
                     # skip it
                     continue
-                # unwrap the function to get one without the 'self' argument
-                _name = m.__name__
-                m = partial(m, cls())
-                m.__name__ = _name
+                # partialize the function to get one without the 'self' argument
+                new_m = partial(m, cls())
+                # we have to recopy all metadata concerning the case function
+                new_m.__name__ = m.__name__
+                copy_case_infos(m, new_m)
+                copy_pytest_marks(m, new_m, override=True)
+                m = new_m
+                del new_m
 
             if matches_tag_query(m, has_tag=has_tag, filter=filter):
                 if _case_param_factory is None:
                     # Nominal usage: put the case in the dictionary
-                    cases_dct[code.co_firstlineno] = m
+                    cases_dct[co_firstlineno] = m
                 else:
                     # Legacy usage where the cases generators were expanded here and inserted with a virtual line no
-                    _case_param_factory(m, code, cases_dct)
+                    _case_param_factory(m, co_firstlineno, cases_dct)
 
     # convert into a list, taking all cases in order of appearance in the code (sort by source code line number)
     cases = [cases_dct[k] for k in sorted(cases_dct.keys())]

@@ -9,6 +9,30 @@ def two_positive_ints():
     return 1, 2
 
 
+class CasesFoo:
+    @classmethod
+    def case_toto(cls):
+        return
+
+    @staticmethod
+    def case_foo():
+        return
+
+    @case(id="hello")
+    def blah(self):
+        """a blah"""
+        return 0, 0
+
+    @pytest.mark.skip
+    def case_skipped(self):
+        """skipped case"""
+        return 0
+
+    def case_two_negative_ints(self):
+        """ Inputs are two negative integers """
+        return -1, -2
+
+
 @pytest.mark.skip
 def case_three_negative_ints():
     """ Inputs are three negative integers """
