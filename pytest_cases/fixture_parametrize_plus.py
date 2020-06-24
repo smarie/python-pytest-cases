@@ -163,7 +163,9 @@ else:
 
 def _unwrap(obj):
     """A light copy of _pytest.compat.get_real_func. In our case
-    we do not wish to unwrap the partial nor handle pytest fixture """
+    we do not wish to unwrap the partial nor handle pytest fixture
+    Note: maybe from inspect import unwrap could do the same?
+    """
     start_obj = obj
     for i in range(100):
         # __pytest_wrapped__ is set by @pytest.fixture when wrapping the fixture function
@@ -540,7 +542,16 @@ class LazyTuple(object):
 
     def force_getitem(self, item):
         """ Call the underlying value getter, then return self[i]. """
-        return self.get()[item]
+        getter = self.value
+        argvalue = self.get()
+        try:
+            return argvalue[item]
+        except TypeError as e:
+            raise ValueError("(lazy_value) The parameter value returned by `%r` is not compliant with the number"
+                             " of argnames in parametrization (%s). A %s-tuple-like was expected. "
+                             "Returned lazy argvalue is %r and argvalue[%s] raised %s: %s"
+                             % (getter.valuegetter, self.theoretical_size, self.theoretical_size,
+                                argvalue, item, e.__class__, e))
 
     def get(self):
         """ Call the underlying value getter, then return the tuple (not self) """
