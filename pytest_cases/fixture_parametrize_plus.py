@@ -234,7 +234,10 @@ class lazy_value(_LazyValueBase):
         """
         self.valuegetter = valuegetter
         self._id = id
-        self._marks = marks
+        if isinstance(marks, (tuple, list, set)):
+            self._marks = marks
+        else:
+            self._marks = (marks, )
 
     def get_marks(self, as_decorators=False):
         """
