@@ -23,7 +23,7 @@ try:  # type hints, python 3+
 
     # Type hint for generator functions
     GeneratedCaseFunc = Callable[[Any], CaseData]
-except ImportError:
+except:  # noqa
     pass
 
 from .common_mini_six import with_metaclass, string_types
@@ -386,36 +386,6 @@ def _get_case_getter_s(f,
 
     if cases_dct is None:
         return cases_list
-
-
-def unfold_expected_err(expected_e  # type: ExpectedError
-                        ):
-    # type: (...) -> Tuple[Optional['Type[Exception]'], Optional[Exception], Optional[Callable[[Exception], bool]]]
-    """
-    'Unfolds' the expected error `expected_e` to return a tuple of
-     - expected error type
-     - expected error instance
-     - error validation callable
-
-    If `expected_e` is an exception type, returns `expected_e, None, None`
-    If `expected_e` is an exception instance, returns `type(expected_e), expected_e, None`
-    If `expected_e` is an exception validation function, returns `Exception, None, expected_e`
-
-    :param expected_e: an `ExpectedError`, that is, either an exception type, an exception instance, or an exception
-        validation function
-    :return:
-    """
-    if type(expected_e) is type and issubclass(expected_e, Exception):
-        return expected_e, None, None
-
-    elif issubclass(type(expected_e), Exception):
-        return type(expected_e), expected_e, None
-
-    elif callable(expected_e):
-        return Exception, None, expected_e
-
-    raise ValueError("ExpectedNormal error should either be an exception type, an exception instance, or an exception "
-                     "validation callable")
 
 
 @function_decorator

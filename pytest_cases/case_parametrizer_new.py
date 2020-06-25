@@ -32,7 +32,7 @@ try:
     from types import ModuleType  # noqa
     ModuleRef = Union[str, ModuleType, Literal[THIS_MODULE]]  # noqa
     CasesHolder = Union[ModuleRef, Type]
-except ImportError:
+except:  # noqa
     pass
 
 

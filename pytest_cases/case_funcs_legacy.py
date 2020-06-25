@@ -12,7 +12,7 @@ except ImportError:
 
 try:  # python 3.5+
     from typing import Type, Callable, Union, Optional, Any, Tuple, Dict, Iterable
-except:  # noqa
+except ImportError:
     pass
 
 from .case_funcs_new import _add_tags
@@ -144,16 +144,13 @@ def cases_generator(names=None,           # type: Union[str, Callable[[Any], str
 # Optional type hints that you can use in your case functions
 try:
     from typing import Any
+    from .common_pytest import ExpectedError
 
     Given = Any
     """The input(s) for the test. It can be anything"""
 
     ExpectedNormal = Optional[Any]
     """The expected test results in case success is expected, or None if this test should fail"""
-
-    ExpectedError = Optional[Union['Type[Exception]', Exception, Callable[[Exception], Optional[bool]]]]
-    """The expected error in case failure is expected, or None if the test should succeed. It is proposed that expected 
-    error can be defined as an exception type, an exception instance, or an exception validation function"""
 
     # ------ The two main symbols ----
 

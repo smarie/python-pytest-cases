@@ -9,7 +9,7 @@ except ImportError:
 
 try:  # python 3.5+
     from typing import Type, Callable, Union, Optional, Any, Tuple, Dict, Iterable
-except:  # noqa
+except ImportError:
     pass
 
 from .common_pytest import safe_isclass
