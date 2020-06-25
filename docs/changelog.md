@@ -1,5 +1,23 @@
 # Changelog
 
+### 2.0.0 - Less boilerplate and full `pytest` alignment, unlocking advanced features
+
+New `@parametrize_with_cases(argnames, cases)` decorator:
+ 
+ - Similar behaviour than in `pytest`: 
+ 
+    - now `argnames` can contain several names, and the cases are unpacked automatically. No need to perform a `case.get()` at test execution time anymore.
+ 
+    - Cases are unpacked at test *setup* time, so the clock does not run while the case is created - in case you use `pytest-harvest` to collect the timings.
+
+ - A single `cases` argument is used for everything:
+
+     - Default behaviour (`cases=AUTO`) uses the file name pattern `test_xxx_cases.py`. Users can easily switch to alternate pattern `cases_xxx.py` with `cases=AUTO2`. Fixes [#91](https://github.com/smarie/python-pytest-cases/issues/91)
+    
+     - Cases can sit inside a class. Fixes [#93](https://github.com/smarie/python-pytest-cases/issues/93)
+
+ - New pytest goodie `assert_exception` that can be used as a context manager. Fixes [#104](https://github.com/smarie/python-pytest-cases/issues/104)
+
 ### 1.17.0 - `lazy_value` improvements + annoying warnings suppression
 
  - `lazy_value` are now resolved at pytest `setup` stage, not pytest `call` stage. This is important for execution time recorded in the reports (see also `pytest-harvest` plugin). Fixes [#102](https://github.com/smarie/python-pytest-cases/issues/102) 
