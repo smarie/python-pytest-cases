@@ -294,7 +294,7 @@ class lazy_value(_LazyValueBase):
 def pytest_parametrize_plus(*args,
                             **kwargs):
     warn("`pytest_parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
-         "See https://github.com/pytest-dev/pytest/issues/6475")
+         "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
     return _parametrize_plus(*args, **kwargs)
 
 

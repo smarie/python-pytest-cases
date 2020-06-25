@@ -254,7 +254,7 @@ def _create_params_fixture(caller_module,
 def pytest_fixture_plus(*args,
                         **kwargs):
     warn("`pytest_fixture_plus` is deprecated. Please use the new alias `fixture_plus`. "
-         "See https://github.com/pytest-dev/pytest/issues/6475")
+         "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
     if len(args) == 1:
         if callable(args[0]):
             return _decorate_fixture_plus(args[0], _caller_module_offset_when_unpack=2, **kwargs)

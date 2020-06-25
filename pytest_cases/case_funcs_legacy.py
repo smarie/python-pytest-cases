@@ -22,7 +22,8 @@ from .case_funcs_new import _add_tags
 def case_name(name,  # type: str
               case_func=DECORATED  # noqa
               ):
-    """
+    """ DEPRECATED - use `@case(id=...)`
+
     Decorator to override the name of a case function. The new name will be used instead of the function name,
     in test names.
 
@@ -35,7 +36,7 @@ def case_name(name,  # type: str
     :param name: the name that will be used in the test case instead of the case function name
     :return:
     """
-    warn("`@case_name` is deprecated. Please use `@case(id=<name>)`.")
+    warn("`@case_name` is deprecated. Please use `@case(id=<name>)`.", category=DeprecationWarning, stacklevel=2)
     case_func.__name__ = name
     return case_func
 
@@ -43,7 +44,8 @@ def case_name(name,  # type: str
 @function_decorator(custom_disambiguator=with_parenthesis)
 def case_tags(*tags  # type: Any
               ):
-    """
+    """ DEPRECATED - use `@case(tags=...)`
+
     Decorator to tag a case function with a list of tags. These tags can then be used in the `@cases_data` test
     function decorator to filter cases within the selected module(s).
 
@@ -51,7 +53,7 @@ def case_tags(*tags  # type: Any
         functions...)
     :return:
     """
-    warn("`@case_tags` is deprecated. Please use `@case(tags=(<tags>,...))`.")
+    warn("`@case_tags` is deprecated. Please use `@case(tags=(<tags>,...))`.", category=DeprecationWarning, stacklevel=2)
 
     # we have to use "nested" mode for this decorator because in the decorator signature we have a var-positional
     def _apply(case_func):
@@ -63,7 +65,8 @@ def case_tags(*tags  # type: Any
 
 def test_target(target  # type: Any
                 ):
-    """
+    """ DEPRECATED - use `@case(target=...)`
+
     A simple decorator to declare that a case function is associated with a particular target.
 
     >>> @test_target(int)
@@ -75,7 +78,7 @@ def test_target(target  # type: Any
     :param target: for example a function, a class... or a string representing a function, a class...
     :return:
     """
-    warn("`@test_target` is deprecated. Please use `@case(target=<target>)`.")
+    warn("`@test_target` is deprecated. Please use `@case(target=<target>)`.", category=DeprecationWarning, stacklevel=2)
     return case_tags(target)
 
 

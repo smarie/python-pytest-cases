@@ -36,7 +36,8 @@ from .fixture_core2 import fixture_plus
 
 
 class CaseDataGetter(with_metaclass(ABCMeta)):
-    """
+    """ DEPRECATED - this was created in v1 only by `@cases_data` (not by v2 `@parametrize_with_cases`)
+
     A proxy for a test case. Instances of this class are created by `@cases_data` or `get_all_cases`.
 
     It provides a single method: `get(self, *args, **kwargs) -> CaseData`
@@ -85,7 +86,8 @@ class CaseDataGetter(with_metaclass(ABCMeta)):
 
 
 class CaseDataFromFunction(CaseDataGetter):
-    """
+    """ DEPRECATED - this was created in v1 only by `@cases_data` (not by v2 `@parametrize_with_cases`)
+
     A CaseDataGetter relying on a function
     """
 
@@ -137,7 +139,8 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
                filter=None,                      # type: Callable[[List[Any]], bool]  # noqa
                test_func=DECORATED,  # noqa
                ):
-    """
+    """ DEPRECATED (V1) - use V2 `@parametrize_with_cases(argnames, ...)`
+
     Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with
     all cases listed explicitly in `cases`.
 
@@ -191,6 +194,9 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
         `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
+    warn("`@cases_data` is deprecated. Please use `@parametrize_with_cases`.", category=DeprecationWarning,
+         stacklevel=2)
+
     # equivalent to @mark.parametrize('case_data', cases) where cases is a tuple containing a CaseDataGetter for
 
     # First list all cases according to user preferences
@@ -397,8 +403,7 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
                   f=DECORATED,  # noqa
                   **kwargs
                   ):
-    """
-    DEPRECATED - use double annotation `@fixture_plus` + `@cases_data` instead
+    """ DEPRECATED - use double annotation `@fixture_plus` + `@parametrize_with_cases` instead
 
     ```python
     @fixture_plus
@@ -462,6 +467,9 @@ def cases_fixture(cases=None,                       # type: Union[Callable[[Any]
         `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
+    warn("`@cases_fixture` is deprecated. Please use `@fixture_plus` with `@parametrize_with_cases(id=<name>)` (V2) "
+         "or `@cases_data` (V1).", category=DeprecationWarning, stacklevel=2)
+
     # apply @cases_data (that will translate to a @pytest.mark.parametrize)
     parametrized_f = cases_data(cases=cases, module=module,
                                 case_data_argname=case_data_argname, has_tag=has_tag, filter=filter)(f)
