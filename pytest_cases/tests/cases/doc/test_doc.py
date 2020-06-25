@@ -88,6 +88,7 @@ class CasesFoo:
     def case_foo():
         return
 
+    @pytest.mark.skipif(False, reason="no")
     @case(id="hello")
     def blah(self):
         """a blah"""
