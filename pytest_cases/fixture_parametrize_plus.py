@@ -591,10 +591,29 @@ def _parametrize_plus(argnames,
     if len(fixture_indices) == 0:
         if debug:
             print("No fixture reference found. Calling @pytest.mark.parametrize...")
+
         # no fixture reference: shortcut, do as usual (note that the hook wont be called since no fixture is created)
-        return pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
-                                       ids=ids, scope=scope, **kwargs)
+        _decorator = pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
+                                            ids=ids, scope=scope, **kwargs)
+        if indirect:
+            return _decorator
+        else:
+            # wrap the decorator to check if the test function has the parameters as arguments
+            def _apply(test_func):
+                s = signature(test_func)
+                for p in argnames:
+                    if p not in s.parameters:
+                        raise ValueError("parameter '%s' not found in test function signature '%s%s'"
+                                         "" % (p, test_func.__name__, s))
+                return _decorator(test_func)
+
+            return _apply
+
     else:
+        if indirect:
+            raise ValueError("Setting `indirect=True` is not yet supported when at least a `fixure_ref` is present in "
+                             "the `argvalues`.")
+
         if len(kwargs) > 0:
             warn("Unsupported kwargs for `parametrize_plus`: %r" % kwargs)
 
