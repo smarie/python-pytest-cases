@@ -4,6 +4,10 @@ from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignor
 from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture
 from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref, lazy_value
 
+# additional symbols without the 'plus' suffix
+parametrize = parametrize_plus
+fixture = fixture_plus
+
 from .case_funcs_legacy import case_name, test_target, case_tags, cases_generator
 from .case_funcs_new import case
 
@@ -35,9 +39,9 @@ __all__ = [
     # --fixture core1
     'fixture_union', 'NOT_USED', 'unpack_fixture', 'ignore_unused',
     # -- fixture core2
-    'pytest_fixture_plus', 'fixture_plus', 'param_fixtures', 'param_fixture',
+    'pytest_fixture_plus', 'fixture_plus', 'fixture', 'param_fixtures', 'param_fixture',
     # -- fixture parametrize plus
-    'pytest_parametrize_plus', 'parametrize_plus', 'fixture_ref', 'lazy_value',
+    'pytest_parametrize_plus', 'parametrize_plus', 'parametrize', 'fixture_ref', 'lazy_value',
 
     # --cases_funcs
     'case_name',  'test_target', 'case_tags',
