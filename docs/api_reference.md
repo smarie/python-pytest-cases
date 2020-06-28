@@ -351,12 +351,19 @@ Identical to `param_fixtures` but for a single parameter name, so that you can a
 ### `@parametrize_plus`
 
 ```python
-parametrize_plus(argnames, argvalues, 
+parametrize_plus(argnames=None, argvalues=None, 
                  indirect=False, ids=None, idstyle='explicit',
-                 scope=None, hook=None, debug=False, **kwargs)
+                 idgen=None, scope=None, hook=None, debug=False, 
+                 **args)
 ```
 
-Equivalent to `@pytest.mark.parametrize` but also supports new possibilities in argvalues:
+Equivalent to `@pytest.mark.parametrize` but also supports 
+
+(1) new style for argnames/argvalues. One can also use `**args` to pass additional `{argnames: argvalues}` in the same parametrization call. This can be handy in combination with `idgen` to master the whole id template associated with several parameters.  
+
+(2) new alternate style for ids. One can use `idgen` instead of `ids`. `idgen` can be a callable receiving all parameters at once (`**args`) and returning an id ; or it can be a string template using the new-style string formatting where the argnames can be used as variables (e.g. `idgen=lambda **args: "-".join("%s=%s" % (k, v) for k, v in args.items())` or `idgen="my_id where a={a}"`). 
+
+(3) new possibilities in argvalues:
 
  - one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters from this fixture. Special test ids will be created to illustrate the switching between the various normal parameters and fixtures. You can see debug print messages about all fixtures created using `debug=True`
 

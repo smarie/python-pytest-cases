@@ -2,6 +2,7 @@ from collections import Iterable, namedtuple
 from distutils.version import LooseVersion
 from functools import partial
 from inspect import isgeneratorfunction
+from itertools import product
 from warnings import warn
 
 try:  # python 3.3+
@@ -17,6 +18,7 @@ except ImportError:
 import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
+from .common_mini_six import string_types
 from .common_pytest import get_fixture_name, remove_duplicates, is_marked_parameter_value, mini_idvalset, \
     get_param_argnames_as_list, extract_parameterset_info, ParameterSet, has_pytest_param, get_pytest_marks_on_function, \
     transform_marks_into_decorators
@@ -427,17 +429,29 @@ class ParamIdMakers(object):
             raise ValueError("Unknown style: %r" % style)
 
 
-def parametrize_plus(argnames,
-                     argvalues,
+def parametrize_plus(argnames=None,
+                     argvalues=None,
                      indirect=False,      # type: bool
                      ids=None,            # type: Union[Callable, List[str]]
                      idstyle='explicit',  # type: str
+                     idgen=None,          # type: Union[str, Callable]
                      scope=None,          # type: str
                      hook=None,           # type: Callable[[Callable], Callable]
                      debug=False,         # type: bool
-                     **kwargs):
+                     **args):
     """
-    Equivalent to `@pytest.mark.parametrize` but also supports new possibilities in argvalues:
+    Equivalent to `@pytest.mark.parametrize` but also supports
+
+    (1) new style for argnames/argvalues. One can also use `**args` to pass additional `{argnames: argvalues}` in the
+    same parametrization call. This can be handy in combination with `idgen` to master the whole id template associated
+    with several parameters.
+
+    (2) new alternate style for ids. One can use `idgen` instead of `ids`. `idgen` can be a callable receiving all
+    parameters at once (`**args`) and returning an id ; or it can be a string template using the new-style string
+    formatting where the argnames can be used as variables (e.g.
+    `idgen=lambda **args: "-".join("%s=%s" % (k, v) for k, v in args.items())` or `idgen="my_id where a={a}"`).
+
+    (3) new possibilities in argvalues:
 
      - one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or
        fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture
@@ -462,7 +476,11 @@ def parametrize_plus(argnames,
     :param argnames: same as in pytest.mark.parametrize
     :param argvalues: same as in pytest.mark.parametrize except that `fixture_ref` and `lazy_value` are supported
     :param indirect: same as in pytest.mark.parametrize
-    :param ids: same as in pytest.mark.parametrize
+    :param ids: same as in pytest.mark.parametrize. Note that an alternative way to create ids exists with `idgen`. Only
+        one non-None `ids` or `idgen should be provided.
+    :param idgen: an id formatter. Either a string representing a template, or a callable receiving all argvalues
+        at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when
+        `ids` is not provided (None).
     :param idstyle: style of ids to be used in generated "union" fixtures. See `fixture_union` for details.
     :param scope: same as in pytest.mark.parametrize
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
@@ -470,11 +488,11 @@ def parametrize_plus(argnames,
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
-    :param kwargs: additional arguments for pytest.mark.parametrize
+    :param args: additional {argnames: argvalues} definition
     :return:
     """
-    return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, idstyle=idstyle, scope=scope, hook=hook,
-                             debug=debug, **kwargs)
+    return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, idgen=idgen, idstyle=idstyle, scope=scope,
+                             hook=hook, debug=debug, **args)
 
 
 def handle_lazy_args(argval):
@@ -562,25 +580,47 @@ class LazyTuple(object):
         return self.value
 
 
-def _parametrize_plus(argnames,
-                      argvalues,
+class InvalidIdTemplateException(Exception):
+    """
+    Raised when a string template provided in an `idgen` raises an error
+    """
+    def __init__(self, idgen, params, caught):
+        self.idgen = idgen
+        self.params = params
+        self.caught = caught
+        super(InvalidIdTemplateException, self).__init__()
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return "Error generating test id using name template '%s' with parameter values " \
+               "%r. Please check the name template. Caught: %s - %s" \
+               % (self.idgen, self.params, self.caught.__class__, self.caught)
+
+
+def _parametrize_plus(argnames=None,
+                      argvalues=None,
                       indirect=False,      # type: bool
                       ids=None,            # type: Union[Callable, List[str]]
                       idstyle='explicit',  # type: str
+                      idgen=None,          # type: Union[str, Callable]
                       scope=None,          # type: str
                       hook=None,           # type: Callable[[Callable], Callable]
                       _frame_offset=2,
                       debug=False,         # type: bool
-                      **kwargs):
-    # make sure that we do not destroy the argvalues if it is provided as an iterator
-    try:
-        argvalues = list(argvalues)
-    except TypeError:
-        raise InvalidParamsList(argvalues)
+                      **args):
 
-    # get the param names
-    initial_argnames = argnames
-    argnames = get_param_argnames_as_list(argnames)
+    # first handle argnames / argvalues (new modes of input)
+    argnames, argvalues = _get_argnames_argvalues(argnames, argvalues, **args)
+
+    if idgen is not None:
+        if ids is not None:
+            raise ValueError("Only one of `ids` and `idgen` should be provided")
+        ids = _gen_ids(argnames, argvalues, idgen)
+
+    # argnames related
+    initial_argnames = ','.join(argnames)
     nb_params = len(argnames)
 
     # extract all marks and custom ids.
@@ -594,7 +634,7 @@ def _parametrize_plus(argnames,
 
         # no fixture reference: shortcut, do as usual (note that the hook wont be called since no fixture is created)
         _decorator = pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
-                                            ids=ids, scope=scope, **kwargs)
+                                             ids=ids, scope=scope)
         if indirect:
             return _decorator
         else:
@@ -613,9 +653,6 @@ def _parametrize_plus(argnames,
         if indirect:
             raise ValueError("Setting `indirect=True` is not yet supported when at least a `fixure_ref` is present in "
                              "the `argvalues`.")
-
-        if len(kwargs) > 0:
-            warn("Unsupported kwargs for `parametrize_plus`: %r" % kwargs)
 
         if debug:
             print("Fixture references found. Creating fixtures...")
@@ -944,6 +981,87 @@ def _parametrize_plus(argnames,
             return wrapped_test_func
 
         return parametrize_plus_decorate
+
+
+def _get_argnames_argvalues(argnames=None, argvalues=None, **args):
+    """
+
+    :param argnames:
+    :param argvalues:
+    :param args:
+    :return: argnames, argvalues - both guaranteed to be lists
+    """
+    # handle **args - a dict of {argnames: argvalues}
+    if len(args) < 2:
+        kw_argnames = get_param_argnames_as_list(next(iter(args.keys()))) if len(args) > 0 else []
+        kw_argvalues = list(*args.values())
+    else:
+        kw_argvalues = list(product(*args.values()))
+        kw_argnames = []
+        for i, argname in enumerate(args.keys()):
+            _names = get_param_argnames_as_list(argname)
+            kw_argnames += _names
+            if len(_names) > 1:
+                for j, _argvals in enumerate(kw_argvalues):
+                    kw_argvalues[j] = kw_argvalues[j][:i] + kw_argvalues[j][i] + kw_argvalues[j][i+1:]
+
+    if argnames is None:
+        # (1) all {argnames: argvalues} pairs are provided in **args
+        if argvalues is not None or len(args) == 0:
+            raise ValueError("No parameters provided")
+
+        argnames = kw_argnames
+        argvalues = kw_argvalues
+
+    elif isinstance(argnames, string_types):
+        # (2) argnames + argvalues, as usual. However **args can also be passed and should be added
+        argnames = get_param_argnames_as_list(argnames)
+
+        if argvalues is None:
+            raise ValueError("No argvalues provided while argnames are provided")
+
+        # transform argvalues to a list (it can be a generator)
+        try:
+            argvalues = list(argvalues)
+        except TypeError:
+            raise InvalidParamsList(argvalues)
+
+        # append **args
+        if len(kw_argnames) > 0:
+            argnames.extend(kw_argnames)
+            argvalues = list(product(argvalues, *kw_argvalues))
+
+    return argnames, argvalues
+
+
+def _gen_ids(argnames, argvalues, idgen):
+    """
+    Generates an explicit test ids list from a non-none `idgen`.
+
+    `idgen` should be either a callable of a string template.
+
+    :param argnames:
+    :param argvalues:
+    :param idgen:
+    :return:
+    """
+    if not callable(idgen):
+        _formatter = idgen
+
+        def gen_id_using_str_formatter(**params):
+            try:
+                return _formatter.format(**params)
+            except Exception as e:
+                raise InvalidIdTemplateException(_formatter, params, e)
+
+        idgen = gen_id_using_str_formatter
+    if len(argnames) > 1:
+        ids = [idgen(**{n: v for n, v in zip(argnames, _argvals)}) for _argvals in argvalues]
+    else:
+        _only_name = argnames[0]
+        ids = [idgen(**{_only_name: v}) for v in argvalues]
+
+    return ids
 
 
 def _process_argvalues(argnames, marked_argvalues, nb_params):
