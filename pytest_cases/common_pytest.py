@@ -8,7 +8,7 @@ except ImportError:
     from funcsigs import signature  # noqa
 
 from distutils.version import LooseVersion
-from inspect import isgeneratorfunction, isclass, findsource
+from inspect import isgeneratorfunction, isclass
 from warnings import warn
 
 try:

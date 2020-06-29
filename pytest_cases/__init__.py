@@ -9,11 +9,11 @@ parametrize = parametrize_plus
 fixture = fixture_plus
 
 from .case_funcs_legacy import case_name, test_target, case_tags, cases_generator
-from .case_funcs_new import case
+from .case_parametrizer_legacy import cases_data, CaseDataGetter, get_all_cases_legacy, \
+    get_pytest_parametrize_args_legacy, cases_fixture
 
-from .case_parametrizer_legacy import cases_data, CaseDataGetter, get_all_cases, get_pytest_parametrize_args, \
-    cases_fixture
-from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, AUTO, AUTO2
+from .case_funcs_new import case, CaseInfo
+from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_pytest_parametrize_args
 
 try:
     # -- Distribution mode --
@@ -29,7 +29,7 @@ except ImportError:
 __all__ = [
     '__version__',
     # the submodules
-    'common_pytest',
+    'common_pytest', 'common_others', 'common_mini_six',
     'case_funcs_legacy', 'case_funcs_new',  'case_parametrizer_legacy', 'case_parametrizer_new',
     'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
 
@@ -43,15 +43,19 @@ __all__ = [
     # -- fixture parametrize plus
     'pytest_parametrize_plus', 'parametrize_plus', 'parametrize', 'fixture_ref', 'lazy_value',
 
+    # V1 - DEPRECATED symbols
     # --cases_funcs
-    'case_name',  'test_target', 'case_tags',
-    'case', 'cases_generator',
-
+    'case_name',  'test_target', 'case_tags', 'cases_generator',
     # --main params
-    'cases_data', 'CaseDataGetter', 'THIS_MODULE', 'AUTO', 'AUTO2', 'get_all_cases',
-    'get_pytest_parametrize_args', 'cases_fixture',
-    #
-    'parametrize_with_cases', 'THIS_MODULE'
+    'cases_data', 'CaseDataGetter', 'get_all_cases_legacy',
+    'get_pytest_parametrize_args_legacy', 'cases_fixture',
+
+    # V2 symbols
+    'AUTO', 'AUTO2',
+    # case functions
+    'case', 'CaseInfo', 'get_all_cases',
+    # test functions
+    'parametrize_with_cases', 'THIS_MODULE', 'get_pytest_parametrize_args'
 ]
 
 try:  # python 3.5+ type hints

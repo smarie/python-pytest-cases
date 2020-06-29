@@ -30,6 +30,7 @@ from .common_mini_six import with_metaclass, string_types
 from .common_pytest import make_marked_parameter_value, get_pytest_marks_on_function
 
 from .case_funcs_legacy import is_case_generator, get_case_generator_details
+from .case_funcs_new import matches_tag_query
 from .case_parametrizer_new import THIS_MODULE, extract_cases_from_module
 
 from .fixture_core2 import fixture_plus
@@ -200,10 +201,10 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
     # equivalent to @mark.parametrize('case_data', cases) where cases is a tuple containing a CaseDataGetter for
 
     # First list all cases according to user preferences
-    _cases = get_all_cases(cases, module, test_func, has_tag, filter)
+    _cases = get_all_cases_legacy(cases, module, test_func, has_tag, filter)
 
     # Then transform into required arguments for pytest (applying the pytest marks if needed)
-    marked_cases, cases_ids = get_pytest_parametrize_args(_cases)
+    marked_cases, cases_ids = get_pytest_parametrize_args_legacy(_cases)
 
     # Finally create the pytest decorator and apply it
     parametrizer = pytest.mark.parametrize(case_data_argname, marked_cases, ids=cases_ids)
@@ -211,7 +212,7 @@ def cases_data(cases=None,                       # type: Union[Callable[[Any], A
     return parametrizer(test_func)
 
 
-def get_pytest_parametrize_args(cases):
+def get_pytest_parametrize_args_legacy(cases):
     """
     Transforms a list of cases into a tuple containing the arguments to use in `@pytest.mark.parametrize`
     the tuple is (marked_cases, ids) where
@@ -233,12 +234,12 @@ def get_pytest_parametrize_args(cases):
     return marked_cases, case_ids
 
 
-def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
-                  module=None,              # type: Union[ModuleType, Iterable[ModuleType]]
-                  this_module_object=None,  # type: Any
-                  has_tag=None,             # type: Any
-                  filter=None               # type: Callable[[List[Any]], bool]  # noqa
-                  ):
+def get_all_cases_legacy(cases=None,               # type: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]]
+                         module=None,              # type: Union[ModuleType, Iterable[ModuleType]]
+                         this_module_object=None,  # type: Any
+                         has_tag=None,             # type: Any
+                         filter=None               # type: Callable[[List[Any]], bool]  # noqa
+                         ):
     # type: (...) -> List[CaseDataGetter]
     """
     Lists all desired cases from the user inputs. This function may be convenient for debugging purposes.
@@ -255,6 +256,7 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
         `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
     :return:
     """
+    _facto = _get_case_getter_s(has_tag=has_tag, filter=filter)
     _cases = None
 
     if module is not None and cases is not None:
@@ -264,20 +266,19 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
         # Hardcoded sequence of cases, or single case
         if callable(cases):
             # single element
-            _cases = [case_getter for case_getter in _get_case_getter_s(cases)]
+            _cases = [case_getter for case_getter in _facto(cases)]
         elif cases is THIS_MODULE:
             raise ValueError("`THIS_MODULE` should only be used in the `module` argument, not in the `cases` argument")
         else:
             # already a sequence
-            _cases = [case_getter for c in cases for case_getter in _get_case_getter_s(c)]
+            _cases = [case_getter for c in cases for case_getter in _facto(c)]
     else:
         # Gather all cases from the reference module(s)
         try:
             _cases = []
             for m in module:  # noqa
                 m = sys.modules[this_module_object.__module__] if m is THIS_MODULE else m
-                _cases += extract_cases_from_module(m, has_tag=has_tag, filter=filter,
-                                                    _case_param_factory=_get_case_getter_s)
+                _cases += extract_cases_from_module(m, _case_param_factory=_facto)
             success = True
         except TypeError:
             success = False
@@ -285,8 +286,7 @@ def get_all_cases(cases=None,               # type: Union[Callable[[Any], Any], 
         if not success:
             # 'module' object is not iterable: a single module was provided
             m = sys.modules[this_module_object.__module__] if module is THIS_MODULE else module
-            _cases = extract_cases_from_module(m, has_tag=has_tag, filter=filter,
-                                               _case_param_factory=_get_case_getter_s)
+            _cases = extract_cases_from_module(m, _case_param_factory=_facto)
 
     return _cases
 
@@ -306,92 +306,99 @@ class InvalidNamesTemplateException(Exception):
                "%s. Please check the name template." % (self.cases_func.__name__, self.names_template, self.params)
 
 
-def _get_case_getter_s(f,
-                       co_firstlineno=None,
-                       cases_dct=None):
-    # type: (...) -> Optional[List[CaseDataFromFunction]]
-    """
-    Creates the case function getter or the several cases function getters (in case of a generator) associated with
-    function f. If cases_dct is provided, they are stored in this dictionary with a key equal to their code line number.
-    For generated cases, a floating line number is created to preserve order.
+def _get_case_getter_s(has_tag=None, filter=None):
+    if filter is not None and not callable(filter):
+        raise ValueError("`filter` should be a callable starting in pytest-cases 0.8.0. If you wish to provide a single"
+                         " tag to match, use `has_tag` instead.")
 
-    :param f:
-    :param co_firstlineno: should be provided if cases_dct is provided.
-    :param cases_dct: an optional dictionary where to store the created function wrappers
-    :return:
-    """
+    def __get_case_getter_s(f,
+                            co_firstlineno=None,
+                            cases_dct=None):
+        # type: (...) -> Optional[List[CaseDataFromFunction]]
+        """
+        Creates the case function getter or the several cases function getters (in case of a generator) associated with
+        function f. If cases_dct is provided, they are stored in this dictionary with a key equal to their code line number.
+        For generated cases, a floating line number is created to preserve order.
 
-    # create a return variable if needed
-    if cases_dct is None:
-        cases_list = []
-    else:
-        cases_list = None
-
-    # Handle case generators
-    if is_case_generator(f):
-        already_used_names = []
-
-        names, param_ids, all_param_values_combinations = get_case_generator_details(f)
-        nb_cases_generated = len(all_param_values_combinations)
-
-        if names is None:
-            # default template based on parameter names
-            names = "%s__%s" % (f.__name__, ', '.join("%s={%s}" % (p_name, p_name) for p_name in param_ids))
-
-        if isinstance(names, string_types):
-            # then this is a string formatter creating the names. Create the corresponding callable
-            _formatter = names
-
-            def names(**params):
-                try:
-                    return _formatter.format(**params)
-                except Exception:
-                    raise InvalidNamesTemplateException(f, _formatter, params)
-
-        if not callable(names):
-            # This is an explicit list
-            if len(names) != nb_cases_generated:
-                raise ValueError("An explicit list of names has been provided but it has not the same length (%s) than"
-                                 " the number of cases to be generated (%s)" % (len(names), nb_cases_generated))
-
-        for gen_case_id, case_params_values in enumerate(all_param_values_combinations):
-            # build the dictionary of parameters for the case functions
-            gen_case_params_dct = dict(zip(param_ids, case_params_values))
-
-            # generate the case name by applying the name template
-            if callable(names):
-                gen_case_name = names(**gen_case_params_dct)
-            else:
-                # an explicit list is provided
-                gen_case_name = names[gen_case_id]
-
-            if gen_case_name in already_used_names:
-                raise ValueError("Generated function names for generator case function {} are not "
-                                 "unique. Please use all parameter names in the string format variables"
-                                 "".format(f.__name__))
-            else:
-                already_used_names.append(gen_case_name)
-            case_getter = CaseDataFromFunction(f, gen_case_name, gen_case_params_dct)
-
-            # save the result in the list or the dict
-            if cases_dct is None:
-                cases_list.append(case_getter)
-            else:
-                # with an artificial floating point line number to keep order in dict
-                gen_line_nb = co_firstlineno + (gen_case_id / nb_cases_generated)
-                cases_dct[gen_line_nb] = case_getter
-    else:
-        # single case
-        case_getter = CaseDataFromFunction(f)
-
-        # save the result
+        :param f:
+        :param co_firstlineno: should be provided if cases_dct is provided.
+        :param cases_dct: an optional dictionary where to store the created function wrappers
+        :return:
+        """
+        # create a return variable if needed
         if cases_dct is None:
-            cases_list.append(case_getter)
+            cases_list = []
         else:
-            cases_dct[co_firstlineno] = case_getter
+            cases_list = None
 
-    if cases_dct is None:
-        return cases_list
+        if matches_tag_query(f, has_tag=has_tag, filter=filter):
+            # Handle case generators
+            if is_case_generator(f):
+                already_used_names = []
+
+                names, param_ids, all_param_values_combinations = get_case_generator_details(f)
+                nb_cases_generated = len(all_param_values_combinations)
+
+                if names is None:
+                    # default template based on parameter names
+                    names = "%s__%s" % (f.__name__, ', '.join("%s={%s}" % (p_name, p_name) for p_name in param_ids))
+
+                if isinstance(names, string_types):
+                    # then this is a string formatter creating the names. Create the corresponding callable
+                    _formatter = names
+
+                    def names(**params):
+                        try:
+                            return _formatter.format(**params)
+                        except Exception:
+                            raise InvalidNamesTemplateException(f, _formatter, params)
+
+                if not callable(names):
+                    # This is an explicit list
+                    if len(names) != nb_cases_generated:
+                        raise ValueError("An explicit list of names has been provided but it has not the same length (%s) than"
+                                         " the number of cases to be generated (%s)" % (len(names), nb_cases_generated))
+
+                for gen_case_id, case_params_values in enumerate(all_param_values_combinations):
+                    # build the dictionary of parameters for the case functions
+                    gen_case_params_dct = dict(zip(param_ids, case_params_values))
+
+                    # generate the case name by applying the name template
+                    if callable(names):
+                        gen_case_name = names(**gen_case_params_dct)
+                    else:
+                        # an explicit list is provided
+                        gen_case_name = names[gen_case_id]
+
+                    if gen_case_name in already_used_names:
+                        raise ValueError("Generated function names for generator case function {} are not "
+                                         "unique. Please use all parameter names in the string format variables"
+                                         "".format(f.__name__))
+                    else:
+                        already_used_names.append(gen_case_name)
+                    case_getter = CaseDataFromFunction(f, gen_case_name, gen_case_params_dct)
+
+                    # save the result in the list or the dict
+                    if cases_dct is None:
+                        cases_list.append(case_getter)
+                    else:
+                        # with an artificial floating point line number to keep order in dict
+                        gen_line_nb = co_firstlineno + (gen_case_id / nb_cases_generated)
+                        cases_dct[gen_line_nb] = case_getter
+            else:
+                # single case
+                case_getter = CaseDataFromFunction(f)
+
+                # save the result
+                if cases_dct is None:
+                    cases_list.append(case_getter)
+                else:
+                    cases_dct[co_firstlineno] = case_getter
+
+        if cases_dct is None:
+            return cases_list
+
+    return __get_case_getter_s
 
 
 @function_decorator
