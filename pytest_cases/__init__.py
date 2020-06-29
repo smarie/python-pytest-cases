@@ -1,4 +1,4 @@
-from .common_pytest import unfold_expected_err, assert_exception
+from .common_others import unfold_expected_err, assert_exception, AUTO, AUTO2
 
 from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
 from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture

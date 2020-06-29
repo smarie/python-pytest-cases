@@ -19,6 +19,7 @@ import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
 from .common_mini_six import string_types
+from .common_others import AUTO
 from .common_pytest import get_fixture_name, remove_duplicates, is_marked_parameter_value, mini_idvalset, \
     get_param_argnames_as_list, extract_parameterset_info, ParameterSet, has_pytest_param, get_pytest_marks_on_function, \
     transform_marks_into_decorators
@@ -429,12 +430,15 @@ class ParamIdMakers(object):
             raise ValueError("Unknown style: %r" % style)
 
 
+_IDGEN = object()
+
+
 def parametrize_plus(argnames=None,
                      argvalues=None,
                      indirect=False,      # type: bool
                      ids=None,            # type: Union[Callable, List[str]]
                      idstyle='explicit',  # type: str
-                     idgen=None,          # type: Union[str, Callable]
+                     idgen=_IDGEN,        # type: Union[str, Callable]
                      scope=None,          # type: str
                      hook=None,           # type: Callable[[Callable], Callable]
                      debug=False,         # type: bool
@@ -442,14 +446,17 @@ def parametrize_plus(argnames=None,
     """
     Equivalent to `@pytest.mark.parametrize` but also supports
 
-    (1) new style for argnames/argvalues. One can also use `**args` to pass additional `{argnames: argvalues}` in the
-    same parametrization call. This can be handy in combination with `idgen` to master the whole id template associated
-    with several parameters.
+    (1) new alternate style for argnames/argvalues. One can also use `**args` to pass additional `{argnames: argvalues}`
+    in the same parametrization call. This can be handy in combination with `idgen` to master the whole id template
+    associated with several parameters. Note that you can pass coma-separated argnames too, by de-referencing a dict:
+    e.g. `**{'a,b': [(0, True), (1, False)], 'c': [-1, 2]}`.
 
     (2) new alternate style for ids. One can use `idgen` instead of `ids`. `idgen` can be a callable receiving all
     parameters at once (`**args`) and returning an id ; or it can be a string template using the new-style string
-    formatting where the argnames can be used as variables (e.g.
-    `idgen=lambda **args: "-".join("%s=%s" % (k, v) for k, v in args.items())` or `idgen="my_id where a={a}"`).
+    formatting where the argnames can be used as variables (e.g. `idgen=lambda **args: "a={a}".format(**args)` or
+    `idgen="my_id where a={a}"`). The special `idgen=AUTO` symbol can be used to generate a default string template
+    equivalent to `lambda **args: "-".join("%s=%s" % (n, v) for n, v in args.items())`. This is enabled by default
+    if you use the alternate style for argnames/argvalues (e.g. if `len(args) > 0`).
 
     (3) new possibilities in argvalues:
 
@@ -604,12 +611,19 @@ def _parametrize_plus(argnames=None,
                       indirect=False,      # type: bool
                       ids=None,            # type: Union[Callable, List[str]]
                       idstyle='explicit',  # type: str
-                      idgen=None,          # type: Union[str, Callable]
+                      idgen=_IDGEN,        # type: Union[str, Callable]
                       scope=None,          # type: str
                       hook=None,           # type: Callable[[Callable], Callable]
                       _frame_offset=2,
                       debug=False,         # type: bool
                       **args):
+
+    # idgen default
+    if idgen is _IDGEN:
+        idgen = AUTO if len(args) > 0 else None
+
+    if idgen is AUTO:
+        idgen = lambda **args: "-".join("%s=%s" % (n, v) for n, v in args.items())
 
     # first handle argnames / argvalues (new modes of input)
     argnames, argvalues = _get_argnames_argvalues(argnames, argvalues, **args)

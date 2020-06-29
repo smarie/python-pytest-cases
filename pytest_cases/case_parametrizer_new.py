@@ -14,15 +14,11 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
-from .common_pytest import get_code_first_line, safe_isclass, copy_pytest_marks
+from .common_others import get_code_first_line, AUTO, AUTO2
+from .common_pytest import safe_isclass, copy_pytest_marks
 
 from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, get_case_info, copy_case_infos
 
-AUTO = object()
-"""Marker that can be used instead of a module name to indicate that the module is the one named `test_*_cases.py`"""
-
-AUTO2 = object()
-"""Marker that can be used instead of a module name to indicate that the module is the one named `cases_*.py`"""
 
 THIS_MODULE = object()
 """Singleton that can be used instead of a module name to indicate that the module is the current one"""
