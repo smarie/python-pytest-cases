@@ -1,4 +1,4 @@
-from pytest_cases import cases_data, THIS_MODULE, cases_generator, CaseDataGetter, get_all_cases
+from pytest_cases import cases_data, THIS_MODULE, cases_generator, CaseDataGetter, get_all_cases_legacy
 from ..utils import nb_pytest_parameters, get_pytest_param
 
 try:  # python 3+: type hints
@@ -40,7 +40,7 @@ def test_b(case_data   # type: CaseDataGetter
 def test_assert_cases_are_here():
     """Asserts that the 3 cases are generated"""
     import sys
-    cases = get_all_cases(module=sys.modules[case_gen.__module__])
+    cases = get_all_cases_legacy(module=sys.modules[case_gen.__module__])
     assert len(cases) == 3
 
 

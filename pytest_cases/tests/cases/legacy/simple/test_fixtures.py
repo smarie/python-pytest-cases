@@ -28,7 +28,7 @@ def test_with_cases_decorated_legacy(my_case_fixture_legacy):
     else:
         # **** Error test ****
         # First see what we need to assert
-        err_type, err_inst, err_checker = unfold_expected_err(expected_e)
+        err_type, err_ptrn, err_inst, err_checker = unfold_expected_err(expected_e)
 
         # Run with exception capture and type check
         with pytest.raises(err_type) as err_info:
@@ -75,7 +75,7 @@ def test_with_cases_decorated(my_case_fixture):
     else:
         # **** Error test ****
         # First see what we need to assert
-        err_type, err_inst, err_checker = unfold_expected_err(expected_e)
+        err_type, err_ptrn, err_inst, err_checker = unfold_expected_err(expected_e)
 
         # Run with exception capture and type check
         with pytest.raises(err_type) as err_info:
