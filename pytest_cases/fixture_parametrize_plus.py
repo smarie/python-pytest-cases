@@ -614,11 +614,6 @@ def _parametrize_plus(argnames=None,
     # first handle argnames / argvalues (new modes of input)
     argnames, argvalues = _get_argnames_argvalues(argnames, argvalues, **args)
 
-    if idgen is not None:
-        if ids is not None:
-            raise ValueError("Only one of `ids` and `idgen` should be provided")
-        ids = _gen_ids(argnames, argvalues, idgen)
-
     # argnames related
     initial_argnames = ','.join(argnames)
     nb_params = len(argnames)
@@ -627,6 +622,12 @@ def _parametrize_plus(argnames=None,
     # Do not check consistency of sizes argname/argvalue as a fixture_ref can stand for several argvalues.
     marked_argvalues = argvalues
     p_ids, p_marks, argvalues, fixture_indices = _process_argvalues(argnames, marked_argvalues, nb_params)
+
+    # generate id
+    if idgen is not None:
+        if ids is not None:
+            raise ValueError("Only one of `ids` and `idgen` should be provided")
+        ids = _gen_ids(argnames, argvalues, idgen)
 
     if len(fixture_indices) == 0:
         if debug:
