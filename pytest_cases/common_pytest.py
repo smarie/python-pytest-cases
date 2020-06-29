@@ -3,9 +3,9 @@ from __future__ import division
 import warnings
 
 try:  # python 3.3+
-    from inspect import signature
+    from inspect import signature, Parameter
 except ImportError:
-    from funcsigs import signature  # noqa
+    from funcsigs import signature, Parameter  # noqa
 
 from distutils.version import LooseVersion
 from inspect import isgeneratorfunction, isclass
@@ -604,7 +604,7 @@ try:
     from _pytest.fixtures import scopes as pt_scopes
 except ImportError:
     # pytest 2
-    from _pytest.python import scopes as pt_scopes  # noqa
+    from _pytest.python import scopes as pt_scopes, Metafunc  # noqa
 
 
 def get_pytest_scopenum(scope_str):
@@ -653,3 +653,98 @@ def mini_idvalset(argnames, argvalues, idx):
         for val, argname in zip(argvalues, argnames)
     ]
     return "-".join(this_id)
+
+
+from _pytest.python import Metafunc
+
+try:
+    from _pytest.compat import getfuncargnames
+except ImportError:
+    import sys
+
+    def num_mock_patch_args(function):
+        """ return number of arguments used up by mock arguments (if any) """
+        patchings = getattr(function, "patchings", None)
+        if not patchings:
+            return 0
+
+        mock_sentinel = getattr(sys.modules.get("mock"), "DEFAULT", object())
+        ut_mock_sentinel = getattr(sys.modules.get("unittest.mock"), "DEFAULT", object())
+
+        return len(
+            [
+                p
+                for p in patchings
+                if not p.attribute_name
+                   and (p.new is mock_sentinel or p.new is ut_mock_sentinel)
+            ]
+        )
+
+    def getfuncargnames(function, cls=None):
+        """Returns the names of a function's mandatory arguments."""
+        parameters = signature(function).parameters
+
+        arg_names = tuple(
+            p.name
+            for p in parameters.values()
+            if (
+                    p.kind is Parameter.POSITIONAL_OR_KEYWORD
+                    or p.kind is Parameter.KEYWORD_ONLY
+            )
+            and p.default is Parameter.empty
+        )
+
+        # If this function should be treated as a bound method even though
+        # it's passed as an unbound method or function, remove the first
+        # parameter name.
+        if cls and not isinstance(cls.__dict__.get(function.__name__, None), staticmethod):
+            arg_names = arg_names[1:]
+        # Remove any names that will be replaced with mocks.
+        if hasattr(function, "__wrapped__"):
+            arg_names = arg_names[num_mock_patch_args(function):]
+        return arg_names
+
+
+class MiniFuncDef(object):
+    __slots__ = ('nodeid',)
+
+    def __init__(self, nodeid):
+        self.nodeid = nodeid
+
+
+class MiniMetafunc(Metafunc):
+    def __init__(self, func):
+        self.config = None
+        self.function = func
+        self.definition = MiniFuncDef(func.__name__)
+        self._calls = []
+        # non-default parameters
+        self.fixturenames = getfuncargnames(func)
+
+
+def get_callspecs(func):
+    """
+    Returns a list of pytest CallSpec objects corresponding to calls that should be made for this parametrized function.
+    This mini-helper assumes no complex things (scope='function', indirect=False, no fixtures, no custom configuration)
+
+    :param func:
+    :return:
+    """
+    meta = MiniMetafunc(func)
+
+    pmarks = get_pytest_parametrize_marks(func)
+    for pmark in pmarks:
+        if len(pmark.param_names) == 1:
+            argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
+        else:
+            argvals = pmark.param_values
+        meta.parametrize(argnames=pmark.param_names, argvalues=argvals, ids=pmark.param_ids,
+                         # use indirect = False and scope = 'function' to avoid having to implement complex patches
+                         indirect=False, scope='function')
+
+    if not has_pytest_param:
+        # fix the CallSpec2 instances so that the marks appear
+        for c in meta._calls:
+            c.marks = list(c.keywords.values())
+
+    return meta._calls

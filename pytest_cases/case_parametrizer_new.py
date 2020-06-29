@@ -13,7 +13,7 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_others import get_code_first_line, AUTO, AUTO2
-from .common_pytest import safe_isclass, copy_pytest_marks
+from .common_pytest import safe_isclass, copy_pytest_marks, get_callspecs
 
 from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CaseInfo
 from .fixture_parametrize_plus import parametrize_plus, lazy_value
@@ -146,7 +146,7 @@ def get_pytest_parametrize_args(cases_funs  # type: List[Callable]
     return [c for _f in cases_funs for c in case_to_argvalues(_f)]
 
 
-def case_to_argvalues(f  # type: Callable
+def case_to_argvalues(case_fun  # type: Callable
                       ):
     # type: (...) -> List[lazy_value]
     """Transform a single case into one or several `lazy_value` to be used in `@parametrize`
@@ -164,21 +164,29 @@ def case_to_argvalues(f  # type: Callable
     id = None
     marks = ()
 
-    case_info = CaseInfo.get_from(f)
+    case_info = CaseInfo.get_from(case_fun)
     if case_info is not None:
         id = case_info.id
         marks = case_info.marks
 
     if id is None:
         # default test id from function name
-        if f.__name__.startswith('case_'):
-            id = f.__name__[5:]
-        elif f.__name__.startswith('cases_'):
-            id = f.__name__[6:]
+        if case_fun.__name__.startswith('case_'):
+            id = case_fun.__name__[5:]
+        elif case_fun.__name__.startswith('cases_'):
+            id = case_fun.__name__[6:]
         else:
-            id = f.__name__
+            id = case_fun.__name__
 
-    return lazy_value(f, id=id, marks=marks)
+    # get the list of all calls that pytest *would* have made for such a (possibly parametrized) function
+    calls = get_callspecs(case_fun)
+
+    if len(calls) == 0:
+        # single unparametrized case function
+        return (lazy_value(case_fun, id=id, marks=marks),)
+    else:
+        # parametrized. create one version of the callable for each parametrized call
+        return tuple(lazy_value(partial(case_fun, **c.funcargs), id="%s-%s" % (id, c.id), marks=c.marks) for c in calls)
 
 
 def import_default_cases_module(f, alt_name=False):
