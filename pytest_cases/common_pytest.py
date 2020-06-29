@@ -516,7 +516,10 @@ except ImportError:  # pytest 2.x
         return [v]
 
     def get_marked_parameter_values(v):
-        return v.args[1:]
+        if v.name in ('skip', 'skipif'):
+            return v.args[-1]  # see MetaFunc.parametrize in pytest 2 to be convinced :)
+        else:
+            raise ValueError("Unsupported mark")
 
     def get_marked_parameter_id(v):
         return v.kwargs.get('id', None)
@@ -541,8 +544,8 @@ if not has_pytest_param:
             # get a decorator for each of the markinfo
             marks_mod = transform_marks_into_decorators(marks)
 
-            # decorate
-            return marks_mod[0](c)
+            # decorate. Warning: the argvalue MUST be in a tuple
+            return marks_mod[0]((c,))
 else:
     # Otherwise pytest.param exists, it is easier
     def make_marked_parameter_value(c, marks):
