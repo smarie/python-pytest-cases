@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.3.3">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.4.0">
     
     
       
@@ -312,6 +312,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#200-less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features" class="md-nav__link">
+    2.0.0 - Less boilerplate and full pytest alignment, unlocking advanced features
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#1170-lazy_value-improvements-annoying-warnings-suppression" class="md-nav__link">
@@ -773,6 +780,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#200-less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features" class="md-nav__link">
+    2.0.0 - Less boilerplate and full pytest alignment, unlocking advanced features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1170-lazy_value-improvements-annoying-warnings-suppression" class="md-nav__link">
     1.17.0 - lazy_value improvements + annoying warnings suppression
   </a>
@@ -1220,6 +1234,35 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="200-less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features">2.0.0 - Less boilerplate and full <code>pytest</code> alignment, unlocking advanced features<a class="headerlink" href="#200-less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features" title="Permanent link">&para;</a></h3>
+<p>New <code>@parametrize_with_cases(argnames, cases)</code> decorator:</p>
+<ul>
+<li>
+<p>Similar behaviour than in <code>pytest</code>: </p>
+<ul>
+<li>
+<p>now <code>argnames</code> can contain several names, and the cases are unpacked automatically. No need to perform a <code>case.get()</code> at test execution time anymore.</p>
+</li>
+<li>
+<p>Cases are unpacked at test <em>setup</em> time, so the clock does not run while the case is created - in case you use <code>pytest-harvest</code> to collect the timings.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>A single <code>cases</code> argument is used for everything:</p>
+<ul>
+<li>
+<p>Default behaviour (<code>cases=AUTO</code>) uses the file name pattern <code>test_xxx_cases.py</code>. Users can easily switch to alternate pattern <code>cases_xxx.py</code> with <code>cases=AUTO2</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/91">#91</a></p>
+</li>
+<li>
+<p>Cases can sit inside a class. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/93">#93</a></p>
+</li>
+</ul>
+</li>
+<li>
+<p>New pytest goodie <code>assert_exception</code> that can be used as a context manager. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/104">#104</a></p>
+</li>
+</ul>
 <h3 id="1170-lazy_value-improvements-annoying-warnings-suppression">1.17.0 - <code>lazy_value</code> improvements + annoying warnings suppression<a class="headerlink" href="#1170-lazy_value-improvements-annoying-warnings-suppression" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -1541,14 +1584,14 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.4a5ba8d6.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "clipboard.copy": "Copy to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.lang": "en", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.one": "1 matching document", "clipboard.copied": "Copied to clipboard", "search.result.other": "# matching documents"}</script>
+      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.one": "1 matching document", "search.config.lang": "en", "search.result.other": "# matching documents", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter"}</script>
       
       <script>
         app = initialize({
           base: "..",
           features: [],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.9b3611bd.min.js"
+            worker: "../assets/javascripts/worker/search.a68abb33.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

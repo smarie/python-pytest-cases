@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.3.3">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.4.0">
     
     
       
@@ -966,13 +966,17 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
 
 <p>Identical to <code>param_fixtures</code> but for a single parameter name, so that you can assign its output to a single variable.</p>
 <h3 id="parametrize_plus"><code>@parametrize_plus</code><a class="headerlink" href="#parametrize_plus" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="n">parametrize_plus</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> 
+<div class="codehilite"><pre><span></span><code><span class="n">parametrize_plus</span><span class="p">(</span><span class="n">argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">argvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
                  <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idstyle</span><span class="o">=</span><span class="s1">&#39;explicit&#39;</span><span class="p">,</span>
-                 <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                 <span class="n">idgen</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                 <span class="o">**</span><span class="n">args</span><span class="p">)</span>
 </code></pre></div>
 
 
-<p>Equivalent to <code>@pytest.mark.parametrize</code> but also supports new possibilities in argvalues:</p>
+<p>Equivalent to <code>@pytest.mark.parametrize</code> but also supports </p>
+<p>(1) new style for argnames/argvalues. One can also use <code>**args</code> to pass additional <code>{argnames: argvalues}</code> in the same parametrization call. This can be handy in combination with <code>idgen</code> to master the whole id template associated with several parameters.  </p>
+<p>(2) new alternate style for ids. One can use <code>idgen</code> instead of <code>ids</code>. <code>idgen</code> can be a callable receiving all parameters at once (<code>**args</code>) and returning an id ; or it can be a string template using the new-style string formatting where the argnames can be used as variables (e.g. <code>idgen=lambda **args: "-".join("%s=%s" % (k, v) for k, v in args.items())</code> or <code>idgen="my_id where a={a}"</code>). </p>
+<p>(3) new possibilities in argvalues:</p>
 <ul>
 <li>
 <p>one can include references to fixtures with <code>fixture_ref(&lt;fixture&gt;)</code> where <fixture> can be the fixture name or fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters from this fixture. Special test ids will be created to illustrate the switching between the various normal parameters and fixtures. You can see debug print messages about all fixtures created using <code>debug=True</code></p>
@@ -1051,14 +1055,14 @@ If <code>expected_e</code> is an exception validation function, returns <code>Ex
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.4a5ba8d6.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "clipboard.copy": "Copy to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.lang": "en", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.one": "1 matching document", "clipboard.copied": "Copied to clipboard", "search.result.other": "# matching documents"}</script>
+      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.one": "1 matching document", "search.config.lang": "en", "search.result.other": "# matching documents", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter"}</script>
       
       <script>
         app = initialize({
           base: "..",
           features: [],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.9b3611bd.min.js"
+            worker: "../assets/javascripts/worker/search.a68abb33.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
