@@ -15,6 +15,9 @@ def test_argname_error():
             pass
 
 
+PY36 = sys.version_info >= (3, 6)
+
+
 @pytest.mark.parametrize("tuple_around_single", [False, True])
 def test_get_argnames_argvalues(tuple_around_single):
 
@@ -35,8 +38,15 @@ def test_get_argnames_argvalues(tuple_around_single):
     assert argvalues == [1.25, 0]
     # -- several argnames
     argnames, argvalues = _get_argnames_argvalues(a=[True], b=[1.25, 0])
-    assert argnames == ['a', 'b']
-    assert argvalues == [(True, 1.25), (True, 0)]
+    if PY36:
+        assert argnames == ['a', 'b']
+    else:
+        assert set(argnames) == {'a', 'b'}
+    if argnames[-1] == 'b':
+        assert argvalues == [(True, 1.25), (True, 0)]
+    else:
+        assert argvalues == [(1.25, True), (0, True)]
+
     # --dict version
     # -- 1 argname
     argnames, argvalues = _get_argnames_argvalues(**{'b': [1.25, 0]})
@@ -48,7 +58,7 @@ def test_get_argnames_argvalues(tuple_around_single):
     assert argvalues == [(True, 1.25), (True, 0)]
     # -- several argnames in two entries
     argnames, argvalues = _get_argnames_argvalues(**{'a,b': ((True, 1.25), (True, 0)), 'c': [-1, 2]})
-    if sys.version_info < (3, 6):
+    if not PY36:
         # order is lost
         assert set(argnames) == {'a', 'b', 'c'}
     else:

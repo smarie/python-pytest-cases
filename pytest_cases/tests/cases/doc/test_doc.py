@@ -1,7 +1,7 @@
 import pytest
 
 from pytest_harvest import get_session_synthesis_dct
-from pytest_cases import parametrize_with_cases, AUTO2, fixture_plus, case
+from pytest_cases import parametrize_with_cases, AUTO2, fixture, case
 from pytest_cases.common_pytest import has_pytest_param
 
 from . import cases_doc
@@ -89,7 +89,7 @@ class CasesFoo:
         return
 
     @pytest.mark.skipif(False, reason="no")
-    @case(id="hello")
+    @case(id="hello world")
     def blah(self):
         """a blah"""
         return 0, 0
@@ -111,7 +111,7 @@ def test_foo_cls(a, b):
 
 def test_foo_cls_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_cls, test_id_format='function')
-    assert list(results_dct) == ['test_foo_cls[%s]' % ('hello' if has_pytest_param else 'a0-b0'),
+    assert list(results_dct) == ['test_foo_cls[%s]' % ('hello world' if has_pytest_param else 'a0-b0'),
                                  'test_foo_cls[%s]' % ('two_negative_ints' if has_pytest_param else 'a2-b2'),]
 
 
@@ -124,16 +124,16 @@ def test_foo_cls_list_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_cls_list, test_id_format='function')
     ref_list = [
         # CasesFoo
-        'test_foo_cls_list[hello0]',
+        'test_foo_cls_list[hello world0]',
         'test_foo_cls_list[two_negative_ints0]',
         # strange_ints
         'test_foo_cls_list[strange_ints]',
         # cases_doc.py
-        'test_foo_cls_list[hello1]',
+        'test_foo_cls_list[hello]',
         'test_foo_cls_list[two_negative_ints1]',
         'test_foo_cls_list[two_negative_ints2]',
         # CasesFoo
-        'test_foo_cls_list[hello2]',
+        'test_foo_cls_list[hello world1]',
         'test_foo_cls_list[two_negative_ints3]',
         # test_doc_cases.py
         'test_foo_cls_list[two_positive_ints1]',
@@ -145,7 +145,7 @@ def test_foo_cls_list_synthesis(request):
         assert len(results_dct) == len(ref_list)
 
 
-@fixture_plus
+@fixture
 @parametrize_with_cases("a,b")
 def c(a, b):
     return a + b

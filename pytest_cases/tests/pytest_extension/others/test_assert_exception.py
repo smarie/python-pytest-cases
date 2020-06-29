@@ -26,7 +26,7 @@ def test_assert_exception():
             raise TypeError()
 
     # good repr pattern
-    with assert_exception(r"ValueError\('hello'[,]+\)"):
+    with assert_exception(r"ValueError\('hello'[,]?\)"):
         raise ValueError("hello")
 
     # good instance - equality check
