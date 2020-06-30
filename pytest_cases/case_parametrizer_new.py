@@ -7,16 +7,18 @@ from inspect import getmembers
 from warnings import warn
 
 try:
-    from typing import Union, Callable, Iterable, Any, Type, List  # noqa
+    from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
 except ImportError:
     pass
 
 from .common_mini_six import string_types
 from .common_others import get_code_first_line, AUTO, AUTO2
-from .common_pytest import safe_isclass, copy_pytest_marks, get_callspecs
+from .common_pytest_marks import copy_pytest_marks
+from .common_pytest_lazy_values import lazy_value
+from .common_pytest import safe_isclass, get_callspecs
 
 from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CaseInfo
-from .fixture_parametrize_plus import parametrize_plus, lazy_value
+from .fixture_parametrize_plus import parametrize_plus
 
 
 THIS_MODULE = object()
@@ -35,7 +37,7 @@ except:  # noqa
 def parametrize_with_cases(argnames,      # type: str
                            cases=AUTO,    # type: Union[Callable, Type, ModuleRef]
                            has_tag=None,  # type: Any
-                           filter=None,   # type: Callable[[List[Any]], bool]  # noqa
+                           filter=None,   # type: Callable[[Iterable[Any]], bool]  # noqa
                            **kwargs
                            ):
     # type: (...) -> Callable[[Callable], Callable]
@@ -85,13 +87,13 @@ def parametrize_with_cases(argnames,      # type: str
 def get_all_cases(parametrization_target,  # type: Callable
                   cases=None,              # type: Union[Callable, Type, ModuleRef]
                   has_tag=None,            # type: Any
-                  filter=None              # type: Callable[[List[Any]], bool]  # noqa
+                  filter=None              # type: Callable[[Iterable[Any]], bool]  # noqa
                   ):
     # type: (...) -> List[Callable]
     """
     Returns a list of case functions. Useful for debugging case collection.
 
-    :param argnames: same than in @pytest.mark.parametrize
+    :param parametrization_target: a test function
     :param cases: a case function, a class containing cases, a module or a module name string (relative module
         names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module.
         `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
@@ -105,7 +107,8 @@ def get_all_cases(parametrization_target,  # type: Callable
             "`filter` should be a callable starting in pytest-cases 0.8.0. If you wish to provide a single"
             " tag to match, use `has_tag` instead.")
 
-    caller_module = '.'.join(parametrization_target.__module__.split('.')[:-1])
+    caller_module_name = getattr(parametrization_target, '__module__', None)
+    parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
 
     cases_funs = []
     for c in cases:
@@ -127,8 +130,8 @@ def get_all_cases(parametrization_target,  # type: Callable
             elif c is AUTO2:
                 c = import_default_cases_module(parametrization_target, alt_name=True)
             elif c is THIS_MODULE or c == '.':
-                c = parametrization_target.__module__
-            new_cases = extract_cases_from_module(c, caller_module=caller_module)
+                c = caller_module_name
+            new_cases = extract_cases_from_module(c, package_name=parent_pkg_name)
             cases_funs += new_cases
 
     # filter last, for easier debugging (collection will be slightly less performant when a large volume of cases exist)
@@ -148,7 +151,7 @@ def get_pytest_parametrize_args(cases_funs  # type: List[Callable]
 
 def case_to_argvalues(case_fun  # type: Callable
                       ):
-    # type: (...) -> List[lazy_value]
+    # type: (...) -> Tuple[lazy_value]
     """Transform a single case into one or several `lazy_value` to be used in `@parametrize`
 
     If `case_fun` requires at least on fixture, TODO
@@ -161,32 +164,33 @@ def case_to_argvalues(case_fun  # type: Callable
     :param case_fun:
     :return:
     """
-    id = None
+    case_id = None
     marks = ()
 
     case_info = CaseInfo.get_from(case_fun)
     if case_info is not None:
-        id = case_info.id
+        case_id = case_info.id
         marks = case_info.marks
 
-    if id is None:
+    if case_id is None:
         # default test id from function name
         if case_fun.__name__.startswith('case_'):
-            id = case_fun.__name__[5:]
+            case_id = case_fun.__name__[5:]
         elif case_fun.__name__.startswith('cases_'):
-            id = case_fun.__name__[6:]
+            case_id = case_fun.__name__[6:]
         else:
-            id = case_fun.__name__
+            case_id = case_fun.__name__
 
     # get the list of all calls that pytest *would* have made for such a (possibly parametrized) function
     calls = get_callspecs(case_fun)
 
     if len(calls) == 0:
         # single unparametrized case function
-        return (lazy_value(case_fun, id=id, marks=marks),)
+        return (lazy_value(case_fun, id=case_id, marks=marks),)
     else:
         # parametrized. create one version of the callable for each parametrized call
-        return tuple(lazy_value(partial(case_fun, **c.funcargs), id="%s-%s" % (id, c.id), marks=c.marks) for c in calls)
+        return tuple(lazy_value(partial(case_fun, **c.funcargs), id="%s-%s" % (case_id, c.id), marks=c.marks)
+                     for c in calls)
 
 
 def import_default_cases_module(f, alt_name=False):
@@ -243,13 +247,11 @@ def extract_cases_from_class(cls,
     """
 
     :param cls:
-    :param has_tag:
-    :param filter:
+    :param _case_param_factory:
     :return:
     """
     if is_case_class(cls):
-        # see
-        from _pytest.python import pytest_pycollect_makeitem
+        # see from _pytest.python import pytest_pycollect_makeitem
 
         if hasinit(cls):
             warn(
@@ -275,8 +277,8 @@ def extract_cases_from_class(cls,
         return []
 
 
-def extract_cases_from_module(module,        # type: ModuleRef
-                              caller_module=None,  # type: str
+def extract_cases_from_module(module,             # type: ModuleRef
+                              package_name=None,  # type: str
                               _case_param_factory=None
                               ):
     # type: (...) -> List[Callable]
@@ -288,14 +290,13 @@ def extract_cases_from_module(module,        # type: ModuleRef
     `_pytest.python.pytest_pycollect_makeitem`: we could probably do this in a better way in pytest_pycollect_makeitem
 
     :param module:
-    :param has_tag: a tag used to filter the cases. Only cases with the given tag will be selected
-    :param filter: a function taking as an input a list of tags associated with a case, and returning a boolean
-        indicating if the case should be selected
+    :param package_name:
+    :param _case_param_factory:
     :return:
     """
     # optionally import module if passed as module name string
     if isinstance(module, string_types):
-        module = import_module(module, package=caller_module)
+        module = import_module(module, package=package_name)
 
     return _extract_cases_from_module_or_class(module=module, _case_param_factory=_case_param_factory)
 
@@ -307,8 +308,6 @@ def _extract_cases_from_module_or_class(module=None,   # type: ModuleRef
     """
 
     :param module:
-    :param has_tag:
-    :param filter:
     :param _case_param_factory:
     :return:
     """
@@ -332,7 +331,8 @@ def _extract_cases_from_module_or_class(module=None,   # type: ModuleRef
             except:  # noqa
                 return False
     else:
-        _of_interest = lambda x: True
+        def _of_interest(x):  # noqa
+            return True
 
     for m_name, m in getmembers(container, _of_interest):
         if is_case_class(m):
@@ -397,7 +397,7 @@ def _extract_cases_from_module_or_class(module=None,   # type: ModuleRef
 # class CasesModule(object):
 #     """
 #     A collector for test cases
-#     This is a very lightweight version of `_pytest.python.Module`, the pytest collector for test functions and classes.
+#     This is a very lightweight version of `_pytest.python.Module`,the pytest collector for test functions and classes.
 #
 #     See also pytest_collect_file and pytest_pycollect_makemodule hooks
 #     """

@@ -27,7 +27,7 @@ except:  # noqa
     pass
 
 from .common_mini_six import with_metaclass, string_types
-from .common_pytest import make_marked_parameter_value, get_pytest_marks_on_function
+from .common_pytest_marks import get_pytest_marks_on_function, make_marked_parameter_value
 
 from .case_funcs_legacy import is_case_generator, get_case_generator_details
 from .case_funcs_new import matches_tag_query
@@ -228,7 +228,7 @@ def get_pytest_parametrize_args_legacy(cases):
     case_ids = [str(c) for c in cases]
 
     # create the pytest parameter values with the appropriate pytest marks
-    marked_cases = [c if len(c.get_marks()) == 0 else make_marked_parameter_value(c, marks=c.get_marks())
+    marked_cases = [c if len(c.get_marks()) == 0 else make_marked_parameter_value((c,), marks=c.get_marks())
                     for c in cases]
 
     return marked_cases, case_ids

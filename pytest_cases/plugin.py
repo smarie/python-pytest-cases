@@ -18,11 +18,11 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
+from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
     get_pytest_scopenum, get_param_argnames_as_list
 
 from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
-from .fixture_parametrize_plus import handle_lazy_args
 
 
 _DEBUG = False
@@ -80,7 +80,7 @@ def pytest_runtest_setup(item  # type: Function
     yield
 
     # now item.funcargs exists so we can handle it
-    item.funcargs = {argname: handle_lazy_args(argvalue) for argname, argvalue in item.funcargs.items()}
+    item.funcargs = {argname: get_lazy_args(argvalue) for argname, argvalue in item.funcargs.items()}
 
 
 # @hookspec(firstresult=True)

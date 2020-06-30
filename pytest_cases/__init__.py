@@ -1,8 +1,9 @@
+from .common_pytest_lazy_values import lazy_value
 from .common_others import unfold_expected_err, assert_exception, AUTO, AUTO2
 
 from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
 from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture
-from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref, lazy_value
+from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref
 
 # additional symbols without the 'plus' suffix
 parametrize = parametrize_plus
@@ -29,7 +30,7 @@ except ImportError:
 __all__ = [
     '__version__',
     # the submodules
-    'common_pytest', 'common_others', 'common_mini_six',
+    'common_pytest_lazy_values', 'common_pytest', 'common_others', 'common_mini_six',
     'case_funcs_legacy', 'case_funcs_new',  'case_parametrizer_legacy', 'case_parametrizer_new',
     'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
 
