@@ -157,10 +157,10 @@ def test_idgen1_synthesis(request):
             ]
         else:
             assert list(results_dct) == [
-                'test_idgen1[a=True,b= -1-10yes-c2.1]',
-                'test_idgen1[a=False,b=  3-10yes-c2.1]',
-                'test_idgen1[a=True,b= -1-10yes-c0.0]',
-                'test_idgen1[a=False,b=  3-10yes-c0.0]'
+                'test_idgen1[a=True,b= -1-c2.1-10yes]',
+                'test_idgen1[a=False,b=  3-c2.1-10yes]',
+                'test_idgen1[a=True,b= -1-c0.0-10yes]',
+                'test_idgen1[a=False,b=  3-c0.0-10yes]'
             ]
     else:
         assert len(results_dct) == 4
