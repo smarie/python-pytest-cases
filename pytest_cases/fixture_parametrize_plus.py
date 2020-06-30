@@ -796,11 +796,8 @@ def _get_argnames_argvalues(argnames=None, argvalues=None, **args):
 
         # append **args
         if len(kw_argnames) > 0:
-            argnames.extend(kw_argnames)
-            # TODO check this case
-            # cart_product(*args.values())  # do NOT use `itertools.product` as it fails to handle MarkDecorators
-            # argvalues = list(product(argvalues, *kw_argvalues))
-            argvalues = cart_product_pytest(argvalues, *kw_argvalues)
+            argnames, argvalues = cart_product_pytest((argnames, kw_argnames),
+                                                      (argvalues, kw_argvalues))
 
     return argnames, argvalues
 
