@@ -38,7 +38,7 @@ if not has_pytest_param:
     def test_synthesis(module_results_dct):
         assert list(module_results_dct) == ['test_foo_single[val]',
                                             'test_foo_single[A]',
-                                            'test_foo_multi[a0-b0]',  # normal: lazy_value is used for the whole tuple
+                                            'test_foo_multi[valtuple[0]-valtuple[1]]',  # normal: lazy_value is used for the whole tuple
                                                                       # AND we cannot use pytest.param in this version
                                                                       # AND there are no fixtures so we pass to normal @parametrize
                                             'test_foo_multi[1-val]']

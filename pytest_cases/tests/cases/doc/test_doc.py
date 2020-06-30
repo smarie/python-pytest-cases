@@ -26,8 +26,8 @@ def test_foo_default_cases_file(a, b):
 def test_foo_default_cases_file_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_default_cases_file, test_id_format='function')
     assert list(results_dct) == [
-        'test_foo_default_cases_file[%s]' % ('two_positive_ints' if has_pytest_param else 'a0-b0'),
-        'test_foo_default_cases_file[%s]' % ('two_negative_ints' if has_pytest_param else 'a1-b1')
+        'test_foo_default_cases_file[%s]' % ('two_positive_ints' if has_pytest_param else 'two_positive_ints[0]-two_positive_ints[1]'),
+        'test_foo_default_cases_file[%s]' % ('two_negative_ints' if has_pytest_param else 'two_negative_ints[0]-two_negative_ints[1]')
     ]
 
 
@@ -47,9 +47,9 @@ def test_foo_alternate_cases_file_and_one_marked_skip_synthesis(request):
         ]
     else:
         assert list(results_dct) == [
-            'test_foo_alternate_cases_file_and_one_marked_skip[a1-b1]',
-            'test_foo_alternate_cases_file_and_one_marked_skip[a3-b3]',
-            'test_foo_alternate_cases_file_and_one_marked_skip[a5-b5]'
+            'test_foo_alternate_cases_file_and_one_marked_skip[1hello[0]-hello[1]]',
+            'test_foo_alternate_cases_file_and_one_marked_skip[3two_negative_ints[0]-two_negative_ints[1]]',
+            'test_foo_alternate_cases_file_and_one_marked_skip[5two_negative_ints[0]-two_negative_ints[1]]'
         ]
 
 
@@ -65,7 +65,10 @@ def test_foo_fun(a, b):
 
 def test_foo_fun_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_fun, test_id_format='function')
-    assert list(results_dct) == ['test_foo_fun[%s]' % ('strange_ints' if has_pytest_param else 'a0-b0')]
+    if has_pytest_param:
+        assert list(results_dct) == ['test_foo_fun[strange_ints]']
+    else:
+        assert list(results_dct) == ['test_foo_fun[strange_ints[0]-strange_ints[1]]']
 
 
 @parametrize_with_cases("a,b", cases=(strange_ints, strange_ints))
@@ -75,8 +78,16 @@ def test_foo_fun_list(a, b):
 
 def test_foo_fun_list_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_fun_list, test_id_format='function')
-    assert list(results_dct) == ['test_foo_fun_list[%s]' % ('strange_ints0' if has_pytest_param else 'a0-b0'),
-                                 'test_foo_fun_list[%s]' % ('strange_ints1' if has_pytest_param else 'a1-b1')]
+    if has_pytest_param:
+        assert list(results_dct) == [
+            'test_foo_fun_list[strange_ints0]',
+            'test_foo_fun_list[strange_ints1]'
+        ]
+    else:
+        assert list(results_dct) == [
+            'test_foo_fun_list[0strange_ints[0]-strange_ints[1]]',
+            'test_foo_fun_list[1strange_ints[0]-strange_ints[1]]'
+        ]
 
 
 class CasesFoo:
@@ -111,8 +122,16 @@ def test_foo_cls(a, b):
 
 def test_foo_cls_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_cls, test_id_format='function')
-    assert list(results_dct) == ['test_foo_cls[%s]' % ('hello world' if has_pytest_param else 'a0-b0'),
-                                 'test_foo_cls[%s]' % ('two_negative_ints' if has_pytest_param else 'a2-b2'),]
+    if has_pytest_param:
+        assert list(results_dct) == [
+            'test_foo_cls[hello world]',
+            'test_foo_cls[two_negative_ints]'
+        ]
+    else:
+        assert list(results_dct) == [
+            'test_foo_cls[hello world[0]-hello world[1]]',
+            'test_foo_cls[two_negative_ints[0]-two_negative_ints[1]]'
+        ]
 
 
 @parametrize_with_cases("a,b", cases=(CasesFoo, strange_ints, cases_doc, CasesFoo, '.test_doc_cases'))
@@ -161,5 +180,5 @@ def test_foo_parametrize_fixture_synthesis(request):
         assert list(results_dct) == ['test_foo_parametrize_fixture[two_positive_ints]',
                                      'test_foo_parametrize_fixture[two_negative_ints]']
     else:
-        assert list(results_dct) == ['test_foo_parametrize_fixture[a0-b0]',
-                                     'test_foo_parametrize_fixture[a1-b1]']
+        assert list(results_dct) == ['test_foo_parametrize_fixture[two_positive_ints[0]-two_positive_ints[1]]',
+                                     'test_foo_parametrize_fixture[two_negative_ints[0]-two_negative_ints[1]]']

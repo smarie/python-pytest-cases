@@ -31,7 +31,7 @@ else:
     @pytest.mark.parametrize('new_style', [False, True])
     def test_getcallspecs(new_style):
         if new_style:
-            parametrizer = parametrize(a=[1, pytest.param('12', marks=pytest.mark.skip, id='hey')], idgen="a={a}")
+            parametrizer = parametrize(a=[1, pytest.param('12', marks=pytest.mark.skip)], idgen="a={a}")
         else:
             parametrizer = parametrize('a', [1, pytest.param('12', marks=pytest.mark.skip, id='hey')], ids=['oh', 'my'])
 
@@ -47,5 +47,5 @@ else:
         assert calls[0].marks == []
 
         assert calls[1].funcargs == dict(a='12')
-        assert calls[1].id == 'hey'
+        assert calls[1].id == 'a=12' if new_style else 'hey'
         assert calls[1].marks[0].name == 'skip'

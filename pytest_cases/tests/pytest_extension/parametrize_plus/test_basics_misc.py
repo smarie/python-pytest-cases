@@ -2,10 +2,45 @@ import sys
 
 import pytest
 
+from pytest_cases import parametrize_plus, lazy_value
 from pytest_harvest import get_session_synthesis_dct
 
-from pytest_cases import parametrize_plus
+from pytest_cases.common_pytest import has_pytest_param, cart_product_pytest, get_marked_parameter_values, \
+    extract_parameterset_info
+from pytest_cases.common_pytest_lazy_values import is_lazy
 from pytest_cases.fixture_parametrize_plus import _get_argnames_argvalues
+from ...utils import skip
+
+
+def test_cart_product_pytest():
+
+    # simple
+    names_lst, values = cart_product_pytest(('a', 'b'), ([True], [1, 2]))
+    assert names_lst == ['a', 'b']
+    assert values == [(True, 1), (True, 2)]
+
+    # multi
+    names_lst, values = cart_product_pytest(('a,b', 'c'), ([(True, 1)], [1, 2]))
+    assert names_lst == ['a', 'b', 'c']
+    assert values == [(True, 1, 1), (True, 1, 2)]
+
+    # marks
+    names_lst, values = cart_product_pytest(('a,b', 'c'), ([(True, 1)], [skip(1), 2]))
+    assert names_lst == ['a', 'b', 'c']
+    assert get_marked_parameter_values(values[0]) == (True, 1, 1)
+    assert values[1] == (True, 1, 2)
+
+    # lazy values
+    def get_tuple():
+        return 3, 4
+    names_lst, values = cart_product_pytest(('a', 'b,c'), ([True], [lazy_value(get_tuple, marks=skip), (1, 2)]))
+    assert names_lst == ['a', 'b', 'c']
+    assert values[0][0] is True
+    assert is_lazy(values[0][1])
+    assert is_lazy(values[0][2])
+    assert values[0][1].get_id() == 'get_tuple[0]'
+    assert values[0][2].get_id() == 'get_tuple[1]'
+    assert values[1] == (True, 1, 2)
 
 
 def test_argname_error():
@@ -63,12 +98,36 @@ def test_get_argnames_argvalues(tuple_around_single):
         assert set(argnames) == {'a', 'b', 'c'}
     else:
         assert argnames == ['a', 'b', 'c']
-
     if argnames[-1] == 'c':
         assert argvalues == [(True, 1.25, -1), (True, 1.25, 2), (True, 0, -1), (True, 0, 2)]
     else:
         # for python < 3.6
         assert argvalues == [(-1, True, 1.25), (-1, True, 0), (2, True, 1.25),  (2, True, 0)]
+
+    # a mark on any of them
+    argnames, argvalues = _get_argnames_argvalues(**{'a,b': (skip(True, 1.25), (True, 0)), 'c': [-1, 2]})
+    if has_pytest_param:
+        assert argvalues[0].id is None
+        assert argvalues[0].marks[0].name == 'skip'
+        assert argvalues[0].values == (True, 1.25, -1) if argnames[-1] == 'c' else (-1, True, 1.25)
+
+    # hybrid
+    # -- several argnames in two entries
+    argnames, argvalues = _get_argnames_argvalues('c', (-1, 2), **{'a,b': ((True, 1.25), (True, 0))})
+    assert argnames == ['c', 'a', 'b']
+    assert argvalues == [(-1, True, 1.25), (-1, True, 0), (2, True, 1.25), (2, True, 0)]
+    # -- several argnames in two entries with marks
+    argnames, argvalues = _get_argnames_argvalues('c,d', ((True, -1), skip('hey', 2)), **{'a,b': ((True, 1.25), (True, 0))})
+    assert argnames == ['c', 'd', 'a', 'b']
+    custom_pids, p_marks, p_values = extract_parameterset_info(argnames, argvalues, check_nb=True)
+    assert all(p is None for p in custom_pids)
+    assert p_values == [(True, -1, True, 1.25), (True, -1, True, 0), ('hey', 2, True, 1.25), ('hey', 2, True, 0)]
+    assert p_marks[0:2] == [None, None]
+    if has_pytest_param:
+        assert len(p_marks[2]) == 1
+        assert p_marks[2][0].name == 'skip'
+        assert len(p_marks[3]) == 1
+        assert p_marks[3][0].name == 'skip'
 
 
 def format_me(**kwargs):
