@@ -52,7 +52,7 @@ def test_foo_multi_synthesis(request):
     if sys.version_info >= (3, 6):
         if has_pytest_param:
             assert list(results_dct) == [
-                'test_foo_multi[hello]' % ('hello' if has_pytest_param else 'hello[0]-hello[1]'),
+                'test_foo_multi[hello]',
                 # 'test_foo_multi[simple_generator-who=you]',  skipped
                 # 'test_foo_multi[simple_generator-who=you]',  skipped
                 'test_foo_multi[simple_generator-who=there-a=5-b=5]',
