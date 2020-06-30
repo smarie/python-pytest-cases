@@ -1,4 +1,5 @@
 import sys
+from distutils.version import LooseVersion
 
 import pytest
 
@@ -147,12 +148,20 @@ def test_idgen1(a, b, c, d):
 def test_idgen1_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_idgen1, test_id_format='function')
     if sys.version_info >= (3, 6):
-        assert list(results_dct) == [
-            'test_idgen1[10yes-c2.1-a=True,b= -1]',
-            'test_idgen1[10yes-c2.1-a=False,b=  3]',
-            'test_idgen1[10yes-c0.0-a=True,b= -1]',
-            'test_idgen1[10yes-c0.0-a=False,b=  3]'
-        ]
+        if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+            assert list(results_dct) == [
+                'test_idgen1[10yes-c2.1-a=True,b= -1]',
+                'test_idgen1[10yes-c2.1-a=False,b=  3]',
+                'test_idgen1[10yes-c0.0-a=True,b= -1]',
+                'test_idgen1[10yes-c0.0-a=False,b=  3]'
+            ]
+        else:
+            assert list(results_dct) == [
+                'test_idgen1[a=True,b= -1-10yes-c2.1]',
+                'test_idgen1[a=False,b=  3-10yes-c2.1]',
+                'test_idgen1[a=True,b= -1-10yes-c0.0]',
+                'test_idgen1[a=False,b=  3-10yes-c0.0]'
+            ]
     else:
         assert len(results_dct) == 4
 
