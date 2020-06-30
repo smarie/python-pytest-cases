@@ -586,6 +586,10 @@ def cart_product_pytest(argnames, argvalues):
 def _cart_product_pytest(argnames_lists, argvalues):
     result = []
 
+    # first perform the sub cartesian product with entries [1:]
+    sub_product = _cart_product_pytest(argnames_lists[1:], argvalues[1:]) if len(argvalues) > 1 else None
+
+    # then do the final product with entry [0]
     for x in argvalues[0]:
         # handle x
         nb_names = len(argnames_lists[0])
@@ -609,7 +613,7 @@ def _cart_product_pytest(argnames_lists, argvalues):
 
         # product
         if len(argvalues) > 1:
-            for m, p in _cart_product_pytest(argnames_lists[1:], argvalues[1:]):
+            for m, p in sub_product:
                 # combine marks and values
                 result.append((x_marks_lst + m, x_value_lst + p))
         else:
