@@ -146,7 +146,7 @@ def test_idgen1(a, b, c, d):
 
 def test_idgen1_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_idgen1, test_id_format='function')
-    if sys.version_info > (3, 6):
+    if sys.version_info >= (3, 6):
         assert list(results_dct) == [
             'test_idgen1[10yes-c2.1-a=True,b= -1]',
             'test_idgen1[10yes-c2.1-a=False,b=  3]',
