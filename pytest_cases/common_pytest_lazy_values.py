@@ -310,9 +310,11 @@ def get_lazy_args(argval):
     """ Possibly calls the lazy values contained in argval if needed, before returning it"""
 
     try:
-        if is_lazy(argval):
+        _is_lazy = is_lazy(argval)
+    except:  # noqa
+        return argval
+    else:
+        if _is_lazy:
             return argval.get()
         else:
             return argval
-    except:  # noqa
-        return argval
