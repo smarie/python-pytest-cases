@@ -6,6 +6,8 @@ from importlib import import_module
 from inspect import getmembers
 from warnings import warn
 
+from pytest_cases import fixture
+
 try:
     from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
 except ImportError:
@@ -13,13 +15,12 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_others import get_code_first_line, AUTO, AUTO2
-from .common_pytest_marks import copy_pytest_marks
+from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value
 from .common_pytest_lazy_values import lazy_value
-from .common_pytest import safe_isclass, get_callspecs
+from .common_pytest import safe_isclass, MiniMetafunc
 
 from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CaseInfo
-from .fixture_parametrize_plus import parametrize_plus
-
+from .fixture_parametrize_plus import fixture_ref, _parametrize_plus
 
 THIS_MODULE = object()
 """Singleton that can be used instead of a module name to indicate that the module is the current one"""
@@ -77,8 +78,9 @@ def parametrize_with_cases(argnames,      # type: str
         # Transform the various functions found
         argvalues = get_pytest_parametrize_args(cases_funs)
 
-        # Finally apply parametrization
-        _parametrize_with_cases = parametrize_plus(argnames, argvalues, **kwargs)
+        # Finally apply parametrization - note that we need to call the private method so that fixture are created in
+        # the right module (not here)
+        _parametrize_with_cases = _parametrize_plus(argnames, argvalues, **kwargs)
         return _parametrize_with_cases(f)
 
     return _apply_parametrization
@@ -138,7 +140,7 @@ def get_all_cases(parametrization_target,  # type: Callable
     return [c for c in cases_funs if matches_tag_query(c, has_tag=has_tag, filter=filter)]
 
 
-def get_pytest_parametrize_args(cases_funs  # type: List[Callable]
+def get_pytest_parametrize_args(cases_funs,  # type: List[Callable]
                                 ):
     # type: (...) -> List[lazy_value]
     """ Transform a list of cases (obtained from `get_all_cases`) into a list of argvalues for `@parametrize`
@@ -149,7 +151,7 @@ def get_pytest_parametrize_args(cases_funs  # type: List[Callable]
     return [c for _f in cases_funs for c in case_to_argvalues(_f)]
 
 
-def case_to_argvalues(case_fun  # type: Callable
+def case_to_argvalues(case_fun,  # type: Callable
                       ):
     # type: (...) -> Tuple[lazy_value]
     """Transform a single case into one or several `lazy_value` to be used in `@parametrize`
@@ -182,15 +184,40 @@ def case_to_argvalues(case_fun  # type: Callable
             case_id = case_fun.__name__
 
     # get the list of all calls that pytest *would* have made for such a (possibly parametrized) function
-    calls = get_callspecs(case_fun)
+    meta = MiniMetafunc(case_fun)
 
-    if len(calls) == 0:
-        # single unparametrized case function
-        return (lazy_value(case_fun, id=case_id, marks=marks),)
+    if not meta.requires_fixtures:
+        if not meta.is_parametrized:
+            # single unparametrized case function
+            return (lazy_value(case_fun, id=case_id, marks=marks),)
+        else:
+            # parametrized. create one version of the callable for each parametrized call
+            return tuple(lazy_value(partial(case_fun, **c.funcargs), id="%s-%s" % (case_id, c.id), marks=c.marks)
+                         for c in meta._calls)
     else:
-        # parametrized. create one version of the callable for each parametrized call
-        return tuple(lazy_value(partial(case_fun, **c.funcargs), id="%s-%s" % (case_id, c.id), marks=c.marks)
-                     for c in calls)
+        # at least a required fixture: create a fixture
+        # unwrap any partial that would have been created by us because the fixture was in a class
+        if isinstance(case_fun, partial):
+            host_cls = case_fun.host_class
+            case_fun = case_fun.func
+        else:
+            host_cls = None
+
+        host_module = import_module(case_fun.__module__)
+
+        # create a new fixture and place it on the host (note: if already done, no need to recreate it)
+        existing_fix = getattr(host_cls or host_module, case_id, None)
+        if existing_fix is None:
+            # if meta.is_parametrized:
+            #     nothing to do, the parametrization marks are already there
+            new_fix = fixture(name=case_id)(case_fun)
+            setattr(host_cls or host_module, case_id, new_fix)
+        else:
+            raise NotImplementedError("We should check if this is the same or another and generate a new name in that case")
+
+        # now reference the new or existing fixture
+        argvalues_tuple = (fixture_ref(case_id),)
+        return make_marked_parameter_value(argvalues_tuple, marks=marks) if marks else argvalues_tuple
 
 
 def import_default_cases_module(f, alt_name=False):
@@ -350,6 +377,8 @@ def _extract_cases_from_module_or_class(module=None,   # type: ModuleRef
                     continue
                 # partialize the function to get one without the 'self' argument
                 new_m = partial(m, cls())
+                # remember the class
+                new_m.host_class = cls
                 # we have to recopy all metadata concerning the case function
                 new_m.__name__ = m.__name__
                 CaseInfo.copy_info(m, new_m)

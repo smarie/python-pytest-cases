@@ -525,6 +525,41 @@ class MiniMetafunc(Metafunc):
         self._calls = []
         # non-default parameters
         self.fixturenames = getfuncargnames(func)
+        # get parametrization marks
+        self.pmarks = get_pytest_parametrize_marks(self.function)
+        if self.is_parametrized:
+            self.update_callspecs()
+            self.required_fixtures = set(self.fixturenames) - set(self._calls[0].funcargs)
+        else:
+            self.required_fixtures = self.fixturenames
+
+    @property
+    def is_parametrized(self):
+        return len(self.pmarks) > 0
+
+    @property
+    def requires_fixtures(self):
+        return len(self.required_fixtures) > 0
+
+    def update_callspecs(self):
+        """
+
+        :return:
+        """
+        for pmark in self.pmarks:
+            if len(pmark.param_names) == 1:
+                argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
+            else:
+                argvals = pmark.param_values
+            self.parametrize(argnames=pmark.param_names, argvalues=argvals, ids=pmark.param_ids,
+                             # use indirect = False and scope = 'function' to avoid having to implement complex patches
+                             indirect=False, scope='function')
+
+        if not has_pytest_param:
+            # fix the CallSpec2 instances so that the marks appear
+            # noinspection PyProtectedMember
+            for c in self._calls:
+                c.marks = list(c.keywords.values())
 
 
 def get_callspecs(func):
@@ -536,23 +571,7 @@ def get_callspecs(func):
     :return:
     """
     meta = MiniMetafunc(func)
-
-    pmarks = get_pytest_parametrize_marks(func)
-    for pmark in pmarks:
-        if len(pmark.param_names) == 1:
-            argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
-        else:
-            argvals = pmark.param_values
-        meta.parametrize(argnames=pmark.param_names, argvalues=argvals, ids=pmark.param_ids,
-                         # use indirect = False and scope = 'function' to avoid having to implement complex patches
-                         indirect=False, scope='function')
-
-    if not has_pytest_param:
-        # fix the CallSpec2 instances so that the marks appear
-        # noinspection PyProtectedMember
-        for c in meta._calls:
-            c.marks = list(c.keywords.values())
-
+    # meta.update_callspecs()
     # noinspection PyProtectedMember
     return meta._calls
 
