@@ -6,7 +6,9 @@
 
  - New `@case(id=None, tags=(), marks=())` decorator to replace `@case_name`, `@case_tags` and `@test_target` (all deprecated): a single simple way to customize all aspects of a case function. Also, `target` disappears from the picture as it was just a tag like others - this could be misleading.
 
- - `@cases_generator` is now deprecated and replaced with `@parametrize` : now, cases can be parametrized exactly the same way than tests. `@parametrize_plus` has been renamed `@parametrize` for readability. It was also improved in order to support the alternate parametrization mode that was previously offered by `@cases_generator`. That way, users will be able to choose the style of their choice. Fixes [#106](https://github.com/smarie/python-pytest-cases/issues/106).
+ - `@cases_generator` is now deprecated and replaced with `@parametrize` : now, cases can be parametrized exactly the same way than tests. This includes the ability to put marks on the whole or on some specific parameter values. `@parametrize_plus` has been renamed `@parametrize` for readability. It was also improved in order to support the alternate parametrization mode that was previously offered by `@cases_generator`. That way, users will be able to choose the style of their choice. Fixes [#57](https://github.com/smarie/python-pytest-cases/issues/57) and [#106](https://github.com/smarie/python-pytest-cases/issues/106).
+ 
+ - Since `@cases_generat`Marks can now 
 
  - Now case functions can require fixtures ! In that case they will be transformed into fixtures and injected as `fixture_ref` in the parametrization. Fixes [#56](https://github.com/smarie/python-pytest-cases/issues/56).
 
