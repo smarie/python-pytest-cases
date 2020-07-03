@@ -314,8 +314,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#200-less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features" class="md-nav__link">
-    2.0.0 - Less boilerplate and full pytest alignment, unlocking advanced features
+  <a href="#200-less-boilerplate-full-pytest-alignment" class="md-nav__link">
+    2.0.0 - Less boilerplate &amp; full pytest alignment !
   </a>
   
 </li>
@@ -780,8 +780,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#200-less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features" class="md-nav__link">
-    2.0.0 - Less boilerplate and full pytest alignment, unlocking advanced features
+  <a href="#200-less-boilerplate-full-pytest-alignment" class="md-nav__link">
+    2.0.0 - Less boilerplate &amp; full pytest alignment !
   </a>
   
 </li>
@@ -1234,33 +1234,89 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="200-less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features">2.0.0 - Less boilerplate and full <code>pytest</code> alignment, unlocking advanced features<a class="headerlink" href="#200-less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features" title="Permanent link">&para;</a></h3>
-<p>New <code>@parametrize_with_cases(argnames, cases)</code> decorator:</p>
+<h3 id="200-less-boilerplate-full-pytest-alignment">2.0.0 - Less boilerplate &amp; full <code>pytest</code> alignment !<a class="headerlink" href="#200-less-boilerplate-full-pytest-alignment" title="Permanent link">&para;</a></h3>
+<p><strong>Case functions</strong></p>
 <ul>
 <li>
-<p>Similar behaviour than in <code>pytest</code>: </p>
-<ul>
-<li>
-<p>now <code>argnames</code> can contain several names, and the cases are unpacked automatically. No need to perform a <code>case.get()</code> at test execution time anymore.</p>
+<p>New <code>@case(id=None, tags=(), marks=())</code> decorator to replace <code>@case_name</code>, <code>@case_tags</code> and <code>@test_target</code> (all deprecated): a single simple way to customize all aspects of a case function. Also, <code>target</code> disappears from the picture as it was just a tag like others - this could be misleading.</p>
 </li>
 <li>
-<p>Cases are unpacked at test <em>setup</em> time, so the clock does not run while the case is created - in case you use <code>pytest-harvest</code> to collect the timings.</p>
+<p><code>@cases_generator</code> is now deprecated and replaced with <code>@parametrize</code> : now, cases can be parametrized exactly the same way than tests. <code>@parametrize_plus</code> has been renamed <code>@parametrize</code> for readability. It was also improved in order to support the alternate parametrization mode that was previously offered by <code>@cases_generator</code>. That way, users will be able to choose the style of their choice. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/106">#106</a>.</p>
+</li>
+<li>
+<p>Now case functions can require fixtures ! In that case they will be transformed into fixtures and injected as <code>fixture_ref</code> in the parametrization. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/56">#56</a>.</p>
+</li>
+</ul>
+<p><strong>Test functions</strong></p>
+<p>New <code>@parametrize_with_cases(argnames, cases, ...)</code> decorator to replace <code>@cases_data</code> (deprecated):</p>
+<ul>
+<li>
+<p>Aligned with <code>pytest</code> behaviour: </p>
+<ul>
+<li>
+<p>now <code>argnames</code> can contain several names, and the cases are unpacked automatically. <strong>Less boilerplate code</strong>: no need to perform a <code>case.get()</code> in the test anymore !</p>
+<div class="codehilite"><pre><span></span><code>@parametrize_with_cases(&quot;a,b&quot;)
+def test_foo(a, b):
+    # use a and b directly !
+    ...
+</code></pre></div>
+
+
+</li>
+<li>
+<p>cases are unpacked at test <em>setup</em> time, so <em>the clock does not run while the case is created</em> - in case you use <code>pytest-harvest</code> to collect the timings.</p>
+</li>
+<li>
+<p><code>@parametrize_with_cases</code> can be used on test functions <em>as well as fixture functions</em> (it was already the case in v1)</p>
 </li>
 </ul>
 </li>
 <li>
-<p>A single <code>cases</code> argument is used for everything:</p>
+<p><strong>A single <code>cases</code> argument</strong> to indicate the cases, wherever they come from:</p>
 <ul>
 <li>
-<p>Default behaviour (<code>cases=AUTO</code>) uses the file name pattern <code>test_xxx_cases.py</code>. Users can easily switch to alternate pattern <code>cases_xxx.py</code> with <code>cases=AUTO2</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/91">#91</a></p>
+<p>Default (<code>cases=AUTO</code>) <em>automatically looks for cases in the associated case module</em> named <code>test_xxx_cases.py</code>. Users can easily switch to alternate pattern <code>cases_xxx.py</code> with <code>cases=AUTO2</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/91">#91</a>.</p>
 </li>
 <li>
-<p>Cases can sit inside a class. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/93">#93</a></p>
+<p><em>Cases can sit inside a class</em>, which makes it much more convenient to organize when they sit in the same file than the tests. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/93">#93</a>.</p>
+</li>
+<li>
+<p>an explicit sequence can be provided, <em>it can mix all kind of sources</em>: functions, classes, modules, and <em>module names as strings</em> (even relative ones!).</p>
+<div class="codehilite"><pre><span></span><code>@parametrize_with_cases(&quot;a&quot;, cases=(CasesClass, &#39;.my_extra_cases&#39;))
+def test_foo(a):
+    ...
+</code></pre></div>
+
+
 </li>
 </ul>
 </li>
+</ul>
+<p><strong>Misc / pytest goodies</strong></p>
+<ul>
 <li>
-<p>New pytest goodie <code>assert_exception</code> that can be used as a context manager. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/104">#104</a></p>
+<p><code>parametrize_plus</code> now raises an explicit error message when the user makes a mistake with the argnames. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/105">#105</a>.</p>
+</li>
+<li>
+<p><code>parametrize_plus</code> now provides an alternate way to pass argnames, argvalues and ids. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/106">#106</a>.</p>
+</li>
+<li>
+<p>New aliases for readability: <code>fixture</code> for <code>fixture_plus</code>, and<code>parametrize</code> for <code>parametrize_plus</code> (both aliases will coexist with the old names). Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/107">#107</a>.</p>
+</li>
+<li>
+<p>New pytest goodie <code>assert_exception</code> that can be used as a context manager. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/104">#104</a>.</p>
+</li>
+<li>
+<p>More readable error messages when <code>lazy_value</code> does not return the same number of argvalues than expected by the <code>parametrize</code>.</p>
+</li>
+<li>
+<p>Any error message associated to a <code>lazy_value</code> function call is not caught and hidden anymore but is emitted to the user.</p>
+</li>
+<li>
+<p>Fixed issue with <code>lazy_value</code> when a single mark is passed in the constructor.</p>
+</li>
+<li>
+<p><code>lazy_value</code> used as a tuple for several arguments now have a correct id generated even in old pytest version 2.</p>
 </li>
 </ul>
 <h3 id="1170-lazy_value-improvements-annoying-warnings-suppression">1.17.0 - <code>lazy_value</code> improvements + annoying warnings suppression<a class="headerlink" href="#1170-lazy_value-improvements-annoying-warnings-suppression" title="Permanent link">&para;</a></h3>
@@ -1584,7 +1640,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.config.lang": "en", "clipboard.copied": "Copied to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.result.other": "# matching documents", "search.config.separator": "[\\s\\-]+", "search.result.none": "No matching documents", "search.result.one": "1 matching document"}</script>
+      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.result.one": "1 matching document", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.config.lang": "en", "search.result.other": "# matching documents", "clipboard.copied": "Copied to clipboard"}</script>
       
       <script>
         app = initialize({
