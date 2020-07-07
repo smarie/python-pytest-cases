@@ -243,8 +243,10 @@ def import_default_cases_module(f, alt_name=False):
     try:
         cases_module = import_module(cases_module_name)
     except ImportError:
-        raise ValueError("Could not import test cases module with module=AUTO pattern: unable to import %r"
-                         % cases_module_name)
+        raise ValueError("Error importing test cases module to parametrize function %r: unable to import AUTO%s "
+                         "cases module %r. Maybe you wish to import cases from somewhere else ? In that case please "
+                         "specify `cases=...`."
+                         % (f, '2' if alt_name else '', cases_module_name))
     return cases_module
 
 
