@@ -22,7 +22,7 @@ from .common_others import AUTO
 from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, is_lazy, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
-    extract_parameterset_info, ParameterSet, cart_product_pytest
+    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval
 
 from .fixture__creation import check_name_available, CHANGE, WARN, get_caller_module
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
@@ -378,7 +378,9 @@ def _parametrize_plus(argnames=None,
         idgen = AUTO if len(args) > 0 else None
 
     if idgen is AUTO:
-        idgen = lambda **args: "-".join("%s=%s" % (n, v) for n, v in args.items())
+        # note: we use a "trick" here with mini_idval to get the appropriate result
+        # TODO support fixture_ref in mini_idval or add __name__ and str() in fixture_ref
+        idgen = lambda **args: "-".join("%s=%s" % (n, mini_idval(val=v, argname='', idx=v)) for n, v in args.items())
 
     # first handle argnames / argvalues (new modes of input)
     argnames, argvalues = _get_argnames_argvalues(argnames, argvalues, **args)
