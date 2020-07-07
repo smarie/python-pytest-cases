@@ -146,11 +146,31 @@ CASE_PREFIX_FUN = 'case_'
 """Prefix used by default to identify case functions within a module"""
 
 
-def is_case_class(cls):
-    return safe_isclass(cls) and cls.__name__.startswith(CASE_PREFIX_CLS)
+def is_case_class(cls, case_marker_in_name=CASE_PREFIX_CLS, check_name=True):
+    """
+    Returns True if the given object is a class and, if `check_name=True` (default), if its name contains
+    `case_marker_in_name`.
+
+    :param cls: the object to check
+    :param case_marker_in_name: the string that should be present in a class name so that it is selected. Default is
+        'Case'.
+    :param check_name: a boolean (default True) to enforce that the name contains the word `case_marker_in_name`.
+        If False, all classes will lead to a `True` result whatever their name.
+    :return: True if this is a case class
+    """
+    return safe_isclass(cls) and (not check_name or case_marker_in_name in cls.__name__)
 
 
-def is_case_function(f, enforce_prefix=True):
+def is_case_function(f, prefix=CASE_PREFIX_FUN, check_prefix=True):
+    """
+    Returns True if the provided object is a function or callable and, if `check_prefix=True` (default), if it starts
+    with `prefix`.
+
+    :param f:
+    :param prefix:
+    :param check_prefix:
+    :return:
+    """
     if not callable(f):
         return False
     elif safe_isclass(f):
@@ -158,4 +178,4 @@ def is_case_function(f, enforce_prefix=True):
     elif hasattr(f, CASE_FIELD):
         return True
     else:
-        return f.__name__.startswith(CASE_PREFIX_FUN) if enforce_prefix else True
+        return f.__name__.startswith(prefix) if check_prefix else True

@@ -4,6 +4,7 @@ from __future__ import division
 from functools import partial
 from importlib import import_module
 from inspect import getmembers
+import re
 from warnings import warn
 
 from pytest_cases import fixture
@@ -19,7 +20,7 @@ from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value
 from .common_pytest_lazy_values import lazy_value
 from .common_pytest import safe_isclass, MiniMetafunc
 
-from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CaseInfo
+from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CaseInfo, CASE_PREFIX_FUN
 from .fixture_parametrize_plus import fixture_ref, _parametrize_plus
 
 THIS_MODULE = object()
@@ -35,10 +36,11 @@ except:  # noqa
     pass
 
 
-def parametrize_with_cases(argnames,      # type: str
-                           cases=AUTO,    # type: Union[Callable, Type, ModuleRef]
-                           has_tag=None,  # type: Any
-                           filter=None,   # type: Callable[[Iterable[Any]], bool]  # noqa
+def parametrize_with_cases(argnames,                # type: str
+                           cases=AUTO,              # type: Union[Callable, Type, ModuleRef]
+                           prefix=CASE_PREFIX_FUN,  # type: str
+                           has_tag=None,            # type: Any
+                           filter=None,             # type: Union[str, Callable[[Callable], bool]]  # noqa
                            **kwargs
                            ):
     # type: (...) -> Callable[[Callable], Callable]
@@ -56,8 +58,11 @@ def parametrize_with_cases(argnames,      # type: str
         `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
         the module file of the decorated function. `AUTO2` allows you to use the alternative naming scheme
         `case_<name>.py`.
-    :param has_tag:
-    :param filter:
+    :param prefix: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to
+        denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
+    :param has_tag: a single tag or a tuple, set, list of tags that should be matched by the case function to be used
+    :param filter: a string or a callable receiving the case function and returning True or None in case the function
+        needs to be selected.
     :return:
     """
     # Handle single elements
@@ -73,10 +78,10 @@ def parametrize_with_cases(argnames,      # type: str
         :return:
         """
         # Collect all cases
-        cases_funs = get_all_cases(f, cases=cases, filter=filter, has_tag=has_tag)
+        cases_funs = get_all_cases(f, cases=cases, prefix=prefix, filter=filter, has_tag=has_tag)
 
         # Transform the various functions found
-        argvalues = get_pytest_parametrize_args(cases_funs)
+        argvalues = get_pytest_parametrize_args(cases_funs, prefix=prefix)
 
         # Finally apply parametrization - note that we need to call the private method so that fixture are created in
         # the right module (not here)
@@ -86,10 +91,29 @@ def parametrize_with_cases(argnames,      # type: str
     return _apply_parametrization
 
 
+def create_glob_name_filter(glob_str  # type: str
+                            ):
+    """
+    Creates a glob-like matcher for the name of case functions
+
+    :param case_fun:
+    :return:
+    """
+
+    name_matcher = re.compile(glob_str.replace("*", ".*"))
+
+    def _glob_name_filter(case_fun):
+        case_fun_name = getattr(case_fun, '__name__', None)
+        return name_matcher.match(case_fun_name)
+
+    return _glob_name_filter
+
+
 def get_all_cases(parametrization_target,  # type: Callable
                   cases=None,              # type: Union[Callable, Type, ModuleRef]
+                  prefix=CASE_PREFIX_FUN,  # type: str
                   has_tag=None,            # type: Any
-                  filter=None              # type: Callable[[Iterable[Any]], bool]  # noqa
+                  filter=None              # type: Union[str, Callable[[Iterable[Any]], bool]]  # noqa
                   ):
     # type: (...) -> List[Callable]
     """
@@ -101,13 +125,24 @@ def get_all_cases(parametrization_target,  # type: Callable
         `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
         the module file of the decorated function. `AUTO2` allows you to use the alternative naming scheme
         `case_<name>.py`.
-    :param has_tag:
-    :param filter:
+    :param prefix: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to
+        denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
+    :param has_tag: a single tag or a tuple, set, list of tags that should be matched by the case function to be used
+    :param filter: a string or a callable receiving the case function and returning True or None in case the function
+        needs to be selected.
     """
-    if filter is not None and not callable(filter):
-        raise ValueError(
-            "`filter` should be a callable starting in pytest-cases 0.8.0. If you wish to provide a single"
-            " tag to match, use `has_tag` instead.")
+    if not isinstance(prefix, str):
+        raise TypeError("`prefix` should be a string, found: %r" % prefix)
+
+    if filter is not None:
+        if isinstance(filter, string_types):
+            # String = A glob-like filter
+            filter = create_glob_name_filter(filter)
+
+        if not callable(filter):
+            raise ValueError(
+                "`filter` should be a callable starting in pytest-cases 0.8.0. If you wish to provide a single"
+                " tag to match, use `has_tag` instead.")
 
     caller_module_name = getattr(parametrization_target, '__module__', None)
     parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
@@ -117,11 +152,11 @@ def get_all_cases(parametrization_target,  # type: Callable
         # load case or cases depending on type
         if safe_isclass(c):
             # class
-            new_cases = extract_cases_from_class(c)
+            new_cases = extract_cases_from_class(c, case_fun_prefix=prefix, check_name=False)  # do not check name, it was explicitly passed
             cases_funs += new_cases
         elif callable(c):
             # function
-            if is_case_function(c, enforce_prefix=False):
+            if is_case_function(c, check_prefix=False):  # do not check prefix, it was explicitly passed
                 cases_funs.append(c)
             else:
                 raise ValueError("Unsupported case function: %r" % c)
@@ -133,25 +168,28 @@ def get_all_cases(parametrization_target,  # type: Callable
                 c = import_default_cases_module(parametrization_target, alt_name=True)
             elif c is THIS_MODULE or c == '.':
                 c = caller_module_name
-            new_cases = extract_cases_from_module(c, package_name=parent_pkg_name)
+            new_cases = extract_cases_from_module(c, package_name=parent_pkg_name, case_fun_prefix=prefix)
             cases_funs += new_cases
 
     # filter last, for easier debugging (collection will be slightly less performant when a large volume of cases exist)
     return [c for c in cases_funs if matches_tag_query(c, has_tag=has_tag, filter=filter)]
 
 
-def get_pytest_parametrize_args(cases_funs,  # type: List[Callable]
+def get_pytest_parametrize_args(cases_funs,              # type: List[Callable]
+                                prefix=CASE_PREFIX_FUN,  # type: str
                                 ):
     # type: (...) -> List[lazy_value]
     """ Transform a list of cases (obtained from `get_all_cases`) into a list of argvalues for `@parametrize`
 
     :param cases_funs:
+    :param prefix:
     :return:
     """
-    return [c for _f in cases_funs for c in case_to_argvalues(_f)]
+    return [c for _f in cases_funs for c in case_to_argvalues(_f, prefix=prefix)]
 
 
-def case_to_argvalues(case_fun,  # type: Callable
+def case_to_argvalues(case_fun,                # type: Callable
+                      prefix=CASE_PREFIX_FUN,  # type: str
                       ):
     # type: (...) -> Tuple[lazy_value]
     """Transform a single case into one or several `lazy_value` to be used in `@parametrize`
@@ -164,6 +202,7 @@ def case_to_argvalues(case_fun,  # type: Callable
     Otherwise, `case_fun` represents a single case: in that case a single `lazy_value` is returned.
 
     :param case_fun:
+    :param prefix
     :return:
     """
     case_id = None
@@ -176,10 +215,8 @@ def case_to_argvalues(case_fun,  # type: Callable
 
     if case_id is None:
         # default test id from function name
-        if case_fun.__name__.startswith('case_'):
-            case_id = case_fun.__name__[5:]
-        elif case_fun.__name__.startswith('cases_'):
-            case_id = case_fun.__name__[6:]
+        if case_fun.__name__.startswith(prefix):
+            case_id = case_fun.__name__[len(prefix):]
         else:
             case_id = case_fun.__name__
 
@@ -270,16 +307,20 @@ class CasesCollectionWarning(UserWarning):
 
 
 def extract_cases_from_class(cls,
+                             check_name=True,
+                             case_fun_prefix=CASE_PREFIX_FUN,
                              _case_param_factory=None
                              ):
     # type: (...) -> List[Callable]
     """
 
     :param cls:
+    :param check_name:
+    :param case_fun_prefix:
     :param _case_param_factory:
     :return:
     """
-    if is_case_class(cls):
+    if is_case_class(cls, check_name=check_name):
         # see from _pytest.python import pytest_pycollect_makeitem
 
         if hasinit(cls):
@@ -301,13 +342,15 @@ def extract_cases_from_class(cls,
             )
             return []
 
-        return _extract_cases_from_module_or_class(cls=cls, _case_param_factory=_case_param_factory)
+        return _extract_cases_from_module_or_class(cls=cls, case_fun_prefix=case_fun_prefix,
+                                                   _case_param_factory=_case_param_factory)
     else:
         return []
 
 
-def extract_cases_from_module(module,             # type: ModuleRef
-                              package_name=None,  # type: str
+def extract_cases_from_module(module,                           # type: ModuleRef
+                              package_name=None,                # type: str
+                              case_fun_prefix=CASE_PREFIX_FUN,  # type: str
                               _case_param_factory=None
                               ):
     # type: (...) -> List[Callable]
@@ -327,11 +370,13 @@ def extract_cases_from_module(module,             # type: ModuleRef
     if isinstance(module, string_types):
         module = import_module(module, package=package_name)
 
-    return _extract_cases_from_module_or_class(module=module, _case_param_factory=_case_param_factory)
+    return _extract_cases_from_module_or_class(module=module, _case_param_factory=_case_param_factory,
+                                               case_fun_prefix=case_fun_prefix)
 
 
-def _extract_cases_from_module_or_class(module=None,   # type: ModuleRef
-                                        cls=None,      # type: Type
+def _extract_cases_from_module_or_class(module=None,                      # type: ModuleRef
+                                        cls=None,                         # type: Type
+                                        case_fun_prefix=CASE_PREFIX_FUN,  # type: str
                                         _case_param_factory=None
                                         ):
     """
@@ -366,12 +411,12 @@ def _extract_cases_from_module_or_class(module=None,   # type: ModuleRef
     for m_name, m in getmembers(container, _of_interest):
         if is_case_class(m):
             co_firstlineno = get_code_first_line(m)
-            cls_cases = extract_cases_from_class(m, _case_param_factory=_case_param_factory)
+            cls_cases = extract_cases_from_class(m, case_fun_prefix=case_fun_prefix, _case_param_factory=_case_param_factory)
             for _i, _m_item in enumerate(cls_cases):
                 gen_line_nb = co_firstlineno + (_i / len(cls_cases))
                 cases_dct[gen_line_nb] = _m_item
 
-        elif is_case_function(m):
+        elif is_case_function(m, prefix=case_fun_prefix):
             co_firstlineno = get_code_first_line(m)
             if cls is not None:
                 if isinstance(cls.__dict__[m_name], (staticmethod, classmethod)):
