@@ -4,29 +4,29 @@ from pytest_cases import parametrize_with_cases, fixture, parametrize
 
 
 @fixture(scope='session')
-def db(request):
-    return {0: 'zero', 1: (2, 3)}
+def db():
+    return {0: 'louise', 1: 'bob'}
 
 
-def case_fix(db):
-    return db[0]
+def user_bob(db):
+    return db[1]
 
 
-@parametrize(key=[0, 1])
-def case_fix_param(db, key):
-    return db[key]
+@parametrize(id=range(2))
+def user_from_db(db, id):
+    return db[id]
 
 
-@parametrize_with_cases("a", cases='.')
-def test_foo_fixtures(a, db, request):
+@parametrize_with_cases("a", cases='.', prefix='user_')
+def test_users(a, db, request):
     print("this is test %r" % request.node.nodeid)
     assert a in db.values()
 
 
-def test_foo_fixtures_synthesis(request, db):
-    results_dct = get_session_synthesis_dct(request, filter=test_foo_fixtures, test_id_format='function')
+def test_users_synthesis(request, db):
+    results_dct = get_session_synthesis_dct(request, filter=test_users, test_id_format='function')
     assert list(results_dct) == [
-        'test_foo_fixtures[a_is_fix]',
-        'test_foo_fixtures[a_is_fix_param-key=0]',
-        'test_foo_fixtures[a_is_fix_param-key=1]'
+        'test_foo_fixtures[a_is_bob]',
+        'test_foo_fixtures[a_is_from_db-id=0]',
+        'test_foo_fixtures[a_is_from_db-id=1]'
     ]
