@@ -108,7 +108,7 @@ As of `pytest` 5, it is not possible to create a "union" fixture, i.e. a paramet
 
 The topic has been largely discussed in [pytest-dev#349](https://github.com/pytest-dev/pytest/issues/349) and a [request for proposal](https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html) has been finally made.
 
-`fixture_union` is an implementation of this proposal. It is also used by `parametrize` to support `fixture_ref` in parameter values, see [below](#parametrize).
+`fixture_union` is an implementation of this proposal. It is also used by `parametrize` to support `fixture_ref` in parameter values, see [below](#parametrize). The theory is presented in more details in [this page](unions_theory.md), while below are more practical examples.
 
 ```python
 from pytest_cases import fixture, fixture_union
