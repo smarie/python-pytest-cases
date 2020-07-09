@@ -21,6 +21,7 @@ try:  # type hints, python 3+
 except ImportError:
     pass
 
+from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_parametrize_marks, make_marked_parameter_value, get_param_argnames_as_list, \
     analyze_parameter_set, combine_ids, is_marked_parameter_value, get_marked_parameter_values, pytest_fixture
 from .fixture__creation import get_caller_module, check_name_available, WARN, CHANGE
@@ -28,7 +29,7 @@ from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _mak
 
 
 def param_fixture(argname,           # type: str
-                  argvalues,         # type: Sequence[Any]
+                  argvalues,         # type: Iterable[Any]
                   autouse=False,     # type: bool
                   ids=None,          # type: Union[Callable, List[str]]
                   scope="function",  # type: str
@@ -125,8 +126,8 @@ def _create_param_fixture(caller_module,
     return fix
 
 
-def param_fixtures(argnames,
-                   argvalues,
+def param_fixtures(argnames,          # type: str
+                   argvalues,         # type: Iterable[Any]
                    autouse=False,     # type: bool
                    ids=None,          # type: Union[Callable, List[str]]
                    scope="function",  # type: str
@@ -254,7 +255,7 @@ def _create_params_fixture(caller_module,
 def pytest_fixture_plus(*args,
                         **kwargs):
     warn("`pytest_fixture_plus` is deprecated. Please use the new alias `fixture_plus`. "
-         "See https://github.com/pytest-dev/pytest/issues/6475")
+         "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
     if len(args) == 1:
         if callable(args[0]):
             return _decorate_fixture_plus(args[0], _caller_module_offset_when_unpack=2, **kwargs)
@@ -282,6 +283,8 @@ def fixture_plus(scope="function",  # type: str
 
      - it supports a new argument `unpack_into` where you can provide names for fixtures where to unpack this fixture
        into.
+
+    As a consequence it does not support the `params` and `ids` arguments anymore.
 
     :param scope: the scope for which this fixture is shared, one of "function" (default), "class", "module" or
         "session".
@@ -408,7 +411,7 @@ def _decorate_fixture_plus(fixture_func,
         # reapply the marks
         for i, marks in enumerate(final_marks):
             if marks is not None:
-                final_values[i] = make_marked_parameter_value(final_values[i], marks=marks)
+                final_values[i] = make_marked_parameter_value((final_values[i],), marks=marks)
     else:
         final_values = list(product(*params_values))
         final_ids = combine_ids(product(*params_ids))
@@ -418,7 +421,7 @@ def _decorate_fixture_plus(fixture_func,
         for i, marks in enumerate(final_marks):
             ms = [m for mm in marks if mm is not None for m in mm]
             if len(ms) > 0:
-                final_values[i] = make_marked_parameter_value(final_values[i], marks=ms)
+                final_values[i] = make_marked_parameter_value((final_values[i],), marks=ms)
 
     if len(final_values) != len(final_ids):
         raise ValueError("Internal error related to fixture parametrization- please report")
@@ -440,8 +443,6 @@ def _decorate_fixture_plus(fixture_func,
 
     # --common routine used below. Fills kwargs with the appropriate names and values from fixture_params
     def _map_arguments(*_args, **_kwargs):
-        # todo better...
-        from .fixture_parametrize_plus import handle_lazy_args
         request = _kwargs['request'] if func_needs_request else _kwargs.pop('request')
 
         # populate the parameters
@@ -452,12 +453,12 @@ def _decorate_fixture_plus(fixture_func,
         for p_names, fixture_param_value in zip(params_names_or_name_combinations, _params):
             if len(p_names) == 1:
                 # a single parameter for that generated fixture (@pytest.mark.parametrize with a single name)
-                _kwargs[p_names[0]] = handle_lazy_args(fixture_param_value)
+                _kwargs[p_names[0]] = get_lazy_args(fixture_param_value)
             else:
                 # several parameters for that generated fixture (@pytest.mark.parametrize with several names)
                 # unpack all of them and inject them in the kwargs
                 for old_p_name, old_p_value in zip(p_names, fixture_param_value):
-                    _kwargs[old_p_name] = handle_lazy_args(old_p_value)
+                    _kwargs[old_p_name] = get_lazy_args(old_p_value)
 
         return _args, _kwargs
 

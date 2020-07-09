@@ -1,5 +1,67 @@
 # Changelog
 
+### 2.0.0 - Less boilerplate & full `pytest` alignment !
+
+**Case functions**
+
+ - New `@case(id=None, tags=(), marks=())` decorator to replace `@case_name`, `@case_tags` and `@test_target` (all deprecated): a single simple way to customize all aspects of a case function. Also, `target` disappears from the picture as it was just a tag like others - this could be misleading.
+
+ - `@cases_generator` is now deprecated and replaced with `@parametrize` : now, cases can be parametrized exactly the same way than tests. This includes the ability to put marks on the whole or on some specific parameter values. `@parametrize_plus` has been renamed `@parametrize` for readability. It was also improved in order to support the alternate parametrization mode that was previously offered by `@cases_generator`. That way, users will be able to choose the style of their choice. Fixes [#57](https://github.com/smarie/python-pytest-cases/issues/57) and [#106](https://github.com/smarie/python-pytest-cases/issues/106).
+ 
+ - Since `@cases_generat`Marks can now 
+
+ - Now case functions can require fixtures ! In that case they will be transformed into fixtures and injected as `fixture_ref` in the parametrization. Fixes [#56](https://github.com/smarie/python-pytest-cases/issues/56).
+
+
+**Test functions**
+
+New `@parametrize_with_cases(argnames, cases, ...)` decorator to replace `@cases_data` (deprecated):
+ 
+ - Aligned with `pytest` behaviour: 
+ 
+    - now `argnames` can contain several names, and the cases are unpacked automatically. **Less boilerplate code**: no need to perform a `case.get()` in the test anymore !
+
+            @parametrize_with_cases("a,b")
+            def test_foo(a, b):
+                # use a and b directly !
+                ...
+
+
+    - cases are unpacked at test *setup* time, so *the clock does not run while the case is created* - in case you use `pytest-harvest` to collect the timings.
+
+    - `@parametrize_with_cases` can be used on test functions *as well as fixture functions* (it was already the case in v1)
+
+
+ - **A single `cases` argument** to indicate the cases, wherever they come from:
+
+     - Default (`cases=AUTO`) *automatically looks for cases in the associated case module* named `test_xxx_cases.py`. Users can easily switch to alternate pattern `cases_xxx.py` with `cases=AUTO2`. Fixes [#91](https://github.com/smarie/python-pytest-cases/issues/91).
+    
+     - *Cases can sit inside a class*, which makes it much more convenient to organize when they sit in the same file than the tests. Fixes [#93](https://github.com/smarie/python-pytest-cases/issues/93).
+     
+     - an explicit sequence can be provided, *it can mix all kind of sources*: functions, classes, modules, and *module names as strings* (even relative ones!).
+
+            @parametrize_with_cases("a", cases=(CasesClass, '.my_extra_cases'))
+            def test_foo(a):
+                ...
+
+**Misc / pytest goodies**
+
+ - `parametrize_plus` now raises an explicit error message when the user makes a mistake with the argnames. Fixes [#105](https://github.com/smarie/python-pytest-cases/issues/105).
+ 
+ - `parametrize_plus` now provides an alternate way to pass argnames, argvalues and ids. Fixes [#106](https://github.com/smarie/python-pytest-cases/issues/106).
+
+ - New aliases for readability: `fixture` for `fixture_plus`, and`parametrize` for `parametrize_plus` (both aliases will coexist with the old names). Fixes [#107](https://github.com/smarie/python-pytest-cases/issues/107).
+
+ - New pytest goodie `assert_exception` that can be used as a context manager. Fixes [#104](https://github.com/smarie/python-pytest-cases/issues/104).
+ 
+ - More readable error messages when `lazy_value` does not return the same number of argvalues than expected by the `parametrize`.
+ 
+ - Any error message associated to a `lazy_value` function call is not caught and hidden anymore but is emitted to the user.
+ 
+ - Fixed issue with `lazy_value` when a single mark is passed in the constructor.
+
+ - `lazy_value` used as a tuple for several arguments now have a correct id generated even in old pytest version 2.
+
 ### 1.17.0 - `lazy_value` improvements + annoying warnings suppression
 
  - `lazy_value` are now resolved at pytest `setup` stage, not pytest `call` stage. This is important for execution time recorded in the reports (see also `pytest-harvest` plugin). Fixes [#102](https://github.com/smarie/python-pytest-cases/issues/102) 

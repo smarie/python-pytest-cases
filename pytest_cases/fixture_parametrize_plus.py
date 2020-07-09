@@ -1,8 +1,7 @@
-from collections import Iterable, namedtuple
-from distutils.version import LooseVersion
-from functools import partial
+from collections import Iterable
 from inspect import isgeneratorfunction
 from warnings import warn
+
 
 try:  # python 3.3+
     from inspect import signature, Parameter
@@ -11,15 +10,19 @@ except ImportError:
 
 try:
     from typing import Union, Callable, List, Any, Sequence, Optional  # noqa
+
 except ImportError:
     pass
 
 import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
-from .common_pytest import get_fixture_name, remove_duplicates, is_marked_parameter_value, mini_idvalset, \
-    get_param_argnames_as_list, extract_parameterset_info, ParameterSet, has_pytest_param, get_pytest_marks_on_function, \
-    transform_marks_into_decorators
+from .common_mini_six import string_types
+from .common_others import AUTO
+from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
+from .common_pytest_lazy_values import is_lazy_value, is_lazy, get_lazy_args
+from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
+    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval
 
 from .fixture__creation import check_name_available, CHANGE, WARN, get_caller_module
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
@@ -57,7 +60,7 @@ def _fixture_product(caller_module,
     if not isinstance(fixtures_or_values, (tuple, set, list)):
         raise TypeError("fixture_product: the `fixtures_or_values` argument should be a tuple, set or list")
     else:
-        has_lazy_vals = any(isinstance(v, lazy_value) for v in fixtures_or_values)
+        has_lazy_vals = any(is_lazy_value(v) for v in fixtures_or_values)
 
     _tuple_size = len(fixtures_or_values)
 
@@ -82,7 +85,7 @@ def _fixture_product(caller_module,
             if fix_at_pos_i is None:
                 # fixed value
                 # note: wouldnt it be almost as efficient but more readable to *always* call handle_lazy_args?
-                yield handle_lazy_args(fixtures_or_values[i]) if has_lazy_vals else fixtures_or_values[i]
+                yield get_lazy_args(fixtures_or_values[i]) if has_lazy_vals else fixtures_or_values[i]
             else:
                 # fixture value
                 yield all_fixtures[fix_at_pos_i]
@@ -116,168 +119,13 @@ _make_fixture_product = _fixture_product
 
 class fixture_ref(object):  # noqa
     """
-    A reference to a fixture, to be used in `parametrize_plus`.
+    A reference to a fixture, to be used in `@parametrize_plus`.
     You can create it from a fixture name or a fixture object (function).
     """
     __slots__ = 'fixture',
 
     def __init__(self, fixture):
         self.fixture = fixture
-
-
-pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
-if pytest53:
-    # in the latest versions of pytest, the default _idmaker returns the value of __name__ if it is available,
-    # even if an object is not a class nor a function. So we do not need to use any special trick.
-    _LazyValueBase = object
-else:
-    fake_base = int
-
-    class _LazyValueBase(int, object):
-        """
-        in this older version of pytest, the default _idmaker does *not* return the value of __name__ for
-        objects that are not functions not classes. However it *does* return str(obj) for objects that are
-        instances of bool, int or float. So that's why lazy_value inherits from int.
-        """
-        __slots__ = ()
-
-        def __new__(cls,
-                    valuegetter,  # type: Callable[[], Any]
-                    id=None,      # type: str
-                    marks=()      # type: Sequence
-                    ):
-            """ Inheriting from int is a bit hard in python: we have to override __new__ """
-            obj = fake_base.__new__(cls, 111111)
-            cls.__init__(obj, valuegetter=valuegetter, id=id, marks=marks)
-            return obj
-
-        def __getattribute__(self, item):
-            """Map all default attribute and method access to the ones in object, not in int"""
-            return object.__getattribute__(self, item)
-
-        def __repr__(self):
-            """Magic methods are not intercepted by __getattribute__ and need to be overridden manually.
-            We do not need all of them by at least override this one for easier debugging"""
-            return object.__repr__(self)
-
-
-def _unwrap(obj):
-    """A light copy of _pytest.compat.get_real_func. In our case
-    we do not wish to unwrap the partial nor handle pytest fixture """
-    start_obj = obj
-    for i in range(100):
-        # __pytest_wrapped__ is set by @pytest.fixture when wrapping the fixture function
-        # to trigger a warning if it gets called directly instead of by pytest: we don't
-        # want to unwrap further than this otherwise we lose useful wrappings like @mock.patch (#3774)
-        # new_obj = getattr(obj, "__pytest_wrapped__", None)
-        # if isinstance(new_obj, _PytestWrapper):
-        #     obj = new_obj.obj
-        #     break
-        new_obj = getattr(obj, "__wrapped__", None)
-        if new_obj is None:
-            break
-        obj = new_obj
-    else:
-        raise ValueError("could not find real function of {start}\nstopped at {current}".format(
-                start=repr(start_obj), current=repr(obj)
-            )
-        )
-    return obj
-
-
-def partial_to_str(partialfun):
-    """Return a string representation of a partial function, to use in lazy_value ids"""
-    strwds = ", ".join("%s=%s" % (k, v) for k, v in partialfun.keywords.items())
-    if len(partialfun.args) > 0:
-        strargs = ', '.join(str(i) for i in partialfun.args)
-        if len(partialfun.keywords) > 0:
-            strargs = "%s, %s" % (strargs, strwds)
-    else:
-        strargs = strwds
-    return "%s(%s)" % (partialfun.func.__name__, strargs)
-
-
-# noinspection PyPep8Naming
-class lazy_value(_LazyValueBase):
-    """
-    A reference to a value getter, to be used in `parametrize_plus`.
-
-    A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
-    fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
-    """
-    if pytest53:
-        __slots__ = 'valuegetter', '_id', '_marks'
-    else:
-        # we can not define __slots__ since we extend int,
-        # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
-        pass
-
-    # noinspection PyMissingConstructor
-    def __init__(self,
-                 valuegetter,  # type: Callable[[], Any]
-                 id=None,      # type: str
-                 marks=()      # type: Sequence
-                 ):
-        """
-        Creates a reference to a value getter, to be used in `parametrize_plus`.
-
-        A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
-        fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
-
-        Note that a `lazy_value` can be included in a `pytest.param` without problem. In that case the id defined by
-        `pytest.param` will take precedence over the one defined in `lazy_value` if any. The marks, however,
-        will all be kept wherever they are defined.
-
-        :param valuegetter: a callable without mandatory arguments
-        :param id: an optional id. Otherwise `valuegetter.__name__` will be used by default
-        :param marks: optional marks. `valuegetter` marks will also be preserved.
-        """
-        self.valuegetter = valuegetter
-        self._id = id
-        self._marks = marks
-
-    def get_marks(self, as_decorators=False):
-        """
-        Overrides default implementation to return the marks that are on the case function
-
-        :param as_decorators: when True, the marks will be transformed into MarkDecorators before being
-            returned
-        :return:
-        """
-        valuegetter_marks = get_pytest_marks_on_function(self.valuegetter, as_decorators=as_decorators)
-
-        if self._marks:
-            return transform_marks_into_decorators(self._marks) + valuegetter_marks
-        else:
-            return valuegetter_marks
-
-    def get_id(self):
-        """The id to use in pytest"""
-        if self._id is not None:
-            return self._id
-        else:
-            # default is the __name__ of the value getter
-            _id = getattr(self.valuegetter, '__name__', None)
-            if _id is not None:
-                return _id
-
-            # unwrap and handle partial functions
-            vg = _unwrap(self.valuegetter)
-
-            if isinstance(vg, partial):
-                return partial_to_str(vg)
-            else:
-                return vg.__name__
-
-    if not pytest53:
-        def __str__(self):
-            """in pytest<5.3 we inherit from int so that str(v) is called by pytest _idmaker to get the id"""
-            return self.get_id()
-
-    @property
-    def __name__(self):
-        """for pytest >= 5.3 we override this so that pytest uses it for id"""
-        return self.get_id()
 
 
 # Fix for https://github.com/smarie/python-pytest-cases/issues/71
@@ -289,7 +137,7 @@ class lazy_value(_LazyValueBase):
 def pytest_parametrize_plus(*args,
                             **kwargs):
     warn("`pytest_parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
-         "See https://github.com/pytest-dev/pytest/issues/6475")
+         "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
     return _parametrize_plus(*args, **kwargs)
 
 
@@ -422,17 +270,35 @@ class ParamIdMakers(object):
             raise ValueError("Unknown style: %r" % style)
 
 
-def parametrize_plus(argnames,
-                     argvalues,
+_IDGEN = object()
+
+
+def parametrize_plus(argnames=None,       # type: str
+                     argvalues=None,      # type: Iterable[Any]
                      indirect=False,      # type: bool
                      ids=None,            # type: Union[Callable, List[str]]
                      idstyle='explicit',  # type: str
+                     idgen=_IDGEN,        # type: Union[str, Callable]
                      scope=None,          # type: str
                      hook=None,           # type: Callable[[Callable], Callable]
                      debug=False,         # type: bool
-                     **kwargs):
+                     **args):
     """
-    Equivalent to `@pytest.mark.parametrize` but also supports new possibilities in argvalues:
+    Equivalent to `@pytest.mark.parametrize` but also supports
+
+    (1) new alternate style for argnames/argvalues. One can also use `**args` to pass additional `{argnames: argvalues}`
+    in the same parametrization call. This can be handy in combination with `idgen` to master the whole id template
+    associated with several parameters. Note that you can pass coma-separated argnames too, by de-referencing a dict:
+    e.g. `**{'a,b': [(0, True), (1, False)], 'c': [-1, 2]}`.
+
+    (2) new alternate style for ids. One can use `idgen` instead of `ids`. `idgen` can be a callable receiving all
+    parameters at once (`**args`) and returning an id ; or it can be a string template using the new-style string
+    formatting where the argnames can be used as variables (e.g. `idgen=lambda **args: "a={a}".format(**args)` or
+    `idgen="my_id where a={a}"`). The special `idgen=AUTO` symbol can be used to generate a default string template
+    equivalent to `lambda **args: "-".join("%s=%s" % (n, v) for n, v in args.items())`. This is enabled by default
+    if you use the alternate style for argnames/argvalues (e.g. if `len(args) > 0`).
+
+    (3) new possibilities in argvalues:
 
      - one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or
        fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture
@@ -457,7 +323,11 @@ def parametrize_plus(argnames,
     :param argnames: same as in pytest.mark.parametrize
     :param argvalues: same as in pytest.mark.parametrize except that `fixture_ref` and `lazy_value` are supported
     :param indirect: same as in pytest.mark.parametrize
-    :param ids: same as in pytest.mark.parametrize
+    :param ids: same as in pytest.mark.parametrize. Note that an alternative way to create ids exists with `idgen`. Only
+        one non-None `ids` or `idgen should be provided.
+    :param idgen: an id formatter. Either a string representing a template, or a callable receiving all argvalues
+        at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when
+        `ids` is not provided (None).
     :param idstyle: style of ids to be used in generated "union" fixtures. See `fixture_union` for details.
     :param scope: same as in pytest.mark.parametrize
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
@@ -465,223 +335,108 @@ def parametrize_plus(argnames,
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
-    :param kwargs: additional arguments for pytest.mark.parametrize
+    :param args: additional {argnames: argvalues} definition
     :return:
     """
-    return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, idstyle=idstyle, scope=scope, hook=hook,
-                             debug=debug, **kwargs)
+    return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, idgen=idgen, idstyle=idstyle, scope=scope,
+                             hook=hook, debug=debug, **args)
 
 
-def handle_lazy_args(argval):
-    """ Possibly calls the lazy values contained in argval if needed, before returning it"""
-
-    # First handle the general case
-    try:
-        if not isinstance(argval, (lazy_value, LazyTuple, LazyTuple.LazyItem)):
-            return argval
-    except:  # noqa
-        return argval
-
-    # Now the lazy ones
-    if isinstance(argval, lazy_value):
-        return argval.valuegetter()
-    elif isinstance(argval, LazyTuple):
-        return argval.get()
-    elif isinstance(argval, LazyTuple.LazyItem):
-        return argval.get()
-    else:
-        return argval
-
-
-class LazyTuple(object):
+class InvalidIdTemplateException(Exception):
     """
-    A wrapper representing a lazy_value used as a tuple = for several argvalues at once.
-
-     -
-       while not calling the lazy value
-     -
+    Raised when a string template provided in an `idgen` raises an error
     """
-    __slots__ = ('value', 'theoretical_size', 'retrieved')
+    def __init__(self, idgen, params, caught):
+        self.idgen = idgen
+        self.params = params
+        self.caught = caught
+        super(InvalidIdTemplateException, self).__init__()
 
-    def __init__(self,
-                 valueref,        # type: Union[lazy_value, Sequence]
-                 theoretical_size  # type: int
-                 ):
-        self.value = valueref
-        self.theoretical_size = theoretical_size
-        self.retrieved = False
+    def __str__(self):
+        return repr(self)
 
-    def __len__(self):
-        return self.theoretical_size
-
-    def get_id(self):
-        """return the id to use by pytest"""
-        return self.value.get_id()
-
-    class LazyItem(namedtuple('LazyItem', ('host', 'item'))):
-        def get(self):
-            return self.host.force_getitem(self.item)
-
-    def __getitem__(self, item):
-        """
-        Getting an item in the tuple with self[i] does *not* retrieve the value automatically, but returns
-        a facade (a LazyItem), so that pytest can store this item independently wherever needed, without
-        yet calling the value getter.
-        """
-        if self.retrieved:
-            # this is never called by pytest, but keep it for debugging
-            return self.value[item]
-        else:
-            # do not retrieve yet: return a facade
-            return LazyTuple.LazyItem(self, item)
-
-    def force_getitem(self, item):
-        """ Call the underlying value getter, then return self[i]. """
-        return self.get()[item]
-
-    def get(self):
-        """ Call the underlying value getter, then return the tuple (not self) """
-        if not self.retrieved:
-            # retrieve
-            self.value = self.value.valuegetter()
-            self.retrieved = True
-        return self.value
+    def __repr__(self):
+        return "Error generating test id using name template '%s' with parameter values " \
+               "%r. Please check the name template. Caught: %s - %s" \
+               % (self.idgen, self.params, self.caught.__class__, self.caught)
 
 
-def _parametrize_plus(argnames,
-                      argvalues,
+def _parametrize_plus(argnames=None,
+                      argvalues=None,
                       indirect=False,      # type: bool
                       ids=None,            # type: Union[Callable, List[str]]
                       idstyle='explicit',  # type: str
+                      idgen=_IDGEN,        # type: Union[str, Callable]
                       scope=None,          # type: str
                       hook=None,           # type: Callable[[Callable], Callable]
                       _frame_offset=2,
                       debug=False,         # type: bool
-                      **kwargs):
-    # make sure that we do not destroy the argvalues if it is provided as an iterator
-    try:
-        argvalues = list(argvalues)
-    except TypeError:
-        raise InvalidParamsList(argvalues)
+                      **args):
 
-    # get the param names
-    initial_argnames = argnames
-    argnames = get_param_argnames_as_list(argnames)
+    # idgen default
+    if idgen is _IDGEN:
+        idgen = AUTO if len(args) > 0 else None
+
+    if idgen is AUTO:
+        # note: we use a "trick" here with mini_idval to get the appropriate result
+        # TODO support fixture_ref in mini_idval or add __name__ and str() in fixture_ref
+        idgen = lambda **args: "-".join("%s=%s" % (n, mini_idval(val=v, argname='', idx=v)) for n, v in args.items())
+
+    # first handle argnames / argvalues (new modes of input)
+    argnames, argvalues = _get_argnames_argvalues(argnames, argvalues, **args)
+
+    # argnames related
+    initial_argnames = ','.join(argnames)
     nb_params = len(argnames)
 
     # extract all marks and custom ids.
     # Do not check consistency of sizes argname/argvalue as a fixture_ref can stand for several argvalues.
     marked_argvalues = argvalues
-    custom_pids, p_marks, argvalues = extract_parameterset_info(argnames, argvalues, check_nb=False)
+    p_ids, p_marks, argvalues, fixture_indices = _process_argvalues(argnames, marked_argvalues, nb_params)
 
-    # find if there are fixture references in the values provided
-    fixture_indices = []
-    if nb_params == 1:
-        for i, v in enumerate(argvalues):
-            if isinstance(v, lazy_value):
-                # Note: no need to modify the id, it will be ok thanks to the lazy_value class design
-                # handle marks
-                _mks = v.get_marks(as_decorators=True)
-                if len(_mks) > 0:
-                    # merge with the mark decorators possibly already present with pytest.param
-                    if p_marks[i] is None:
-                        p_marks[i] = []
-                    p_marks[i] = list(p_marks[i]) + _mks
-
-                    # update the marked_argvalues
-                    marked_argvalues[i] = ParameterSet(values=(argvalues[i],), id=custom_pids[i], marks=p_marks[i])
-                del _mks
-
-            if isinstance(v, fixture_ref):
-                fixture_indices.append((i, None))
-    elif nb_params > 1:
-        for i, v in enumerate(argvalues):
-            if isinstance(v, lazy_value):
-                # a lazy value is used for several parameters at the same time, and is NOT between pytest.param()
-                argvalues[i] = LazyTuple(v, nb_params)
-
-                # TUPLE usage: we HAVE to set an id to prevent too early access to the value by _idmaker
-                # note that on pytest 2 we cannot set an id here, so the lazy value wont be too lazy
-                assert custom_pids[i] is None
-                _id = v.get_id()
-                if not has_pytest_param:
-                    warn("The custom id %r in `lazy_value` will be ignored as this version of pytest is too old to"
-                         " support `pytest.param`." % _id)
-                    _id = None
-
-                # handle marks
-                _mks = v.get_marks(as_decorators=True)
-                if len(_mks) > 0:
-                    # merge with the mark decorators possibly already present with pytest.param
-                    assert p_marks[i] is None
-                    p_marks[i] = _mks
-
-                # note that here argvalues[i] IS a tuple-like so we do not create a tuple around it
-                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=_id, marks=_mks)
-                custom_pids[i] = _id
-                del _id, _mks
-
-            elif isinstance(v, fixture_ref):
-                # a fixture ref is used for several parameters at the same time
-                fixture_indices.append((i, None))
-
-            elif len(v) == 1 and isinstance(v[0], lazy_value):
-                # same than above but it was in a pytest.mark
-                # valueref_indices.append((i, None))
-                argvalues[i] = LazyTuple(v[0], nb_params)  # unpack it
-                if custom_pids[i] is None:
-                    # force-use the id from the lazy value (do not have pytest request for it, that would unpack it)
-                    custom_pids[i] = v[0].get_id()
-                # handle marks
-                _mks = v[0].get_marks(as_decorators=True)
-                if len(_mks) > 0:
-                    # merge with the mark decorators possibly already present with pytest.param
-                    if p_marks[i] is None:
-                        p_marks[i] = []
-                    p_marks[i] = list(p_marks[i]) + _mks
-                del _mks
-                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=custom_pids[i], marks=p_marks[i])
-
-            elif len(v) == 1 and isinstance(v[0], fixture_ref):
-                # same than above but it was in a pytest.mark
-                fixture_indices.append((i, None))
-                argvalues[i] = v[0]  # unpack it
-            else:
-                # check for consistency
-                if len(v) != len(argnames):
-                    raise ValueError("Inconsistent number of values in pytest parametrize: %s items found while the "
-                                     "number of parameters is %s: %s." % (len(v), len(argnames), v))
-
-                # let's dig into the tuple
-                fix_pos_list = [j for j, _pval in enumerate(v) if isinstance(_pval, fixture_ref)]
-                if len(fix_pos_list) > 0:
-                    # there is at least one fixture ref inside the tuple
-                    fixture_indices.append((i, fix_pos_list))
-
-                # let's dig into the tuple
-                # has_val_ref = any(isinstance(_pval, lazy_value) for _pval in v)
-                # val_pos_list = [j for j, _pval in enumerate(v) if isinstance(_pval, lazy_value)]
-                # if len(val_pos_list) > 0:
-                #     # there is at least one value ref inside the tuple
-                #     argvalues[i] = tuple_with_value_refs(v, theoreticalsize=nb_params, positions=val_pos_list)
-    del i
+    # generate id
+    if idgen is not None:
+        if ids is not None:
+            raise ValueError("Only one of `ids` and `idgen` should be provided")
+        ids = _gen_ids(argnames, argvalues, idgen)
 
     if len(fixture_indices) == 0:
         if debug:
             print("No fixture reference found. Calling @pytest.mark.parametrize...")
+            print(" - argnames: %s" % initial_argnames)
+            print(" - argvalues: %s" % marked_argvalues)
+            print(" - ids: %s" % ids)
+
         # no fixture reference: shortcut, do as usual (note that the hook wont be called since no fixture is created)
-        return pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
-                                       ids=ids, scope=scope, **kwargs)
+        _decorator = pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
+                                             ids=ids, scope=scope)
+        if indirect:
+            return _decorator
+        else:
+            # wrap the decorator to check if the test function has the parameters as arguments
+            def _apply(test_func):
+                s = signature(test_func)
+                for p in argnames:
+                    if p not in s.parameters:
+                        raise ValueError("parameter '%s' not found in test function signature '%s%s'"
+                                         "" % (p, test_func.__name__, s))
+                return _decorator(test_func)
+
+            return _apply
+
     else:
-        if len(kwargs) > 0:
-            warn("Unsupported kwargs for `parametrize_plus`: %r" % kwargs)
+        if indirect:
+            raise ValueError("Setting `indirect=True` is not yet supported when at least a `fixure_ref` is present in "
+                             "the `argvalues`.")
 
         if debug:
             print("Fixture references found. Creating fixtures...")
-        # there are fixture references: we have to create a specific decorator
+
+        # there are fixture references: we will create a specific decorator replacing the params with a "union" fixture
         caller_module = get_caller_module(frame_offset=_frame_offset)
         param_names_str = '_'.join(argnames).replace(' ', '')
 
+        # First define a few functions that will help us create the various fixtures to use in the final "union"
         def _make_idfun_for_params(argnames,  # noqa
                                    nb_positions):
             """
@@ -701,7 +456,7 @@ def _parametrize_plus(argnames,
                     raise ValueError("Internal error, please report")
                 if len(argnames) <= 1:
                     argvals = (argvals,)
-                elif isinstance(argvals, LazyTuple):
+                elif is_lazy(argvals):
                     return argvals.get_id()
                 return mini_idvalset(argnames, argvals, idx=_tmp_make_id.i)
 
@@ -750,22 +505,22 @@ def _parametrize_plus(argnames,
 
                 # If an explicit list of ids was provided, slice it. Otherwise use the provided callable
                 try:
-                    p_ids = ids[from_i:to_i]
+                    param_ids = ids[from_i:to_i]
                 except TypeError:
                     # callable ? otherwise default to a customized id maker that replaces the fixture name
                     # that we use (p_fix_name) with a simpler name in the ids (just the argnames)
-                    p_ids = ids or _make_idfun_for_params(argnames=argnames, nb_positions=(to_i - from_i))
+                    param_ids = ids or _make_idfun_for_params(argnames=argnames, nb_positions=(to_i - from_i))
 
                 # Create the fixture that will take ALL these parameter values (in a single parameter)
-                # That fixture WILL be parametrized, this is why we propagate the p_ids and use the marked values
+                # That fixture WILL be parametrized, this is why we propagate the param_ids and use the marked values
                 if nb_params == 1:
                     _argvals = marked_argvalues[from_i:to_i]
                 else:
                     # we have to create a tuple around the vals because we have a SINGLE parameter that is a tuple
                     _argvals = tuple(ParameterSet((vals, ), id=id, marks=marks or ())
                                      for vals, id, marks in zip(argvalues[from_i:to_i],
-                                                                custom_pids[from_i:to_i], p_marks[from_i:to_i]))
-                _create_param_fixture(caller_module, argname=p_fix_name, argvalues=_argvals, ids=p_ids, hook=hook)
+                                                                p_ids[from_i:to_i], p_marks[from_i:to_i]))
+                _create_param_fixture(caller_module, argname=p_fix_name, argvalues=_argvals, ids=param_ids, hook=hook)
 
                 # todo put back debug=debug above
 
@@ -796,12 +551,12 @@ def _parametrize_plus(argnames,
 
             # If an explicit list of ids was provided, slice it. Otherwise use the provided callable
             try:
-                p_ids = ids[i]
+                param_ids = ids[i]
             except TypeError:
-                p_ids = ids  # callable
+                param_ids = ids  # callable
 
             # values to use:
-            p_values = argvalues[i]
+            param_values = argvalues[i]
 
             # Create a unique fixture name
             p_fix_name = "%s_%s_P%s" % (test_func_name, param_names_str, i)
@@ -811,8 +566,8 @@ def _parametrize_plus(argnames,
                 print("Creating fixture %r to handle parameter %s that is a cross-product" % (p_fix_name, i))
 
             # Create the fixture
-            _make_fixture_product(caller_module, name=p_fix_name, hook=hook, ids=p_ids, fixtures_or_values=p_values,
-                                  fixture_positions=fixture_ref_positions, caller=parametrize_plus)
+            _make_fixture_product(caller_module, name=p_fix_name, hook=hook, caller=parametrize_plus, ids=param_ids,
+                                  fixtures_or_values=param_values, fixture_positions=fixture_ref_positions)
 
             # Create the corresponding alternative
             p_fix_alt = ProductParamAlternative(union_name=union_name, alternative_name=p_fix_name,
@@ -823,7 +578,7 @@ def _parametrize_plus(argnames,
 
             return p_fix_name, p_fix_alt
 
-        # then create the decorator
+        # Then create the decorator per se
         def parametrize_plus_decorate(test_func):
             """
             A decorator that wraps the test function so that instead of receiving the parameter names, it receives the
@@ -1001,3 +756,188 @@ def _parametrize_plus(argnames,
             return wrapped_test_func
 
         return parametrize_plus_decorate
+
+
+def _get_argnames_argvalues(argnames=None, argvalues=None, **args):
+    """
+
+    :param argnames:
+    :param argvalues:
+    :param args:
+    :return: argnames, argvalues - both guaranteed to be lists
+    """
+    # handle **args - a dict of {argnames: argvalues}
+    if len(args) > 0:
+        kw_argnames, kw_argvalues = cart_product_pytest(tuple(args.keys()), tuple(args.values()))
+    else:
+        kw_argnames, kw_argvalues = (), ()
+
+    if argnames is None:
+        # (1) all {argnames: argvalues} pairs are provided in **args
+        if argvalues is not None or len(args) == 0:
+            raise ValueError("No parameters provided")
+
+        argnames = kw_argnames
+        argvalues = kw_argvalues
+        # simplify if needed to comply with pytest.mark.parametrize
+        if len(argnames) == 1:
+            argvalues = [l[0] if not is_marked_parameter_value(l) else l for l in argvalues]
+
+    elif isinstance(argnames, string_types):
+        # (2) argnames + argvalues, as usual. However **args can also be passed and should be added
+        argnames = get_param_argnames_as_list(argnames)
+
+        if argvalues is None:
+            raise ValueError("No argvalues provided while argnames are provided")
+
+        # transform argvalues to a list (it can be a generator)
+        try:
+            argvalues = list(argvalues)
+        except TypeError:
+            raise InvalidParamsList(argvalues)
+
+        # append **args
+        if len(kw_argnames) > 0:
+            argnames, argvalues = cart_product_pytest((argnames, kw_argnames),
+                                                      (argvalues, kw_argvalues))
+
+    return argnames, argvalues
+
+
+def _gen_ids(argnames, argvalues, idgen):
+    """
+    Generates an explicit test ids list from a non-none `idgen`.
+
+    `idgen` should be either a callable of a string template.
+
+    :param argnames:
+    :param argvalues:
+    :param idgen:
+    :return:
+    """
+    if not callable(idgen):
+        _formatter = idgen
+
+        def gen_id_using_str_formatter(**params):
+            try:
+                return _formatter.format(**params)
+            except Exception as e:
+                raise InvalidIdTemplateException(_formatter, params, e)
+
+        idgen = gen_id_using_str_formatter
+    if len(argnames) > 1:
+        ids = [idgen(**{n: v for n, v in zip(argnames, _argvals)}) for _argvals in argvalues]
+    else:
+        _only_name = argnames[0]
+        ids = [idgen(**{_only_name: v}) for v in argvalues]
+
+    return ids
+
+
+def _process_argvalues(argnames, marked_argvalues, nb_params):
+    """Internal method to use in _pytest_parametrize_plus
+
+    Processes the provided marked_argvalues (possibly marked with pytest.param) and returns
+    p_ids, p_marks, argvalues (not marked with pytest.param), fixture_indices
+
+    Note: `marked_argvalues` is modified in the process if a `lazy_value` is found with a custom id or marks.
+
+    :param argnames:
+    :param marked_argvalues:
+    :param nb_params:
+    :return:
+    """
+    p_ids, p_marks, argvalues = extract_parameterset_info(argnames, marked_argvalues, check_nb=False)
+
+    # find if there are fixture references or lazy values in the values provided
+    fixture_indices = []
+    if nb_params == 1:
+        for i, v in enumerate(argvalues):
+            if is_lazy_value(v):
+                # Note: no need to modify the id, it will be ok thanks to the lazy_value class design
+                # handle marks
+                _mks = v.get_marks(as_decorators=True)
+                if len(_mks) > 0:
+                    # merge with the mark decorators possibly already present with pytest.param
+                    if p_marks[i] is None:
+                        p_marks[i] = []
+                    p_marks[i] = list(p_marks[i]) + _mks
+
+                    # update the marked_argvalues
+                    marked_argvalues[i] = ParameterSet(values=(argvalues[i],), id=p_ids[i], marks=p_marks[i])
+                del _mks
+
+            if isinstance(v, fixture_ref):
+                fixture_indices.append((i, None))
+    elif nb_params > 1:
+        for i, v in enumerate(argvalues):
+            if is_lazy_value(v):
+                # a lazy value is used for several parameters at the same time, and is NOT between pytest.param()
+                argvalues[i] = v.as_lazy_tuple(nb_params)
+
+                # TUPLE usage: we HAVE to set an id to prevent too early access to the value by _idmaker
+                # note that on pytest 2 we cannot set an id here, the lazy value wont be too lazy
+                assert p_ids[i] is None
+                _id = v.get_id()
+                if not has_pytest_param:
+                    warn("The custom id %r in `lazy_value` will be ignored as this version of pytest is too old to"
+                         " support `pytest.param`." % _id)
+                    _id = None
+
+                # handle marks
+                _mks = v.get_marks(as_decorators=True)
+                if len(_mks) > 0:
+                    # merge with the mark decorators possibly already present with pytest.param
+                    assert p_marks[i] is None
+                    p_marks[i] = _mks
+
+                # note that here argvalues[i] IS a tuple-like so we do not create a tuple around it
+                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=_id, marks=_mks)
+                p_ids[i] = _id
+                del _id, _mks
+
+            elif isinstance(v, fixture_ref):
+                # a fixture ref is used for several parameters at the same time
+                fixture_indices.append((i, None))
+
+            elif len(v) == 1 and is_lazy_value(v[0]):
+                # same than above but it was in a pytest.mark
+                # valueref_indices.append((i, None))
+                argvalues[i] = v[0].as_lazy_tuple(nb_params)  # unpack it
+                if p_ids[i] is None:
+                    # force-use the id from the lazy value (do not have pytest request for it, that would unpack it)
+                    p_ids[i] = v[0].get_id()
+                # handle marks
+                _mks = v[0].get_marks(as_decorators=True)
+                if len(_mks) > 0:
+                    # merge with the mark decorators possibly already present with pytest.param
+                    if p_marks[i] is None:
+                        p_marks[i] = []
+                    p_marks[i] = list(p_marks[i]) + _mks
+                del _mks
+                marked_argvalues[i] = ParameterSet(values=argvalues[i], id=p_ids[i], marks=p_marks[i])
+
+            elif len(v) == 1 and isinstance(v[0], fixture_ref):
+                # same than above but it was in a pytest.mark
+                fixture_indices.append((i, None))
+                argvalues[i] = v[0]  # unpack it
+            else:
+                # check for consistency
+                if len(v) != len(argnames):
+                    raise ValueError("Inconsistent number of values in pytest parametrize: %s items found while the "
+                                     "number of parameters is %s: %s." % (len(v), len(argnames), v))
+
+                # let's dig into the tuple
+                fix_pos_list = [j for j, _pval in enumerate(v) if isinstance(_pval, fixture_ref)]
+                if len(fix_pos_list) > 0:
+                    # there is at least one fixture ref inside the tuple
+                    fixture_indices.append((i, fix_pos_list))
+
+                # let's dig into the tuple
+                # has_val_ref = any(isinstance(_pval, lazy_value) for _pval in v)
+                # val_pos_list = [j for j, _pval in enumerate(v) if isinstance(_pval, lazy_value)]
+                # if len(val_pos_list) > 0:
+                #     # there is at least one value ref inside the tuple
+                #     argvalues[i] = tuple_with_value_refs(v, theoreticalsize=nb_params, positions=val_pos_list)
+
+    return p_ids, p_marks, argvalues, fixture_indices

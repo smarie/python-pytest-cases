@@ -18,14 +18,55 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
+from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
     get_pytest_scopenum, get_param_argnames_as_list
 
 from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
-from .fixture_parametrize_plus import handle_lazy_args
 
 
 _DEBUG = False
+
+
+# @pytest.hookimpl(hookwrapper=True, tryfirst=True)
+# def pytest_pycollect_makeitem(collector, name, obj):
+#     # custom collection of additional things for Cases for example
+#     # see also https://hackebrot.github.io/pytest-tricks/customize_class_collection/
+#     outcome = yield
+#     res = outcome.get_result()
+#     if res is not None:
+#         return
+    # nothing was collected elsewhere, let's do it here
+    # if safe_isclass(obj):
+    #     if collector.istestclass(obj, name):
+    #         outcome.force_result(Class(name, parent=collector))
+    # elif collector.istestfunction(obj, name):
+    #     # mock seems to store unbound methods (issue473), normalize it
+    #     obj = getattr(obj, "__func__", obj)
+    #     # We need to try and unwrap the function if it's a functools.partial
+    #     # or a functools.wrapped.
+    #     # We mustn't if it's been wrapped with mock.patch (python 2 only)
+    #     if not (inspect.isfunction(obj) or inspect.isfunction(get_real_func(obj))):
+    #         filename, lineno = getfslineno(obj)
+    #         warnings.warn_explicit(
+    #             message=PytestCollectionWarning(
+    #                 "cannot collect %r because it is not a function." % name
+    #             ),
+    #             category=None,
+    #             filename=str(filename),
+    #             lineno=lineno + 1,
+    #         )
+    #     elif getattr(obj, "__test__", True):
+    #         if is_generator(obj):
+    #             res = Function(name, parent=collector)
+    #             reason = "yield tests were removed in pytest 4.0 - {name} will be ignored".format(
+    #                 name=name
+    #             )
+    #             res.add_marker(MARK_GEN.xfail(run=False, reason=reason))
+    #             res.warn(PytestCollectionWarning(reason))
+    #         else:
+    #             res = list(collector._genfunctions(name, obj))
+    #         outcome.force_result(res)
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -39,7 +80,7 @@ def pytest_runtest_setup(item  # type: Function
     yield
 
     # now item.funcargs exists so we can handle it
-    item.funcargs = {argname: handle_lazy_args(argvalue) for argname, argvalue in item.funcargs.items()}
+    item.funcargs = {argname: get_lazy_args(argvalue) for argname, argvalue in item.funcargs.items()}
 
 
 # @hookspec(firstresult=True)
@@ -691,7 +732,7 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
     The resulting `CallsReactor` instance is then able to dynamically behave like the correct list of calls,
     lazy-creating that list when it is used.
     """
-    # create our special container object if needed
+    # create our special container object TODO maybe we could be lazy and create it only when a union appears
     if not isinstance(metafunc._calls, CallsReactor):  # noqa
         # first call: should be an empty list
         if len(metafunc._calls) > 0:  # noqa

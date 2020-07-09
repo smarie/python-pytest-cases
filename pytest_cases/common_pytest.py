@@ -1,23 +1,25 @@
 from __future__ import division
 
-import warnings
-
 try:  # python 3.3+
-    from inspect import signature
+    from inspect import signature, Parameter
 except ImportError:
-    from funcsigs import signature  # noqa
+    from funcsigs import signature, Parameter  # noqa
 
 from distutils.version import LooseVersion
-from inspect import isgeneratorfunction
-from warnings import warn
+from inspect import isgeneratorfunction, isclass
 
 try:
-    from typing import Union, Callable, Any, Optional  # noqa
+    from typing import Union, Callable, Any, Optional, Tuple, Type  # noqa
 except ImportError:
     pass
 
 import pytest
+from _pytest.python import Metafunc
+
 from .common_mini_six import string_types
+from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, has_pytest_param, \
+    get_pytest_parametrize_marks
+from .common_pytest_lazy_values import is_lazy_value
 
 
 # A decorator that will work to create a fixture containing 'yield', whatever the pytest version, and supports hooks
@@ -71,6 +73,16 @@ def is_fixture(fixture_fun  # type: Any
         return True
     except AttributeError:
         # not a fixture ?
+        return False
+
+
+def safe_isclass(obj  # type: object
+                 ):
+    # type: (...) -> bool
+    """Ignore any exception via isinstance on Python 3."""
+    try:
+        return isclass(obj)
+    except Exception:  # noqa
         return False
 
 
@@ -137,54 +149,6 @@ def get_fixture_scope(fixture_fun):
     #     return fixture_fun.func_scope
 
 
-def get_param_argnames_as_list(argnames):
-    """
-    pytest parametrize accepts both coma-separated names and list/tuples.
-    This function makes sure that we always return a list
-    :param argnames:
-    :return:
-    """
-    if isinstance(argnames, string_types):
-        argnames = argnames.replace(' ', '').split(',')
-    return list(argnames)
-
-
-# ------------ container for the mark information that we grab from the fixtures (`@fixture_plus`)
-class _ParametrizationMark:
-    """
-    Represents the information required by `@fixture_plus` to work.
-    """
-    __slots__ = "param_names", "param_values", "param_ids"
-
-    def __init__(self, mark):
-        bound = get_parametrize_signature().bind(*mark.args, **mark.kwargs)
-        try:
-            remaining_kwargs = bound.arguments['kwargs']
-        except KeyError:
-            pass
-        else:
-            if len(remaining_kwargs) > 0:
-                warn("parametrize kwargs not taken into account: %s. Please report it at"
-                     " https://github.com/smarie/python-pytest-cases/issues" % remaining_kwargs)
-        self.param_names = get_param_argnames_as_list(bound.arguments['argnames'])
-        self.param_values = bound.arguments['argvalues']
-        try:
-            bound.apply_defaults()
-            self.param_ids = bound.arguments['ids']
-        except AttributeError:
-            # can happen if signature is from funcsigs so we have to apply ourselves
-            self.param_ids = bound.arguments.get('ids', None)
-
-
-# -------- tools to get the parametrization mark whatever the pytest version
-class _LegacyMark:
-    __slots__ = "args", "kwargs"
-
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-
-
 # ---------------- working on pytest nodes (e.g. Function)
 
 def is_function_node(node):
@@ -220,79 +184,6 @@ def get_param_names(fnode):
     for paramz_mark in p_markers:
         param_names += get_param_argnames_as_list(paramz_mark.args[0])
     return param_names
-
-
-# ---------------- working on functions
-def get_pytest_marks_on_function(f, as_decorators=False):
-    """
-    Utility to return *ALL* pytest marks (not only parametrization) applied on a function
-
-    :param f:
-    :param as_decorators: transforms the marks into decorators before returning them
-    :return:
-    """
-    try:
-        mks = f.pytestmark
-    except AttributeError:
-        try:
-            # old pytest < 3: marks are set as fields on the function object
-            # but they do not have a particulat type, their type is 'instance'...
-            mks = [v for v in vars(f).values() if str(v).startswith("<MarkInfo '")]
-        except AttributeError:
-            mks = []
-
-    if as_decorators:
-        return transform_marks_into_decorators(mks)
-    else:
-        return mks
-
-
-def get_pytest_parametrize_marks(f):
-    """
-    Returns the @pytest.mark.parametrize marks associated with a function (and only those)
-
-    :param f:
-    :return: a tuple containing all 'parametrize' marks
-    """
-    # pytest > 3.2.0
-    marks = getattr(f, 'pytestmark', None)
-    if marks is not None:
-        return tuple(_ParametrizationMark(m) for m in marks if m.name == 'parametrize')
-    else:
-        # older versions
-        mark_info = getattr(f, 'parametrize', None)
-        if mark_info is not None:
-            # mark_info.args contains a list of (name, values)
-            if len(mark_info.args) % 2 != 0:
-                raise ValueError("internal pytest compatibility error - please report")
-            nb_parametrize_decorations = len(mark_info.args) // 2
-            if nb_parametrize_decorations > 1 and len(mark_info.kwargs) > 0:
-                raise ValueError("Unfortunately with this old pytest version it is not possible to have several "
-                                 "parametrization decorators while specifying **kwargs, as all **kwargs are "
-                                 "merged, leading to inconsistent results. Either upgrade pytest, remove the **kwargs,"
-                                 "or merge all the @parametrize decorators into a single one. **kwargs: %s"
-                                 % mark_info.kwargs)
-            res = []
-            for i in range(nb_parametrize_decorations):
-                param_name, param_values = mark_info.args[2*i:2*(i+1)]
-                res.append(_ParametrizationMark(_LegacyMark(param_name, param_values, **mark_info.kwargs)))
-            return tuple(res)
-        else:
-            return ()
-
-
-# noinspection PyUnusedLocal
-def _pytest_mark_parametrize(argnames, argvalues, ids=None, indirect=False, scope=None, **kwargs):
-    """ Fake method to have a reference signature of pytest.mark.parametrize"""
-    pass
-
-
-def get_parametrize_signature():
-    """
-
-    :return: a reference signature representing
-    """
-    return signature(_pytest_mark_parametrize)
 
 
 # ---------- test ids utils ---------
@@ -430,31 +321,32 @@ def extract_parameterset_info(argnames, argvalues, check_nb=True):
         raise TypeError("argnames must be an iterable. Found %r" % argnames)
     nbnames = len(argnames)
     for v in argvalues:
-        # is this a pytest.param() ?
-        if is_marked_parameter_value(v):
-            # --id
-            _id = get_marked_parameter_id(v)
-            pids.append(_id)
-            # --marks
-            marks = get_marked_parameter_marks(v)
-            pmarks.append(marks)  # note: there might be several
-            # --value(a tuple if this is a tuple parameter)
-            v = get_marked_parameter_values(v)
-            if nbnames == 1:
-                pvalues.append(v[0])
-            else:
-                pvalues.append(v)
-        else:
-            # normal argvalue
-            pids.append(None)
-            pmarks.append(None)
-            pvalues.append(v)
+        _pid, _pmark, _pvalue = extract_pset_info_single(nbnames, v)
 
-        if check_nb and nbnames > 1 and (len(v) != nbnames):
+        pids.append(_pid)
+        pmarks.append(_pmark)
+        pvalues.append(_pvalue)
+
+        if check_nb and nbnames > 1 and (len(_pvalue) != nbnames):
             raise ValueError("Inconsistent number of values in pytest parametrize: %s items found while the "
-                             "number of parameters is %s: %s." % (len(v), nbnames, v))
+                             "number of parameters is %s: %s." % (len(_pvalue), nbnames, _pvalue))
 
     return pids, pmarks, pvalues
+
+
+def extract_pset_info_single(nbnames, argvalue):
+    """Return id, marks, value"""
+    if is_marked_parameter_value(argvalue):
+        # --id
+        _id = get_marked_parameter_id(argvalue)
+        # --marks
+        marks = get_marked_parameter_marks(argvalue)
+        # --value(a tuple if this is a tuple parameter)
+        argvalue = get_marked_parameter_values(argvalue)
+        return _id, marks, argvalue[0] if nbnames == 1 else argvalue
+    else:
+        # normal argvalue
+        return None, None, argvalue
 
 
 try:  # pytest 3.x+
@@ -475,7 +367,10 @@ try:  # pytest 3.x+
 except ImportError:  # pytest 2.x
     from _pytest.mark import MarkDecorator
 
-    def ParameterSet(values, id, marks):
+    # noinspection PyPep8Naming
+    def ParameterSet(values,
+                     id,  # noqa
+                     marks):
         """ Dummy function (not a class) used only by parametrize_plus """
         if id is not None:
             raise ValueError("This should not happen as `pytest.param` does not exist in pytest 2")
@@ -499,81 +394,13 @@ except ImportError:  # pytest 2.x
         return [v]
 
     def get_marked_parameter_values(v):
-        return v.args[1:]
+        if v.name in ('skip', 'skipif'):
+            return v.args[-1]  # see MetaFunc.parametrize in pytest 2 to be convinced :)
+        else:
+            raise ValueError("Unsupported mark")
 
     def get_marked_parameter_id(v):
         return v.kwargs.get('id', None)
-
-
-# ---- tools to reapply marks on test parameter values, whatever the pytest version ----
-
-# Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
-# see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize
-
-# check if pytest.param exists
-has_pytest_param = hasattr(pytest, 'param')
-
-
-if not has_pytest_param:
-    # if not this is how it was done
-    # see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize
-    def make_marked_parameter_value(c, marks):
-        if len(marks) > 1:
-            raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
-        else:
-            # get a decorator for each of the markinfo
-            marks_mod = transform_marks_into_decorators(marks)
-
-            # decorate
-            return marks_mod[0](c)
-else:
-    # Otherwise pytest.param exists, it is easier
-    def make_marked_parameter_value(c, marks):
-        # get a decorator for each of the markinfo
-        marks_mod = transform_marks_into_decorators(marks)
-
-        # decorate
-        return pytest.param(c, marks=marks_mod)
-
-
-def transform_marks_into_decorators(marks):
-    """
-    Transforms the provided marks (MarkInfo) obtained from marked cases, into MarkDecorator so that they can
-    be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.
-
-    :param marks:
-    :return:
-    """
-    marks_mod = []
-    try:
-        # suppress the warning message that pytest generates when calling pytest.mark.MarkDecorator() directly
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            for m in marks:
-                md = pytest.mark.MarkDecorator()
-
-                if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-                    if isinstance(m, type(md)):
-                        # already a decorator, we can use it
-                        marks_mod.append(m)
-                    else:
-                        md.mark = m
-                        marks_mod.append(md)
-                else:
-                    # always recreate one, type comparison does not work (all generic stuff)
-                    md.name = m.name
-                    # md.markname = m.name
-                    md.args = m.args
-                    md.kwargs = m.kwargs
-
-                    # markinfodecorator = getattr(pytest.mark, markinfo.name)
-                    # markinfodecorator(*markinfo.args)
-
-                    marks_mod.append(md)
-
-    except Exception as e:
-        warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))
-    return marks_mod
 
 
 def get_pytest_nodeid(metafunc):
@@ -587,7 +414,7 @@ try:
     from _pytest.fixtures import scopes as pt_scopes
 except ImportError:
     # pytest 2
-    from _pytest.python import scopes as pt_scopes  # noqa
+    from _pytest.python import scopes as pt_scopes, Metafunc  # noqa
 
 
 def get_pytest_scopenum(scope_str):
@@ -636,3 +463,179 @@ def mini_idvalset(argnames, argvalues, idx):
         for val, argname in zip(argvalues, argnames)
     ]
     return "-".join(this_id)
+
+
+try:
+    from _pytest.compat import getfuncargnames  # noqa
+except ImportError:
+    import sys
+
+    def num_mock_patch_args(function):
+        """ return number of arguments used up by mock arguments (if any) """
+        patchings = getattr(function, "patchings", None)
+        if not patchings:
+            return 0
+
+        mock_sentinel = getattr(sys.modules.get("mock"), "DEFAULT", object())
+        ut_mock_sentinel = getattr(sys.modules.get("unittest.mock"), "DEFAULT", object())
+
+        return len(
+            [p for p in patchings if not p.attribute_name and (p.new is mock_sentinel or p.new is ut_mock_sentinel)]
+        )
+
+    # noinspection SpellCheckingInspection
+    def getfuncargnames(function, cls=None):
+        """Returns the names of a function's mandatory arguments."""
+        parameters = signature(function).parameters
+
+        arg_names = tuple(
+            p.name
+            for p in parameters.values()
+            if (
+                    p.kind is Parameter.POSITIONAL_OR_KEYWORD
+                    or p.kind is Parameter.KEYWORD_ONLY
+            )
+            and p.default is Parameter.empty
+        )
+
+        # If this function should be treated as a bound method even though
+        # it's passed as an unbound method or function, remove the first
+        # parameter name.
+        if cls and not isinstance(cls.__dict__.get(function.__name__, None), staticmethod):
+            arg_names = arg_names[1:]
+        # Remove any names that will be replaced with mocks.
+        if hasattr(function, "__wrapped__"):
+            arg_names = arg_names[num_mock_patch_args(function):]
+        return arg_names
+
+
+class MiniFuncDef(object):
+    __slots__ = ('nodeid',)
+
+    def __init__(self, nodeid):
+        self.nodeid = nodeid
+
+
+class MiniMetafunc(Metafunc):
+    # noinspection PyMissingConstructor
+    def __init__(self, func):
+        self.config = None
+        self.function = func
+        self.definition = MiniFuncDef(func.__name__)
+        self._calls = []
+        # non-default parameters
+        self.fixturenames = getfuncargnames(func)
+        # get parametrization marks
+        self.pmarks = get_pytest_parametrize_marks(self.function)
+        if self.is_parametrized:
+            self.update_callspecs()
+            self.required_fixtures = set(self.fixturenames) - set(self._calls[0].funcargs)
+        else:
+            self.required_fixtures = self.fixturenames
+
+    @property
+    def is_parametrized(self):
+        return len(self.pmarks) > 0
+
+    @property
+    def requires_fixtures(self):
+        return len(self.required_fixtures) > 0
+
+    def update_callspecs(self):
+        """
+
+        :return:
+        """
+        for pmark in self.pmarks:
+            if len(pmark.param_names) == 1:
+                argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
+            else:
+                argvals = pmark.param_values
+            self.parametrize(argnames=pmark.param_names, argvalues=argvals, ids=pmark.param_ids,
+                             # use indirect = False and scope = 'function' to avoid having to implement complex patches
+                             indirect=False, scope='function')
+
+        if not has_pytest_param:
+            # fix the CallSpec2 instances so that the marks appear
+            # noinspection PyProtectedMember
+            for c in self._calls:
+                c.marks = list(c.keywords.values())
+
+
+def get_callspecs(func):
+    """
+    Returns a list of pytest CallSpec objects corresponding to calls that should be made for this parametrized function.
+    This mini-helper assumes no complex things (scope='function', indirect=False, no fixtures, no custom configuration)
+
+    :param func:
+    :return:
+    """
+    meta = MiniMetafunc(func)
+    # meta.update_callspecs()
+    # noinspection PyProtectedMember
+    return meta._calls
+
+
+def cart_product_pytest(argnames, argvalues):
+    """
+     - do NOT use `itertools.product` as it fails to handle MarkDecorators
+     - we also unpack tuples associated with several argnames ("a,b") if needed
+     - we also propagate marks
+
+    :param argnames:
+    :param argvalues:
+    :return:
+    """
+    # transform argnames into a list of lists
+    argnames_lists = [get_param_argnames_as_list(_argnames) if len(_argnames) > 0 else [] for _argnames in argnames]
+
+    # make the cartesian product per se
+    argvalues_prod = _cart_product_pytest(argnames_lists, argvalues)
+
+    # flatten the list of argnames
+    argnames_list = [n for nlist in argnames_lists for n in nlist]
+
+    # apply all marks to the arvalues
+    argvalues_prod = [make_marked_parameter_value(tuple(argvalues), marks=marks) if len(marks) > 0 else tuple(argvalues)
+                      for marks, argvalues in argvalues_prod]
+
+    return argnames_list, argvalues_prod
+
+
+def _cart_product_pytest(argnames_lists, argvalues):
+    result = []
+
+    # first perform the sub cartesian product with entries [1:]
+    sub_product = _cart_product_pytest(argnames_lists[1:], argvalues[1:]) if len(argvalues) > 1 else None
+
+    # then do the final product with entry [0]
+    for x in argvalues[0]:
+        # handle x
+        nb_names = len(argnames_lists[0])
+
+        # (1) extract meta-info
+        x_id, x_marks, x_value = extract_pset_info_single(nb_names, x)
+        x_marks_lst = list(x_marks) if x_marks is not None else []
+        if x_id is not None:
+            raise ValueError("It is not possible to specify a sub-param id when using the new parametrization style. "
+                             "Either use the traditional style or customize all ids at once in `idgen`")
+
+        # (2) possibly unpack
+        if nb_names > 1:
+            # if lazy value, we have to do something
+            if is_lazy_value(x_value):
+                x_value_lst = x_value.as_lazy_items_list(nb_names)
+            else:
+                x_value_lst = list(x_value)
+        else:
+            x_value_lst = [x_value]
+
+        # product
+        if len(argvalues) > 1:
+            for m, p in sub_product:
+                # combine marks and values
+                result.append((x_marks_lst + m, x_value_lst + p))
+        else:
+            result.append((x_marks_lst, x_value_lst))
+
+    return result
