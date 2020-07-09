@@ -29,7 +29,7 @@ from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _mak
 
 
 def param_fixture(argname,           # type: str
-                  argvalues,         # type: Sequence[Any]
+                  argvalues,         # type: Iterable[Any]
                   autouse=False,     # type: bool
                   ids=None,          # type: Union[Callable, List[str]]
                   scope="function",  # type: str
@@ -126,8 +126,8 @@ def _create_param_fixture(caller_module,
     return fix
 
 
-def param_fixtures(argnames,
-                   argvalues,
+def param_fixtures(argnames,          # type: str
+                   argvalues,         # type: Iterable[Any]
                    autouse=False,     # type: bool
                    ids=None,          # type: Union[Callable, List[str]]
                    scope="function",  # type: str
@@ -283,6 +283,8 @@ def fixture_plus(scope="function",  # type: str
 
      - it supports a new argument `unpack_into` where you can provide names for fixtures where to unpack this fixture
        into.
+
+    As a consequence it does not support the `params` and `ids` arguments anymore.
 
     :param scope: the scope for which this fixture is shared, one of "function" (default), "class", "module" or
         "session".

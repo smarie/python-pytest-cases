@@ -119,7 +119,7 @@ _make_fixture_product = _fixture_product
 
 class fixture_ref(object):  # noqa
     """
-    A reference to a fixture, to be used in `parametrize_plus`.
+    A reference to a fixture, to be used in `@parametrize_plus`.
     You can create it from a fixture name or a fixture object (function).
     """
     __slots__ = 'fixture',
@@ -273,8 +273,8 @@ class ParamIdMakers(object):
 _IDGEN = object()
 
 
-def parametrize_plus(argnames=None,
-                     argvalues=None,
+def parametrize_plus(argnames=None,       # type: str
+                     argvalues=None,      # type: Iterable[Any]
                      indirect=False,      # type: bool
                      ids=None,            # type: Union[Callable, List[str]]
                      idstyle='explicit',  # type: str

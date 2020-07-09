@@ -132,20 +132,6 @@ class LazyValue(Lazy, _LazyValueBase):
                  id=None,      # type: str  # noqa
                  marks=()      # type: Union[Any, Sequence[Any]]
                  ):
-        """
-        Creates a reference to a value getter, to be used in `parametrize_plus`.
-
-        A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
-        fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
-
-        Note that a `lazy_value` can be included in a `pytest.param` without problem. In that case the id defined by
-        `pytest.param` will take precedence over the one defined in `lazy_value` if any. The marks, however,
-        will all be kept wherever they are defined.
-
-        :param valuegetter: a callable without mandatory arguments
-        :param id: an optional id. Otherwise `valuegetter.__name__` will be used by default
-        :param marks: optional marks. `valuegetter` marks will also be preserved.
-        """
         self.valuegetter = valuegetter
         self._id = id
         if isinstance(marks, (tuple, list, set)):
@@ -289,6 +275,20 @@ def lazy_value(valuegetter,  # type: Callable[[], Any]
                id=None,      # type: str  # noqa
                marks=()      # type: Union[Any, Sequence[Any]]
                ):
+    """
+    Creates a reference to a value getter, to be used in `parametrize_plus`.
+
+    A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
+    fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+
+    Note that a `lazy_value` can be included in a `pytest.param` without problem. In that case the id defined by
+    `pytest.param` will take precedence over the one defined in `lazy_value` if any. The marks, however,
+    will all be kept wherever they are defined.
+
+    :param valuegetter: a callable without mandatory arguments
+    :param id: an optional id. Otherwise `valuegetter.__name__` will be used by default
+    :param marks: optional marks. `valuegetter` marks will also be preserved.
+    """
     return LazyValue(valuegetter, id=id, marks=marks)
 
 
