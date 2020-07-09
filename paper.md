@@ -1,5 +1,5 @@
 ---
-title: 'pytest-cases: A Python package to create powerful tests and benchmarks'
+title: 'pytest-cases: A Python package for reproducible AI results (among others)'
 tags:
   - Python
   - tests
