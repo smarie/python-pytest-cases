@@ -193,7 +193,8 @@ class FixtureClosureNode(object):
     def __setitem__(self, key, value):
         # This is called in Pytest 4+.
         if self.has_split():
-            # TODO how should we behave ?
+            # TODO to take into account the new order, the tree has to be flattened into alternate closures,
+            #  and each of them will then be able to be sorted accordingly
             warn("WARNING the new order is not taken into account !!")
         else:
             self.to_list()[key] = value
