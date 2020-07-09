@@ -249,7 +249,7 @@
       
         <li class="md-nav__item">
   <a href="#200-less-boilerplate-full-pytest-alignment" class="md-nav__link">
-    2.0.0 - Less boilerplate &amp; full pytest alignment !
+    2.0.0 - Less boilerplate &amp; full pytest alignment
   </a>
   
 </li>
@@ -715,7 +715,7 @@
       
         <li class="md-nav__item">
   <a href="#200-less-boilerplate-full-pytest-alignment" class="md-nav__link">
-    2.0.0 - Less boilerplate &amp; full pytest alignment !
+    2.0.0 - Less boilerplate &amp; full pytest alignment
   </a>
   
 </li>
@@ -1168,30 +1168,17 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="200-less-boilerplate-full-pytest-alignment">2.0.0 - Less boilerplate &amp; full <code>pytest</code> alignment !<a class="headerlink" href="#200-less-boilerplate-full-pytest-alignment" title="Permanent link">&para;</a></h3>
-<p><strong>Case functions</strong></p>
+<h3 id="200-less-boilerplate-full-pytest-alignment">2.0.0 - Less boilerplate &amp; full <code>pytest</code> alignment<a class="headerlink" href="#200-less-boilerplate-full-pytest-alignment" title="Permanent link">&para;</a></h3>
+<p>I am very pleased to announce this new version of <code>pytest-cases</code>, providing a lot of <strong>major</strong> improvements. Creating powerful and complex test suites have never been so easy and intuitive !</p>
+<p>Below is a complete list of changes, but the user guide has also been updated accordingly so feel free to <a href="..">have a look</a> to get a complete example-based walkthrough.</p>
+<p><strong>A/ More powerful and flexible cases collection</strong></p>
+<p>New <a href="../api_reference/#parametrize_with_cases"><code>@parametrize_with_cases</code></a> decorator to replace <code>@cases_data</code> (deprecated).</p>
+<ol>
+<li>
+<p>Aligned with <code>pytest</code>: </p>
 <ul>
 <li>
-<p>New <code>@case(id=None, tags=(), marks=())</code> decorator to replace <code>@case_name</code>, <code>@case_tags</code> and <code>@test_target</code> (all deprecated): a single simple way to customize all aspects of a case function. Also, <code>target</code> disappears from the picture as it was just a tag like others - this could be misleading.</p>
-</li>
-<li>
-<p><code>@cases_generator</code> is now deprecated and replaced with <code>@parametrize</code> : now, cases can be parametrized exactly the same way than tests. This includes the ability to put marks on the whole or on some specific parameter values. <code>@parametrize_plus</code> has been renamed <code>@parametrize</code> for readability. It was also improved in order to support the alternate parametrization mode that was previously offered by <code>@cases_generator</code>. That way, users will be able to choose the style of their choice. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/57">#57</a> and <a href="https://github.com/smarie/python-pytest-cases/issues/106">#106</a>.</p>
-</li>
-<li>
-<p>Since <code>@cases_generat</code>Marks can now </p>
-</li>
-<li>
-<p>Now case functions can require fixtures ! In that case they will be transformed into fixtures and injected as <code>fixture_ref</code> in the parametrization. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/56">#56</a>.</p>
-</li>
-</ul>
-<p><strong>Test functions</strong></p>
-<p>New <code>@parametrize_with_cases(argnames, cases, ...)</code> decorator to replace <code>@cases_data</code> (deprecated):</p>
-<ul>
-<li>
-<p>Aligned with <code>pytest</code> behaviour: </p>
-<ul>
-<li>
-<p>now <code>argnames</code> can contain several names, and the cases are unpacked automatically. <strong>Less boilerplate code</strong>: no need to perform a <code>case.get()</code> in the test anymore !</p>
+<p>now <code>argnames</code> can contain several names, and the case functions are <strong>automatically unpacked</strong> into it. You don't need to perform a <code>case.get()</code> in the test anymore !</p>
 <div class="codehilite"><pre><span></span><code>@parametrize_with_cases(&quot;a,b&quot;)
 def test_foo(a, b):
     # use a and b directly !
@@ -1209,13 +1196,16 @@ def test_foo(a, b):
 </ul>
 </li>
 <li>
-<p><strong>A single <code>cases</code> argument</strong> to indicate the cases, wherever they come from:</p>
+<p>Easier to configure: </p>
 <ul>
 <li>
-<p>Default (<code>cases=AUTO</code>) <em>automatically looks for cases in the associated case module</em> named <code>test_xxx_cases.py</code>. Users can easily switch to alternate pattern <code>cases_xxx.py</code> with <code>cases=AUTO2</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/91">#91</a>.</p>
+<p>the decorator now has a single <code>cases</code> argument to indicate the cases, wherever they come from (no <code>module</code> argument anymore)</p>
 </li>
 <li>
-<p><em>Cases can sit inside a class</em>, which makes it much more convenient to organize when they sit in the same file than the tests. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/93">#93</a>.</p>
+<p>default (<code>cases=AUTO</code>) <em>automatically looks for cases in the associated case module</em> named <code>test_xxx_cases.py</code>. Users can easily switch to alternate pattern <code>cases_xxx.py</code> with <code>cases=AUTO2</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/91">#91</a>.</p>
+</li>
+<li>
+<p><strong>cases can sit inside a class</strong>, like <a href="https://docs.pytest.org/en/stable/getting-started.html#group-multiple-tests-in-a-class">what you're used to do with <code>pytest</code></a>. This additional style makes it much more convenient to organize cases and associated them with tests, when cases sit in the same file than the tests. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/93">#93</a>.</p>
 </li>
 <li>
 <p>an explicit sequence can be provided, <em>it can mix all kind of sources</em>: functions, classes, modules, and <em>module names as strings</em> (even relative ones!).</p>
@@ -1228,32 +1218,61 @@ def test_foo(a):
 </li>
 </ul>
 </li>
-</ul>
-<p><strong>Misc / pytest goodies</strong></p>
+<li>
+<p>More powerful API for filtering:</p>
 <ul>
 <li>
-<p><code>parametrize_plus</code> now raises an explicit error message when the user makes a mistake with the argnames. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/105">#105</a>.</p>
+<p>a new <code>prefix</code> argument (default <code>case_</code>) can be used to define case functions for various type of parameters: welcome <code>user_&lt;id&gt;</code>, <code>data_&lt;id&gt;</code>, <code>algo_&lt;id&gt;</code>, <code>model_&lt;id&gt;</code> ! Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/108">#108</a></p>
 </li>
 <li>
-<p><code>parametrize_plus</code> now provides an alternate way to pass argnames, argvalues and ids. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/106">#106</a>.</p>
+<p>a new <code>glob</code> argument receiving a glob-like string can be used to further filter cases based on their names. For example you can distinguish <code>*_success</code> from <code>*_failure</code> case ids, so as to dispatch them to the appropriate positive or negative test. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/108">#108</a></p>
 </li>
 <li>
-<p>New aliases for readability: <code>fixture</code> for <code>fixture_plus</code>, and<code>parametrize</code> for <code>parametrize_plus</code> (both aliases will coexist with the old names). Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/107">#107</a>.</p>
+<p>finally you can still use <code>has_tag</code> and/or provide a <code>filter</code> callable, but now the callable will receive the case function, and this case function has a <code>f._pytestcase</code> attribute containing the id, tags and marks - it is therefore much easier to implement custom filtering.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>B/ Easier-to-define case functions</strong></p>
+<ul>
+<li>
+<p>Case functions can start with different prefixes to denote different kind of data: e.g. <code>data_&lt;id&gt;</code>, <code>user_&lt;id&gt;</code>, <code>model_&lt;id&gt;</code>, etc.</p>
 </li>
 <li>
-<p>New pytest goodie <code>assert_exception</code> that can be used as a context manager. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/104">#104</a>.</p>
+<p>Case functions can now be parametrized with <a href="../pytest_goodies/#parametrize"><code>@parametrize</code></a> or <code>@pytest.mark.parametrize</code>, just as in pytest ! This includes the ability to put <a href="https://docs.pytest.org/en/stable/mark.html"><code>pytest</code> marks</a> on the whole case, or on some specific parameter values using <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test"><code>pytest.param</code></a>. <code>@cases_generator</code> is therefore now deprecated but its alternate style for ids and arguments definition was preserved in <code>@parametrize</code>, see below. </p>
 </li>
 <li>
-<p>More readable error messages when <code>lazy_value</code> does not return the same number of argvalues than expected by the <code>parametrize</code>.</p>
+<p>Now case functions can require fixtures ! In that case they will be transformed into fixtures and injected as <code>fixture_ref</code> in the parametrization. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/56">#56</a>.</p>
 </li>
 <li>
-<p>Any error message associated to a <code>lazy_value</code> function call is not caught and hidden anymore but is emitted to the user.</p>
+<p>New single optional <code>@case(id=None, tags=(), marks=())</code> decorator to replace <code>@case_name</code> and <code>@case_tags</code> (deprecated): a single simple way to customize all aspects of a case function. Also, <code>@test_target</code> completely disappears from the picture as it was just a tag like others - this could be misleading.</p>
+</li>
+</ul>
+<p><strong>C/ Misc / pytest goodies</strong></p>
+<ul>
+<li>
+<p>New aliases for readability: <code>@fixture</code> for <code>@fixture_plus</code>, and<code>@parametrize</code> for <code>@parametrize_plus</code> (both aliases will coexist with the old names). Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/107">#107</a>.</p>
+</li>
+<li>
+<p><code>@parametrize</code> was improved in order to support the alternate parametrization mode that was previously offered by <code>@cases_generator</code>, see <a href="../api_reference/#parametrize">api reference</a>. That way, users will be able to choose the style of their choice. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/57">#57</a> and <a href="https://github.com/smarie/python-pytest-cases/issues/106">#106</a>.</p>
+</li>
+<li>
+<p><code>@parametrize</code> now raises an explicit error message when the user makes a mistake with the argnames. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/105">#105</a>.</p>
+</li>
+<li>
+<p>More readable error messages in <code>@parametrize</code> when <code>lazy_value</code> does not return the same number of argvalues than expected from the argnames.</p>
+</li>
+<li>
+<p>Any error message associated to a <code>lazy_value</code> function call is not caught and hidden anymore but is emitted to the user, for easier debugging.</p>
 </li>
 <li>
 <p>Fixed issue with <code>lazy_value</code> when a single mark is passed in the constructor.</p>
 </li>
 <li>
 <p><code>lazy_value</code> used as a tuple for several arguments now have a correct id generated even in old pytest version 2.</p>
+</li>
+<li>
+<p>New pytest goodie <code>assert_exception</code> that can be used as a context manager. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/104">#104</a>.</p>
 </li>
 </ul>
 <h3 id="1170-lazy_value-improvements-annoying-warnings-suppression">1.17.0 - <code>lazy_value</code> improvements + annoying warnings suppression<a class="headerlink" href="#1170-lazy_value-improvements-annoying-warnings-suppression" title="Permanent link">&para;</a></h3>
@@ -1577,7 +1596,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.config.separator": "[\\s\\-]+", "search.result.other": "# matching documents", "search.result.one": "1 matching document", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.result.none": "No matching documents", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.lang": "en"}</script>
+      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.config.lang": "en", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copy": "Copy to clipboard", "search.result.other": "# matching documents", "search.result.none": "No matching documents"}</script>
       
       <script>
         app = initialize({
