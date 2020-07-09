@@ -30,8 +30,9 @@ def test_evaluation(algo, data, results_bag):
     results_bag.perf = random()
 
 
-def test_synthesis(module_results_df):
-    # we use this `module_results_df` fixture from `pytest-harvest`
-    # to collect the final results table.
-    # print(tabulate(module_results_df, headers="keys"))
-    print(module_results_df)
+# from tabulate import tabulate
+#
+# def test_synthesis(module_results_df):
+#     # we use this `module_results_df` fixture from `pytest-harvest`
+#     # to collect the final results table.
+#     print(tabulate(module_results_df, headers="keys"))
