@@ -5,11 +5,7 @@ docs_dir: .
 site_dir: ../site
 nav:
     - Home: index.md
-    - Usage details:
-        - Overview: usage.md
-        - Basics: usage/basics.md
-        - Intermediate: usage/intermediate.md
-        - Advanced: usage/advanced.md
+    - pytest goodies: pytest_goodies.md
     - API reference: api_reference.md
     - Changelog: changelog.md
 theme: material  # readthedocs  mkdocs

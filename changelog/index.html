@@ -188,76 +188,10 @@
       
 
 
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
-    
-    <label class="md-nav__link" for="nav-2">
-      Usage details
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
-      </span>
-    </label>
-    <nav class="md-nav" aria-label="Usage details" data-md-level="1">
-      <label class="md-nav__title" for="nav-2">
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-        </span>
-        Usage details
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
   <li class="md-nav__item">
-    <a href="../usage/" title="Overview" class="md-nav__link">
-      Overview
+    <a href="../pytest_goodies/" title="pytest goodies" class="md-nav__link">
+      pytest goodies
     </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../usage/basics/" title="Basics" class="md-nav__link">
-      Basics
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../usage/intermediate/" title="Intermediate" class="md-nav__link">
-      Intermediate
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../usage/advanced/" title="Advanced" class="md-nav__link">
-      Advanced
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
   </li>
 
     
@@ -1241,7 +1175,10 @@
 <p>New <code>@case(id=None, tags=(), marks=())</code> decorator to replace <code>@case_name</code>, <code>@case_tags</code> and <code>@test_target</code> (all deprecated): a single simple way to customize all aspects of a case function. Also, <code>target</code> disappears from the picture as it was just a tag like others - this could be misleading.</p>
 </li>
 <li>
-<p><code>@cases_generator</code> is now deprecated and replaced with <code>@parametrize</code> : now, cases can be parametrized exactly the same way than tests. <code>@parametrize_plus</code> has been renamed <code>@parametrize</code> for readability. It was also improved in order to support the alternate parametrization mode that was previously offered by <code>@cases_generator</code>. That way, users will be able to choose the style of their choice. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/106">#106</a>.</p>
+<p><code>@cases_generator</code> is now deprecated and replaced with <code>@parametrize</code> : now, cases can be parametrized exactly the same way than tests. This includes the ability to put marks on the whole or on some specific parameter values. <code>@parametrize_plus</code> has been renamed <code>@parametrize</code> for readability. It was also improved in order to support the alternate parametrization mode that was previously offered by <code>@cases_generator</code>. That way, users will be able to choose the style of their choice. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/57">#57</a> and <a href="https://github.com/smarie/python-pytest-cases/issues/106">#106</a>.</p>
+</li>
+<li>
+<p>Since <code>@cases_generat</code>Marks can now </p>
 </li>
 <li>
 <p>Now case functions can require fixtures ! In that case they will be transformed into fixtures and injected as <code>fixture_ref</code> in the parametrization. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/56">#56</a>.</p>
@@ -1640,7 +1577,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.result.one": "1 matching document", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.config.lang": "en", "search.result.other": "# matching documents", "clipboard.copied": "Copied to clipboard"}</script>
+      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "clipboard.copied": "Copied to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.lang": "en"}</script>
       
       <script>
         app = initialize({

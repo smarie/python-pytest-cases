@@ -1,0 +1,694 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.4.0">
+    
+    
+      
+        <title>pytest goodies - pytest_cases</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.fe0cca5b.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pytest-goodies" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="pytest_cases" class="md-header-nav__button md-logo" aria-label="pytest_cases">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            pytest_cases
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              pytest goodies
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/smarie/python-pytest-cases/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pytest_cases" class="md-nav__button md-logo" aria-label="pytest_cases">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    pytest_cases
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/smarie/python-pytest-cases/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        pytest goodies
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="pytest goodies" class="md-nav__link md-nav__link--active">
+      pytest goodies
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fixture" class="md-nav__link">
+    @fixture
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unpack_fixture-unpack_into" class="md-nav__link">
+    unpack_fixture / unpack_into
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#param_fixtures" class="md-nav__link">
+    param_fixture[s]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fixture_union" class="md-nav__link">
+    fixture_union
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parametrize" class="md-nav__link">
+    @parametrize
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#passing-a-hook" class="md-nav__link">
+    passing a hook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assert_exception" class="md-nav__link">
+    assert_exception
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-with-reorder" class="md-nav__link">
+    --with-reorder
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../api_reference/" title="API reference" class="md-nav__link">
+      API reference
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fixture" class="md-nav__link">
+    @fixture
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unpack_fixture-unpack_into" class="md-nav__link">
+    unpack_fixture / unpack_into
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#param_fixtures" class="md-nav__link">
+    param_fixture[s]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fixture_union" class="md-nav__link">
+    fixture_union
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parametrize" class="md-nav__link">
+    @parametrize
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#passing-a-hook" class="md-nav__link">
+    passing a hook
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assert_exception" class="md-nav__link">
+    assert_exception
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-with-reorder" class="md-nav__link">
+    --with-reorder
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/smarie/python-pytest-cases/edit/master/docs/pytest_goodies.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  
+                
+                
+                <h1 id="pytest-goodies"><code>pytest</code> Goodies<a class="headerlink" href="#pytest-goodies" title="Permanent link">&para;</a></h1>
+<p>Many <code>pytest</code> features were missing to make <code>pytest_cases</code> work with such a "no-boilerplate" experience. Many of these can be of interest to the general <code>pytest</code> audience, so they are exposed in the public API.</p>
+<h2 id="fixture"><code>@fixture</code><a class="headerlink" href="#fixture" title="Permanent link">&para;</a></h2>
+<p><code>@fixture</code> is similar to <code>pytest.fixture</code> but without its <code>param</code> and <code>ids</code> arguments. Instead, it is able to pick the parametrization from <code>@pytest.mark.parametrize</code> marks applied on fixtures. This makes it very intuitive for users to parametrize both their tests and fixtures. As a bonus, its <code>name</code> argument works even in old versions of pytest (which is not the case for <code>fixture</code>).</p>
+<p>Finally it now supports unpacking, see <a href="#unpack_fixture-unpack_into">unpacking feature</a>.</p>
+<div class="admonition note">
+<p class="admonition-title"><code>@fixture</code> deprecation if/when <code>@pytest.fixture</code> supports <code>@pytest.mark.parametrize</code></p>
+<p>The ability for pytest fixtures to support the <code>@pytest.mark.parametrize</code> annotation is a feature that clearly belongs to <code>pytest</code> scope, and has been <a href="https://github.com/pytest-dev/pytest/issues/3960">requested already</a>. It is therefore expected that <code>@fixture</code> will be deprecated in favor of <code>@pytest_fixture</code> if/when the <code>pytest</code> team decides to add the proposed feature. As always, deprecation will happen slowly across versions (at least two minor, or one major version update) so as for users to have the time to update their code bases.</p>
+</div>
+<h2 id="unpack_fixture-unpack_into"><code>unpack_fixture</code> / <code>unpack_into</code><a class="headerlink" href="#unpack_fixture-unpack_into" title="Permanent link">&para;</a></h2>
+<p>In some cases fixtures return a tuple or a list of items. It is not easy to refer to a single of these items in a test or another fixture. With <code>unpack_fixture</code> you can easily do it:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">unpack_fixture</span><span class="p">,</span> <span class="n">fixture</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">unpack_fixture</span><span class="p">(</span><span class="s2">&quot;a,b&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
+</code></pre></div>
+
+
+<p>Note that you can also use the <code>unpack_into=</code> argument of <code>@fixture</code> to do the same thing:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span>
+
+<span class="nd">@fixture</span><span class="p">(</span><span class="n">unpack_into</span><span class="o">=</span><span class="s2">&quot;a,b&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
+</code></pre></div>
+
+
+<p>And it is also available in <code>fixture_union</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">fixture_union</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;yeepee&#39;</span><span class="p">,</span> <span class="s1">&#39;yay&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">d</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">fixture_union</span><span class="p">(</span><span class="s2">&quot;c_or_d&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">],</span> <span class="n">unpack_into</span><span class="o">=</span><span class="s2">&quot;a, b&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
+</code></pre></div>
+
+
+<h2 id="param_fixtures"><code>param_fixture[s]</code><a class="headerlink" href="#param_fixtures" title="Permanent link">&para;</a></h2>
+<p>If you wish to share some parameters across several fixtures and tests, it might be convenient to have a fixture representing this parameter. This is relatively easy for single parameters, but a bit harder for parameter tuples.</p>
+<p>The two utilities functions <code>param_fixture</code> (for a single parameter name) and <code>param_fixtures</code> (for a tuple of parameter names) handle the difficulty for you:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">param_fixtures</span><span class="p">,</span> <span class="n">param_fixture</span>
+
+<span class="c1"># create a single parameter fixture</span>
+<span class="n">my_parameter</span> <span class="o">=</span> <span class="n">param_fixture</span><span class="p">(</span><span class="s2">&quot;my_parameter&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">fixture_uses_param</span><span class="p">(</span><span class="n">my_parameter</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">test_uses_param</span><span class="p">(</span><span class="n">my_parameter</span><span class="p">,</span> <span class="n">fixture_uses_param</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="c1"># -----</span>
+<span class="c1"># create a 2-tuple parameter fixture</span>
+<span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span> <span class="o">=</span> <span class="n">param_fixtures</span><span class="p">(</span><span class="s2">&quot;arg1, arg2&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">fixture_uses_param2</span><span class="p">(</span><span class="n">arg2</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">test_uses_param2</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="n">fixture_uses_param2</span><span class="p">):</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+
+<p>You can mark any of the argvalues with <code>pytest.mark</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
+<h2 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h2>
+<p>As of <code>pytest</code> 5, it is not possible to create a "union" fixture, i.e. a parametrized fixture that would first take all the possible values of fixture A, then all possible values of fixture B, etc. Indeed all fixture dependencies (a.k.a. "closure") of each test node are grouped together, and if they have parameters a big "cross-product" of the parameters is done by <code>pytest</code>.</p>
+<p>The topic has been largely discussed in <a href="https://github.com/pytest-dev/pytest/issues/349">pytest-dev#349</a> and a <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">request for proposal</a> has been finally made.</p>
+<p><code>fixture_union</code> is an implementation of this proposal. It is also used by <code>parametrize</code> to support <code>fixture_ref</code> in parameter values, see <a href="#parametrize">below</a>.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">fixture_union</span>
+
+<span class="nd">@fixture</span>
+<span class="k">def</span> <span class="nf">first</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;hello&#39;</span>
+
+<span class="nd">@fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">second</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>
+
+<span class="c1"># c will first take all the values of &#39;first&#39;, then all of &#39;second&#39;</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">fixture_union</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">test_basic_union</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>yields</p>
+<div class="codehilite"><pre><span></span><code>&lt;...&gt;::test_basic_union[c_is_first] hello   PASSED
+&lt;...&gt;::test_basic_union[c_is_second-a] a    PASSED
+&lt;...&gt;::test_basic_union[c_is_second-b] b    PASSED
+</code></pre></div>
+
+
+<p>As you can see the ids of union fixtures are slightly different from standard ids, so that you can easily understand what is going on. You can change this feature with <code>ìdstyle</code>, see <a href="../api_reference/#fixture_union">API documentation</a> for details.</p>
+<p>You can mark any of the alternatives with <code>pytest.mark</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
+<p>Fixture unions also support unpacking with the <code>unpack_into</code> argument, see <a href="#unpack_fixture-unpack_into">unpacking feature</a>.</p>
+<p>Fixture unions are a <strong>major change</strong> in the internal pytest engine, as fixture closures (the ordered set of all fixtures required by a test node to run - directly or indirectly) now become trees where branches correspond to alternative paths taken in the "unions", and leafs are the alternative fixture closures. This feature has been tested in very complex cases (several union fixtures, fixtures that are not selected by a given union but that is requested by the test function, etc.). But if you find some strange behaviour don't hesitate to report it in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues</a> page !</p>
+<p><strong>IMPORTANT</strong> if you do not use <code>@fixture</code> but only <code>@pytest.fixture</code>, then you will see that your fixtures are called even when they are not used, with a parameter <code>NOT_USED</code>. This symbol is automatically ignored if you use <code>@fixture</code>, otherwise you have to handle it. Alternatively you can use <code>@ignore_unused</code> on your fixture function.</p>
+<div class="admonition note">
+<p class="admonition-title">fixture unions vs. cases</p>
+<p>If you're familiar with <code>pytest-cases</code> already, you might note that <code>@cases_data</code> is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by <code>pytest</code>, we will probably refactor this lib to align all the concepts.</p>
+</div>
+<h2 id="parametrize"><code>@parametrize</code><a class="headerlink" href="#parametrize" title="Permanent link">&para;</a></h2>
+<p><code>@parametrize</code> is a replacement for <code>@pytest.mark.parametrize</code> with many additional features to make the most of parametrization. See <a href="../api_reference/#parametrize">API reference</a> for details about all the new features. In particular it allows you to include references to fixtures and to value-generating functions in the parameter values. </p>
+<ul>
+<li>Simply use <code>fixture_ref(&lt;fixture&gt;)</code> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function.</li>
+<li>if you do not wish to create a fixture, you can also use <code>lazy_value(&lt;function&gt;)</code></li>
+<li>Note that when parametrizing several argnames, both <code>fixture_ref</code> and <code>lazy_value</code> can be used <em>as</em> the tuple, or <em>in</em> the tuple. Several <code>fixture_ref</code> and/or <code>lazy_value</code> can be used in the same tuple, too. </li>
+</ul>
+<p>For example, with a single argument:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">,</span> <span class="n">lazy_value</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">world_str</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;world&#39;</span>
+
+<span class="k">def</span> <span class="nf">whatfun</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s1">&#39;what&#39;</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@parametrize</span><span class="p">(</span><span class="s1">&#39;who&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">fixture_ref</span><span class="p">(</span><span class="n">world_str</span><span class="p">),</span> 
+                          <span class="s1">&#39;you&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">greetings</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;hello &#39;</span> <span class="o">+</span> <span class="n">who</span>
+
+<span class="nd">@parametrize</span><span class="p">(</span><span class="s1">&#39;main_msg&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nothing&#39;</span><span class="p">,</span> 
+                               <span class="n">fixture_ref</span><span class="p">(</span><span class="n">world_str</span><span class="p">),</span>
+                               <span class="n">lazy_value</span><span class="p">(</span><span class="n">whatfun</span><span class="p">),</span> 
+                               <span class="n">fixture_ref</span><span class="p">(</span><span class="n">greetings</span><span class="p">)])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;ending&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">test_prints</span><span class="p">(</span><span class="n">main_msg</span><span class="p">,</span> <span class="n">ending</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">main_msg</span> <span class="o">+</span> <span class="n">ending</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>yields the following</p>
+<div class="codehilite"><pre><span></span><code>&gt; pytest -s -v
+collected <span class="m">10</span> items
+test_prints<span class="o">[</span>main_msg_is_nothing-?<span class="o">]</span> PASSED       <span class="o">[</span> <span class="m">10</span>%<span class="o">]</span>nothing?
+test_prints<span class="o">[</span>main_msg_is_nothing-!<span class="o">]</span> PASSED       <span class="o">[</span> <span class="m">20</span>%<span class="o">]</span>nothing!
+test_prints<span class="o">[</span>main_msg_is_world_str-?<span class="o">]</span> PASSED     <span class="o">[</span> <span class="m">30</span>%<span class="o">]</span>world?
+test_prints<span class="o">[</span>main_msg_is_world_str-!<span class="o">]</span> PASSED     <span class="o">[</span> <span class="m">40</span>%<span class="o">]</span>world!
+test_prints<span class="o">[</span>main_msg_is_whatfun-?<span class="o">]</span> PASSED       <span class="o">[</span> <span class="m">50</span>%<span class="o">]</span>what?
+test_prints<span class="o">[</span>main_msg_is_whatfun-!<span class="o">]</span> PASSED       <span class="o">[</span> <span class="m">60</span>%<span class="o">]</span>what!
+test_prints<span class="o">[</span>main_msg_is_greetings-who_is_world_str-?<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">70</span>%<span class="o">]</span>hello world?
+test_prints<span class="o">[</span>main_msg_is_greetings-who_is_world_str-!<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">80</span>%<span class="o">]</span>hello world!
+test_prints<span class="o">[</span>main_msg_is_greetings-who_is_you-?<span class="o">]</span> PASSED <span class="o">[</span> <span class="m">90</span>%<span class="o">]</span>hello you?
+test_prints<span class="o">[</span>main_msg_is_greetings-who_is_you-!<span class="o">]</span> PASSED <span class="o">[</span><span class="m">100</span>%<span class="o">]</span>hello you!
+</code></pre></div>
+
+
+<p>You can also mark any of the argvalues with <code>pytest.mark</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
+<p>As you can see in the example above, the default ids are a bit more explicit than usual when you use at least one <code>fixture_ref</code>. This is because the parameters need to be replaced with a fixture union that will "switch" between alternative groups of parameters, and the appropriate fixtures referenced. As opposed to <code>fixture_union</code>, the style of these ids is not configurable for now, but feel free to propose alternatives in the <a href="https://github.com/smarie/python-pytest-cases/issues">issues page</a>. Note that this does not happen if you only use <code>lazy_value</code>s, as they do not require to create a fixture union behind the scenes.</p>
+<p>Another consequence of using <code>fixture_ref</code> is that the priority order of the parameters, relative to other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your other <code>@pytest.mark.parametrize</code> calls with <code>param_fixture</code>s so that all the parameters are fixtures (see <a href="#param_fixtures">above</a>.)</p>
+<h2 id="passing-a-hook">passing a <code>hook</code><a class="headerlink" href="#passing-a-hook" title="Permanent link">&para;</a></h2>
+<p>As per version <code>1.14</code>, all the above functions now support passing a <code>hook</code> argument. This argument should be a callable. It will be called everytime a fixture is about to be created by <code>pytest_cases</code> on your behalf. The fixture function is passed as the argument of the hook, and the hook should return it as the result.</p>
+<p>You can use this fixture to better understand which fixtures are created behind the scenes, and also to decorate the fixture functions before they are created. For example you can use <code>hook=saved_fixture</code> (from <a href="https://smarie.github.io/python-pytest-harvest/"><code>pytest-harvest</code></a>) in order to save the created fixtures in the fixture store.  </p>
+<h2 id="assert_exception"><code>assert_exception</code><a class="headerlink" href="#assert_exception" title="Permanent link">&para;</a></h2>
+<p><code>assert_exception</code> context manager is an alternative to <code>pytest.raises</code> to check exceptions in your tests. You can either check type, instance equality, repr string pattern, or use custom validation functions. See <a href="../api_reference/">API reference</a>.</p>
+<h2 id="-with-reorder"><code>--with-reorder</code><a class="headerlink" href="#-with-reorder" title="Permanent link">&para;</a></h2>
+<p><code>pytest</code> postprocesses the order of the collected items in order to optimize setup/teardown of session, module and class fixtures. This optimization algorithm happens at the <code>pytest_collection_modifyitems</code> stage, and is still under improvement, as can be seen in <a href="https://github.com/pytest-dev/pytest/pull/3551">pytest#3551</a>, <a href="https://github.com/pytest-dev/pytest/issues/3393">pytest#3393</a>, <a href="https://github.com/pytest-dev/pytest/issues/2846">#2846</a>...</p>
+<p>Besides other plugins such as <a href="https://github.com/not-raspberry/pytest_reorder">pytest-reorder</a> can modify the order as well.</p>
+<p>This new commandline is a goodie to change the reordering:</p>
+<ul>
+<li>
+<p><code>--with-reorder normal</code> is the default behaviour: it lets pytest and all the plugins execute their reordering in each of their <code>pytest_collection_modifyitems</code> hooks, and simply does not interact </p>
+</li>
+<li>
+<p><code>--with-reorder skip</code> allows you to restore the original order that was active before <code>pytest_collection_modifyitems</code> was initially called, thus not taking into account any reordering done by pytest or by any of its plugins.</p>
+</li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href=".." title="Home" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Home
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../api_reference/" title="API reference" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                API reference
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
+      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "clipboard.copied": "Copied to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.lang": "en"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.a68abb33.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
