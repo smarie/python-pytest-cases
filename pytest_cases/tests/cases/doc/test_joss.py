@@ -1,5 +1,5 @@
 from random import random
-from tabulate import tabulate
+# from tabulate import tabulate
 from pytest_cases import parametrize, parametrize_with_cases
 
 
@@ -33,4 +33,5 @@ def test_evaluation(algo, data, results_bag):
 def test_synthesis(module_results_df):
     # we use this `module_results_df` fixture from `pytest-harvest`
     # to collect the final results table.
-    print(tabulate(module_results_df, headers="keys"))
+    # print(tabulate(module_results_df, headers="keys"))
+    print(module_results_df)
