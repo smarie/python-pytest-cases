@@ -11,7 +11,7 @@ authors:
     orcid: 0000-0002-5929-1047
     affiliation: 1
 affiliations:
- - name: IEEE Senior Expert, Schneider Electric
+ - name: IEEE Senior Member, Schneider Electric
    index: 1
 date: 09 July 2020
 bibliography: paper.bib
