@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.0.2 - Better string representation for lazy values
+
+Lazy values (so, test cases) now have a much nicer string representation ; in particular in `pytest-harvest` results tables. Fixes [#112](https://github.com/smarie/python-pytest-cases/issues/112)
+
 ### 2.0.1 - Better test ids and theory page
 
  - New documentation page concerning theory of fixture unions. Fixes [#109](https://github.com/smarie/python-pytest-cases/issues/109)
