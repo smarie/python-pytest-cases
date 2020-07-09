@@ -90,8 +90,8 @@ def test_synthesis(module_results_df):
 `pytest-cases` introduces a few major modifications in the `pytest` engine in 
 order to manage fixture unions, lazy parameter values, and fixture references 
 in parameters ; all of these being required to manage test cases that can be
-parametrized and require fixtures. In particular, the new concept of "fixture 
-unions" deeply modifies the pytest parametrization process by creating
+parametrized and that can require fixtures. In particular, the new concept of 
+"fixture unions" deeply modifies the pytest parametrization process by creating
 several independently parametrized fixture closures for each test function 
 instead of a single one as in `pytest`. See \autoref{fig:union_closures} ; 
 detailed explanations about this figure are available on the project page.
