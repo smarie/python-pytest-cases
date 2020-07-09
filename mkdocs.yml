@@ -6,6 +6,7 @@ site_dir: ../site
 nav:
     - Home: index.md
     - pytest goodies: pytest_goodies.md
+    - fixture unions theory: unions_theory.md
     - API reference: api_reference.md
     - Changelog: changelog.md
 theme: material  # readthedocs  mkdocs

@@ -292,6 +292,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../unions_theory/" title="fixture unions theory" class="md-nav__link">
+      fixture unions theory
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../api_reference/" title="API reference" class="md-nav__link">
       API reference
     </a>
@@ -505,7 +517,7 @@
 <h2 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h2>
 <p>As of <code>pytest</code> 5, it is not possible to create a "union" fixture, i.e. a parametrized fixture that would first take all the possible values of fixture A, then all possible values of fixture B, etc. Indeed all fixture dependencies (a.k.a. "closure") of each test node are grouped together, and if they have parameters a big "cross-product" of the parameters is done by <code>pytest</code>.</p>
 <p>The topic has been largely discussed in <a href="https://github.com/pytest-dev/pytest/issues/349">pytest-dev#349</a> and a <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">request for proposal</a> has been finally made.</p>
-<p><code>fixture_union</code> is an implementation of this proposal. It is also used by <code>parametrize</code> to support <code>fixture_ref</code> in parameter values, see <a href="#parametrize">below</a>.</p>
+<p><code>fixture_union</code> is an implementation of this proposal. It is also used by <code>parametrize</code> to support <code>fixture_ref</code> in parameter values, see <a href="#parametrize">below</a>. The theory is presented in more details in <a href="../unions_theory/">this page</a>, while below are more practical examples.</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">fixture_union</span>
 
 <span class="nd">@fixture</span>
@@ -643,13 +655,13 @@ test_prints<span class="o">[</span>main_msg_is_greetings-who_is_you-!<span class
           </a>
         
         
-          <a href="../api_reference/" title="API reference" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../unions_theory/" title="fixture unions theory" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                API reference
+                fixture unions theory
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
@@ -677,7 +689,7 @@ test_prints<span class="o">[</span>main_msg_is_greetings-who_is_you-!<span class
     </div>
     
       <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.result.one": "1 matching document", "clipboard.copied": "Copied to clipboard", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.lang": "en", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.config.separator": "[\\s\\-]+"}</script>
+      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.result.placeholder": "Type to start searching", "clipboard.copied": "Copied to clipboard", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "search.result.one": "1 matching document", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter"}</script>
       
       <script>
         app = initialize({

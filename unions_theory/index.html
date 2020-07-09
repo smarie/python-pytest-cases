@@ -1,0 +1,603 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.4.0">
+    
+    
+      
+        <title>fixture unions theory - pytest_cases</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.fe0cca5b.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#theory-behind-fixture_union" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="pytest_cases" class="md-header-nav__button md-logo" aria-label="pytest_cases">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            pytest_cases
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              fixture unions theory
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/smarie/python-pytest-cases/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pytest_cases" class="md-nav__button md-logo" aria-label="pytest_cases">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    pytest_cases
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/smarie/python-pytest-cases/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../pytest_goodies/" title="pytest goodies" class="md-nav__link">
+      pytest goodies
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        fixture unions theory
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="fixture unions theory" class="md-nav__link md-nav__link--active">
+      fixture unions theory
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-how-pytest-works-today" class="md-nav__link">
+    1. How pytest works today
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-extension-to-fixture-unions" class="md-nav__link">
+    2. Extension to fixture unions.
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../api_reference/" title="API reference" class="md-nav__link">
+      API reference
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-how-pytest-works-today" class="md-nav__link">
+    1. How pytest works today
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-extension-to-fixture-unions" class="md-nav__link">
+    2. Extension to fixture unions.
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/smarie/python-pytest-cases/edit/master/docs/unions_theory.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  
+                
+                
+                <h1 id="theory-behind-fixture_union">Theory behind <a href="../pytest_goodies/#fixture_union"><code>fixture_union</code></a><a class="headerlink" href="#theory-behind-fixture_union" title="Permanent link">&para;</a></h1>
+<h2 id="1-how-pytest-works-today">1. How <code>pytest</code> works today<a class="headerlink" href="#1-how-pytest-works-today" title="Permanent link">&para;</a></h2>
+<p>As of <code>pytest</code> 5, there are three kind of concepts at play to generate the list of test nodes and their received parameters ("call spec" in pytest internals).</p>
+<ul>
+<li>
+<p>test functions are the functions defined with <code>def test_&lt;name&gt;(&lt;args&gt;)</code>.</p>
+</li>
+<li>
+<p>they can be parametrized using <code>@pytest.mark.parametrize</code> (or our enhanced version <a href="../pytest_goodies/#parametrize"><code>@parametrize</code></a>). That means that some of the <code>&lt;args&gt;</code> will take several values, and for each combination a distinct test node will be created</p>
+</li>
+<li>
+<p>they can require <em>fixtures</em>, that is, functions decorated with <code>@pytest.fixture</code> (or our enhanced version <a href="../pytest_goodies/#fixture"><code>@fixture</code></a>). That means that some of the <code>&lt;args&gt;</code> will take the value of the corresponding fixture(s).</p>
+</li>
+<li>
+<p>fixtures can be parametrized too (with <a href="../pytest_goodies/#fixture"><code>@fixture</code></a> it is easier :) ), and can require other fixtures.</p>
+</li>
+<li>
+<p>finally fixtures can enable an "auto-use" mode, so that they are called even when not explicitly required by anything.</p>
+</li>
+</ul>
+<p>Therefore, a test plan can be represented as an acyclic directed graph of fixtures, where nodes are fixtures and edges represent dependencies. On top of this layout, we can overlay the information of which fixture nodes are parametrized, which ones are required by which test function, and which test function is parametrized. The resulting figure is presented below:</p>
+<p><img alt="fixture graph pytest" src="../imgs/3_fixture_graph_pytest.png" /></p>
+<p>The following code can be used to easily check the number of tests run. Note that we use <code>@fixture</code> and <code>@parametrize</code> from <code>pytest-cases</code> to ease code readability here but you would get a similar behaviour with <code>@pytest.fixture</code> and <code>@pytest.mark.parametrize</code> (the test ids would not show the parameter names by default though, which is helpful for our demonstration here).</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">parametrize</span>
+
+<span class="nd">@fixture</span><span class="p">(</span><span class="n">autouse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@parametrize</span><span class="p">(</span><span class="n">ie</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">e</span><span class="p">(</span><span class="n">ie</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;e</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ie</span>
+
+<span class="nd">@fixture</span>
+<span class="k">def</span> <span class="nf">d</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;d&quot;</span>
+
+<span class="nd">@fixture</span>
+<span class="k">def</span> <span class="nf">c</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;c&quot;</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@parametrize</span><span class="p">(</span><span class="n">ia</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">a</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">ia</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;a</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ia</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="n">d</span>
+
+<span class="nd">@parametrize</span><span class="p">(</span><span class="n">i2</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">test_2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">i2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i2</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;a0cdx&quot;</span><span class="p">,</span> <span class="s2">&quot;a0cdz&quot;</span><span class="p">,</span> <span class="s2">&quot;a1cdx&quot;</span><span class="p">,</span> <span class="s2">&quot;a1cdz&quot;</span><span class="p">)</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@parametrize</span><span class="p">(</span><span class="n">ib</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">ib</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;b</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ib</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="n">a</span>
+
+<span class="k">def</span> <span class="nf">test_1</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;a0cd&quot;</span><span class="p">,</span> <span class="s2">&quot;a1cd&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span>
+    <span class="k">assert</span> <span class="n">b</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bxc&quot;</span><span class="p">,</span> <span class="s2">&quot;bzc&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>calling <code>pytest</code> yields:</p>
+<div class="codehilite"><pre><span></span><code>============================= test session starts =============================
+collecting ... collected 16 items
+
+test_doc_fixture_graph.py::test_2[ie=-1-ia=0-i2=x] 
+test_doc_fixture_graph.py::test_2[ie=-1-ia=0-i2=z] 
+test_doc_fixture_graph.py::test_2[ie=-1-ia=1-i2=x] 
+test_doc_fixture_graph.py::test_2[ie=-1-ia=1-i2=z] 
+test_doc_fixture_graph.py::test_2[ie=1-ia=0-i2=x] 
+test_doc_fixture_graph.py::test_2[ie=1-ia=0-i2=z] 
+test_doc_fixture_graph.py::test_2[ie=1-ia=1-i2=x] 
+test_doc_fixture_graph.py::test_2[ie=1-ia=1-i2=z] 
+test_doc_fixture_graph.py::test_1[ie=-1-ia=0-ib=x] 
+test_doc_fixture_graph.py::test_1[ie=-1-ia=0-ib=z] 
+test_doc_fixture_graph.py::test_1[ie=-1-ia=1-ib=x] 
+test_doc_fixture_graph.py::test_1[ie=-1-ia=1-ib=z] 
+test_doc_fixture_graph.py::test_1[ie=1-ia=0-ib=x] 
+test_doc_fixture_graph.py::test_1[ie=1-ia=0-ib=z] 
+test_doc_fixture_graph.py::test_1[ie=1-ia=1-ib=x] 
+test_doc_fixture_graph.py::test_1[ie=1-ia=1-ib=z] 
+
+============================= 16 passed in 0.14s ==============================
+</code></pre></div>
+
+
+<p>So each test is called 8 times. How are these calls computed ?</p>
+<ul>
+<li>first for each test, <code>pytest</code> computes the set of all fixtures that are directly or indirectly required to run it. This is known as the "fixture closure". So for <code>test_1</code> this closure is <code>{a, b, c, d, e}</code> while for test 2 it is <code>{a, c, d, e}</code>. We can show this on the following picture:</li>
+</ul>
+<p><img alt="fixture graph pytest closure" src="../imgs/4_fixture_graph_pytest_closure.png" /></p>
+<ul>
+<li>then a cartesian product is made across the parameters of all parametrization marks found on any item in the closure (including parameters of the test itself), So for <code>test_1</code> the cartesian product is <code>&lt;ie&gt; x &lt;ia&gt; x &lt;ib&gt;</code> while for <code>test_2</code> it is <code>&lt;ie&gt; x &lt;ia&gt; x &lt;i2&gt;</code>. This is why both tests result in having 8 variants being called (see details in the test ids above).</li>
+</ul>
+<h2 id="2-extension-to-fixture-unions">2. Extension to fixture unions.<a class="headerlink" href="#2-extension-to-fixture-unions" title="Permanent link">&para;</a></h2>
+<p>A fixture union is by definition a fixture that is parametrized to alternately depend on other fixtures. We will represent this in the figures with a special dashed orange arrow, to remind that a special parameter is associated with the selection of which arrow is activated. </p>
+<p>Let's consider the following modification of the above example, where we introduce two "unions": one as an explicit fixture <code>u</code>, and the other implicitly created by using <code>fixture_ref</code>s in the parametrization of <code>b</code>.</p>
+<p><img alt="fixture graph union" src="../imgs/5_fixture_graph_union.png" /></p>
+<p>We can create such a configuration with a slight modification to the above example:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">,</span> <span class="n">fixture_union</span>
+
+<span class="p">(</span><span class="o">...</span> <span class="n">same</span> <span class="k">as</span> <span class="n">above</span> <span class="o">...</span><span class="p">)</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@parametrize</span><span class="p">(</span><span class="n">ub</span><span class="o">=</span><span class="p">(</span><span class="n">fixture_ref</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">fixture_ref</span><span class="p">(</span><span class="n">c</span><span class="p">)),</span> <span class="n">ib</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="n">ub</span><span class="p">,</span> <span class="n">ib</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;b</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ib</span> <span class="o">+</span> <span class="n">ub</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">fixture_union</span><span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">test_1</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre></div>
+
+
+<p>calling <code>pytest</code> yields:</p>
+<div class="codehilite"><pre><span></span><code>============================= test session starts =============================
+collecting ... collected 24 items
+
+test_doc_fixture_graph_union.py::test_2[ie=-1-ia=0-i2=x] PASSED          [  4%]
+test_doc_fixture_graph_union.py::test_2[ie=-1-ia=0-i2=z] PASSED          [  8%]
+test_doc_fixture_graph_union.py::test_2[ie=-1-ia=1-i2=x] PASSED          [ 12%]
+test_doc_fixture_graph_union.py::test_2[ie=-1-ia=1-i2=z] PASSED          [ 16%]
+test_doc_fixture_graph_union.py::test_2[ie=1-ia=0-i2=x] PASSED           [ 20%]
+test_doc_fixture_graph_union.py::test_2[ie=1-ia=0-i2=z] PASSED           [ 25%]
+test_doc_fixture_graph_union.py::test_2[ie=1-ia=1-i2=x] PASSED           [ 29%]
+test_doc_fixture_graph_union.py::test_2[ie=1-ia=1-i2=z] PASSED           [ 33%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_a-ia=0] PASSED        [ 37%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_a-ia=1] PASSED        [ 41%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_a-ib=x-ia=0] PASSED [ 45%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_a-ib=x-ia=1] PASSED [ 50%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_a-ib=z-ia=0] PASSED [ 54%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_a-ib=z-ia=1] PASSED [ 58%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_c-ib=x] PASSED [ 62%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_c-ib=z] PASSED [ 66%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u_is_a-ia=0] PASSED         [ 70%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u_is_a-ia=1] PASSED         [ 75%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_a-ib=x-ia=0] PASSED [ 79%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_a-ib=x-ia=1] PASSED [ 83%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_a-ib=z-ia=0] PASSED [ 87%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_a-ib=z-ia=1] PASSED [ 91%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_c-ib=x] PASSED [ 95%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_c-ib=z] PASSED [100%]
+
+======================== 24 passed, 1 warning in 0.30s ========================
+</code></pre></div>
+
+
+<p>Now 24 tests were created ! <code>test_2</code> still has 8 runs, which is normal as it does not depend on any union fixture. Let's try to understand what happened to parametrization of <code>test_1</code>. It is actually fairly simple: </p>
+<ul>
+<li>
+<p>first a global fixture closure is created as usual, consisting in <code>{u, a, b, c, d, e}</code></p>
+</li>
+<li>
+<p>then for each union fixture in <code>test_1</code>'s closure, starting from the bottom of the graph, we generate several closures by activating each of the arrows in turn. We progress upwards through the graph of remaining dependencies for each alternative:</p>
+<ul>
+<li>first <code>u</code> is used to split between subgraphs <code>u_is_a</code> and <code>u_is_b</code></li>
+<li>subgraph <code>u_is_a</code> does not contain any union. Its final closure is <code>{u, a, c, d, e}</code></li>
+<li>
+<p>for subgraph <code>u_is_b</code> there is another union. So a new split is generated:</p>
+<ul>
+<li>subgraph <code>u_is_b-ub_is_a</code> does not contain any union. Its final closure is <code>{u, b, a, c, d, e}</code></li>
+<li>subgraph <code>u_is_b-ub_is_c</code> does not contain any union. Its final closure is <code>{u, b, c, e}</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>So the result consists in <strong>3 alternate fixture closures</strong> for <code>test_1</code>:</p>
+<p><img alt="fixture graph union closures" src="../imgs/6_fixture_graph_union_closures.png" /></p>
+<ul>
+<li>
+<p>finally, as usual, for each closure a cartesian product is made across the parameters of all parametrization marks found on any item in the closure (including parameters of the test itself), So </p>
+<ul>
+<li>for <code>test_1</code> alternative <code>u_is_a</code>, the cartesian product is <code>&lt;ie&gt; x &lt;ia&gt;</code>  (4 tests) </li>
+<li>for <code>test_1</code> alternative <code>u_is_b-ub_is_a</code>, the cartesian product is <code>&lt;ie&gt; x &lt;ia&gt; x &lt;ib&gt;</code>  (8 tests) </li>
+<li>for <code>test_1</code> alternative <code>u_is_b-ub_is_c</code>, the cartesian product is <code>&lt;ie&gt; x &lt;ib&gt;</code>  (4 tests) </li>
+<li>for <code>test_2</code> it is <code>&lt;ie&gt; x &lt;ia&gt; x &lt;i2&gt;</code>. (8 tests).</li>
+</ul>
+</li>
+</ul>
+<p>The total is indeed 4 + 8 + 4 + 8 = 24 tests. Once again the test ids may be used to check that everything is correct, see above.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../pytest_goodies/" title="pytest goodies" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                pytest goodies
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../api_reference/" title="API reference" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                API reference
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.d710d30a.min.js"></script>
+      <script src="../assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.result.placeholder": "Type to start searching", "clipboard.copied": "Copied to clipboard", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "search.result.one": "1 matching document", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.a68abb33.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
