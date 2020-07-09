@@ -125,7 +125,10 @@ class fixture_ref(object):  # noqa
     __slots__ = 'fixture',
 
     def __init__(self, fixture):
-        self.fixture = fixture
+        self.fixture = get_fixture_name(fixture)
+
+    def __repr__(self):
+        return "fixture_ref<%s>" % self.fixture
 
 
 # Fix for https://github.com/smarie/python-pytest-cases/issues/71
@@ -379,8 +382,14 @@ def _parametrize_plus(argnames=None,
 
     if idgen is AUTO:
         # note: we use a "trick" here with mini_idval to get the appropriate result
-        # TODO support fixture_ref in mini_idval or add __name__ and str() in fixture_ref
-        idgen = lambda **args: "-".join("%s=%s" % (n, mini_idval(val=v, argname='', idx=v)) for n, v in args.items())
+        def _make_ids(**args):
+            for n, v in args.items():
+                if isinstance(v, fixture_ref):
+                    yield "%s_is_%s" % (n, v.fixture)
+                else:
+                    yield "%s=%s" % (n, mini_idval(val=v, argname='', idx=v))
+
+        idgen = lambda **args: "-".join(_make_ids(**args))
 
     # first handle argnames / argvalues (new modes of input)
     argnames, argvalues = _get_argnames_argvalues(argnames, argvalues, **args)
@@ -533,7 +542,7 @@ def _parametrize_plus(argnames=None,
 
         def _create_fixture_ref_alt(union_name, i):  # noqa
             # Get the referenced fixture name
-            f_fix_name = get_fixture_name(argvalues[i].fixture)
+            f_fix_name = argvalues[i].fixture
 
             if debug:
                 print("Creating reference to fixture %r" % (f_fix_name,))
