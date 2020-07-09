@@ -1,42 +1,37 @@
 # Changelog
 
-### 2.0.0 - Less boilerplate & full `pytest` alignment !
+### 2.0.0 - Less boilerplate & full `pytest` alignment
 
-**Case functions**
+I am very pleased to announce this new version of `pytest-cases`, providing a lot of **major** improvements. Creating powerful and complex test suites have never been so easy and intuitive !
 
- - New `@case(id=None, tags=(), marks=())` decorator to replace `@case_name`, `@case_tags` and `@test_target` (all deprecated): a single simple way to customize all aspects of a case function. Also, `target` disappears from the picture as it was just a tag like others - this could be misleading.
+Below is a complete list of changes, but the user guide has also been updated accordingly so feel free to [have a look](index.md) to get a complete example-based walkthrough.
 
- - `@cases_generator` is now deprecated and replaced with `@parametrize` : now, cases can be parametrized exactly the same way than tests. This includes the ability to put marks on the whole or on some specific parameter values. `@parametrize_plus` has been renamed `@parametrize` for readability. It was also improved in order to support the alternate parametrization mode that was previously offered by `@cases_generator`. That way, users will be able to choose the style of their choice. Fixes [#57](https://github.com/smarie/python-pytest-cases/issues/57) and [#106](https://github.com/smarie/python-pytest-cases/issues/106).
+
+**A/ More powerful and flexible cases collection**
+
+New [`@parametrize_with_cases`](./api_reference.md#parametrize_with_cases) decorator to replace `@cases_data` (deprecated).
+
+ 1. Aligned with `pytest`: 
  
- - Since `@cases_generat`Marks can now 
-
- - Now case functions can require fixtures ! In that case they will be transformed into fixtures and injected as `fixture_ref` in the parametrization. Fixes [#56](https://github.com/smarie/python-pytest-cases/issues/56).
-
-
-**Test functions**
-
-New `@parametrize_with_cases(argnames, cases, ...)` decorator to replace `@cases_data` (deprecated):
- 
- - Aligned with `pytest` behaviour: 
- 
-    - now `argnames` can contain several names, and the cases are unpacked automatically. **Less boilerplate code**: no need to perform a `case.get()` in the test anymore !
+    - now `argnames` can contain several names, and the case functions are **automatically unpacked** into it. You don't need to perform a `case.get()` in the test anymore !
 
             @parametrize_with_cases("a,b")
             def test_foo(a, b):
                 # use a and b directly !
                 ...
 
-
     - cases are unpacked at test *setup* time, so *the clock does not run while the case is created* - in case you use `pytest-harvest` to collect the timings.
 
     - `@parametrize_with_cases` can be used on test functions *as well as fixture functions* (it was already the case in v1)
 
 
- - **A single `cases` argument** to indicate the cases, wherever they come from:
+ 2. Easier to configure: 
+ 
+     - the decorator now has a single `cases` argument to indicate the cases, wherever they come from (no `module` argument anymore)
 
-     - Default (`cases=AUTO`) *automatically looks for cases in the associated case module* named `test_xxx_cases.py`. Users can easily switch to alternate pattern `cases_xxx.py` with `cases=AUTO2`. Fixes [#91](https://github.com/smarie/python-pytest-cases/issues/91).
+     - default (`cases=AUTO`) *automatically looks for cases in the associated case module* named `test_xxx_cases.py`. Users can easily switch to alternate pattern `cases_xxx.py` with `cases=AUTO2`. Fixes [#91](https://github.com/smarie/python-pytest-cases/issues/91).
     
-     - *Cases can sit inside a class*, which makes it much more convenient to organize when they sit in the same file than the tests. Fixes [#93](https://github.com/smarie/python-pytest-cases/issues/93).
+     - **cases can sit inside a class**, like [what you're used to do with `pytest`](https://docs.pytest.org/en/stable/getting-started.html#group-multiple-tests-in-a-class). This additional style makes it much more convenient to organize cases and associated them with tests, when cases sit in the same file than the tests. Fixes [#93](https://github.com/smarie/python-pytest-cases/issues/93).
      
      - an explicit sequence can be provided, *it can mix all kind of sources*: functions, classes, modules, and *module names as strings* (even relative ones!).
 
@@ -44,23 +39,45 @@ New `@parametrize_with_cases(argnames, cases, ...)` decorator to replace `@cases
             def test_foo(a):
                 ...
 
-**Misc / pytest goodies**
 
- - `parametrize_plus` now raises an explicit error message when the user makes a mistake with the argnames. Fixes [#105](https://github.com/smarie/python-pytest-cases/issues/105).
+ 3. More powerful API for filtering:
  
- - `parametrize_plus` now provides an alternate way to pass argnames, argvalues and ids. Fixes [#106](https://github.com/smarie/python-pytest-cases/issues/106).
+     - a new `prefix` argument (default `case_`) can be used to define case functions for various type of parameters: welcome `user_<id>`, `data_<id>`, `algo_<id>`, `model_<id>` ! Fixes [#108](https://github.com/smarie/python-pytest-cases/issues/108)
+     
+     - a new `glob` argument receiving a glob-like string can be used to further filter cases based on their names. For example you can distinguish `*_success` from `*_failure` case ids, so as to dispatch them to the appropriate positive or negative test. Fixes [#108](https://github.com/smarie/python-pytest-cases/issues/108)
+     
+     - finally you can still use `has_tag` and/or provide a `filter` callable, but now the callable will receive the case function, and this case function has a `f._pytestcase` attribute containing the id, tags and marks - it is therefore much easier to implement custom filtering.
 
- - New aliases for readability: `fixture` for `fixture_plus`, and`parametrize` for `parametrize_plus` (both aliases will coexist with the old names). Fixes [#107](https://github.com/smarie/python-pytest-cases/issues/107).
 
- - New pytest goodie `assert_exception` that can be used as a context manager. Fixes [#104](https://github.com/smarie/python-pytest-cases/issues/104).
- 
- - More readable error messages when `lazy_value` does not return the same number of argvalues than expected by the `parametrize`.
- 
- - Any error message associated to a `lazy_value` function call is not caught and hidden anymore but is emitted to the user.
+**B/ Easier-to-define case functions**
+
+ - Case functions can start with different prefixes to denote different kind of data: e.g. `data_<id>`, `user_<id>`, `model_<id>`, etc.
+
+ - Case functions can now be parametrized with [`@parametrize`](pytest_goodies.md#parametrize) or `@pytest.mark.parametrize`, just as in pytest ! This includes the ability to put [`pytest` marks](https://docs.pytest.org/en/stable/mark.html) on the whole case, or on some specific parameter values using [`pytest.param`](https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test). `@cases_generator` is therefore now deprecated but its alternate style for ids and arguments definition was preserved in `@parametrize`, see below. 
+
+ - Now case functions can require fixtures ! In that case they will be transformed into fixtures and injected as `fixture_ref` in the parametrization. Fixes [#56](https://github.com/smarie/python-pytest-cases/issues/56).
+
+ - New single optional `@case(id=None, tags=(), marks=())` decorator to replace `@case_name` and `@case_tags` (deprecated): a single simple way to customize all aspects of a case function. Also, `@test_target` completely disappears from the picture as it was just a tag like others - this could be misleading.
+
+
+**C/ Misc / pytest goodies**
+
+ - New aliases for readability: `@fixture` for `@fixture_plus`, and`@parametrize` for `@parametrize_plus` (both aliases will coexist with the old names). Fixes [#107](https://github.com/smarie/python-pytest-cases/issues/107).
+
+ - `@parametrize` was improved in order to support the alternate parametrization mode that was previously offered by `@cases_generator`, see [api reference](api_reference.md#parametrize). That way, users will be able to choose the style of their choice. Fixes [#57](https://github.com/smarie/python-pytest-cases/issues/57) and [#106](https://github.com/smarie/python-pytest-cases/issues/106).
+
+ - `@parametrize` now raises an explicit error message when the user makes a mistake with the argnames. Fixes [#105](https://github.com/smarie/python-pytest-cases/issues/105).
+
+ - More readable error messages in `@parametrize` when `lazy_value` does not return the same number of argvalues than expected from the argnames.
+
+ - Any error message associated to a `lazy_value` function call is not caught and hidden anymore but is emitted to the user, for easier debugging.
  
  - Fixed issue with `lazy_value` when a single mark is passed in the constructor.
 
  - `lazy_value` used as a tuple for several arguments now have a correct id generated even in old pytest version 2.
+ 
+ - New pytest goodie `assert_exception` that can be used as a context manager. Fixes [#104](https://github.com/smarie/python-pytest-cases/issues/104).
+
 
 ### 1.17.0 - `lazy_value` improvements + annoying warnings suppression
 
