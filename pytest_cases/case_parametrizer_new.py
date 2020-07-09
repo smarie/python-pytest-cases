@@ -39,49 +39,64 @@ except:  # noqa
 def parametrize_with_cases(argnames,                # type: str
                            cases=AUTO,              # type: Union[Callable, Type, ModuleRef]
                            prefix=CASE_PREFIX_FUN,  # type: str
+                           glob=None,               # type: str
                            has_tag=None,            # type: Any
-                           filter=None,             # type: Union[str, Callable[[Callable], bool]]  # noqa
+                           filter=None,             # type: Callable[[Callable], bool]  # noqa
                            **kwargs
                            ):
     # type: (...) -> Callable[[Callable], Callable]
     """
-    A decorator for test functions, to parametrize them based on test cases.
+    A decorator for test functions or fixtures, to parametrize them based on test cases. It works similarly to
+    `@pytest.mark.parametrize`: argnames represent a coma-separated string of arguments to inject in the decorated
+    test function or fixture. The argument values (argvalues in `pytest.mark.parametrize`) are collected from the
+    various case functions found according to `cases`, and injected as lazy values so that the case functions are called
+    just before the test or fixture is executed.
 
-    By default (`cases=AUTO`) the list of test cases is automatically drawn from the file named `<name>_cases.py` where
-    `<name>` is the current module name.
-    This list can otherwise either be provided explicitly in the `cases` argument, or referenced
-    as a python module or a list of python modules in the `cases` argument.
+    By default (`cases=AUTO`) the list of test cases is automatically drawn from the python module file named
+    `test_<name>_cases.py` where `test_<name>` is the current module name. An alternate naming convention
+    `cases_<name>.py` can be used by setting `cases=AUTO2`.
+
+    Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name;
+    or a list of such elements. Note that both absolute and relative module names are suported.
+
+    Note that `@parametrize_with_cases` collection and parameter creation steps are strictly equivalent to
+    `get_all_cases` + `get_parametrize_args`. This can be handy for debugging purposes.
+
+    ```python
+    # Collect all cases
+    cases_funs = get_all_cases(f, cases=cases, prefix=prefix, glob=glob, has_tag=has_tag, filter=filter)
+
+    # Transform the various functions found
+    argvalues = get_parametrize_args(cases_funs, prefix=prefix)
+    ```
 
     :param argnames: same than in @pytest.mark.parametrize
-    :param cases: a case function, a class containing cases, a module or a module name string (relative module
+    :param cases: a case function, a class containing cases, a module object or a module name string (relative module
         names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module.
         `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
         the module file of the decorated function. `AUTO2` allows you to use the alternative naming scheme
-        `case_<name>.py`.
+        `case_<name>.py`. When a module is listed, all of its functions matching the `prefix`, `filter` and `has_tag`
+        are selected, including those functions nested in classes following naming pattern `*Case*`. When classes are
+        explicitly provided in the list, they can have any name and do not need to follow this `*Case*` pattern.
     :param prefix: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to
         denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
-    :param has_tag: a single tag or a tuple, set, list of tags that should be matched by the case function to be used
-    :param filter: a string or a callable receiving the case function and returning True or None in case the function
+    :param glob: an optional glob-like pattern for case ids, for example "*_success" or "*_failure". Note that this
+        is applied on the case id, and therefore if it is customized through `@case(id=...)` it should be taken into
+        account.
+    :param has_tag: a single tag or a tuple, set, list of tags that should be matched by the ones set with the `@case`
+        decorator on the case function(s) to be selected.
+    :param filter: a callable receiving the case function and returning True or a truth value in case the function
         needs to be selected.
     :return:
     """
-    # Handle single elements
-    try:
-        cases = tuple(cases)
-    except TypeError:
-        cases = (cases,)
-
     def _apply_parametrization(f):
-        """
+        """ execute parametrization of test function or fixture `f` """
 
-        :param f:
-        :return:
-        """
         # Collect all cases
-        cases_funs = get_all_cases(f, cases=cases, prefix=prefix, filter=filter, has_tag=has_tag)
+        cases_funs = get_all_cases(f, cases=cases, prefix=prefix, glob=glob, has_tag=has_tag, filter=filter)
 
         # Transform the various functions found
-        argvalues = get_pytest_parametrize_args(cases_funs, prefix=prefix)
+        argvalues = get_parametrize_args(cases_funs)
 
         # Finally apply parametrization - note that we need to call the private method so that fixture are created in
         # the right module (not here)
@@ -99,12 +114,12 @@ def create_glob_name_filter(glob_str  # type: str
     :param case_fun:
     :return:
     """
-
     name_matcher = re.compile(glob_str.replace("*", ".*"))
 
     def _glob_name_filter(case_fun):
-        case_fun_name = getattr(case_fun, '__name__', None)
-        return name_matcher.match(case_fun_name)
+        case_fun_id = case_fun._pytestcase.id
+        assert case_fun_id is not None
+        return name_matcher.match(case_fun_id)
 
     return _glob_name_filter
 
@@ -112,41 +127,63 @@ def create_glob_name_filter(glob_str  # type: str
 def get_all_cases(parametrization_target,  # type: Callable
                   cases=None,              # type: Union[Callable, Type, ModuleRef]
                   prefix=CASE_PREFIX_FUN,  # type: str
-                  has_tag=None,            # type: Any
-                  filter=None              # type: Union[str, Callable[[Iterable[Any]], bool]]  # noqa
+                  glob=None,               # type: str
+                  has_tag=None,            # type: Union[str, Iterable[str]]
+                  filter=None              # type: Callable[[Callable], bool]  # noqa
                   ):
     # type: (...) -> List[Callable]
     """
-    Returns a list of case functions. Useful for debugging case collection.
+    Lists all desired cases for a given `parametrization_target` (a test function or a fixture). This function may be
+    convenient for debugging purposes. See `@parametrize_with_cases` for details on the parameters.
 
     :param parametrization_target: a test function
     :param cases: a case function, a class containing cases, a module or a module name string (relative module
         names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module.
         `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
         the module file of the decorated function. `AUTO2` allows you to use the alternative naming scheme
-        `case_<name>.py`.
+        `case_<name>.py`. When a module is listed, all of its functions matching the `prefix`, `filter` and `has_tag`
+        are selected, including those functions nested in classes following naming pattern `*Case*`. When classes are
+        explicitly provided in the list, they can have any name and do not need to follow this `*Case*` pattern.
     :param prefix: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to
         denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
-    :param has_tag: a single tag or a tuple, set, list of tags that should be matched by the case function to be used
-    :param filter: a string or a callable receiving the case function and returning True or None in case the function
+    :param glob: an optional glob-like pattern for case ids, for example "*_success" or "*_failure". Note that this
+        is applied on the case id, and therefore if it is customized through `@case(id=...)` it should be taken into
+        account.
+    :param has_tag: a single tag or a tuple, set, list of tags that should be matched by the ones set with the `@case`
+        decorator on the case function(s) to be selected.
+    :param filter: a callable receiving the case function and returning True or a truth value in case the function
         needs to be selected.
     """
+    # Handle single elements
+    try:
+        cases = tuple(cases)
+    except TypeError:
+        cases = (cases,)
+
+    # validate prefix
     if not isinstance(prefix, str):
         raise TypeError("`prefix` should be a string, found: %r" % prefix)
 
-    if filter is not None:
-        if isinstance(filter, string_types):
-            # String = A glob-like filter
-            filter = create_glob_name_filter(filter)
+    # validate glob and filter and merge them in a single tuple of callables
+    filters = ()
+    if glob is not None:
+        if not isinstance(glob, string_types):
+            raise TypeError("`glob` should be a string containing a glob-like pattern (not a regex).")
 
+        filters += (create_glob_name_filter(glob),)
+    if filter is not None:
         if not callable(filter):
-            raise ValueError(
+            raise TypeError(
                 "`filter` should be a callable starting in pytest-cases 0.8.0. If you wish to provide a single"
                 " tag to match, use `has_tag` instead.")
 
+        filters += (filter,)
+
+    # parent package
     caller_module_name = getattr(parametrization_target, '__module__', None)
     parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
 
+    # start collecting all cases
     cases_funs = []
     for c in cases:
         # load case or cases depending on type
@@ -172,29 +209,39 @@ def get_all_cases(parametrization_target,  # type: Callable
             cases_funs += new_cases
 
     # filter last, for easier debugging (collection will be slightly less performant when a large volume of cases exist)
-    return [c for c in cases_funs if matches_tag_query(c, has_tag=has_tag, filter=filter)]
+    return [c for c in cases_funs
+            # IMPORTANT: with the trick below we create and attach a case info on each `c` in the same loop
+            if CaseInfo.get_from(c, create=True, prefix_for_ids=prefix)
+            # this second member below is the only actual test performing query filtering
+            and matches_tag_query(c, has_tag=has_tag, filter=filters)]
 
 
-def get_pytest_parametrize_args(cases_funs,              # type: List[Callable]
-                                prefix=CASE_PREFIX_FUN,  # type: str
-                                ):
-    # type: (...) -> List[lazy_value]
-    """ Transform a list of cases (obtained from `get_all_cases`) into a list of argvalues for `@parametrize`
+def get_parametrize_args(cases_funs,  # type: List[Callable]
+                         ):
+    # type: (...) -> List[Union[lazy_value, fixture_ref]]
+    """
+    Transforms a list of cases (obtained from `get_all_cases`) into a list of argvalues for `@parametrize`.
+    Each case function `case_fun` is transformed into one or several `lazy_value`(s) or a `fixture_ref`:
 
-    :param cases_funs:
-    :param prefix:
+     - If `case_fun` requires at least on fixture, a fixture will be created if not yet present, and a `fixture_ref`
+       will be returned.
+     - If `case_fun` is a parametrized case, one `lazy_value` with a partialized version will be created for each
+       parameter combination.
+     - Otherwise, `case_fun` represents a single case: in that case a single `lazy_value` is returned.
+
+    :param cases_funs: a list of case functions returned typically by `get_all_cases`
     :return:
     """
-    return [c for _f in cases_funs for c in case_to_argvalues(_f, prefix=prefix)]
+    return [c for _f in cases_funs for c in case_to_argvalues(_f)]
 
 
 def case_to_argvalues(case_fun,                # type: Callable
-                      prefix=CASE_PREFIX_FUN,  # type: str
                       ):
     # type: (...) -> Tuple[lazy_value]
-    """Transform a single case into one or several `lazy_value` to be used in `@parametrize`
+    """Transform a single case into one or several `lazy_value`(s) or a `fixture_ref` to be used in `@parametrize`
 
-    If `case_fun` requires at least on fixture, TODO
+    If `case_fun` requires at least on fixture, a fixture will be created if not yet present, and a `fixture_ref` will
+    be returned.
 
     If `case_fun` is a parametrized case, one `lazy_value` with a partialized version will be created for each parameter
     combination.
@@ -202,23 +249,11 @@ def case_to_argvalues(case_fun,                # type: Callable
     Otherwise, `case_fun` represents a single case: in that case a single `lazy_value` is returned.
 
     :param case_fun:
-    :param prefix
     :return:
     """
-    case_id = None
-    marks = ()
-
     case_info = CaseInfo.get_from(case_fun)
-    if case_info is not None:
-        case_id = case_info.id
-        marks = case_info.marks
-
-    if case_id is None:
-        # default test id from function name
-        if case_fun.__name__.startswith(prefix):
-            case_id = case_fun.__name__[len(prefix):]
-        else:
-            case_id = case_fun.__name__
+    case_id = case_info.id
+    case_marks = case_info.marks
 
     # get the list of all calls that pytest *would* have made for such a (possibly parametrized) function
     meta = MiniMetafunc(case_fun)
@@ -226,7 +261,7 @@ def case_to_argvalues(case_fun,                # type: Callable
     if not meta.requires_fixtures:
         if not meta.is_parametrized:
             # single unparametrized case function
-            return (lazy_value(case_fun, id=case_id, marks=marks),)
+            return (lazy_value(case_fun, id=case_id, marks=case_marks),)
         else:
             # parametrized. create one version of the callable for each parametrized call
             return tuple(lazy_value(partial(case_fun, **c.funcargs), id="%s-%s" % (case_id, c.id), marks=c.marks)
@@ -250,11 +285,12 @@ def case_to_argvalues(case_fun,                # type: Callable
             new_fix = fixture(name=case_id)(case_fun)
             setattr(host_cls or host_module, case_id, new_fix)
         else:
-            raise NotImplementedError("We should check if this is the same or another and generate a new name in that case")
+            raise NotImplementedError("We should check if this is the same or another and generate a new name in that "
+                                      "case")
 
         # now reference the new or existing fixture
         argvalues_tuple = (fixture_ref(case_id),)
-        return make_marked_parameter_value(argvalues_tuple, marks=marks) if marks else argvalues_tuple
+        return make_marked_parameter_value(argvalues_tuple, marks=case_marks) if case_marks else argvalues_tuple
 
 
 def import_default_cases_module(f, alt_name=False):

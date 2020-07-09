@@ -14,7 +14,7 @@ from .case_parametrizer_legacy import cases_data, CaseDataGetter, get_all_cases_
     get_pytest_parametrize_args_legacy, cases_fixture
 
 from .case_funcs_new import case, CaseInfo
-from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_pytest_parametrize_args
+from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_parametrize_args
 
 try:
     # -- Distribution mode --
@@ -56,7 +56,7 @@ __all__ = [
     # case functions
     'case', 'CaseInfo', 'get_all_cases',
     # test functions
-    'parametrize_with_cases', 'THIS_MODULE', 'get_pytest_parametrize_args'
+    'parametrize_with_cases', 'THIS_MODULE', 'get_parametrize_args'
 ]
 
 try:  # python 3.5+ type hints

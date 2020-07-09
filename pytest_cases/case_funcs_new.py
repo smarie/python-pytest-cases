@@ -37,12 +37,30 @@ class CaseInfo(object):
         self.add_tags(tags)
 
     @classmethod
-    def get_from(cls, case_func, create=False):
-        """return the CaseInfo associated with case_fun ; create it and attach it if needed and required"""
+    def get_from(cls, case_func, create=False, prefix_for_ids='case_'):
+        """
+        Returns the CaseInfo associated with case_fun ; creates it and attaches it if needed and required.
+        If not present, a case id is automatically created from the function name based on the collection prefix.
+
+        :param case_func:
+        :param create:
+        :param prefix_for_ids:
+        :return:
+        """
         case_info = getattr(case_func, CASE_FIELD, None)
-        if case_info is None and create:
-            case_info = CaseInfo()
-            case_info.attach_to(case_func)
+
+        if create:
+            if case_info is None:
+                case_info = CaseInfo()
+                case_info.attach_to(case_func)
+
+            if case_info.id is None:
+                # default test id from function name
+                if case_func.__name__.startswith(prefix_for_ids):
+                    case_info.id = case_func.__name__[len(prefix_for_ids):]
+                else:
+                    case_info.id = case_func.__name__
+
         return case_info
 
     def attach_to(self,
@@ -63,23 +81,21 @@ class CaseInfo(object):
             self.tags += tuple(tags)
 
     def matches_tag_query(self,
-                          has_tag=None,  # type: Any
-                          filter=None    # type: Callable[[Iterable[Any]], bool]  # noqa
+                          has_tag=None,  # type: Union[str, Iterable[str]]
                           ):
         """
         Returns True if the case function with this case_info is selected by the query
 
         :param has_tag:
-        :param filter: a callable
         :return:
         """
-        selected = True  # by default select the case, then AND the conditions
-        if has_tag is not None:
-            selected = selected and (has_tag in self.tags)
-        if filter is not None:
-            selected = selected and filter(self.tags)
+        if has_tag is None:
+            return True
 
-        return selected
+        if not isinstance(has_tag, (tuple, list, set)):
+            has_tag = (has_tag,)
+
+        return all(t in self.tags for t in has_tag)
 
     @classmethod
     def copy_info(cls, from_case_func, to_case_func):
@@ -90,50 +106,75 @@ class CaseInfo(object):
 
 
 def matches_tag_query(case_fun,
-                      has_tag=None,  # type: Any
-                      filter=None    # type: Callable[[Iterable[Any]], bool]  # noqa
+                      has_tag=None,  # type: Union[str, Iterable[str]]
+                      filter=None,   # type: Union[Callable[[Iterable[Any]], bool], Iterable[Callable[[Iterable[Any]], bool]]]  # noqa
                       ):
     """
-    Returns True if the case function is selected by the query
+    Returns True if the case function is selected by the query:
+
+     - if `has_tag` contains one or several tags, they should ALL be present in the tags
+       set on `case_fun` (`case_fun._pytestcase.tags`)
+
+     - if `filter` contains one or several filter callables, they are all called in sequence and the
+       case_fun is only selected if ALL of them return a True truth value
 
     :param case_fun:
     :param has_tag:
     :param filter:
-    :return:
+    :return: True if the case_fun is selected by the query.
     """
-    # no query = match
-    if has_tag is None and filter is None:
-        return True
+    selected = True
 
-    # query = first get info
-    case_info = CaseInfo.get_from(case_fun)
-    if not case_info:
-        # no tags: do the test on an empty case info
-        return CaseInfo().matches_tag_query(has_tag, filter)
-    else:
-        return case_info.matches_tag_query(has_tag, filter)
+    # query on tags
+    if has_tag is not None:
+        selected = selected and CaseInfo.get_from(case_fun).matches_tag_query(has_tag)
+
+    # filter function
+    if filter is not None:
+        if not isinstance(filter, (tuple, set, list)):
+            filter = (filter,)
+
+        for _filter in filter:
+            # break if already unselected
+            if not selected:
+                return selected
+
+            # try next filter
+            try:
+                res = _filter(case_fun)
+                # keep this in the try catch in case there is an issue with the truth value of result
+                selected = selected and res
+            except:  # noqa
+                # any error leads to a no-match
+                selected = False
+
+    return selected
 
 
 @function_decorator
 def case(id=None,             # type: str  # noqa
          tags=None,           # type: Union[Any, Iterable[Any]]
-         # lru_cache=False,     # type: bool
          marks=(),            # type: Union[MarkDecorator, Iterable[MarkDecorator]]
          case_func=DECORATED  # noqa
          ):
     """
+    Optional decorator for case functions so as to customize some information.
+
+    ```python
+    @case(id='hey')
+    def case_hi():
+        return 1
+    ```
 
     :param id: the custom pytest id that should be used when this case is active. Replaces the deprecated `@case_name`
-    :param tags: custom tags to be used for filtering. Replaces the deprecated `@case_tags`
-    :param lru_cache:
-    :param marks:
+        decorator from v1. If no id is provided, the id is generated from case functions by removing their prefix,
+        see `@parametrize_with_cases(prefix='case_')`.
+    :param tags: custom tags to be used for filtering in `@parametrize_with_cases(has_tags)`. Replaces the deprecated
+        `@case_tags` and `@target` decorators.
+    :param marks: optional pytest marks to add on the case. Note that decorating the function directly with the mark
+        also works, and if marks are provided in both places they are merged.
     :return:
     """
-    # if lru_cache:
-    #     nb_cases = 1  # TODO change when fixture dependencies are taken into account. What about creating a dedicated independent cache decorator pytest goodie ?
-    #     # decorate the function with the appropriate lru cache size
-    #     case_func = lru(maxsize=nb_cases)(case_func)
-
     case_info = CaseInfo(id, marks, tags)
     case_info.attach_to(case_func)
     return case_func
@@ -175,7 +216,5 @@ def is_case_function(f, prefix=CASE_PREFIX_FUN, check_prefix=True):
         return False
     elif safe_isclass(f):
         return False
-    elif hasattr(f, CASE_FIELD):
-        return True
     else:
         return f.__name__.startswith(prefix) if check_prefix else True
