@@ -1,5 +1,11 @@
 # Changelog
 
+### 2.0.1 - Better test ids and theory page
+
+ - New documentation page concerning theory of fixture unions. Fixes [#109](https://github.com/smarie/python-pytest-cases/issues/109)
+
+ - Using a `fixture_ref` in a new-style `@parametrize` (with `**args` or `idgen`) now outputs a correct id. Fixes [#110](https://github.com/smarie/python-pytest-cases/issues/110)
+
 ### 2.0.0 - Less boilerplate & full `pytest` alignment
 
 I am very pleased to announce this new version of `pytest-cases`, providing a lot of **major** improvements. Creating powerful and complex test suites have never been so easy and intuitive !
