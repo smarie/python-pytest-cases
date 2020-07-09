@@ -23,7 +23,12 @@ def case_a():
     return ins, outs, None
 
 
-@cases_data(module=THIS_MODULE, filter=lambda tags: 'a' in tags or 'b' in tags)
+def my_tag_filter(case_func):
+    tags = case_func._pytestcase.tags
+    return 'a' in tags or 'b' in tags
+
+
+@cases_data(module=THIS_MODULE, filter=my_tag_filter)
 def test_with_cases_a_or_b(case_data  # type: CaseDataGetter
                            ):
 
@@ -36,7 +41,7 @@ def test_with_cases_a_or_b(case_data  # type: CaseDataGetter
     assert outs == expected_o
 
 
-@cases_data(module=THIS_MODULE, filter=lambda tags: 'a' in tags and 'b' in tags)
+@cases_data(module=THIS_MODULE, filter=my_tag_filter)
 def test_with_cases_a_and_b(case_data  # type: CaseDataGetter
                             ):
 

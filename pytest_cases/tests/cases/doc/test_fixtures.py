@@ -26,7 +26,7 @@ def test_users(a, db, request):
 def test_users_synthesis(request, db):
     results_dct = get_session_synthesis_dct(request, filter=test_users, test_id_format='function')
     assert list(results_dct) == [
-        'test_foo_fixtures[a_is_bob]',
-        'test_foo_fixtures[a_is_from_db-id=0]',
-        'test_foo_fixtures[a_is_from_db-id=1]'
+        'test_users[a_is_bob]',
+        'test_users[a_is_from_db-id=0]',
+        'test_users[a_is_from_db-id=1]'
     ]

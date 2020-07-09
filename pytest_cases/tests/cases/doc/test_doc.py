@@ -32,24 +32,24 @@ def test_foo_default_cases_file_synthesis(request):
 
 
 @parametrize_with_cases("a,b", cases=AUTO2)
-def test_foo_alternate_cases_file_and_one_marked_skip(a, b):
+def test_foo_alternate_cases_file_and_two_marked_skip(a, b):
     assert isinstance(foo(a, b), tuple)
 
 
-def test_foo_alternate_cases_file_and_one_marked_skip_synthesis(request):
-    results_dct = get_session_synthesis_dct(request, filter=test_foo_alternate_cases_file_and_one_marked_skip,
+def test_foo_alternate_cases_file_and_two_marked_skip_synthesis(request):
+    results_dct = get_session_synthesis_dct(request, filter=test_foo_alternate_cases_file_and_two_marked_skip,
                                             test_id_format='function')
     if has_pytest_param:
         assert list(results_dct) == [
-            'test_foo_alternate_cases_file_and_one_marked_skip[hello]',
-            'test_foo_alternate_cases_file_and_one_marked_skip[two_negative_ints0]',
-            'test_foo_alternate_cases_file_and_one_marked_skip[two_negative_ints1]'
+            'test_foo_alternate_cases_file_and_two_marked_skip[hello]',
+            'test_foo_alternate_cases_file_and_two_marked_skip[two_negative_ints0]',
+            'test_foo_alternate_cases_file_and_two_marked_skip[two_negative_ints1]'
         ]
     else:
         assert list(results_dct) == [
-            'test_foo_alternate_cases_file_and_one_marked_skip[1hello[0]-hello[1]]',
-            'test_foo_alternate_cases_file_and_one_marked_skip[3two_negative_ints[0]-two_negative_ints[1]]',
-            'test_foo_alternate_cases_file_and_one_marked_skip[5two_negative_ints[0]-two_negative_ints[1]]'
+            'test_foo_alternate_cases_file_and_two_marked_skip[0hello[0]-hello[1]]',
+            'test_foo_alternate_cases_file_and_two_marked_skip[2two_negative_ints[0]-two_negative_ints[1]]',
+            'test_foo_alternate_cases_file_and_two_marked_skip[4two_negative_ints[0]-two_negative_ints[1]]'
         ]
 
 
@@ -101,7 +101,7 @@ class CasesFoo:
 
     @pytest.mark.skipif(False, reason="no")
     @case(id="hello world")
-    def blah(self):
+    def case_blah(self):
         """a blah"""
         return 0, 0
 
@@ -155,7 +155,7 @@ def test_foo_cls_list_synthesis(request):
         'test_foo_cls_list[hello world1]',
         'test_foo_cls_list[two_negative_ints3]',
         # test_doc_cases.py
-        'test_foo_cls_list[two_positive_ints1]',
+        'test_foo_cls_list[two_positive_ints]',
         'test_foo_cls_list[two_negative_ints4]'
     ]
     if has_pytest_param:

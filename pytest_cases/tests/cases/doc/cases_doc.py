@@ -19,7 +19,7 @@ class CasesFoo:
         return
 
     @case(id="hello")
-    def blah(self):
+    def case_blah(self):
         """a blah"""
         return 0, 0
 
