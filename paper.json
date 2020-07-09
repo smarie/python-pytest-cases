@@ -1,0 +1,23 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "http://orcid.org/0000-0002-5929-1047",
+      "@type": "Person",
+      "email": "sylvain.marie@se.com",
+      "name": "Sylvain Marié",
+      "affiliation": "Schneider Electric"
+    }
+  ],
+  "identifier": "http://doi.org/10.5281/zenodo.3937830",
+  "codeRepository": "https://github.com/smarie/python-pytest-cases",
+  "datePublished": "2020-07-09",
+  "dateModified": "2020-07-09",
+  "dateCreated": "2020-07-09",
+  "description": "`pytest-cases` is a Python package leveraging the widely popular `pytest` library to design tests and benchmarks where test data, tested code, and evaluation protocols are strictly separated. The API for `pytest-cases` is as minimal as possible, so that each concept (test data, algorithms candidates, evaluation protocols) is a readable python function ; this is in line with the design philosophy of `pytest` itself.",
+  "keywords": "python, test, case, data, benchmark, pytest",
+  "license": "BSD 3-Clause",
+  "title": "pytest-cases",
+  "version": "v2.0.2"
+}
