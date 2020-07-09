@@ -62,10 +62,13 @@ class Lazy(object):
         """Return the value to use by pytest"""
         raise NotImplementedError()
 
-    if not pytest53:
-        def __str__(self):
-            """in pytest<5.3 we inherit from int so that str(v) is called by pytest _idmaker to get the id"""
-            return self.get_id()
+    def __str__(self):
+        """in pytest<5.3 we inherit from int so that str(v) is called by pytest _idmaker to get the id
+
+        In later pytest this is extremely convenient to have this string representation
+        for example to use in pytest-harvest results tables, so we still keep it.
+        """
+        return self.get_id()
 
     @property
     def __name__(self):
