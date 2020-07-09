@@ -2,252 +2,124 @@
 
 In general, using `help(symbol)` is the recommended way to get the latest documentation. In addition, this page provides an overview of the various elements in this package.
 
+## 1 - Case functions
 
-## 1 - On case functions side
+As explained in the [documentation](index.md), case functions have no requirement anymore, and starting from version 2.0.0 of `pytest_cases` they can be parametrized with the usual `@pytest.mark.parametrize` or its improvement [`@parametrize`](#parametrize). Therefore the only remaining decorator is the optional `@case` decorator:
 
-### `CaseData` type hint
-
-A proposed standard type hint for the case functions outputs. `CaseData = Tuple[Given, ExpectedNormal, ExpectedError]` where 
+### `@case`
 
 ```python
-Given = Any
-"""The input(s) for the test. It can be anything"""
-
-ExpectedNormal = Optional[Any]
-"""The expected test results in case success is expected, or None if this test
- should fail"""
-
-ExpectedError = Optional[Union[Type[Exception], 
-                               Exception, 
-                               Callable[[Exception], Optional[bool]]]]
-"""The expected error in case failure is expected, or None if the test should 
-succeed. It is proposed that expected error can be defined as an exception 
-type, an exception instance, or an exception validation function"""
+@case(id=None,    # type: str  # noqa
+      tags=None,  # type: Union[Any, Iterable[Any]]
+      marks=(),   # type: Union[MarkDecorator, Iterable[MarkDecorator]]
+      )
 ```
 
-### `@case_name`
-
-`@case_name(name: str)`
-
-Decorator to override the name of a case function. The new name will be used instead of the function name, in test names.
+Optional decorator for case functions so as to customize some information.
 
 ```python
-@case_name('simple_case')
-def case_simple():
-    ...
-```
-
-### `@case_tags`
-
-`@case_tags(*tags: Any)`
-
-Decorator to tag a case function with a list of tags. These tags can then be used in the `@cases_data` test function decorator to filter cases within the selected module(s).
-
-**Parameters:**
-
- - `tags`: a list of tags that may be used to filter the case. Tags can be anything (string, objects, types, functions...)
-
-
-### `@test_target`
-
-`@test_target(target: Any)`
-
-A simple decorator to declare that a case function is associated with a particular target.
-
-```python
-@test_target(int)
-def case_to_test_int():
-    ...
-```
-
-This is actually an alias for `@case_tags(target)`, that some users may find a bit more readable.
-
-
-### `@cases_generator`
-
-`@cases_generator(name_template: str, lru_cache: bool=False, **param_ranges)`
-
-Decorator to declare a case function as being a cases generator. `param_ranges`  should be a named list of parameter ranges to explore to generate the cases.
-    
-The decorator will use `itertools.product` to create a cartesian product of the named parameter ranges, and create a case for each combination. When the case function will be called for a given combination, the corresponding parameters will be passed to the decorated function.
-
-```python
-@cases_generator("test with i={i}", i=range(10))
-def case_10_times(i):
-    ''' Generates 10 cases '''
-    ins = dict(a=i, b=i+1)
-    outs = i+1, i+2
-    return ins, outs, None
+@case(id='hey')
+def case_hi():
+    return 1
 ```
 
 **Parameters:**
 
- - `name_template`: a name template, that will be transformed into the case name using `name_template.format(**params)` for each case, where params is the dictionary of parameter values for this generated case.
- - `lru_cache`: a boolean (default False) indicating if the generated cases should be cached. This is identical to decorating the function with an additional `@lru_cache(maxsize=n)` where n is the total number of generated cases.
- - `param_ranges`: named parameters and for each of them the list of values to be used to generate cases. For each combination of values (a cartesian product is made) the parameters will be passed to the underlying function so they should have names the underlying function can handle. 
+ - `id`: the custom pytest id that should be used when this case is active. Replaces the deprecated `@case_name` decorator from v1. If no id is provided, the id is generated from case functions by removing their prefix, see [`@parametrize_with_cases(prefix='case_')`](#parametrize_with_cases).
 
-
-### `MultipleStepsCaseData` type hint
-
-You may wish to use this type hint instead of `CaseData` when your case functions may return dictionaries of given/expected_normal/expected_error.
-
-`MultipleStepsCaseData = Tuple[Union[Given, Dict[Any, Given]],
-                               Union[ExpectedNormal, Dict[Any, ExpectedNormal]],
-                               Union[ExpectedError, Dict[Any, ExpectedError]]]`
-
-## 2 - On test functions side
-
-### `@cases_fixture`
-
-`@cases_fixture(cases=None, module=None, case_data_argname='case_data', has_tag=None, filter=None)`
-
-Decorates a function so that it becomes a parametrized fixture.
-
-The fixture will be automatically parametrized with all cases listed in module `module`, or with
-all cases listed explicitly in `cases`.
-
-Using it with a non-None `module` argument is equivalent to
- * extracting all cases from `module`
- * then decorating your function with @pytest.fixture(params=cases) with all the cases
-
-So
-
-```python
-from pytest_cases import cases_fixture, CaseData
-
-# import the module containing the test cases
-import test_foo_cases
-
-@cases_fixture(module=test_foo_cases)
-def foo_fixture(case_data: CaseData):
-    ...
-```
-
-is equivalent to:
-
-```python
-import pytest
-from pytest_cases import get_all_cases, get_pytest_parametrize_args
-
-# import the module containing the test cases
-import test_foo_cases
-
-# manually list the available cases
-cases = get_all_cases(module=test_foo_cases)
-
-# transform into required arguments for pytest (applying the pytest marks if needed)
-marked_cases, cases_ids = get_pytest_parametrize_args(cases)
-
-# parametrize the fixture manually
-@pytest.fixture(params=marked_cases, ids=cases_ids)
-def foo_fixture(request):
-    case_data = request.param  # type: CaseData
-    ...
-```
-
-**Parameters**
-
- - `case_data_argname`: the optional name of the function parameter that should receive the `CaseDataGetter` object. Default is `case_data`.
- - Other parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering, of cases to include. See `get_all_cases()` for details about them.
-
-### `@cases_data`
-
-`@cases_data(cases=None, module=None, case_data_argname='case_data', has_tag=None, filter=None)`
-
-Decorates a test function so as to automatically parametrize it with all cases listed in module `module`, or with all cases listed explicitly in `cases`.
-
-Using it with a non-None `module` argument is equivalent to
-
- * extracting all cases from `module`
- * then decorating your function with `@pytest.mark.parametrize` with all the cases
-
-So
-
-```python
-from pytest_cases import cases_data
-
-# import the module containing the test cases
-import test_foo_cases
-
-@cases_data(module=test_foo_cases)
-def test_foo(case_data):
-    ...
-```
+ - `tags`: custom tags to be used for filtering in [`@parametrize_with_cases(has_tags)`](#parametrize_with_cases). Replaces the deprecated `@case_tags` and `@target` decorators.
  
-is equivalent to:
+ - `marks`: optional pytest marks to add on the case. Note that decorating the function directly with the mark also works, and if marks are provided in both places they are merged.
+
+
+## 2 - Cases collection
+
+### `@parametrize_with_cases`
 
 ```python
-import pytest
-from pytest_cases import get_all_cases, get_pytest_parametrize_args
+@parametrize_with_cases(argnames: str,
+                        cases: Union[Callable, Type, ModuleRef] = AUTO,
+                        prefix: str = 'case_',
+                        glob:str = None,
+                        has_tag: Union[str, Iterable[str]]=None,
+                        filter: Callable = None,
+                        **kwargs
+                        )
+```
 
-# import the module containing the test cases
-import test_foo_cases
+A decorator for test functions or fixtures, to parametrize them based on test cases. It works similarly to [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/parametrize.html): argnames represent a coma-separated string of arguments to inject in the decorated test function or fixture. The argument values (`argvalues` in [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/parametrize.html)) are collected from the various case functions found according to `cases`, and injected as lazy values so that the case functions are called just before the test or fixture is executed.
 
-# manually list the available cases
-cases = get_all_cases(module=test_foo_cases)
+By default (`cases=AUTO`) the list of test cases is automatically drawn from the python module file named `test_<name>_cases.py` where `test_<name>` is the current module name. An alternate naming convention `cases_<name>.py` can be used by setting `cases=AUTO2`.
 
-# transform into required arguments for pytest (applying the pytest marks if needed)
-marked_cases, cases_ids = get_pytest_parametrize_args(cases)
+Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name; or a list of such elements. Note that both absolute and relative module names are suported.
 
-# parametrize the test function manually
-@pytest.mark.parametrize('case_data', marked_cases, ids=str)
-def test_foo(case_data):
-    ...
+Note that `@parametrize_with_cases` collection and parameter creation steps are strictly equivalent to [`get_all_cases`](#get_all_cases) + [`get_parametrize_args`](#get_parametrize_args). This can be handy for debugging purposes.
+
+```python
+# Collect all cases
+cases_funs = get_all_cases(f, cases=cases, prefix=prefix, 
+                           glob=glob, has_tag=has_tag, filter=filter)
+
+# Transform the various functions found
+argvalues = get_parametrize_args(cases_funs)
 ```
 
 **Parameters**
 
- - `case_data_argname`: the optional name of the function parameter that should receive the `CaseDataGetter` object. Default is `case_data`.
- - Other parameters (cases, module, has_tag, filter) can be used to perform explicit listing, or filtering, of cases to include. See `get_all_cases()` for details about them.
+ - `argnames`: same than in `@pytest.mark.parametrize`
+ 
+ - `cases`: a case function, a class containing cases, a module object or a module name string (relative module names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module. `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is the module file of the decorated function. `AUTO2` allows you to use the alternative naming scheme `case_<name>.py`. When a module is listed, all of its functions matching the `prefix`, `filter` and `has_tag` are selected, including those functions nested in classes following naming pattern `*Case*`. When classes are explicitly provided in the list, they can have any name and do not need to follow this `*Case*` pattern.
 
-### `CaseDataGetter`
+ - `prefix`: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
 
-A proxy for a test case. Instances of this class are created by `@cases_data` or `get_all_cases`. It provides a single method:
+ - `glob`: an optional glob-like pattern for case ids, for example "*_success" or "*_failure". Note that this is applied on the case id, and therefore if it is customized through [`@case(id=...)`](#case) it should be taken into account.
 
-`get(self, *args, **kwargs) -> Union[CaseData, Any]`
+ - `has_tag`: a single tag or a tuple, set, list of tags that should be matched by the ones set with the [`@case`](#case) decorator on the case function(s) to be selected.
 
-This method calls the actual underlying case function with arguments propagation, and returns the result. The case functions can use the proposed standard `CaseData` type hint and return outputs matching this type hint, but this is not mandatory.
-
-### `unfold_expected_err`
-
-'Unfolds' the expected error `expected_e` to return a tuple of
-
- - expected error type
- - expected error instance
- - error validation callable
-
-If `expected_e` is an exception type, returns `expected_e, None, None`.
-If `expected_e` is an exception instance, returns `type(expected_e), expected_e, None`.
-If `expected_e` is an exception validation function, returns `Exception, None, expected_e`.
-
-**Parameters:**
-
- - `expected_e`: an `ExpectedError`, that is, either an exception type, an exception instance, or an exception validation function
+ - `filter`: a callable receiving the case function and returning True or a truth value in case the function needs to be selected.
 
 
 ### `get_all_cases`
 
-`get_all_cases(cases=None, module=None, this_module_object=None, has_tag=None, filter=None) -> List[CaseDataGetter]`
+```python
+def get_all_cases(parametrization_target: Callable,
+                  cases: Union[Callable, Type, ModuleRef] = None,
+                  prefix: str = 'case_',
+                  glob: str = None,
+                  has_tag: Union[str, Iterable[str]] = None,
+                  filter: Callable[[Callable], bool] = None
+                  ) -> List[Callable]:
+```
 
-Lists all desired cases for a given user query. This function may be convenient for debugging purposes.
-    
+Lists all desired cases for a given `parametrization_target` (a test function or a fixture). This function may be convenient for debugging purposes. See [`@parametrize_with_cases`](#parametrize_with_cases) for details on the parameters.
 
-**Parameters:**
 
- - `cases`: a single case or a hardcoded list of cases to use. Only one of `cases` and `module` should be set.
- - `module`: a module or a hardcoded list of modules to use. You may use `THIS_MODULE` to indicate that the module is the current one. Only one of `cases` and `module` should be set.
- - `this_module_object`: any variable defined in the module of interest, for example a function. It is used to find "this module", when `module` contains `THIS_MODULE`. 
- - `has_tag`: an optional tag used to filter the cases in the `module`. Only cases with the given tag will be selected.
- - `filter`: an optional filtering function taking as an input a list of tags associated with a case, and returning a boolean indicating if the case should be selected. It will be used to filter the cases in the `module`. It both `has_tag` and `filter` are set, both will be applied in sequence.
+### `get_parametrize_args`
 
+```python
+def get_parametrize_args(cases_funs: List[Callable],
+                         ) -> List[Union[lazy_value, fixture_ref]]:
+```
+
+Transforms a list of cases (obtained from [`get_all_cases`](#get_all_cases)) into a list of argvalues for [`@parametrize`](#parametrize). Each case function `case_fun` is transformed into one or several [`lazy_value`](#lazy_value)(s) or a [`fixture_ref`](#fixture_ref):
+
+ - If `case_fun` requires at least on fixture, a fixture will be created if not yet present, and a `fixture_ref` will be returned.
+
+ - If `case_fun` is a parametrized case, one `lazy_value` with a partialized version will be created for each parameter combination.
+
+ - Otherwise, `case_fun` represents a single case: in that case a single `lazy_value` is returned.
 
 ## 3 - Pytest goodies
 
-### `@fixture_plus`
+### `@fixture`
 
 ```python
-fixture_plus(scope="function", autouse=False, name=None, 
-             unpack_into=None, hook=None, **kwargs)
+@fixture(scope: str = "function", 
+         autouse: bool = False, 
+         name: str = None, 
+         unpack_into: Iterable[str] = None,
+         hook: Callable = None,
+         **kwargs)
 ```
 
 Identical to `@pytest.fixture` decorator, except that 
@@ -269,11 +141,31 @@ As a consequence it does not support the `params` and `ids` arguments anymore.
 
 ### `unpack_fixture`
 
-`unpack_fixture(argnames, fixture, hook=None) -> Tuple[<Fixture>]`
+```python
+def unpack_fixture(argnames: str,
+                   fixture: Union[str, Callable],
+                   hook: Callable = None
+                   ) -> Tuple[<Fixture>]
+```
 
 Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to elements unpacked from `fixture` in order. For example if `fixture` is a tuple of length 2, `argnames="a,b"` will create two fixtures containing the first and second element respectively.
 
 The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. `a, b = unpack_fixture('a,b', 'c')`.
+
+```python
+import pytest
+from pytest_cases import unpack_fixture, fixture_plus
+
+@fixture_plus
+@pytest.mark.parametrize("o", ['hello', 'world'])
+def c(o):
+    return o, o[0]
+
+a, b = unpack_fixture("a,b", c)
+
+def test_function(a, b):
+    assert a[0] == b
+```
 
 **Parameters**
 
@@ -286,10 +178,15 @@ The created fixtures are automatically registered into the callers' module, but 
 ### `fixture_union`
 
 ```python
-fixture_union(name, fixtures, 
-              scope="function", idstyle='explicit', ids=fixture_alternative_to_str, 
-              unpack_into=None, autouse=False, hook=None, **kwargs)
-               -> <Fixture>
+def fixture_union(name: str,
+                  fixtures: Iterable[Union[str, Callable]],
+                  scope: str = "function",
+                  idstyle: Optional[str] = 'explicit',
+                  ids: Union[Callable, List[str]] = None,
+                  unpack_into: Iterable[str] = None,
+                  autouse: bool = False,
+                  hook: Callable = None,
+                  **kwargs) -> <Fixture>
 ```
 
 Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically registered into the callers' module, but you may wish to assign it to a variable for convenience. In that case make sure that you use the same name, e.g. `a = fixture_union('a', ['b', 'c'])`
@@ -317,15 +214,35 @@ The style of test ids corresponding to the union alternatives can be changed wit
 ### `param_fixtures`
 
 ```python
-param_fixtures(argnames, argvalues, 
-               autouse=False, ids=None, scope="function", hook=None, **kwargs)
-               -> Tuple[<Fixture>]
+def param_fixtures(argnames: str,
+                   argvalues: Iterable[Any],
+                   autouse: bool = False,
+                   ids: Union[Callable, List[str]] = None, 
+                   scope: str = "function",
+                   hook: Callable = None,
+                   debug: bool = False,
+                   **kwargs) -> Tuple[<Fixture>]
 ```
 
 Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`. The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. `p, q = param_fixtures('p,q', [(0, 1), (2, 3)])`.
 
 
 Note that the `(argnames, argvalues, ids)` signature is similar to `@pytest.mark.parametrize` for consistency, see [pytest doc on parametrize](https://docs.pytest.org/en/latest/reference.html?highlight=pytest.param#pytest-mark-parametrize).
+
+```python
+import pytest
+from pytest_cases import param_fixtures, param_fixture
+
+# create a 2-tuple parameter fixture
+arg1, arg2 = param_fixtures("arg1, arg2", [(1, 2), (3, 4)])
+
+@pytest.fixture
+def fixture_uses_param2(arg2):
+    ...
+
+def test_uses_param2(arg1, arg2, fixture_uses_param2):
+    ...
+```
 
 **Parameters:**
 
@@ -348,29 +265,66 @@ param_fixture(argname, argvalues,
 Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single variable.
 
 
-### `@parametrize_plus`
+### `@parametrize`
 
 ```python
-parametrize_plus(argnames=None, argvalues=None, 
-                 indirect=False, ids=None, idstyle='explicit',
-                 idgen=None, scope=None, hook=None, debug=False, 
-                 **args)
+@parametrize_plus(argnames: str=None,
+                  argvalues: Iterable[Any]=None,
+                  indirect: bool = False,
+                  ids: Union[Callable, List[str]] = None,
+                  idstyle: str = 'explicit',
+                  idgen: Union[str, Callable] = _IDGEN,
+                  scope: str = None,
+                  hook: Callable = None,
+                  debug: bool = False,
+                  **args)
 ```
 
 Equivalent to `@pytest.mark.parametrize` but also supports 
 
-(1) new style for argnames/argvalues. One can also use `**args` to pass additional `{argnames: argvalues}` in the same parametrization call. This can be handy in combination with `idgen` to master the whole id template associated with several parameters.  
+**New alternate style for argnames/argvalues**. One can also use `**args` to pass additional `{argnames: argvalues}` in the same parametrization call. This can be handy in combination with `idgen` to master the whole id template associated with several parameters. Note that you can pass coma-separated argnames too, by de-referencing a dict: e.g. `**{'a,b': [(0, True), (1, False)], 'c': [-1, 2]}`.
 
-(2) new alternate style for ids. One can use `idgen` instead of `ids`. `idgen` can be a callable receiving all parameters at once (`**args`) and returning an id ; or it can be a string template using the new-style string formatting where the argnames can be used as variables (e.g. `idgen=lambda **args: "-".join("%s=%s" % (k, v) for k, v in args.items())` or `idgen="my_id where a={a}"`). 
+**New alternate style for ids**. One can use `idgen` instead of `ids`. `idgen` can be a callable receiving all parameters at once (`**args`) and returning an id ; or it can be a string template using the new-style string formatting where the argnames can be used as variables (e.g. `idgen=lambda **args: "a={a}".format(**args)` or `idgen="my_id where a={a}"`). The special `idgen=AUTO` symbol can be used to generate a default string template equivalent to `lambda **args: "-".join("%s=%s" % (n, v) for n, v in args.items())`. This is enabled by default if you use the alternate style for argnames/argvalues (e.g. if `len(args) > 0`).
 
-(3) new possibilities in argvalues:
+**New possibilities in argvalues**:
 
- - one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters from this fixture. Special test ids will be created to illustrate the switching between the various normal parameters and fixtures. You can see debug print messages about all fixtures created using `debug=True`
+ - one can include *references to fixtures* with [`fixture_ref(<fixture>)`](#fixture_ref) where <fixture> can be the fixture name or fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the correct parameters from this fixture. Special test ids will be created to illustrate the switching between the various normal parameters and fixtures. You can see debug print messages about all fixtures created using `debug=True`
 
- - one can include lazy argvalues with `lazy_value(<valuegetter>, [id=..., marks=...])`. A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+ - one can include lazy argvalues with [`lazy_value(<valuegetter>, [id=..., marks=...])`](#lazy_value). A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
 
 Both `fixture_ref` and `lazy_value` can be used to represent a single argvalue, or a whole tuple of argvalues when there are several argnames. Several of them can be used in a tuple.
 
 Finally, `pytest.param` is supported even when there are `fixture_ref` and `lazy_value`. 
 
 Here as for all functions above, an optional `hook` can be passed, to apply on each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+
+### `lazy_value`
+
+```python
+def lazy_value(valuegetter: Callable[[], Any],
+               id: str = None,
+               marks: Union[Any, Sequence[Any]] = ()
+               ) -> LazyValue
+```
+
+A reference to a value getter (an argvalue-providing callable), to be used in [`@parametrize`](#parametrize).
+
+A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+
+Note that a `lazy_value` can be included in a `pytest.param` without problem. In that case the id defined by `pytest.param` will take precedence over the one defined in `lazy_value` if any. The marks, however, will all be kept wherever they are defined.
+
+**Parameters**
+
+ - `valuegetter`: a callable without mandatory arguments
+ - `id`: an optional id. Otherwise `valuegetter.__name__` will be used by default
+ - `marks`: optional marks. `valuegetter` marks will also be preserved.
+
+
+### `fixture_ref`
+
+```python
+def fixture_ref(fixture: Union[str, Fixture]
+                )
+```
+
+A reference to a fixture to be used with [`@parametrize`](#parametrize). Create it with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or actual fixture function.
