@@ -155,10 +155,13 @@ def get_all_cases(parametrization_target,  # type: Callable
         needs to be selected.
     """
     # Handle single elements
-    try:
-        cases = tuple(cases)
-    except TypeError:
+    if isinstance(cases, string_types):
         cases = (cases,)
+    else:
+        try:
+            cases = tuple(cases)
+        except TypeError:
+            cases = (cases,)
 
     # validate prefix
     if not isinstance(prefix, str):
