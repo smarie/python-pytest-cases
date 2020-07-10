@@ -1,5 +1,11 @@
 # Changelog
 
+### 2.0.3 - Bugfixes
+
+ - Fixed wrong module string decomposition when passed to `cases` argument in `@parametrize_with_cases`. Fixes [#113](https://github.com/smarie/python-pytest-cases/issues/113)
+
+ - Autouse fixtures are now correctly used. Fixed [#114](https://github.com/smarie/python-pytest-cases/issues/114)
+
 ### 2.0.2 - Better string representation for lazy values
 
 Lazy values (so, test cases) now have a much nicer string representation ; in particular in `pytest-harvest` results tables. Fixes [#112](https://github.com/smarie/python-pytest-cases/issues/112)
