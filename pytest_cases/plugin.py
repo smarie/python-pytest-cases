@@ -628,7 +628,6 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     else:
         # we cannot sort yet - merge the fixture names into the _init_fixnames
         merge(fixturenames, _init_fixnames)
-        sorted_fixturenames = []
 
     # Finally create the closure tree
     if _DEBUG:
@@ -666,8 +665,7 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     # store_union_closure_in_node(fixturenames_closure_node, parentnode)
 
     if LooseVersion(pytest.__version__) >= LooseVersion('3.7.0'):
-        our_initial_names = sorted_fixturenames  # initial_names
-        return our_initial_names, fixturenames_closure_node, arg2fixturedefs
+        return _init_fixnames, fixturenames_closure_node, arg2fixturedefs
     else:
         return fixturenames_closure_node, arg2fixturedefs
 
