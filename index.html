@@ -414,6 +414,18 @@
 
 
   <li class="md-nav__item">
+    <a href="examples/" title="Examples" class="md-nav__link">
+      Examples
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="pytest_goodies/" title="pytest goodies" class="md-nav__link">
       pytest goodies
     </a>
@@ -711,7 +723,8 @@
 <p>In addition, <code>pytest-cases</code> improves <code>pytest</code>'s fixture mechanism to support "fixture unions". This is a <strong>major change</strong> in the internal <code>pytest</code> engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See <a href="pytest_goodies/#fixture_union">here</a>.</p>
 </li>
 </ul>
-<p><code>pytest-cases</code> is fully compliant with <a href="https://smarie.github.io/python-pytest-harvest/">pytest-harvest</a> and <a href="https://smarie.github.io/python-pytest-steps/">pytest-steps</a> so you can create test suites with several steps, send each case on the full suite, and monitor the execution times and created artifacts. See also <a href="https://smarie.github.io/pytest-patterns/">this example</a> (a bit old, needs to be refreshed) showing how to combine the various plugins to create data science benchmarks.</p>
+<p><code>pytest-cases</code> is fully compliant with <a href="https://smarie.github.io/python-pytest-harvest/">pytest-harvest</a> so you can easily monitor the execution times and created artifacts. With it, it becomes very easy to create a complete data science benchmark, for example comparing various models on various datasets as illustrated below (from the <a href="examples/">example</a> section):</p>
+<p><img alt="benchmark_plots_example" src="imgs/0_bench_plots_example4.png" /></p>
 <h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><code>&gt; pip install pytest_cases
 </code></pre></div>
@@ -1137,13 +1150,13 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
         
-          <a href="pytest_goodies/" title="pytest goodies" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="examples/" title="Examples" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                pytest goodies
+                Examples
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
@@ -1171,7 +1184,7 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
     </div>
     
       <script src="assets/javascripts/vendor.d710d30a.min.js"></script>
-      <script src="assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.config.separator": "[\\s\\-]+", "clipboard.copied": "Copied to clipboard", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.result.one": "1 matching document", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.none": "No matching documents"}</script>
+      <script src="assets/javascripts/bundle.b39636ac.min.js"></script><script id="__lang" type="application/json">{"search.config.lang": "en", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.other": "# matching documents", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents"}</script>
       
       <script>
         app = initialize({
