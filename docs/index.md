@@ -17,7 +17,9 @@ Did you ever think that most of your test functions were actually *the same test
 
  - In addition, `pytest-cases` improves `pytest`'s fixture mechanism to support "fixture unions". This is a **major change** in the internal `pytest` engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See [here](pytest_goodies.md#fixture_union).
 
-`pytest-cases` is fully compliant with [pytest-harvest](https://smarie.github.io/python-pytest-harvest/) and [pytest-steps](https://smarie.github.io/python-pytest-steps/) so you can create test suites with several steps, send each case on the full suite, and monitor the execution times and created artifacts. See also [this example](https://smarie.github.io/pytest-patterns/) (a bit old, needs to be refreshed) showing how to combine the various plugins to create data science benchmarks.
+`pytest-cases` is fully compliant with [pytest-harvest](https://smarie.github.io/python-pytest-harvest/) so you can easily monitor the execution times and created artifacts. With it, it becomes very easy to create a complete data science benchmark, for example comparing various models on various datasets as illustrated below (from the [example](examples.md) section):
+
+![benchmark_plots_example](imgs/0_bench_plots_example4.png)
 
 ## Installing
 
