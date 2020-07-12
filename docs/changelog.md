@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.0.4 - Bugfix
+
+ - Fixed `TypeError` with iterable argvalue in standard parametrize. Fixed [#115](https://github.com/smarie/python-pytest-cases/issues/115).
+
 ### 2.0.3 - Bugfixes
 
  - Fixed wrong module string decomposition when passed to `cases` argument in `@parametrize_with_cases`. Fixes [#113](https://github.com/smarie/python-pytest-cases/issues/113)
