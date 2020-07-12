@@ -129,8 +129,10 @@ def is_fixture_union_params(params):
             if is_marked_parameter_value(p0):
                 p0 = get_marked_parameter_values(p0)[0]
             return isinstance(p0, UnionFixtureAlternative)
-    except TypeError:
-        raise InvalidParamsList(params)
+    except:  # noqa
+        # be conservative
+        # an iterable or the like - we do not use such things when we cope with fixture_refs and unions
+        return False
 
 
 def is_used_request(request):
