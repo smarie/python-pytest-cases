@@ -112,13 +112,15 @@ class FixtureClosureNode(object):
         self._as_list = None
         self.all_fixture_defs = None
 
-    # ------ tree
+    # ------ tree ------------------
+
     def get_leaves(self):
         if self.has_split():
             return [n for c in self.children.values() for n in c.get_leaves()]
         else:
             return [self]
-    # ------
+
+    # ------ str / repr ---------------
 
     def to_str(self, indent_nb=0, with_children=True, with_discarded=True):
         """
