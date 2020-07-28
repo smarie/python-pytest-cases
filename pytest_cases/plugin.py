@@ -84,6 +84,19 @@ class FixtureDefsCache(object):
 
 
 class FixtureClosureNode(object):
+    """
+    A node in a fixture closure Tree.
+
+     - its `fixture_defs` is a {name: def} ordered dict containing all fixtures AND args that are required at this node
+       (*before* a union is required). Note that some of them have def=None when the fixture manager has no definition
+       for them (same beahviour than in pytest). `get_all_fixture_names` and `get_all_fixture_defs` helper functions
+       allow to either return the full ordered list (equivalent to pytest `fixture_names`) or the dictionary of non-none
+       definitions (equivalent to pytest `arg2fixturedefs`)
+
+     - if a union appears at this node, `split_fixture_name` is set to the name of the union fixture, and `children`
+       contains an ordered dict of {split_fixture_alternative: node}
+
+    """
     __slots__ = 'parent', 'fixture_defs', \
                 'split_fixture_name', 'split_fixture_discarded_names', 'children', \
                 '_as_list', 'all_fixture_defs', 'fixture_defs_mgr'
