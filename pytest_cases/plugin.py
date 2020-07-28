@@ -30,69 +30,39 @@ _DEBUG = False
 
 # @pytest.hookimpl(hookwrapper=True, tryfirst=True)
 # def pytest_pycollect_makeitem(collector, name, obj):
-#     # custom collection of additional things for Cases for example
+#     # custom collection of additional things - we could use it one day for Cases ?
 #     # see also https://hackebrot.github.io/pytest-tricks/customize_class_collection/
 #     outcome = yield
 #     res = outcome.get_result()
 #     if res is not None:
 #         return
-    # nothing was collected elsewhere, let's do it here
-    # if safe_isclass(obj):
-    #     if collector.istestclass(obj, name):
-    #         outcome.force_result(Class(name, parent=collector))
-    # elif collector.istestfunction(obj, name):
-    #     # mock seems to store unbound methods (issue473), normalize it
-    #     obj = getattr(obj, "__func__", obj)
-    #     # We need to try and unwrap the function if it's a functools.partial
-    #     # or a functools.wrapped.
-    #     # We mustn't if it's been wrapped with mock.patch (python 2 only)
-    #     if not (inspect.isfunction(obj) or inspect.isfunction(get_real_func(obj))):
-    #         filename, lineno = getfslineno(obj)
-    #         warnings.warn_explicit(
-    #             message=PytestCollectionWarning(
-    #                 "cannot collect %r because it is not a function." % name
-    #             ),
-    #             category=None,
-    #             filename=str(filename),
-    #             lineno=lineno + 1,
-    #         )
-    #     elif getattr(obj, "__test__", True):
-    #         if is_generator(obj):
-    #             res = Function(name, parent=collector)
-    #             reason = "yield tests were removed in pytest 4.0 - {name} will be ignored".format(
-    #                 name=name
-    #             )
-    #             res.add_marker(MARK_GEN.xfail(run=False, reason=reason))
-    #             res.warn(PytestCollectionWarning(reason))
-    #         else:
-    #             res = list(collector._genfunctions(name, obj))
-    #         outcome.force_result(res)
+#     # nothing was collected elsewhere, let's do it here
+#     if safe_isclass(obj):
+#         if collector.istestclass(obj, name):
+#             outcome.force_result(Class(name, parent=collector))
+#     elif collector.istestfunction(obj, name):
+#         ...
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_setup(item  # type: Function
-                         ):
-    """
-    Replace the dictionary of function args with our facade able to handle
-    `lazy_value`
-    """
-    # first let all other hooks run, they will do the setup etc.
-    yield
+def pytest_runtest_setup(item):
+    """ Resolve all `lazy_value` in the dictionary of function args """
+
+    yield  # first let all other hooks run, they will do the setup etc.
 
     # now item.funcargs exists so we can handle it
     item.funcargs = {argname: get_lazy_args(argvalue) for argname, argvalue in item.funcargs.items()}
 
 
-# @hookspec(firstresult=True)
 # @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_collection(session):
-    # override the fixture manager's method
+    """ HACK: override the fixture manager's `getfixtureclosure` method to replace it with ours """
     session._fixturemanager.getfixtureclosure = partial(getfixtureclosure, session._fixturemanager)  # noqa
 
 
 class FixtureDefsCache(object):
     """
-    The object plays a role of 'cache' for fixture definitions.
+    A 'cache' for fixture definitions obtained from the FixtureManager `fm`, for test node `nodeid`
     """
     __slots__ = 'fm', 'nodeid', 'cached_fix_defs'
 
@@ -124,7 +94,7 @@ class FixtureClosureNode(object):
                  ):
         if fixture_defs_mgr is None:
             if parent_node is None:
-                raise ValueError()
+                raise ValueError("root node should have a fixture defs manager")
             fixture_defs_mgr = parent_node.fixture_defs_mgr
         else:
             assert isinstance(fixture_defs_mgr, FixtureDefsCache)
@@ -153,8 +123,7 @@ class FixtureClosureNode(object):
     def to_str(self, indent_nb=0, with_children=True, with_discarded=True):
         """
         Provides a string representation, either with all the subtree (default) or without (with_children=False)
-
-        You can also remove the "discarded" information for clarity with with_discarded=False
+        You can also remove the "discarded" information for clarity with `with_discarded=False`
 
         :param indent_nb:
         :param with_children:
@@ -305,7 +274,7 @@ class FixtureClosureNode(object):
         Fixture names and definitions will be stored in self.fixture_defs.
 
         If some fixtures are Union fixtures, this node will become a "split" node
-        and have children. If new fixtures are added to the closure after that,
+        and have children. If new fixtures are added to the node after that,
         they will be added to the child nodes rather than self.
 
         Note: when this method is used on an existing (already filled) root node,
@@ -314,7 +283,7 @@ class FixtureClosureNode(object):
 
         :param initial_fixture_names:
         :param ignore_args: arguments to keep in the names but not to put in the fixture defs, because they correspond
-            "direct parametrize"
+            to "direct parametrization"
         :return:
         """
         self._build_closure(self.fixture_defs_mgr, initial_fixture_names, ignore_args=ignore_args)
@@ -369,7 +338,7 @@ class FixtureClosureNode(object):
             if self.already_knows_fixture(fixname):
                 continue
 
-            # new ignore_args option in pytest 4.6+
+            # new ignore_args option in pytest 4.6+. Not really a fixture but a test function parameter, it seems.
             if fixname in ignore_args:
                 self.add_required_fixture(fixname, None)
                 continue
@@ -377,7 +346,7 @@ class FixtureClosureNode(object):
             # else grab the fixture definition(s) for this fixture name for this test node id
             fixturedefs = fixture_defs_mgr.get_fixture_defs(fixname)
             if not fixturedefs:
-                # fixture without definition: add it
+                # fixture without definition: add it. This can happen with e.g. "requests", etc.
                 self.add_required_fixture(fixname, None)
                 continue
             else:
@@ -395,6 +364,7 @@ class FixtureClosureNode(object):
 
                     # if there are direct dependencies that are not the union members, add them to pending
                     non_member_dependencies = [f for f in _fixdef.argnames if f not in alternative_f_names]
+                    # currently we only have 'requests' in this list but future impl of fixture_union may act otherwise
                     pending_fixture_names += non_member_dependencies
 
                     # propagate WITH the pending
@@ -546,9 +516,9 @@ class FixtureClosureNode(object):
     def get_alternatives(self):
         """
         Returns the alternatives
-        - a list of dictionaries union_fixture_name: value representing the filters on this alternative
-        - a list of tuples of fixture names used by each alternative
-        - a list of tuples of discarded fixture names in each alternative
+        - a list of dictionaries {union_fixture_name: value} representing the filters on this alternative
+        - a list of fixture names lists used by each alternative
+        - a list of discarded fixture names lists in each alternative
         :return:
         """
         if self.has_split():
@@ -591,8 +561,11 @@ def merge(new_items, into_list):
 
 
 def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
+    """
+    Replaces pytest's getfixtureclosure method to handle unions.
+    """
 
-    # first retrieve the normal pytest output for comparison
+    # (1) first retrieve the normal pytest output for comparison
     kwargs = dict()
     if LooseVersion(pytest.__version__) >= LooseVersion('4.6.0'):
         # new argument "ignore_args" in 4.6+
@@ -606,10 +579,9 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
         # two outputs
         ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, fixturenames, parentnode)
 
-    # now let's do it by ourselves.
+    # (2) now let's do it by ourselves to support fixture unions
     parentid = parentnode.nodeid
 
-    # Create closure
     # -- auto-use fixtures
     _init_fixnames = fm._getautousenames(parentid)  # noqa
 
@@ -684,13 +656,10 @@ def retrieve_union_closure_from_metafunc(metafunc):
 def pytest_generate_tests(metafunc):
     """
     We use this hook to replace the 'partial' function of `metafunc` with our own below, before it is called by pytest
-
-    :param metafunc:
-    :return:
+    Note we could do it in a static way in pytest_sessionstart or plugin init hook but
+    that way we can still access the original method using metafunc.__class__.parametrize
     """
     # override the parametrize method.
-    # Note we could do it in a static way in pytest_sessionstart or plugin init hook, but we would need to save the
-
     metafunc.parametrize = partial(parametrize, metafunc)
 
     # now let pytest parametrize the call as usual
@@ -756,11 +725,8 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
         # add a normal parametrization in the queue (but do not apply it now)
         calls_reactor.append(NormalParamz(argnames, argvalues, indirect, ids, scope, kwargs))
 
-    # put our object back in place - not needed anymore
-    # metafunc._calls = calls_reactor
 
-
-class CallsReactor:
+class CallsReactor(object):
     """
     This object replaces the list of calls that was in `metafunc._calls`.
     It behaves like a list, but it actually builds that list dynamically based on all parametrizations collected
