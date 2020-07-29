@@ -33,8 +33,8 @@ def test_super_closure_edits2():
     global super_closure
     assert isinstance(super_closure, SuperClosure)
     super_closure = copy(super_closure)
-    assert len(super_closure) == 3
-    assert list(super_closure) == ['a', 'request', 'b']
+    assert len(super_closure) == 4
+    assert list(super_closure) == ['environment', 'a', 'request', 'b']
     reflist = list(super_closure)
     assert super_closure[:] == reflist[:]
     assert super_closure[1] == reflist[1]
@@ -45,9 +45,9 @@ def test_super_closure_edits2():
     super_closure[1] = reflist[1]
     super_closure[::2] = reflist[::2]
     with pytest.warns(UserWarning):
-        super_closure[1:] = ['b', 'request']
+        super_closure[2:] = ['b', 'request']
         # the above operation is allowed but does nothing and a warning is issued.
-        assert super_closure[1:] == ['request', 'b']
+        assert super_closure[2:] == ['request', 'b']
 
     with pytest.raises(NotImplementedError):
         super_closure.remove('request')

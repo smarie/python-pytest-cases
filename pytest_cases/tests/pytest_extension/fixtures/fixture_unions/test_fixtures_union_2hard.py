@@ -43,14 +43,14 @@ def test_super_closure():
     # make sure that the closure tree looks good
     assert isinstance(super_closure, SuperClosure)
     assert str(super_closure) == """SuperClosure with 4 alternative closures:
- - ['c', 'a', 'request', 'd', 'b'] (filters: c=c[0]=a, d=d[0]=b)
- - ['c', 'a', 'request', 'd'] (filters: c=c[0]=a, d=d[1]=a)
- - ['c', 'b', 'request', 'a', 'd'] (filters: c=c[1]=b, d=d[0]=b)
- - ['c', 'b', 'request', 'a', 'd'] (filters: c=c[1]=b, d=d[1]=a)
-The 'super closure list' is ['c', 'a', 'request', 'd', 'b']
+ - ['environment', 'c', 'a', 'request', 'd', 'b'] (filters: c=c[0]=a, d=d[0]=b)
+ - ['environment', 'c', 'a', 'request', 'd'] (filters: c=c[0]=a, d=d[1]=a)
+ - ['environment', 'c', 'b', 'request', 'a', 'd'] (filters: c=c[1]=b, d=d[0]=b)
+ - ['environment', 'c', 'b', 'request', 'a', 'd'] (filters: c=c[1]=b, d=d[1]=a)
+The 'super closure list' is ['environment', 'c', 'a', 'request', 'd', 'b']
 
 The fixture tree is :
-(c) split: c
+(environment,c) split: c
  -  (a,request,d) split: d
   -   (b)
   -   ()
