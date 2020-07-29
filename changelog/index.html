@@ -272,6 +272,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#210-internal-engine-improvements-bugfixes" class="md-nav__link">
+    2.1.0 - Internal engine improvements + bugfixes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#204-bugfix" class="md-nav__link">
     2.0.4 - Bugfix
   </a>
@@ -766,6 +773,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#210-internal-engine-improvements-bugfixes" class="md-nav__link">
+    2.1.0 - Internal engine improvements + bugfixes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#204-bugfix" class="md-nav__link">
     2.0.4 - Bugfix
   </a>
@@ -1248,6 +1262,20 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="210-internal-engine-improvements-bugfixes">2.1.0 - Internal engine improvements + bugfixes<a class="headerlink" href="#210-internal-engine-improvements-bugfixes" title="Permanent link">&para;</a></h3>
+<p>Fixed issue with <code>@parametrize_with_cases</code> when two cases with the same id and both requiring a fixture were to be created. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/117">#117</a>.</p>
+<p>Fixture closure engine refactoring:</p>
+<ul>
+<li>
+<p>When no fixture unions are present, the fixture closure is now identical to the default one in <code>pytest</code>, to avoid issues originating from other plugins fiddling with the closure. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/116">#116</a></p>
+</li>
+<li>
+<p>New <code>SuperClosure</code> class representing the "list" facade on top of the fixture tree (instead of <code>FixtureClosureNode</code>). In addition, this list facade now better handles editing the order of fixtures when possible. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/111">#111</a>.</p>
+</li>
+<li>
+<p>Session and Module-scoped fixtures that are not used in all union alternatives are not any more torn town/setup across union alternatives. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/120">#120</a></p>
+</li>
+</ul>
 <h3 id="204-bugfix">2.0.4 - Bugfix<a class="headerlink" href="#204-bugfix" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed <code>TypeError</code> with iterable argvalue in standard parametrize. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/115">#115</a>.</li>
@@ -1700,7 +1728,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.92ffa368.min.js"></script>
-      <script src="../assets/javascripts/bundle.5123e3d4.min.js"></script><script id="__lang" type="application/json">{"search.result.placeholder": "Type to start searching", "search.config.lang": "en", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.separator": "[\\s\\-]+", "search.result.other": "# matching documents", "search.result.none": "No matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.one": "1 matching document"}</script>
+      <script src="../assets/javascripts/bundle.5123e3d4.min.js"></script><script id="__lang" type="application/json">{"search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.lang": "en", "search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "clipboard.copy": "Copy to clipboard", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "clipboard.copied": "Copied to clipboard"}</script>
       
       <script>
         app = initialize({
