@@ -115,6 +115,9 @@ class InvalidParamsList(Exception):
 def is_fixture_union_params(params):
     """
     Internal helper to quickly check if a bunch of parameters correspond to a union fixture.
+
+    Note: unfortunately `pytest` transform all params to a list when a @pytest.fixture is created,
+    so we can not pass a subclass of list to do the trick, we really have to work on the list elements.
     :param params:
     :return:
     """
