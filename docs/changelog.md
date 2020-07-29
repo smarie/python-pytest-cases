@@ -1,5 +1,17 @@
 # Changelog
 
+### 2.1.0 - Internal engine improvements + bugfixes
+
+Fixed issue with `@parametrize_with_cases` when two cases with the same id and both requiring a fixture were to be created. Fixed [#117](https://github.com/smarie/python-pytest-cases/issues/117).
+
+Fixture closure engine refactoring:
+
+ - When no fixture unions are present, the fixture closure is now identical to the default one in `pytest`, to avoid issues originating from other plugins fiddling with the closure. Fixes [#116](https://github.com/smarie/python-pytest-cases/issues/116)
+
+ - New `SuperClosure` class representing the "list" facade on top of the fixture tree (instead of `FixtureClosureNode`). In addition, this list facade now better handles editing the order of fixtures when possible. Fixes [#111](https://github.com/smarie/python-pytest-cases/issues/111).
+
+ - Session and Module-scoped fixtures that are not used in all union alternatives are not any more torn town/setup across union alternatives. Fixes [#120](https://github.com/smarie/python-pytest-cases/issues/120)
+
 ### 2.0.4 - Bugfix
 
  - Fixed `TypeError` with iterable argvalue in standard parametrize. Fixed [#115](https://github.com/smarie/python-pytest-cases/issues/115).
