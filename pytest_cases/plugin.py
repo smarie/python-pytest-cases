@@ -4,6 +4,11 @@ from distutils.version import LooseVersion
 from functools import partial
 from warnings import warn
 
+try:
+    from collections.abc import MutableSequence
+except:  # noqa
+    from collections import MutableSequence
+
 import pytest
 
 try:  # python 3.3+
@@ -97,9 +102,8 @@ class FixtureClosureNode(object):
        contains an ordered dict of {split_fixture_alternative: node}
 
     """
-    __slots__ = 'parent', 'fixture_defs', \
-                'split_fixture_name', 'split_fixture_discarded_names', 'children', \
-                '_as_list', 'all_fixture_defs', 'fixture_defs_mgr'
+    __slots__ = 'parent', 'fixture_defs_mgr', \
+                'fixture_defs', 'split_fixture_name', 'split_fixture_alternatives', 'children'
 
     def __init__(self,
                  fixture_defs_mgr=None,   # type: FixtureDefsCache
@@ -118,33 +122,22 @@ class FixtureClosureNode(object):
         # these will be set after closure has been built
         self.fixture_defs = None
         self.split_fixture_name = None
-        self.split_fixture_discarded_names = []
-        self.children = OrderedDict()  # type: MutableMapping[str, FixtureClosureNode]
-
-        # this will be created after the first time the object is converted to a list (cache)
-        self._as_list = None
-        self.all_fixture_defs = None
+        self.split_fixture_alternatives = []
+        # we do not use a dict any more as several children can use the same union value (doubled unions)
+        self.children = []
 
     # ------ tree ------------------
 
     def get_leaves(self):
         if self.has_split():
-            return [n for c in self.children.values() for n in c.get_leaves()]
+            return [n for c in self.children for n in c.get_leaves()]
         else:
             return [self]
 
     # ------ str / repr ---------------
 
-    def to_str(self, indent_nb=0, with_children=True, with_discarded=True):
-        """
-        Provides a string representation, either with all the subtree (default) or without (with_children=False)
-        You can also remove the "discarded" information for clarity with `with_discarded=False`
-
-        :param indent_nb:
-        :param with_children:
-        :param with_discarded:
-        :return:
-        """
+    def to_str(self, indent_nb=0, with_children=True):
+        """  a string representation, either with all the subtree (default) or without (with_children=False) """
 
         indent = " " * indent_nb
 
@@ -152,13 +145,11 @@ class FixtureClosureNode(object):
             str_repr = "<pending, incomplete>"
         else:
             str_repr = "%s(%s)" % (indent, ",".join([("%s" % f) for f in self.fixture_defs.keys()]))
-            if with_discarded:
-                str_repr += "  (discarded: %s)" % self.split_fixture_discarded_names
 
         if self.has_split() and with_children:
             children_str_prefix = "\n%s - " % indent
             children_str = children_str_prefix + children_str_prefix.join([c.to_str(indent_nb=indent_nb + 1)
-                                                                           for c in self.children.values()])
+                                                                           for c in self.children])
             str_repr = str_repr + " split: " + self.split_fixture_name + children_str
 
         return str_repr
@@ -166,117 +157,49 @@ class FixtureClosureNode(object):
     def __repr__(self):
         return self.to_str()
 
-    # ---- list facade
+    # ---- getters to read the "super" closure (used in SuperClosure)
 
-    def __iter__(self):
-        return iter(self.to_list())
-
-    def __getitem__(self, item):
-        return self.to_list()[item]
-
-    def __setitem__(self, key, value):
-        # This is called in Pytest 4+.
-        if self.has_split():
-            # TODO to take into account the new order, the tree has to be flattened into alternate closures,
-            #  and each of them will then be able to be sorted accordingly
-            warn("WARNING the new order is not taken into account !!")
+    def get_all_fixture_names(self, try_to_sort_by_scope=True):
+        """ Return a list containing all unique fixture names used by this tree"""
+        if not try_to_sort_by_scope:
+            return [k for k, _ in self.gen_all_fixture_defs(drop_fake_fixtures=False)]
         else:
-            self.to_list()[key] = value
+            return list(self.get_all_fixture_defs(drop_fake_fixtures=False, try_to_sort=True))
 
-    def append(self, item):
+    def get_all_fixture_defs(self, drop_fake_fixtures=True, try_to_sort=True):
+        """ Return a dict containing all fixture definitions for fixtures used in this tree"""
+        # get all pairs
+        items = self.gen_all_fixture_defs(drop_fake_fixtures=drop_fake_fixtures)
+
+        # sort by scope as in pytest fixture closure creator, if scope information is available
+        if try_to_sort and LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
+            f_scope = get_pytest_function_scopenum()
+            def sort_by_scope(kv_pair):  # noqa
+                fixture_name, fixture_defs = kv_pair
+                return fixture_defs[-1].scopenum if fixture_defs is not None else f_scope
+            items = sorted(list(items), key=sort_by_scope)
+
+        return OrderedDict(items)
+
+    def gen_all_fixture_defs(self, drop_fake_fixtures=True):
         """
-        This is now supported: we simply update the closure with the new item.
-        `self.all_fixture_defs` and `self._as_list` are updated on the way
-        so the resulting facades used by pytest are consistent after the update.
-
-        :param item:
-        :return:
+        Generate all pairs of (fixture name, fixture def or none) used in the tree in top to bottom order
+        Note that this method could be generalized to also yield the parent defs, so as to be used to replace
+        the engine in `self.gather_all_required`. But this is micro-optimization, really.
+        Note: `gather_all_required` was not built to be concerned with ordering because it is only used as a set.
         """
-        self.build_closure((item, ))
 
-    def insert(self, index, object):  # noqa
-        warn("WARNING some code tries to insert an item in the fixture tree, this will be IGNORED !! "
-             "Item: %s, Index: %s" % (index, object))
-
-    def pop(self, index):  # noqa
-        warn("WARNING some code tries to pop an item from the fixture tree, this will be IGNORED !! Index: %s" % index)
-
-    def extend(self, iterable):  # noqa
-        if len(iterable) > 0:
-            warn("WARNING some code tries to extend the fixture tree, this will be IGNORED !! Iterable: %s" % iterable)
-
-    def index(self, *args):
-        return self.to_list().index(*args)
-
-    def to_list(self):
-        """
-        Converts self to a list to get all fixture names, and caches the result.
-        :return:
-        """
-        if self._as_list is None:
-            # crawl the tree to get the list of unique fixture names
-            fixturenames_closure = self._to_list()
-
-            if LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
-                # sort by scope
-                def sort_by_scope(arg_name):
-                    try:
-                        fixturedefs = self.get_all_fixture_defs()[arg_name]
-                    except KeyError:
-                        return get_pytest_function_scopenum()
-                    else:
-                        return fixturedefs[-1].scopenum
-                fixturenames_closure.sort(key=sort_by_scope)
-
-            self._as_list = fixturenames_closure
-
-        return self._as_list
-
-    def _to_list(self):
-        """ Returns a list of all fixture names used (with no redundancy) """
-
-        lst = []
-        self._append_to(lst)
-
-        # eliminate redundancy
-        unique_lst = _make_unique(lst)
-
-        # TODO remove for efficiency
-        assert set(unique_lst) == set(lst)
-
-        return unique_lst
-
-    def _append_to(self, lst):
-        """Appends all fixture names of this subtree to the given list"""
-
-        # first append the fixture names
-        lst += list(self.fixture_defs.keys())
-
-        # then if there is a split at this node
-        if self.has_split():
-            # add the split fixture > not needed anymore
-            # lst.append(self.split_fixture_name)
-
-            # add all children
-            for c in self.children.values():
-                c._append_to(lst)
-
-    # ----
-    def get_all_fixture_defs(self):
-        if self.all_fixture_defs is None:
-            # collect
-            self.all_fixture_defs = self._get_all_fixture_defs()
-
-        return self.all_fixture_defs
-
-    def _get_all_fixture_defs(self):
-        all_fix_defs = OrderedDict()
+        # fixtures required at this node
         for k, v in self.fixture_defs.items():
-            if v is not None:
-                all_fix_defs[k] = v
-        for c in self.children.values():
-            all_fix_defs.update(c.get_all_fixture_defs())
-        return all_fix_defs
+            if not drop_fake_fixtures or v is not None:
+                yield k, v
+
+        # split fixture: not needed since it is the last entry in self.fixture_defs
+
+        # fixtures required by children if any
+        for c in self.children:
+            for k, v in c.gen_all_fixture_defs(drop_fake_fixtures=drop_fake_fixtures):
+                yield k, v
 
     # ---- utils to build the closure
 
@@ -292,25 +215,12 @@ class FixtureClosureNode(object):
         and have children. If new fixtures are added to the node after that,
         they will be added to the child nodes rather than self.
 
-        Note: when this method is used on an existing (already filled) root node,
-        all of its internal structures (self._as_list and self.all_fixture_defs) are updated accordingly so that the
-        facades used by pytest are still consistent.
-
         :param initial_fixture_names:
         :param ignore_args: arguments to keep in the names but not to put in the fixture defs, because they correspond
             to "direct parametrization"
         :return:
         """
         self._build_closure(self.fixture_defs_mgr, initial_fixture_names, ignore_args=ignore_args)
-
-        # update fixture defs
-        if self.all_fixture_defs is None:
-            self.all_fixture_defs = self._get_all_fixture_defs()
-        else:
-            self.all_fixture_defs.update(self._get_all_fixture_defs())
-
-        # mark the fixture list as to be rebuilt (automatic next time one iterates on self)
-        self._as_list = None
 
     def is_closure_built(self):
         return self.fixture_defs is not None
@@ -414,7 +324,7 @@ class FixtureClosureNode(object):
                 self.fixture_defs[new_fixture_name] = new_fixture_defs
         else:
             # add_required_fixture in each child
-            for c in self.children.values():
+            for c in self.children:
                 c.add_required_fixture(new_fixture_name, new_fixture_defs)
 
     def split_and_build(self,
@@ -430,7 +340,7 @@ class FixtureClosureNode(object):
         if self.has_split():
             raise ValueError("This should not happen anymore")
             # # propagate the split on the children: split each of them
-            # for n in self.children.values():
+            # for n in self.children:
             #     n.split_and_build(fm, nodeid, split_fixture_name, split_fixture_defs, alternative_fixture_names)
         else:
             # add the split (union) name to known fixtures
@@ -438,15 +348,16 @@ class FixtureClosureNode(object):
 
             # remember it
             self.split_fixture_name = split_fixture_name
+            self.split_fixture_alternatives = alternative_fixture_names
 
             # create the child nodes
             for f in alternative_fixture_names:
                 # create the child node
                 new_c = FixtureClosureNode(parent_node=self)
-                self.children[f] = new_c
+                self.children.append(new_c)
 
                 # set the discarded fixture names
-                new_c.split_fixture_discarded_names = [g for g in alternative_fixture_names if g != f]
+                # new_c.split_fixture_discarded_names = [g for g in alternative_fixture_names if g != f]
 
                 # perform the propagation:
                 # (a) first propagate all child's dependencies, (b) then the ones required by parent
@@ -457,8 +368,10 @@ class FixtureClosureNode(object):
     def has_split(self):
         return self.split_fixture_name is not None
 
+    # ----------- for calls parametrization
+
     def get_not_always_used(self):
-        """Returns the list of fixtures used by this subtree, that are not always used"""
+        """Return the list of fixtures used by this subtree, that are used in *some* leaves only, not all"""
         results_list = []
 
         # initial list is made of fixtures that are in the children
@@ -478,11 +391,11 @@ class FixtureClosureNode(object):
 
     def gather_all_required(self, include_children=True, include_parents=True):
         """
-        Returns a list of all fixtures required by the subtree at this node
+        Return a list of all fixtures required by the subtree containing this node
+        and all of its parents (if include_parents=True) and all of its children (if include_children=True)
 
-        :param include_children:
-        :param include_parents:
-        :return:
+        See also `self.gen_all_fixture_defs`, that could be generalized to tackle this use case too
+        (micro-optimization, not really urgent)
         """
         # first the fixtures required by this node
         required = list(self.fixture_defs.keys())
@@ -493,86 +406,184 @@ class FixtureClosureNode(object):
 
         # then the ones from all the children
         if include_children:
-            for child in self.children.values():
+            for child in self.children:
                 required = required + child.gather_all_required(include_parents=False)
 
         return required
 
     def requires(self, fixturename):
-        """
-        Returns True if the fixture with this name is required by the subtree at this node
-        :param fixturename:
-        :return:
-        """
+        """ Return True if the fixture with this name is required by the subtree at this node """
         return fixturename in self.gather_all_required()
 
-    def gather_all_discarded(self):
-        """
-        Returns a list of all fixture names discarded during splits from the parent node down to this node.
-        Note: this does not include the split done at this node if any, nor all of its subtree.
-        :return:
-        """
-        discarded = list(self.split_fixture_discarded_names)
-        if self.parent is not None:
-            discarded = discarded + self.parent.gather_all_discarded()
-
-        return discarded
-
-    # ------ tools to see the tree as a list of alternatives
-
-    def print_alternatives(self):
-        return FixtureClosureNode.print_alternatives_list(*self.get_alternatives())
-
-    @staticmethod
-    def print_alternatives_list(filters_list, fixtures_list):
-        for f, p in zip(filters_list, fixtures_list):
-            print(f, p)
+    # ------ tools to see the tree as a list of alternatives (used in SuperClosure)
 
     def get_alternatives(self):
         """
-        Returns the alternatives
-        - a list of dictionaries {union_fixture_name: value} representing the filters on this alternative
-        - a list of fixture names lists used by each alternative
-        - a list of discarded fixture names lists in each alternative
-        :return:
+        Returns the tree  "flattened" as a list of alternatives (one per leaf).
+        Each entry in the list consists of:
+
+         - an ordered dictionary {union_fixture_name: (idx, value)} representing the active union filters in this
+           alternative
+         - a list of fixture names effectively used in this alternative
+
+        :return: a list of alternatives
         """
+        alternatives = self._get_alternatives()
+        for i, a in enumerate(alternatives):
+            # replace the first entry in the tuple with a reversed order one
+            alternatives[i] = (OrderedDict(reversed(list(a[0].items()))), a[1])
+        return alternatives
+
+    def _get_alternatives(self):
         if self.has_split():
-            partitions_list = []
-            filters_list = []
-            discarded_list = []
-            for k, c in self.children.items():
-                child_filters_dct, child_partitions, child_discarded = c.get_alternatives()
-                for f_dct, p, d in zip(child_filters_dct, child_partitions, child_discarded):
-                    # append a partition for this child:
+            alternatives_list = []
+            for c_idx, (c_split_alternative, c_node) in enumerate(zip(self.split_fixture_alternatives, self.children)):
+                # for all alternatives in this subtree
+                for f_dct, n_lst in c_node._get_alternatives():
                     # - filter
                     _f_dct = f_dct.copy()
-                    _f_dct[self.split_fixture_name] = k
-                    filters_list.append(_f_dct)
-                    # - fixtures used
-                    partitions_list.append(_make_unique(list(self.fixture_defs.keys()) + p))
-                    # - fixtures not used.
-                    discarded_list.append(_make_unique(self.split_fixture_discarded_names
-                                                       + [df for df in d if df not in self.fixture_defs.keys()]))
+                    _f_dct[self.split_fixture_name] = (c_idx, c_split_alternative)
 
-            return filters_list, partitions_list, discarded_list
+                    # - unique fixtures used
+                    _n_lst = list(self.fixture_defs) + [_i for _i in n_lst if _i not in self.fixture_defs]
+
+                    alternatives_list.append((_f_dct, _n_lst))
+
+            return alternatives_list
         else:
-            # return a single partition containing all fixture names
-            return [dict()], [list(self.fixture_defs.keys())], [list(self.split_fixture_discarded_names)]
+            # return a single partition containing no filter and all fixture names
+            return [(OrderedDict(), self.get_all_fixture_names())]
 
 
-def merge(new_items, into_list):
+class SuperClosure(MutableSequence):
     """
-    Appends items from `new_items` into `into_list`, only if they are not already there.
-    :param new_items:
-    :param into_list:
-    :return:
+    A "super closure" is a closure made of several closures, each induced by a fixture union parameter value.
+    The number of alternative closures is `self.nb_alternative_closures`
+
+    This object behaves like a list (a mutable sequence), so that we can pass it to pytest in place of the list of
+    fixture names that is returned in `getfixtureclosure`.
+
+    In this implementation, it is backed by a fixture closure tree, that we have to preserve in order to get
+    parametrization right. In another branch of this project ('super_closure' branch) we tried to forget the tree
+    and only keep the partitions, but parametrization order was not as intuitive for the end user as all unions appeared as parametrized first (since they induced the partitions).
     """
-    at_least_one_added = False
-    for item in new_items:
-        if item not in into_list:
-            into_list.append(item)
-            at_least_one_added = True
-    return at_least_one_added
+    __slots__ = 'tree', 'all_fixture_defs'
+
+    def __init__(self,
+                 root_node  # type: FixtureClosureNode
+                 ):
+        # if we wish to drop the tree - but we do not anymore to get a better paramz order
+        # filters_list, partitions_list = root_node._get_alternatives()
+
+        # save the fixture closure tree root
+        self.tree = root_node
+
+        # get a list of all fixture defs, for quicker access (and sorted)
+        # sort by scope as in pytest fixture closure creator, if scope information is available
+        all_fixture_defs = root_node.get_all_fixture_defs(drop_fake_fixtures=False, try_to_sort=True)
+
+        # # also sort all partitions (note that we cannot rely on the order in all_fixture_defs when scopes are same!)
+        # if LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
+        #     f_scope = get_pytest_function_scopenum()
+        #     for p in self.partitions:
+        #         def sort_by_scope2(fixture_name):  # noqa
+        #             fixture_defs = all_fixture_defs[fixture_name]
+        #             return fixture_defs[-1].scopenum if fixture_defs is not None else f_scope
+        #         p.sort(key=sort_by_scope2)
+
+        self.all_fixture_defs = all_fixture_defs
+
+    # --- visualization tools ----
+
+    @property
+    def nb_alternative_closures(self):
+        """ Return the number of alternative closures induced by fixture unions """
+        filters, partitions = self.tree.get_alternatives()
+        return len(partitions)
+
+    def __repr__(self):
+        """ Return a synthetic view, and a detailed tree view, of this closure """
+        alternatives = self.tree.get_alternatives()
+        nb_alternative_closures = len(alternatives)
+        return "SuperClosure with %s alternative closures:\n" % nb_alternative_closures \
+               + "\n".join(" - %s (filters: %s)" % (p, ", ".join("%s=%s[%s]=%s" % (k, k, v[0], v[1]) for k, v in f.items()))
+                                                    for f, p in alternatives) \
+               + "\nThe 'super closure list' is %s\n\nThe fixture tree is :\n%s\n" % (list(self), self.tree)
+
+    def get_all_fixture_defs(self, drop_fake_fixtures=True):
+        """
+        Return a dictionary of all fixture defs used in this super closure
+
+        note: this is equivalent to
+        self.tree.get_all_fixture_defs(drop_fake_fixtures=drop_fake_fixtures, try_to_sort=True)
+        """
+        if drop_fake_fixtures:
+            # remove the "fixtures" that are actually test function parameter args
+            return {k: v for k, v in self.all_fixture_defs.items() if v is not None}
+        else:
+            # all fixtures AND pseudo-fixtures (test function parameters)
+            return self.all_fixture_defs
+
+    # ---- list (MutableSequence) facade: behaves like a list of fixture names ------
+
+    def __len__(self):
+        return len(self.all_fixture_defs)
+
+    def __getitem__(self, i):
+        # return the key (fixture name) associated with the i-th pair
+        # try:
+        #     return next(islice(self.all_fixture_defs.keys(), i, i+1))
+        # except StopIteration:
+        #     raise IndexError(i)
+        return list(self.all_fixture_defs.keys())[i]
+
+    def __setitem__(self, i, o):
+        # try:
+        #     # pytest performs a full replacement using [:] so we handle at least this case
+        #     full_replace = i == slice(None, None, None)
+        # except:  # noqa
+        #     full_replace = False
+        ref = list(self)[i]
+
+        if o == ref:
+            # no change at all: of course we accept.
+            return
+        else:
+            if isinstance(i, slice):
+                if set(o) == set(ref):
+                    # a change is required in the order of fixtures. Ignore but continue
+                    warn("WARNING: An attempt was made to reorder a super fixture closure with unions. This is not yet "
+                         "supported since the partitions use subsets of the fixtures ; please report it so that we can "
+                         "find a suitable solution for your need.")
+                    return
+
+        # At least one change of fixture name is required: not supported, and reject as it is
+        raise NotImplementedError("It is not possible to replace an element in a super fixture closure,"
+                                  "as the partitions inside it do not have the same size")
+
+    def __delitem__(self, i):
+        self.remove(self[i])
+
+    def insert(self, index, object):
+        # if index == 0:
+        #     print()
+        # elif index == len(self):
+        #     print()
+        # else:
+        #     raise ValueError("It is not possible to insert a fixture name in this closure")
+        raise NotImplementedError("When fixture unions are present, inserting a fixture in the closure is non-trivial."
+                                  " Please report this so that we can find a suitable solution for your need.")
+
+    def remove(self, value):
+        # try:
+        #     del self.all_fixture_defs[value]
+        # except KeyError:
+        #     raise ValueError(value)
+        # else:
+        #     propagate the change to the tree... non-trivial
+
+        raise NotImplementedError("When fixture unions are present, removing a fixture from the closure is non-trivial."
+                                  " Please report this so that we can find a suitable solution for your need.")
 
 
 def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
@@ -595,10 +606,48 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
         ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, fixturenames, parentnode)
 
     # (2) now let's do it by ourselves to support fixture unions
+    _init_fixnames, super_closure, arg2fixturedefs = create_super_closure(fm, parentnode, fixturenames, ignore_args)
+
+    # Compare with the previous behaviour TODO remove when in 'production' ?
+    # NOTE different order happens all the time because of our "prepend" strategy in the closure building
+    # which makes much more sense/intuition than pytest default
+    assert set(super_closure) == set(ref_fixturenames)
+    assert dict(arg2fixturedefs) == ref_arg2fixturedefs
+
+    if LooseVersion(pytest.__version__) >= LooseVersion('3.7.0'):
+        return _init_fixnames, super_closure, arg2fixturedefs
+    else:
+        return super_closure, arg2fixturedefs
+
+
+def create_super_closure(fm,
+                         parentnode,
+                         fixturenames,
+                         ignore_args
+                         ):
+    # type: (...) -> Tuple[List, Union[List, SuperClosure], Mapping]
+    """
+
+    :param fm:
+    :param parentnode:
+    :param fixturenames:
+    :param ignore_args:
+    :return:
+    """
+
     parentid = parentnode.nodeid
+
+    if _DEBUG:
+        print("Creating closure for %s:" % parentid)
 
     # -- auto-use fixtures
     _init_fixnames = fm._getautousenames(parentid)  # noqa
+
+    def _merge(new_items, into_list):
+        """ Appends items from `new_items` into `into_list`, only if they are not already there. """
+        for item in new_items:
+            if item not in into_list:
+                into_list.append(item)
 
     # -- required fixtures/params.
     # ********* fix the order of initial fixtures: indeed this order may not be the right one ************
@@ -611,60 +660,28 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
         sorted_fixturenames = sort_according_to_ref_list(fixturenames, param_names)
         # **********
         # merge the fixture names in correct order into the _init_fixnames
-        merge(sorted_fixturenames, _init_fixnames)
+        _merge(sorted_fixturenames, _init_fixnames)
     else:
         # we cannot sort yet - merge the fixture names into the _init_fixnames
-        merge(fixturenames, _init_fixnames)
+        _merge(fixturenames, _init_fixnames)
 
-    # Finally create the closure tree
-    if _DEBUG:
-        print("Creating closure for %s:" % parentid)
+    # Finally create the closure
+    fixture_defs_mgr = FixtureDefsCache(fm, parentid)
+    closure_tree = FixtureClosureNode(fixture_defs_mgr=fixture_defs_mgr)
+    closure_tree.build_closure(_init_fixnames, ignore_args=ignore_args)
+    super_closure = SuperClosure(closure_tree)
+    all_fixture_defs = super_closure.get_all_fixture_defs(drop_fake_fixtures=True)
 
-    fixture_defs_mger = FixtureDefsCache(fm, parentid)
-    fixturenames_closure_node = FixtureClosureNode(fixture_defs_mgr=fixture_defs_mger)
-    fixturenames_closure_node.build_closure(_init_fixnames, ignore_args=ignore_args)
+    # possibly simplify into a list
+    if not closure_tree.has_split():
+        super_closure = list(super_closure)
 
     if _DEBUG:
         print("Closure for %s completed:" % parentid)
-        print(fixturenames_closure_node)
+        print(closure_tree)
+        print(super_closure)
 
-    # sort the fixture names (note: only in recent pytest)
-    fixturenames_closure_node.to_list()
-
-    # FINALLY compare with the previous behaviour TODO remove when in 'production' ?
-    arg2fixturedefs = fixturenames_closure_node.get_all_fixture_defs()
-    # if len(ignore_args) == 0:
-    assert dict(arg2fixturedefs) == ref_arg2fixturedefs
-    # if fixturenames_closure_node.has_split():
-    #     # order might be changed
-    #     assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
-    # else:
-    #     # same order
-    #     if len(p_markers) < 2:
-    #         assert list(fixturenames_closure_node) == ref_fixturenames
-    #     else:
-    # NOW different order happens all the time because of the "prepend" strategy in the closure building
-    # which makes much more sense/intuition.
-    assert set((str(f) for f in fixturenames_closure_node)) == set(ref_fixturenames)
-
-    # and store our closure in the node
-    # note as an alternative we could return a custom object in place of the ref_fixturenames
-    # store_union_closure_in_node(fixturenames_closure_node, parentnode)
-
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.7.0'):
-        return _init_fixnames, fixturenames_closure_node, arg2fixturedefs
-    else:
-        return fixturenames_closure_node, arg2fixturedefs
-
-
-# ------------ hack to store and retrieve our custom "closure" object
-# def store_union_closure_in_node(fixturenames_closure_node, parentnode):
-#     parentnode.advanced_fixture_closure = fixturenames_closure_node
-
-
-def retrieve_union_closure_from_metafunc(metafunc):
-    return metafunc.fixturenames
-# ---------------------------------------
+    return _init_fixnames, super_closure, all_fixture_defs
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -715,30 +732,32 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
     The resulting `CallsReactor` instance is then able to dynamically behave like the correct list of calls,
     lazy-creating that list when it is used.
     """
-    # create our special container object TODO maybe we could be lazy and create it only when a union appears
-    if not isinstance(metafunc._calls, CallsReactor):  # noqa
-        # first call: should be an empty list
-        if len(metafunc._calls) > 0:  # noqa
-            raise ValueError("This should not happen - please file an issue")
-        metafunc._calls = CallsReactor(metafunc)
-
-    # grab it
-    calls_reactor = metafunc._calls  # noqa
-
-    # detect union fixtures
-    if is_fixture_union_params(argvalues):
-        if ',' in argnames or not isinstance(argnames, string_types):
-            raise ValueError("Union fixtures can not be parametrized")
-        union_fixture_name = argnames
-        union_fixture_alternatives = argvalues
-        if indirect is False or len(kwargs) > 0:
-            raise ValueError("indirect cannot be set on a union fixture, as well as unknown kwargs")
-
-        # add a union parametrization in the queue (but do not apply it now)
-        calls_reactor.append(UnionParamz(union_fixture_name, union_fixture_alternatives, ids, scope, kwargs))
+    if not isinstance(metafunc.fixturenames, SuperClosure):
+        # legacy method
+        metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
     else:
-        # add a normal parametrization in the queue (but do not apply it now)
-        calls_reactor.append(NormalParamz(argnames, argvalues, indirect, ids, scope, kwargs))
+        # get or create our special container object
+        if not isinstance(metafunc._calls, CallsReactor):  # noqa
+            # first call: should be an empty list
+            if len(metafunc._calls) > 0:  # noqa
+                raise ValueError("This should not happen - please file an issue")
+            metafunc._calls = CallsReactor(metafunc)
+        calls_reactor = metafunc._calls  # noqa
+
+        # detect union fixtures
+        if is_fixture_union_params(argvalues):
+            if ',' in argnames or not isinstance(argnames, string_types):
+                raise ValueError("Union fixtures can not be parametrized")
+            union_fixture_name = argnames
+            union_fixture_alternatives = argvalues
+            if indirect is False or len(kwargs) > 0:
+                raise ValueError("indirect cannot be set on a union fixture, as well as unknown kwargs")
+
+            # add a union parametrization in the queue (but do not apply it now)
+            calls_reactor.append(UnionParamz(union_fixture_name, union_fixture_alternatives, ids, scope, kwargs))
+        else:
+            # add a normal parametrization in the queue (but do not apply it now)
+            calls_reactor.append(NormalParamz(argnames, argvalues, indirect, ids, scope, kwargs))
 
 
 class CallsReactor(object):
@@ -808,12 +827,8 @@ class CallsReactor(object):
         self._pending is set to None afterwards
         :return:
         """
-        # temporarily remove self from the _calls field, we'll need to change it
-        bak_calls = self.metafunc._calls
-        assert bak_calls is self
-
-        # grab the fixtures closure tree created previously (see getfixtureclosure above)
-        fix_closure_tree = retrieve_union_closure_from_metafunc(self.metafunc)
+        # self is on the _calls field, we'll temporarily remove it and finally set it back at the end of this call
+        assert self.metafunc._calls is self
 
         # ------ parametrize the calls --------
         # create a dictionary of pending things to parametrize, and only keep the first parameter in case of several
@@ -821,235 +836,352 @@ class CallsReactor(object):
         pending = OrderedDict(pending_items)
 
         if _DEBUG:
-            print()
-            print("---- pending parametrization ----")
+            print("\n---- pending parametrization ----")
             self.print_parametrization_list()
-            print("---------------------------------")
-            print()
+            print("---------------------------------\n")
             print("Applying all of them in the closure tree nodes:")
 
-        calls, nodes = self._process_node(fix_closure_tree, pending.copy(), [])
+        # grab the "super fixtures closure" created previously (see getfixtureclosure above)
+        super_closure = self.metafunc.fixturenames
+        assert isinstance(super_closure, SuperClosure)
 
-        self._cleanup_calls_list(fix_closure_tree, calls, nodes, pending)
+        # Apply parametrization for calls
+        calls = get_calls_for_tree(self.metafunc, super_closure.tree, pending.copy())
+        # Alternative: use the partitions for parametrization. The issue is that this leads to a less intuitive order
+        # calls = []
+        # for i in range(super_closure.nb_alternative_closures):
+        #     calls += get_calls_for_partition(self.metafunc, super_closure, i, pending.copy())
 
         if _DEBUG:
             print("\n".join(["%s[%s]: funcargs=%s, params=%s" % (get_pytest_nodeid(self.metafunc),
                                                                  c.id, c.funcargs, c.params)
-                             for c in calls]))
-            print()
+                             for c in calls]) + "\n")
 
+        # save the list and put back self as the _calls facade
         self._call_list = calls
-
-        # put back self as the _calls facade
-        self.metafunc._calls = bak_calls
-
+        self.metafunc._calls = self
         # forget about all parametrizations now - this wont happen again
         self._pending = None
 
-    def _cleanup_calls_list(self, fix_closure_tree, calls, nodes, pending):
-        """
-        Cleans the calls list so that all calls contain a value for all parameters. This is basically
-        about adding "NOT_USED" parametrization everywhere relevant.
 
-        :param calls:
-        :param nodes:
-        :param pending:
-        :return:
-        """
+def get_calls_for_tree(metafunc, fix_closure_tree, pending):
+    calls, nodes = _process_node(metafunc, fix_closure_tree, pending.copy(), [])
+    _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending)
+    return calls
 
-        nb_calls = len(calls)
-        if nb_calls != len(nodes):
-            raise ValueError("This should not happen !")
 
-        # function_scope_num = get_pytest_function_scopenum()
+def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
+    """
+    Cleans the calls list so that all calls contain a value for all parameters. This is basically
+    about adding "NOT_USED" parametrization everywhere relevant.
 
-        for i in range(nb_calls):
-            c, n = calls[i], nodes[i]
+    :param calls:
+    :param nodes:
+    :param pending:
+    :return:
+    """
 
-            # A/ set to "not used" all parametrized fixtures that were not used in some branches
-            for fixture, p_to_apply in pending.items():
-                if fixture not in c.params and fixture not in c.funcargs:
-                    # parametrize with a single "not used" value and discard the id
-                    if isinstance(p_to_apply, UnionParamz):
-                        c_with_dummy = self._parametrize_calls([c], p_to_apply.union_fixture_name, [NOT_USED],
-                                                               indirect=True, discard_id=True,
-                                                               scope=p_to_apply.scope, **p_to_apply.kwargs)
-                    else:
-                        _nb_argnames = len(get_param_argnames_as_list(p_to_apply.argnames))
-                        if _nb_argnames > 1:
-                            _vals = [(NOT_USED,) * _nb_argnames]
-                        else:
-                            _vals = [NOT_USED]
-                        c_with_dummy = self._parametrize_calls([c], p_to_apply.argnames, _vals,
-                                                               indirect=p_to_apply.indirect, discard_id=True,
-                                                               scope=p_to_apply.scope, **p_to_apply.kwargs)
-                    assert len(c_with_dummy) == 1
-                    calls[i] = c_with_dummy[0]
-                    c = calls[i]
+    nb_calls = len(calls)
+    if nb_calls != len(nodes):
+        raise ValueError("This should not happen !")
 
-            # B/ some non-parametrized fixtures may also need to be explicitly deactivated in some callspecs
-            # otherwise they will be setup/teardown.
-            #
-            # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
-            # in the `request`. TODO is there a better way?
-            # for fixture in list(fix_closure_tree):
-            # for fixture_name, fixdef in self.metafunc._arg2fixturedefs.items():
-            for fixture_name in fix_closure_tree.get_not_always_used():
-                try:
-                    fixdef = self.metafunc._arg2fixturedefs[fixture_name]  # noqa
-                except KeyError:
-                    continue  # dont raise any error here and let pytest say "not found"
-                    
-                if fixture_name not in c.params and fixture_name not in c.funcargs:
-                    if not n.requires(fixture_name):
-                        # explicitly add it as discarded by creating a parameter value for it.
-                        c.params[fixture_name] = NOT_USED
-                        c.indices[fixture_name] = 1
-                        c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
-                    else:
-                        # explicitly add it as active
-                        c.params[fixture_name] = 'used'
-                        c.indices[fixture_name] = 0
-                        c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
+    # function_scope_num = get_pytest_function_scopenum()
 
-    def _parametrize_calls(self, init_calls, argnames, argvalues, discard_id=False, indirect=False, ids=None,
-                           scope=None, **kwargs):
-        """Parametrizes the initial `calls` with the provided information and returns the resulting new calls"""
+    for i in range(nb_calls):
+        c, n = calls[i], nodes[i]
 
-        # make a backup so that we can restore the metafunc at the end
-        bak = self.metafunc._calls
-
-        # place the initial calls on the metafunc
-        self.metafunc._calls = init_calls if init_calls is not None else []
-
-        # parametrize the metafunc. Since we replaced the `parametrize` method on `metafunc` we have to call super
-        self.metafunc.__class__.parametrize(self.metafunc, argnames, argvalues, indirect=indirect, ids=ids,
-                                            scope=scope, **kwargs)
-
-        # extract the result
-        new_calls = self.metafunc._calls
-
-        # If the user wants to discard the newly created id, remove the last id in all these callspecs in this node
-        if discard_id:
-            for callspec in new_calls:
-                callspec._idlist.pop(-1)  # noqa
-
-        # restore the metafunc and return the new calls
-        self.metafunc._calls = bak
-        return new_calls
-
-    def _process_node(self, current_node, pending, calls):
-        """
-        Routine to apply all the parametrization orders in `pending` that are relevant to `current_node`,
-        to the `calls` (a list of pytest CallSpec2).
-
-        It returns a tuple containing a list of calls and a list of same length containing which leaf node each one
-        corresponds to.
-
-        :param current_node: the closure tree node we're focusing on
-        :param pending: a list of parametrization orders to apply
-        :param calls:
-        :return: a tuple (calls, nodes) of two lists of the same length. So that for each CallSpec calls[i], you can see
-            the corresponding leaf node in nodes[i]
-        """
-
-        # (1) first apply all non-split fixtures at this node
-        fixtures_at_this_node = [f for f in current_node.fixture_defs.keys()
-                                 if f is not current_node.split_fixture_name]
-
-        # dirty hack if we want to preserve pytest legacy order when there are no children
-        # if current_node.parent is None and not current_node.has_split():
-        #     # legacy compatibility: use pytest parametrization order even if it is wrong
-        #     # see https://github.com/pytest-dev/pytest/issues/5054
-        #
-        # else:
-        #     # rather trust the order we computed from the closure
-        #     fixtures_to_process = fixtures_at_this_node
-
-        for fixturename in fixtures_at_this_node:
-            try:
-                # pop it from pending - do not rely the order in pending but rather the order in the closure node
-                p_to_apply = pending.pop(fixturename)
-            except KeyError:
-                # not a parametrized fixture
-                continue
-            else:
+        # A/ set to "not used" all parametrized fixtures that were not used in some branches
+        for fixture, p_to_apply in pending.items():
+            if fixture not in c.params and fixture not in c.funcargs:
+                # parametrize with a single "not used" value and discard the id
                 if isinstance(p_to_apply, UnionParamz):
-                    raise ValueError("This should not happen !")
-                elif isinstance(p_to_apply, NormalParamz):
-                    # ******** Normal parametrization **********
-                    if _DEBUG:
-                        print("[Node %s] Applying parametrization for NORMAL %s"
-                              "" % (current_node.to_str(with_children=False, with_discarded=False),
-                                    p_to_apply.argnames))
-
-                    calls = self._parametrize_calls(calls, p_to_apply.argnames, p_to_apply.argvalues,
-                                                    indirect=p_to_apply.indirect, ids=p_to_apply.ids,
-                                                    scope=p_to_apply.scope, **p_to_apply.kwargs)
+                    c_with_dummy = _parametrize_calls(metafunc, [c], p_to_apply.union_fixture_name, [NOT_USED],
+                                                      indirect=True, discard_id=True, scope=p_to_apply.scope,
+                                                      **p_to_apply.kwargs)
                 else:
-                    raise TypeError("Invalid parametrization type: %s" % p_to_apply.__class__)
+                    _nb_argnames = len(get_param_argnames_as_list(p_to_apply.argnames))
+                    if _nb_argnames > 1:
+                        _vals = [(NOT_USED,) * _nb_argnames]
+                    else:
+                        _vals = [NOT_USED]
+                    c_with_dummy = _parametrize_calls(metafunc, [c], p_to_apply.argnames, _vals,
+                                                      indirect=p_to_apply.indirect, discard_id=True,
+                                                      scope=p_to_apply.scope, **p_to_apply.kwargs)
+                assert len(c_with_dummy) == 1
+                calls[i] = c_with_dummy[0]
+                c = calls[i]
 
-        # (2) then if there is a split apply it, otherwise return
-        if not current_node.has_split():
-            nodes = [current_node] * len(calls)
-            return calls, nodes
-        else:
+        # B/ some non-parametrized fixtures may also need to be explicitly deactivated in some callspecs
+        # otherwise they will be setup/teardown.
+        #
+        # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
+        # in the `request`. TODO is there a better way?
+        # for fixture in list(fix_closure_tree):
+        # for fixture_name, fixdef in metafunc._arg2fixturedefs.items():
+        for fixture_name in fix_closure_tree.get_not_always_used():
             try:
-                # pop it from pending - do not trust the order in pending.
-                p_to_apply = pending.pop(current_node.split_fixture_name)
+                fixdef = metafunc._arg2fixturedefs[fixture_name]  # noqa
             except KeyError:
-                # not a parametrized fixture
-                raise ValueError("Error: fixture union parametrization not present")
-            else:
-                if isinstance(p_to_apply, NormalParamz):
-                    raise ValueError("This should not happen !")
-                elif isinstance(p_to_apply, UnionParamz):
-                    # ******** Union parametrization **********
-                    if _DEBUG:
-                        print("[Node %s] Applying parametrization for UNION %s"
-                              "" % (current_node.to_str(with_children=False, with_discarded=False),
-                                    p_to_apply.union_fixture_name))
+                continue  # dont raise any error here and let pytest say "not found"
 
-                    # always use 'indirect' since that's a fixture.
-                    calls = self._parametrize_calls(calls, p_to_apply.union_fixture_name,
-                                                    p_to_apply.alternative_names, indirect=True,
-                                                    ids=p_to_apply.ids,
-                                                    scope=p_to_apply.scope, **p_to_apply.kwargs)
-
-                    # now move to the children
-                    nodes_children = [None] * len(calls)
-                    for i in range(len(calls)):
-                        active_alternative = calls[i].params[p_to_apply.union_fixture_name]
-                        child_node = current_node.children[active_alternative.alternative_name]
-                        child_pending = pending.copy()
-
-                        # place the childs parameter in the first position if it is in the list
-                        # not needed anymore - already automatic
-                        # try:
-                        #     child_pending.move_to_end(child_alternative, last=False)
-                        # except KeyError:
-                        #     # not in the list: the child alternative is a non-parametrized fixture
-                        #     pass
-
-                        calls[i], nodes_children[i] = self._process_node(child_node, child_pending, [calls[i]])
-
-                    # finally flatten the list if needed
-                    calls = flatten_list(calls)
-                    nodes_children = flatten_list(nodes_children)
-                    return calls, nodes_children
+            if fixture_name not in c.params and fixture_name not in c.funcargs:
+                if not n.requires(fixture_name):
+                    # explicitly add it as discarded by creating a parameter value for it.
+                    c.params[fixture_name] = NOT_USED
+                    c.indices[fixture_name] = 1
+                    c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
+                else:
+                    # explicitly add it as active
+                    c.params[fixture_name] = 'used'
+                    c.indices[fixture_name] = 0
+                    c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
 
 
-def _make_unique(lst):
-    _set = set()
+# def get_calls_for_partition(metafunc, super_closure, p_idx, pending):
+#     """
+#     Parametrizes all fixtures that are actually used in this partition
+#     Cleans the calls list so that all calls contain a value for all parameters. This is basically
+#     about adding "NOT_USED" parametrization everywhere relevant.
+#
+#     :return: a list of CallSpec2
+#     """
+#     calls = []
+#
+#     # A/ parametrize all fixtures that are actually used in this partition
+#     for fixture_name in super_closure.partitions[p_idx]:
+#         try:
+#             # pop it from pending - do not rely the order in pending but rather the order in the closure
+#             p_to_apply = pending.pop(fixture_name)
+#         except KeyError:
+#             # not a parametrized fixture
+#             continue
+#         else:
+#             if isinstance(p_to_apply, UnionParamz):
+#                 # ******** Union parametrization **********
+#                 # selected_ids, selected_alternative = super_closure.get_parameter_to_apply(p_to_apply, p_idx)
+#                 num, selected_filter = super_closure.filters[p_idx][p_to_apply.union_fixture_name]
+#                 # in order to get the *actual* id to use (with all pytest subtleties in case of two identical ids
+#                 # appearing in the list), we create a fake calls list
+#                 fake_calls = _parametrize_calls(metafunc, [], p_to_apply.union_fixture_name,
+#                                                 p_to_apply.alternative_names, ids=p_to_apply.ids,
+#                                                 scope=p_to_apply.scope, indirect=True, **p_to_apply.kwargs)
+#                 selected_id = fake_calls[num].id
+#                 selected_alternative = p_to_apply.alternative_names[num]
+#                 # assert selected_alternative.alternative_name == selected_filter
+#
+#                 if _DEBUG:
+#                     print("[Partition %s] Applying parametrization for UNION fixture %r=%r"
+#                           "" % (p_idx, p_to_apply.union_fixture_name, selected_alternative))
+#
+#                 # always use 'indirect' since that's a fixture.
+#                 calls = _parametrize_calls(metafunc, calls, p_to_apply.union_fixture_name,
+#                                            [selected_alternative], ids=[selected_id], scope=p_to_apply.scope,
+#                                            indirect=True, **p_to_apply.kwargs)
+#
+#             elif isinstance(p_to_apply, NormalParamz):
+#                 # ******** Normal parametrization **********
+#                 if _DEBUG:
+#                     print("[Partition %s] Applying parametrization for NORMAL %s"
+#                           "" % (p_idx, p_to_apply.argnames))
+#
+#                 calls = _parametrize_calls(metafunc, calls, p_to_apply.argnames, p_to_apply.argvalues,
+#                                            indirect=p_to_apply.indirect, ids=p_to_apply.ids,
+#                                            scope=p_to_apply.scope, **p_to_apply.kwargs)
+#             else:
+#                 raise TypeError("Invalid parametrization type: %s" % p_to_apply.__class__)
+#
+#     # Cleaning
+#     for i in range(len(calls)):
+#         c = calls[i]
+#
+#         # B/ set to "not used" all parametrized fixtures that were not used in some branches
+#         for fixture_name, p_to_apply in pending.items():
+#             if fixture_name not in c.params and fixture_name not in c.funcargs:
+#                 # parametrize with a single "not used" value and discard the id
+#                 if isinstance(p_to_apply, UnionParamz):
+#                     c_with_dummy = _parametrize_calls(metafunc, [c], p_to_apply.union_fixture_name, [NOT_USED],
+#                                                       indirect=True, discard_id=True, scope=p_to_apply.scope,
+#                                                       **p_to_apply.kwargs)
+#                 else:
+#                     _nb_argnames = len(get_param_argnames_as_list(p_to_apply.argnames))
+#                     if _nb_argnames > 1:
+#                         _vals = [(NOT_USED,) * _nb_argnames]
+#                     else:
+#                         _vals = [NOT_USED]
+#                     c_with_dummy = _parametrize_calls(metafunc, [c], p_to_apply.argnames, _vals,
+#                                                       indirect=p_to_apply.indirect, discard_id=True,
+#                                                       scope=p_to_apply.scope, **p_to_apply.kwargs)
+#                 assert len(c_with_dummy) == 1
+#                 calls[i] = c_with_dummy[0]
+#                 c = calls[i]
+#
+#         # C/ some non-parametrized fixtures may also need to be explicitly deactivated in some callspecs
+#         # otherwise they will be setup/teardown.
+#         #
+#         # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
+#         # in the `request`. TODO is there a better way?
+#         for fixture_name in super_closure.get_not_always_used():
+#             try:
+#                 fixdef = metafunc._arg2fixturedefs[fixture_name]  # noqa
+#             except KeyError:
+#                 continue  # dont raise any error here and instead let pytest say "not found"
+#
+#             if fixture_name not in c.params and fixture_name not in c.funcargs:
+#                 if not super_closure.requires(fixture_name, p_idx):
+#                     # explicitly add it as discarded by creating a parameter value for it.
+#                     c.params[fixture_name] = NOT_USED
+#                     c.indices[fixture_name] = 1
+#                     c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
+#                 else:
+#                     # explicitly add it as active by creating a parameter value for it.
+#                     c.params[fixture_name] = 'used'
+#                     c.indices[fixture_name] = 0
+#                     c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
+#
+#     return calls
 
-    def _first_time_met(v):
-        if v not in _set:
-            _set.add(v)
-            return True
+
+def _parametrize_calls(metafunc, init_calls, argnames, argvalues, discard_id=False, indirect=False, ids=None,
+                       scope=None, **kwargs):
+    """Parametrizes the initial `calls` with the provided information and returns the resulting new calls"""
+
+    # make a backup so that we can restore the metafunc at the end
+    bak = metafunc._calls  # noqa
+
+    # place the initial calls on the metafunc
+    metafunc._calls = init_calls if init_calls is not None else []
+
+    # parametrize the metafunc. Since we replaced the `parametrize` method on `metafunc` we have to call super
+    metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+
+    # extract the result
+    new_calls = metafunc._calls  # noqa
+
+    # If the user wants to discard the newly created id, remove the last id in all these callspecs in this node
+    if discard_id:
+        for callspec in new_calls:
+            callspec._idlist.pop(-1)  # noqa
+
+    # restore the metafunc and return the new calls
+    metafunc._calls = bak
+    return new_calls
+
+
+def _process_node(metafunc, current_node, pending, calls):
+    """
+    Routine to apply all the parametrization orders in `pending` that are relevant to `current_node`,
+    to the `calls` (a list of pytest CallSpec2).
+
+    It returns a tuple containing a list of calls and a list of same length containing which leaf node each one
+    corresponds to.
+
+    :param metafunc:
+    :param current_node: the closure tree node we're focusing on
+    :param pending: a list of parametrization orders to apply
+    :param calls:
+    :return: a tuple (calls, nodes) of two lists of the same length. So that for each CallSpec calls[i], you can see
+        the corresponding leaf node in nodes[i]
+    """
+
+    # (1) first apply all non-split fixtures at this node
+    fixtures_at_this_node = [f for f in current_node.fixture_defs.keys()
+                             if f is not current_node.split_fixture_name]
+
+    # dirty hack if we want to preserve pytest legacy order when there are no children
+    # if current_node.parent is None and not current_node.has_split():
+    #     # legacy compatibility: use pytest parametrization order even if it is wrong
+    #     # see https://github.com/pytest-dev/pytest/issues/5054
+    #
+    # else:
+    #     # rather trust the order we computed from the closure
+    #     fixtures_to_process = fixtures_at_this_node
+
+    for fixturename in fixtures_at_this_node:
+        try:
+            # pop it from pending - do not rely the order in pending but rather the order in the closure node
+            p_to_apply = pending.pop(fixturename)
+        except KeyError:
+            # not a parametrized fixture
+            continue
         else:
-            return False
+            if isinstance(p_to_apply, UnionParamz):
+                raise ValueError("This should not happen !")
+            elif isinstance(p_to_apply, NormalParamz):
+                # ******** Normal parametrization **********
+                if _DEBUG:
+                    print("[Node %s] Applying parametrization for NORMAL %s"
+                          "" % (current_node.to_str(with_children=False, with_discarded=False),
+                                p_to_apply.argnames))
 
-    return [v for v in lst if _first_time_met(v)]
+                calls = _parametrize_calls(metafunc, calls, p_to_apply.argnames, p_to_apply.argvalues,
+                                           indirect=p_to_apply.indirect, ids=p_to_apply.ids,
+                                           scope=p_to_apply.scope, **p_to_apply.kwargs)
+            else:
+                raise TypeError("Invalid parametrization type: %s" % p_to_apply.__class__)
+
+    # (2) then if there is a split apply it, otherwise return
+    if not current_node.has_split():
+        nodes = [current_node] * len(calls)
+        return calls, nodes
+    else:
+        try:
+            # pop it from pending - do not trust the order in pending.
+            p_to_apply = pending.pop(current_node.split_fixture_name)
+        except KeyError:
+            # not a parametrized fixture
+            raise ValueError("Error: fixture union parametrization not present")
+        else:
+            if isinstance(p_to_apply, NormalParamz):
+                raise ValueError("This should not happen !")
+            elif isinstance(p_to_apply, UnionParamz):
+                # ******** Union parametrization **********
+                if _DEBUG:
+                    print("[Node %s] Applying parametrization for UNION %s"
+                          "" % (current_node.to_str(with_children=False, with_discarded=False),
+                                p_to_apply.union_fixture_name))
+
+                # always use 'indirect' since that's a fixture.
+                calls = _parametrize_calls(metafunc, calls, p_to_apply.union_fixture_name,
+                                           p_to_apply.alternative_names, indirect=True,
+                                           ids=p_to_apply.ids, scope=p_to_apply.scope, **p_to_apply.kwargs)
+
+                # now move to the children
+                nodes_children = [None] * len(calls)
+                for i in range(len(calls)):
+                    active_alternative = calls[i].params[p_to_apply.union_fixture_name]
+                    child_indices = [_i for _i, x in enumerate(current_node.split_fixture_alternatives)
+                                     if x == active_alternative.alternative_name]
+                    # only use the first matching child, since the subtrees are identical.
+                    child_node = current_node.children[child_indices[0]]
+                    child_pending = pending.copy()
+
+                    # place the childs parameter in the first position if it is in the list
+                    # not needed anymore - already automatic
+                    # try:
+                    #     child_pending.move_to_end(child_alternative, last=False)
+                    # except KeyError:
+                    #     # not in the list: the child alternative is a non-parametrized fixture
+                    #     pass
+
+                    calls[i], nodes_children[i] = _process_node(metafunc, child_node, child_pending, [calls[i]])
+
+                # finally flatten the list if needed
+                calls = flatten_list(calls)
+                nodes_children = flatten_list(nodes_children)
+                return calls, nodes_children
+
+
+# def _make_unique(lst):
+#     _set = set()
+#
+#     def _first_time_met(v):
+#         if v not in _set:
+#             _set.add(v)
+#             return True
+#         else:
+#             return False
+#
+#     return [v for v in lst if _first_time_met(v)]
 
 
 def flatten_list(lst):
