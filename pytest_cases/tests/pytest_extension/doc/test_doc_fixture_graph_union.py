@@ -42,10 +42,18 @@ def b(ub, ib):
 u = fixture_union("u", (a, b))
 
 
+super_closure = None
+
+
 def test_1(u, request):
-    # make sure that the closure tree looks good
+    # store for later
+    global super_closure
     super_closure = request._pyfuncitem.fixturenames
 
+
+def test_closure():
+    # make sure that the closure tree looks good
+    global super_closure
     assert str(super_closure) == """SuperClosure with 3 alternative closures:
  - ['e', 'request', 'u', 'a', 'c', 'd'] (filters: u=u[0]=a)
  - ['e', 'request', 'u', 'b', 'b_ub', 'a', 'c', 'd'] (filters: u=u[1]=b, b_ub=b_ub[0]=a)

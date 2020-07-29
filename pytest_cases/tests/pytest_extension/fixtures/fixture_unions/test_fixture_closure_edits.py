@@ -20,10 +20,17 @@ def test_issue116(request):
 b = fixture_union('b', [a, a])
 
 
+super_closure = None
+
+
 def test_super_closure_edits(request, b):
-    #
+    # save for later
+    global super_closure
     super_closure = request._pyfuncitem._fixtureinfo.names_closure
 
+
+def test_super_closure_edits2():
+    global super_closure
     assert isinstance(super_closure, SuperClosure)
     super_closure = copy(super_closure)
     assert len(super_closure) == 3
