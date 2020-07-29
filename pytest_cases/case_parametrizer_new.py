@@ -7,8 +7,6 @@ from inspect import getmembers
 import re
 from warnings import warn
 
-from pytest_cases import fixture
-
 try:
     from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
 except ImportError:
@@ -20,8 +18,11 @@ from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value
 from .common_pytest_lazy_values import lazy_value
 from .common_pytest import safe_isclass, MiniMetafunc
 
+from . import fixture
 from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CaseInfo, CASE_PREFIX_FUN
+from .fixture__creation import check_name_available, CHANGE
 from .fixture_parametrize_plus import fixture_ref, _parametrize_plus
+
 
 THIS_MODULE = object()
 """Singleton that can be used instead of a module name to indicate that the module is the current one"""
@@ -280,19 +281,19 @@ def case_to_argvalues(case_fun,                # type: Callable
 
         host_module = import_module(case_fun.__module__)
 
-        # create a new fixture and place it on the host (note: if already done, no need to recreate it)
-        existing_fix = getattr(host_cls or host_module, case_id, None)
-        if existing_fix is None:
-            # if meta.is_parametrized:
-            #     nothing to do, the parametrization marks are already there
-            new_fix = fixture(name=case_id)(case_fun)
-            setattr(host_cls or host_module, case_id, new_fix)
-        else:
-            raise NotImplementedError("We should check if this is the same or another and generate a new name in that "
-                                      "case")
+        # create a new fixture and place it on the host
+        # we have to create a unique fixture name if the fixture already exists.
+        def name_changer(name, i):
+            return name + '_' * i
+        new_fix_name = check_name_available(host_cls or host_module, name=case_id, if_name_exists=CHANGE,
+                                            name_changer=name_changer)
+        # if meta.is_parametrized:
+        #     nothing to do, the parametrization marks are already there
+        new_fix = fixture(name=new_fix_name)(case_fun)
+        setattr(host_cls or host_module, new_fix_name, new_fix)
 
         # now reference the new or existing fixture
-        argvalues_tuple = (fixture_ref(case_id),)
+        argvalues_tuple = (fixture_ref(new_fix_name),)
         return make_marked_parameter_value(argvalues_tuple, marks=case_marks) if case_marks else argvalues_tuple
 
 

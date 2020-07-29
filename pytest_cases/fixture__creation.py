@@ -33,6 +33,7 @@ CHANGE = 2
 def check_name_available(module,
                          name,                  # type: str
                          if_name_exists=RAISE,  # type: int
+                         name_changer=None,     # type: Callable
                          caller=None,           # type: Callable[[Any], Any]
                          ):
     """
@@ -41,9 +42,15 @@ def check_name_available(module,
     :param module:
     :param name:
     :param if_name_exists:
+    :param name_changer:
     :param caller:
     :return: a name that might be different if policy was CHANGE
     """
+    if name_changer is None:
+        # default style for name changing. i starts with 1
+        def name_changer(name, i):
+            return name + '_%s' % i
+
     if name in dir(module):
         if caller is None:
             caller = ''
@@ -58,10 +65,11 @@ def check_name_available(module,
         elif if_name_exists is CHANGE:
             # find a non-used name in that module
             i = 1
-            name2 = name + '_%s' % i
+            name2 = name_changer(name, i)
             while name2 in dir(module):
                 i += 1
-                name2 = name + '_%s' % i
+                name2 = name_changer(name, i)
+
             name = name2
         else:
             raise ValueError("invalid value for `if_name_exists`: %s" % if_name_exists)
