@@ -911,30 +911,33 @@ def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
                 calls[i] = c_with_dummy[0]
                 c = calls[i]
 
-        # B/ some non-parametrized fixtures may also need to be explicitly deactivated in some callspecs
-        # otherwise they will be setup/teardown.
+        # B/ function-scoped non-parametrized fixtures also need to be explicitly deactivated in the callspecs
+        # where they are not required, otherwise they will be setup/teardown.
         #
         # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
         # in the `request`. TODO is there a better way?
-        # for fixture in list(fix_closure_tree):
-        # for fixture_name, fixdef in metafunc._arg2fixturedefs.items():
+        f_scope = get_pytest_function_scopenum()
         for fixture_name in fix_closure_tree.get_not_always_used():
             try:
                 fixdef = metafunc._arg2fixturedefs[fixture_name]  # noqa
             except KeyError:
                 continue  # dont raise any error here and let pytest say "not found"
 
-            if fixture_name not in c.params and fixture_name not in c.funcargs:
-                if not n.requires(fixture_name):
-                    # explicitly add it as discarded by creating a parameter value for it.
-                    c.params[fixture_name] = NOT_USED
-                    c.indices[fixture_name] = 1
-                    c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
-                else:
-                    # explicitly add it as active
-                    c.params[fixture_name] = 'used'
-                    c.indices[fixture_name] = 0
-                    c._arg2scopenum[fixture_name] = get_pytest_scopenum(fixdef[-1].scope)  # noqa
+            this_scopenum = fixdef[-1].scopenum
+
+            # only do this for function-scoped fixtures, module or session scoped fixtures should remain active
+            if this_scopenum == f_scope:
+                if fixture_name not in c.params and fixture_name not in c.funcargs:
+                    if not n.requires(fixture_name):
+                        # explicitly add it as discarded by creating a parameter value for it.
+                        c.params[fixture_name] = NOT_USED
+                        c.indices[fixture_name] = 1
+                        c._arg2scopenum[fixture_name] = this_scopenum  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
+                    else:
+                        # explicitly add it as active
+                        c.params[fixture_name] = 'used'
+                        c.indices[fixture_name] = 0
+                        c._arg2scopenum[fixture_name] = this_scopenum  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
 
 
 # def get_calls_for_partition(metafunc, super_closure, p_idx, pending):
