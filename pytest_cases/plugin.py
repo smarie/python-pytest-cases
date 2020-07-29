@@ -171,7 +171,7 @@ class FixtureClosureNode(object):
         # get all pairs
         items = self.gen_all_fixture_defs(drop_fake_fixtures=drop_fake_fixtures)
 
-        # sort by scope as in pytest fixture closure creator, if scope information is available
+        # sort by scope as in pytest fixture closure creator (pytest did not do it in early versions, align with this)
         if try_to_sort and LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
             f_scope = get_pytest_function_scopenum()
             def sort_by_scope(kv_pair):  # noqa
