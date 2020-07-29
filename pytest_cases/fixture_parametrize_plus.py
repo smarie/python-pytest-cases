@@ -378,6 +378,7 @@ def _parametrize_plus(argnames=None,
 
     # idgen default
     if idgen is _IDGEN:
+        # default: use the new id style only when some **args are provided
         idgen = AUTO if len(args) > 0 else None
 
     if idgen is AUTO:

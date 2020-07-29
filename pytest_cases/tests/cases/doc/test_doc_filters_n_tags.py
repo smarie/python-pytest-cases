@@ -30,18 +30,18 @@ def test_with_data(data, user):
 
 def test_with_data_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_with_data, test_id_format='function')
-    if has_pytest_param:
-        assert list(results_dct) == [
-            'test_with_data[bob-a]',
-            'test_with_data[bob-b-True]',
-            'test_with_data[bob-b-False]'
-        ]
-    else:
-        assert list(results_dct) == [
-            'test_with_data[a-bob]',
-            'test_with_data[b-True-bob]',
-            'test_with_data[b-False-bob]'
-        ]
+    # if has_pytest_param:
+    assert list(results_dct) == [
+        'test_with_data[bob-a]',
+        'test_with_data[bob-b-True]',
+        'test_with_data[bob-b-False]'
+    ]
+    # else:
+    #     assert list(results_dct) == [
+    #         'test_with_data[a-bob]',
+    #         'test_with_data[b-True-bob]',
+    #         'test_with_data[b-False-bob]'
+    #     ]
 
 
 class Foo:

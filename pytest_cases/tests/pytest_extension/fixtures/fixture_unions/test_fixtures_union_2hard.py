@@ -1,3 +1,4 @@
+from pytest_cases.plugin import SuperClosure
 from pytest_cases import param_fixture, fixture_union
 
 # basic parametrized fixtures
@@ -9,7 +10,28 @@ c = fixture_union('c', [a, b])
 d = fixture_union('d', [b, a])
 
 
-def test_fixture_union_harder(c, a, d):
+def test_fixture_union_harder(c, a, d, request):
+
+    # make sure that the closure tree looks good
+    super_closure = request._pyfuncitem.fixturenames
+    assert isinstance(super_closure, SuperClosure)
+    assert str(super_closure) == """SuperClosure with 4 alternative closures:
+ - ['c', 'a', 'request', 'd', 'b'] (filters: c=c[0]=a, d=d[0]=b)
+ - ['c', 'a', 'request', 'd'] (filters: c=c[0]=a, d=d[1]=a)
+ - ['c', 'b', 'request', 'a', 'd'] (filters: c=c[1]=b, d=d[0]=b)
+ - ['c', 'b', 'request', 'a', 'd'] (filters: c=c[1]=b, d=d[1]=a)
+The 'super closure list' is ['c', 'a', 'request', 'd', 'b']
+
+The fixture tree is :
+(c) split: c
+ -  (a,request,d) split: d
+  -   (b)
+  -   ()
+ -  (b,request,a,d) split: d
+  -   ()
+  -   ()
+"""
+
     print(c, a, d)
 
 
