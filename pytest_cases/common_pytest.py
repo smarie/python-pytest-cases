@@ -427,8 +427,12 @@ def get_pytest_function_scopenum():
 
 from _pytest.python import _idval  # noqa
 
-
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+if LooseVersion(pytest.__version__) >= LooseVersion('6.0.0'):
+    _idval_kwargs = dict(idfn=None,
+                         nodeid=None,  # item is not used in pytest(>=6.0.0) nodeid is only used by idfn
+                         config=None  # if a config hook was available it would be used before this is called)
+                         )
+elif LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
     _idval_kwargs = dict(idfn=None,
                          item=None,  # item is only used by idfn
                          config=None  # if a config hook was available it would be used before this is called)
