@@ -6,42 +6,68 @@ language: python
 matrix:
   fast_finish: true
   include:
-    - python: 2.7 # pytest 2
+    - name: "Python 2.7 Pytest 2"
+      python: 2.7
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
-    - python: 2.7 # pytest 3
+    - name: "Python 2.7 Pytest 3"
+      python: 2.7
       env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION="==1.9.0"
-    - python: 2.7 # pytest 4
+    - name: "Python 2.7 Pytest 4"
+      python: 2.7
       env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION="==1.9.0"
-    - python: 3.5 # pytest 2
+    - name: "Python 3.5 Pytest 2"
+      python: 3.5
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
-    - python: 3.5 # pytest 3
+    - name: "Python 3.5 Pytest 3"
+      python: 3.5
       env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION="==1.9.0"
-    - python: 3.5 # pytest 4
+    - name: "Python 3.5 Pytest 4"
+      python: 3.5
       env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION="==1.9.0"
-    - python: 3.5 # pytest 5
+    - name: "Python 3.5 Pytest 5"
+      python: 3.5
       env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION="==1.9.0"
-    - python: 3.6 # pytest 2
+    - name: "Python 3.5 Pytest latest"
+      python: 3.5 # pytest latest
+      env: PYTEST_VERSION="" PYTEST_HTML_VERSION="==1.9.0"
+    - name: "Python 3.6 Pytest 2"
+      python: 3.6
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
-    - python: 3.6 # pytest 3
+    - name: "Python 3.6 Pytest 3"
+      python: 3.6
       env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION="==1.9.0"
-    - python: 3.6 # pytest 4
+    - name: "Python 3.6 Pytest 4"
+      python: 3.6
       env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION="==1.9.0"
-    - python: 3.6 # pytest 5
+    - name: "Python 3.6 Pytest 5"
+      python: 3.6
       env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION="==1.9.0"
-    - python: 3.7 # pytest 2
+    - name: "Python 3.6 Pytest latest"
+      python: 3.6
+      env: PYTEST_VERSION="" PYTEST_HTML_VERSION="==1.9.0"
+    - name: "Python 3.7 Pytest 2"
+      python: 3.7
       env: PYTEST_VERSION="<3" PYTEST_HTML_VERSION="==1.9.0"  # indeed recent pytest_html require pytest>=3
       dist: xenial
       sudo: true
-    - python: 3.7 # pytest 3
+    - name: "Python 3.7 Pytest 3"
+      python: 3.7
       env: PYTEST_VERSION="<4" PYTEST_HTML_VERSION="==1.9.0"
       dist: xenial
       sudo: true
-    - python: 3.7 # pytest 4
+    - name: "Python 3.7 Pytest 4"
+      python: 3.7
       env: PYTEST_VERSION="<5" PYTEST_HTML_VERSION="==1.9.0"
       dist: xenial
       sudo: true
-    - python: 3.7 # pytest 5
+    - name: "Python 3.7 Pytest 5"
+      python: 3.7
       env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION="==1.9.0"
+      dist: xenial
+      sudo: true
+    - name: "Python 3.7 Pytest latest"
+      python: 3.7
+      env: PYTEST_VERSION="" PYTEST_HTML_VERSION="==1.9.0"
       dist: xenial
       sudo: true
 
