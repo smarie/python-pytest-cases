@@ -56,7 +56,8 @@ def pytest_runtest_setup(item):
     yield  # first let all other hooks run, they will do the setup etc.
 
     # now item.funcargs exists so we can handle it
-    item.funcargs = {argname: get_lazy_args(argvalue) for argname, argvalue in item.funcargs.items()}
+    if hasattr(item, "funcargs"):
+        item.funcargs = {argname: get_lazy_args(argvalue) for argname, argvalue in item.funcargs.items()}
 
 
 # @pytest.hookimpl(tryfirst=True, hookwrapper=True)
