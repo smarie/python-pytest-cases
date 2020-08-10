@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.1.2 - Compatibility fix
+
+ - Added support for pytest items without funcargs. Fixes interoperability with other pytest plugins such as `pytest-black` or `pytest-flake8`. Fixes [#122](https://github.com/smarie/python-pytest-cases/issues/122)
+
+### 2.1.1 - Fixed issue with pytest 6
+
+`pytest` 6 is now supported. Fixes [#121](https://github.com/smarie/python-pytest-cases/issues/121) 
+
 ### 2.1.0 - Internal engine improvements + bugfixes
 
 Fixed issue with `@parametrize_with_cases` when two cases with the same id and both requiring a fixture were to be created. Fixed [#117](https://github.com/smarie/python-pytest-cases/issues/117).
