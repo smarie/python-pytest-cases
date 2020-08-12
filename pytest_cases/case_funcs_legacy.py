@@ -99,8 +99,8 @@ def get_case_generator_details(f):
 
 @function_decorator
 def cases_generator(names=None,           # type: Union[str, Callable[[Any], str], Iterable[str]]
-                    target=None,          # type: Any
-                    tags=None,            # type: Iterable[Any]
+                    # target=None,          # type: Any
+                    # tags=None,            # type: Iterable[Any]
                     lru_cache=False,      # type: bool,
                     case_func=DECORATED,  # noqa
                     **param_ranges        # type: Iterable[Any]
