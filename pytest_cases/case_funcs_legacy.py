@@ -105,7 +105,11 @@ def cases_generator(names=None,           # type: Union[str, Callable[[Any], str
                     case_func=DECORATED,  # noqa
                     **param_ranges        # type: Iterable[Any]
                     ):
-    """
+    """ DEPRECATED - use `@parametrize(**<param_ranges>, idgen=<names>)` instead
+
+    Note that `@cases_generator` (legacy api) does not work correctly with `@parametrize_with_cases` (new api). Only
+    `@cases_data` (legacy api) is compliant. See https://github.com/smarie/python-pytest-cases/issues/124
+
     Decorator to declare a case function as being a cases generator. `param_ranges` should be a named list of parameter
     ranges to explore to generate the cases.
 
@@ -133,6 +137,9 @@ def cases_generator(names=None,           # type: Union[str, Callable[[Any], str
         function so they should have names the underlying function can handle.
     :return:
     """
+    warn("`@case_generator` is deprecated. Please use `@parametrize(**<param_ranges>, idgen=<names>)` instead.",
+         category=DeprecationWarning, stacklevel=2)
+
     kwarg_values = list(product(*param_ranges.values()))
     setattr(case_func, _GENERATOR_FIELD, (names, param_ranges.keys(), kwarg_values))
 
