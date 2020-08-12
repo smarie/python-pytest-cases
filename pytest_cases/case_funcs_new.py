@@ -36,6 +36,9 @@ class CaseInfo(object):
         self.tags = ()
         self.add_tags(tags)
 
+    def __repr__(self):
+        return "CaseInfo(id=%r,marks=%r,tags=%r)" % (self.id, self.marks, self.tags)
+
     @classmethod
     def get_from(cls, case_func, create=False, prefix_for_ids='case_'):
         """
