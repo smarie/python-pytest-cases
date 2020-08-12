@@ -1,5 +1,11 @@
 # Changelog
 
+### 2.1.3 - Missing deprecation warning
+
+ - Added missing deprecation warning on `@cases_generator`. Fixes [#124](https://github.com/smarie/python-pytest-cases/issues/124).
+
+ - Removed `target` and `tags` arguments of `@cases_generator` (deprecated api anyway) that were added by mistake in version 2.0.0 but never used.
+
 ### 2.1.2 - Compatibility fix
 
  - Added support for pytest items without funcargs. Fixes interoperability with other pytest plugins such as `pytest-black` or `pytest-flake8`. Fixes [#122](https://github.com/smarie/python-pytest-cases/issues/122)
