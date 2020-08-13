@@ -15,7 +15,7 @@ Did you ever think that most of your test functions were actually *the same test
 
  - `pytest-cases` leverages `pytest` and its great `@pytest.mark.parametrize` decorator, so that you can **separate your test cases from your test functions**.
 
- - In addition, `pytest-cases` improves `pytest`'s fixture mechanism to support "fixture unions". This is a **major change** in the internal `pytest` engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See [here](pytest_goodies.md#fixture_union).
+ - In addition, `pytest-cases` provides [several useful goodies](./pytest_goodies.md) to empower `pytest`. In particular it improves the fixture mechanism to support "fixture unions". This is a **major change** in the internal `pytest` engine, unlocking many possibilities such as using fixture references as parameter values in a test function. See [here](./pytest_goodies.md).
 
 `pytest-cases` is fully compliant with [pytest-harvest](https://smarie.github.io/python-pytest-harvest/) so you can easily monitor the execution times and created artifacts. With it, it becomes very easy to create a complete data science benchmark, for example comparing various models on various datasets as illustrated below (from the [example](examples.md) section):
 
