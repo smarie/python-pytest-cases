@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.6">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.7">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.63b94e9e.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.b8ac9624.min.css">
       
       
     
@@ -1016,6 +1016,10 @@ test_generators.py::test_foo[simple_generator-who=there] PASSED [100%]
 
 <h4 id="cases-requiring-fixtures">Cases requiring fixtures<a class="headerlink" href="#cases-requiring-fixtures" title="Permanent link">&para;</a></h4>
 <p>Cases can use fixtures the same way as <a href="https://docs.pytest.org/en/stable/fixture.html#fixtures-as-function-arguments">test functions do</a>: simply add the fixture names as arguments in their signature and make sure the fixture exists either in the same module, or in a <a href="https://docs.pytest.org/en/stable/fixture.html?highlight=conftest.py#conftest-py-sharing-fixture-functions"><code>conftest.py</code></a> file in one of the parent packages. See <a href="https://docs.pytest.org/en/stable/fixture.html?highlight=conftest.py#conftest-py-sharing-fixture-functions"><code>pytest</code> documentation on sharing fixtures</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Use <code>@fixture</code> instead of <code>@pytest.fixture</code></p>
+<p>If a fixture is used by <em>some</em> of your cases only, then you <em>should</em> use the <code>@fixture</code> decorator from pytest-cases instead of the standard <code>@pytest.fixture</code>. Otherwise you fixture will be setup/teardown for all cases even those not requiring it. See <a href="api_reference/#fixture"><code>@fixture</code> doc</a>.</p>
+</div>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">parametrize</span>
 
 <span class="nd">@fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
@@ -1184,7 +1188,7 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
     </div>
     
       <script src="assets/javascripts/vendor.d1f5a259.min.js"></script>
-      <script src="assets/javascripts/bundle.d5fec882.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "search.result.placeholder": "Type to start searching", "clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.other": "# matching documents", "search.config.lang": "en"}</script>
+      <script src="assets/javascripts/bundle.d5fec882.min.js"></script><script id="__lang" type="application/json">{"search.config.lang": "en", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.other": "# matching documents", "search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.result.none": "No matching documents"}</script>
       
       <script>
         app = initialize({
