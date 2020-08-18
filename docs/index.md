@@ -356,6 +356,8 @@ test_generators.py::test_foo[simple_generator-who=there] PASSED [100%]
 
 Cases can use fixtures the same way as [test functions do](https://docs.pytest.org/en/stable/fixture.html#fixtures-as-function-arguments): simply add the fixture names as arguments in their signature and make sure the fixture exists either in the same module, or in a [`conftest.py`](https://docs.pytest.org/en/stable/fixture.html?highlight=conftest.py#conftest-py-sharing-fixture-functions) file in one of the parent packages. See [`pytest` documentation on sharing fixtures](https://docs.pytest.org/en/stable/fixture.html?highlight=conftest.py#conftest-py-sharing-fixture-functions).
 
+!!! warning "Use `@fixture` instead of `@pytest.fixture`"
+    If a fixture is used by *some* of your cases only, then you *should* use the `@fixture` decorator from pytest-cases instead of the standard `@pytest.fixture`. Otherwise you fixture will be setup/teardown for all cases even those not requiring it. See [`@fixture` doc](./api_reference.md#fixture).
 
 ```python
 from pytest_cases import parametrize_with_cases, fixture, parametrize

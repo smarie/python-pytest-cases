@@ -124,6 +124,8 @@ Transforms a list of cases (obtained from [`get_all_cases`](#get_all_cases)) int
 
 Identical to `@pytest.fixture` decorator, except that 
 
+ - when used in a fixture union (either explicit `fixture_union` or indirect through `@parametrize`+`fixture_ref` or `@parametrize_with_cases`), it will not be setup/teardown unnecessarily in tests that do not require it.
+
  - it supports multi-parametrization with `@pytest.mark.parametrize` as requested in [pytest#3960](https://github.com/pytest-dev/pytest/issues/3960). As a consequence it does not support the `params` and `ids` arguments anymore.
  
  - it supports a new argument `unpack_into` where you can provide names for fixtures where to unpack this fixture into.
