@@ -322,6 +322,9 @@ def get_or_create_case_fixture(case_id,       # type: str
     than the test/fixture requiring it (decorated with @parametrize_with_cases), we create that fixture in the
     appropriate module/class (the host of the test/fixture function).
 
+    Note that we create a small cache in the module/class in order to reuse the created fixture corresponding
+    to a case function if it was already required by a test/fixture in this host.
+
     :param case_id:
     :param case_fun:
     :param host_class_or_module:
