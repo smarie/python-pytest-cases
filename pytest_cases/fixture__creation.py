@@ -35,15 +35,21 @@ def check_name_available(module,
                          if_name_exists=RAISE,  # type: int
                          name_changer=None,     # type: Callable
                          caller=None,           # type: Callable[[Any], Any]
+                         extra_forbidden_names=()  # type: Iterable[str]
                          ):
     """
-    Routine to
+    Routine to check that a name is not already in dir(module) + extra_forbidden_names.
+    The `if_name_exists` argument allows users to specify what happens if a name exists already.
 
-    :param module:
-    :param name:
-    :param if_name_exists:
-    :param name_changer:
-    :param caller:
+    `if_name_exists=CHANGE` allows users to ask for a new non-conflicting name to be found and returned.
+
+    :param module: a module or a class. dir(module) + extra_forbidden_names is used as a reference of forbidden names
+    :param name: proposed name, to check against existent names in module
+    :param if_name_exists: policy to apply if name already exists in dir(module) + extra_forbidden_names
+    :param name_changer: an optional custom name changer function for new names to be generated
+    :param caller: for warning / error messages. Something identifying the caller
+    :param extra_forbidden_names: a reference list of additional forbidden names that can be provided, in addition to
+        dir(module)
     :return: a name that might be different if policy was CHANGE
     """
     if name_changer is None:
@@ -51,7 +57,9 @@ def check_name_available(module,
         def name_changer(name, i):
             return name + '_%s' % i
 
-    if name in dir(module):
+    ref_list = dir(module) + list(extra_forbidden_names)
+
+    if name in ref_list:
         if caller is None:
             caller = ''
 
@@ -66,7 +74,7 @@ def check_name_available(module,
             # find a non-used name in that module
             i = 1
             name2 = name_changer(name, i)
-            while name2 in dir(module):
+            while name2 in ref_list:
                 i += 1
                 name2 = name_changer(name, i)
 

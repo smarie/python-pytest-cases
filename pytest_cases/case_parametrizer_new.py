@@ -3,9 +3,11 @@ from __future__ import division
 
 from functools import partial
 from importlib import import_module
-from inspect import getmembers
+from inspect import getmembers, isfunction, ismethod
 import re
 from warnings import warn
+
+import makefun
 
 try:
     from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
@@ -13,10 +15,10 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
-from .common_others import get_code_first_line, AUTO, AUTO2
+from .common_others import get_code_first_line, AUTO, AUTO2, qname
 from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value
 from .common_pytest_lazy_values import lazy_value
-from .common_pytest import safe_isclass, MiniMetafunc
+from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host
 
 from . import fixture
 from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CaseInfo, CASE_PREFIX_FUN
@@ -43,6 +45,7 @@ def parametrize_with_cases(argnames,                # type: str
                            glob=None,               # type: str
                            has_tag=None,            # type: Any
                            filter=None,             # type: Callable[[Callable], bool]  # noqa
+                           debug=False,             # type: bool
                            **kwargs
                            ):
     # type: (...) -> Callable[[Callable], Callable]
@@ -68,7 +71,7 @@ def parametrize_with_cases(argnames,                # type: str
     cases_funs = get_all_cases(f, cases=cases, prefix=prefix, glob=glob, has_tag=has_tag, filter=filter)
 
     # Transform the various functions found
-    argvalues = get_parametrize_args(cases_funs, prefix=prefix)
+    argvalues = get_parametrize_args(host_class_or_module, cases_funs, debug=False)
     ```
 
     :param argnames: same than in @pytest.mark.parametrize
@@ -88,21 +91,29 @@ def parametrize_with_cases(argnames,                # type: str
         decorator on the case function(s) to be selected.
     :param filter: a callable receiving the case function and returning True or a truth value in case the function
         needs to be selected.
+    :param debug: a boolean flag to debug what happens behind the scenes
     :return:
     """
-    def _apply_parametrization(f):
+    @inject_host
+    def _apply_parametrization(f, host_class_or_module):
         """ execute parametrization of test function or fixture `f` """
 
         # Collect all cases
         cases_funs = get_all_cases(f, cases=cases, prefix=prefix, glob=glob, has_tag=has_tag, filter=filter)
 
-        # Transform the various functions found
-        argvalues = get_parametrize_args(cases_funs)
+        # Transform the various case functions found into `lazy_value` (for case functions not requiring fixtures)
+        # or `fixture_ref` (for case functions requiring fixtures - for them we create associated case fixtures in
+        # `host_class_or_module`)
+        argvalues = get_parametrize_args(host_class_or_module, cases_funs, debug=debug)
 
         # Finally apply parametrization - note that we need to call the private method so that fixture are created in
         # the right module (not here)
-        _parametrize_with_cases = _parametrize_plus(argnames, argvalues, **kwargs)
-        return _parametrize_with_cases(f)
+        _parametrize_with_cases, needs_inject = _parametrize_plus(argnames, argvalues, debug=debug, **kwargs)
+
+        if needs_inject:
+            return _parametrize_with_cases(f, host_class_or_module)
+        else:
+            return _parametrize_with_cases(f)
 
     return _apply_parametrization
 
@@ -220,7 +231,9 @@ def get_all_cases(parametrization_target,  # type: Callable
             and matches_tag_query(c, has_tag=has_tag, filter=filters)]
 
 
-def get_parametrize_args(cases_funs,  # type: List[Callable]
+def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType]
+                         cases_funs,              # type: List[Callable]
+                         debug=False              # type: bool
                          ):
     # type: (...) -> List[Union[lazy_value, fixture_ref]]
     """
@@ -228,18 +241,22 @@ def get_parametrize_args(cases_funs,  # type: List[Callable]
     Each case function `case_fun` is transformed into one or several `lazy_value`(s) or a `fixture_ref`:
 
      - If `case_fun` requires at least on fixture, a fixture will be created if not yet present, and a `fixture_ref`
-       will be returned.
+       will be returned. The fixture will be created in `host_class_or_module`
      - If `case_fun` is a parametrized case, one `lazy_value` with a partialized version will be created for each
        parameter combination.
      - Otherwise, `case_fun` represents a single case: in that case a single `lazy_value` is returned.
 
-    :param cases_funs: a list of case functions returned typically by `get_all_cases`
+    :param host_class_or_module: host of the parametrization target. A class or a module.
+    :param cases_funs: a list of case functions, returned typically by `get_all_cases`
+    :param debug: a boolean flag, turn it to True to print debug messages.
     :return:
     """
-    return [c for _f in cases_funs for c in case_to_argvalues(_f)]
+    return [c for _f in cases_funs for c in case_to_argvalues(host_class_or_module, _f, debug)]
 
 
-def case_to_argvalues(case_fun,                # type: Callable
+def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
+                      case_fun,                # type: Callable
+                      debug=False              # type: bool
                       ):
     # type: (...) -> Tuple[lazy_value]
     """Transform a single case into one or several `lazy_value`(s) or a `fixture_ref` to be used in `@parametrize`
@@ -265,36 +282,143 @@ def case_to_argvalues(case_fun,                # type: Callable
     if not meta.requires_fixtures:
         if not meta.is_parametrized:
             # single unparametrized case function
+            if debug:
+                case_fun_str = qname(case_fun.func if isinstance(case_fun, partial) else case_fun)
+                print("Case function %s > 1 lazy_value() with id %s and marks %s" % (case_fun_str, case_id, case_marks))
             return (lazy_value(case_fun, id=case_id, marks=case_marks),)
         else:
             # parametrized. create one version of the callable for each parametrized call
+            if debug:
+                case_fun_str = qname(case_fun.func if isinstance(case_fun, partial) else case_fun)
+                print("Case function %s > tuple of lazy_value() with ids %s and marks %s"
+                      % (case_fun_str, ["%s-%s" % (case_id, c.id) for c in meta._calls], [c.marks for c in meta._calls]))
             return tuple(lazy_value(partial(case_fun, **c.funcargs), id="%s-%s" % (case_id, c.id), marks=c.marks)
                          for c in meta._calls)
     else:
-        # at least a required fixture: create a fixture
-        # unwrap any partial that would have been created by us because the fixture was in a class
-        if isinstance(case_fun, partial):
-            host_cls = case_fun.host_class
-            case_fun = case_fun.func
-        else:
-            host_cls = None
+        # at least a required fixture:
+        # create or reuse a fixture in the host (pytest collector: module or class) of the parametrization target
+        fix_name = get_or_create_case_fixture(case_id, case_fun, host_class_or_module, debug)
 
-        host_module = import_module(case_fun.__module__)
-
-        # create a new fixture and place it on the host
-        # we have to create a unique fixture name if the fixture already exists.
-        def name_changer(name, i):
-            return name + '_' * i
-        new_fix_name = check_name_available(host_cls or host_module, name=case_id, if_name_exists=CHANGE,
-                                            name_changer=name_changer)
         # if meta.is_parametrized:
         #     nothing to do, the parametrization marks are already there
-        new_fix = fixture(name=new_fix_name)(case_fun)
-        setattr(host_cls or host_module, new_fix_name, new_fix)
 
-        # now reference the new or existing fixture
-        argvalues_tuple = (fixture_ref(new_fix_name),)
+        # reference that case fixture
+        argvalues_tuple = (fixture_ref(fix_name),)
+        if debug:
+            case_fun_str = qname(case_fun.func if isinstance(case_fun, partial) else case_fun)
+            print("Case function %s > fixture_ref(%r) with marks %s" % (case_fun_str, fix_name, case_marks))
         return make_marked_parameter_value(argvalues_tuple, marks=case_marks) if case_marks else argvalues_tuple
+
+
+def get_or_create_case_fixture(case_id,       # type: str
+                               case_fun,      # type: Callable
+                               target_host,   # type: Union[Type, ModuleType]
+                               debug=False    # type: bool
+                               ):
+    # type: (...) -> str
+    """
+    When case functions require fixtures, we want to rely on pytest to inject everything. Therefore
+    we create a fixture wrapping the case function. Since a case function may not be located in the same place
+    than the test/fixture requiring it (decorated with @parametrize_with_cases), we create that fixture in the
+    appropriate module/class (the host of the test/fixture function).
+
+    :param case_id:
+    :param case_fun:
+    :param host_class_or_module:
+    :param debug:
+    :return: the newly created fixture name
+    """
+    if is_fixture(case_fun):
+        raise ValueError("A case function can not be decorated as a `@fixture`. This seems to be the case for"
+                         " %s. If you did not decorate it but still see this error, please report this issue"
+                         % case_fun)
+
+    # source
+    case_in_class = isinstance(case_fun, partial) and hasattr(case_fun, 'host_class')
+    true_case_func = case_fun.func if case_in_class else case_fun
+    # case_host = case_fun.host_class if case_in_class else import_module(case_fun.__module__)
+
+    # for checks
+    orig_name = true_case_func.__name__
+    orig_case = true_case_func
+
+    # destination
+    target_in_class = safe_isclass(target_host)
+    fix_cases_dct = _get_fixture_cases(target_host)  # get our "storage unit" in this module
+
+    # shortcut if the case fixture is already known/registered in target host
+    try:
+        fix_name = fix_cases_dct[true_case_func]
+        if debug:
+            print("Case function %s > Reusing fixture %r" % (qname(true_case_func), fix_name))
+        return fix_name
+    except KeyError:
+        pass
+
+    # not yet known there. Create a new symbol in the target host :
+    # we need a "free" fixture name, and a "free" symbol name
+    existing_fixture_names = []
+    for n, symb in getmembers(target_host, lambda f: isfunction(f) or ismethod(f)):
+        if is_fixture(symb):
+            existing_fixture_names.append(get_fixture_name(symb))
+
+    def name_changer(name, i):
+        return name + '_' * i
+
+    # start with name = case_id and find a name that does not exist
+    fix_name = check_name_available(target_host, extra_forbidden_names=existing_fixture_names, name=case_id,
+                                    if_name_exists=CHANGE, name_changer=name_changer)
+
+    if debug:
+        print("Case function %s > Creating fixture %r in %s" % (qname(true_case_func), fix_name, target_host))
+
+    def funcopy(f):
+        # apparently it is not possible to create an actual copy with copy() !
+        return makefun.partial(f)
+
+    if case_in_class:
+        if target_in_class:
+            # both in class: direct copy of the non-partialized version
+            case_fun = funcopy(case_fun.func)
+        else:
+            # case in class and target in module: use the already existing partialized version
+            case_fun = funcopy(case_fun)
+    else:
+        if target_in_class:
+            # case in module and target in class: create a static method
+            case_fun = staticmethod(case_fun)
+        else:
+            # none in class: direct copy
+            case_fun = funcopy(case_fun)
+
+    # create a new fixture from a copy of the case function, and place it on the target host
+    new_fix = fixture(name=fix_name)(case_fun)
+    # mark as generated by pytest-cases so that we skip it during cases collection
+    new_fix._pytestcasesgen = True
+    setattr(target_host, fix_name, new_fix)
+
+    # remember it for next time
+    fix_cases_dct[true_case_func] = fix_name
+
+    # check that we did not touch the original case
+    assert not is_fixture(orig_case)
+    assert orig_case.__name__ == orig_name
+
+    return fix_name
+
+
+def _get_fixture_cases(module  # type: ModuleType
+                       ):
+    """
+    Returns our 'storage unit' in a module, used to remember the fixtures created from case functions.
+    That way we can reuse fixtures already created for cases, in a given module/class.
+    """
+    try:
+        cache = module._fixture_cases
+    except AttributeError:
+        cache = dict()
+        module._fixture_cases = cache
+    return cache
 
 
 def import_default_cases_module(f, alt_name=False):

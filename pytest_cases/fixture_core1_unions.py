@@ -282,7 +282,7 @@ def fixture_union(name,                # type: str
     return union_fix
 
 
-def _fixture_union(caller_module,
+def _fixture_union(fixtures_dest,
                    name,                  # type: str
                    fix_alternatives,      # type: Sequence[UnionFixtureAlternative]
                    unique_fix_alt_names,  # type: List[str]
@@ -298,7 +298,7 @@ def _fixture_union(caller_module,
     The "alternatives" have to be created beforehand, by the caller. This allows `fixture_union` and `parametrize_plus`
     to use the same implementation while `parametrize_plus` uses customized "alternatives" containing more information.
 
-    :param caller_module:
+    :param fixtures_dest:
     :param name:
     :param fix_alternatives:
     :param unique_fix_alt_names:
@@ -340,8 +340,8 @@ def _fixture_union(caller_module,
     new_union_fix = _make_fix(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
-    check_name_available(caller_module, name, if_name_exists=WARN, caller=caller)
-    setattr(caller_module, name, new_union_fix)
+    check_name_available(fixtures_dest, name, if_name_exists=WARN, caller=caller)
+    setattr(fixtures_dest, name, new_union_fix)
 
     return new_union_fix
 
@@ -390,18 +390,19 @@ def unpack_fixture(argnames,  # type: str
     :return: the created fixtures.
     """
     # get caller module to create the symbols
+    # todo what if this is called in a class ?
     caller_module = get_caller_module()
     return _unpack_fixture(caller_module, argnames, fixture, hook=hook)
 
 
-def _unpack_fixture(caller_module,  # type: ModuleType
+def _unpack_fixture(fixtures_dest,  # type: ModuleType
                     argnames,       # type: Union[str, Iterable[str]]
                     fixture,        # type: Union[str, Callable]
                     hook            # type: Callable[[Callable], Callable]
                     ):
     """
 
-    :param caller_module:
+    :param fixtures_dest:
     :param argnames:
     :param fixture:
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
@@ -446,8 +447,8 @@ def _unpack_fixture(caller_module,  # type: ModuleType
         fix = _create_fixture(value_idx)
 
         # add to module
-        check_name_available(caller_module, argname, if_name_exists=WARN, caller=unpack_fixture)
-        setattr(caller_module, argname, fix)
+        check_name_available(fixtures_dest, argname, if_name_exists=WARN, caller=unpack_fixture)
+        setattr(fixtures_dest, argname, fix)
 
         # collect to return the whole list eventually
         created_fixtures.append(fix)

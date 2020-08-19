@@ -61,7 +61,7 @@ cases_funs = get_all_cases(f, cases=cases, prefix=prefix,
                            glob=glob, has_tag=has_tag, filter=filter)
 
 # Transform the various functions found
-argvalues = get_parametrize_args(cases_funs)
+argvalues = get_parametrize_args(host_class_or_module_of_f, cases_funs)
 ```
 
 **Parameters**
@@ -97,7 +97,9 @@ Lists all desired cases for a given `parametrization_target` (a test function or
 ### `get_parametrize_args`
 
 ```python
-def get_parametrize_args(cases_funs: List[Callable],
+def get_parametrize_args(host_class_or_module: Union[Type, ModuleType],
+                         cases_funs: List[Callable],
+                         debug: bool = False
                          ) -> List[Union[lazy_value, fixture_ref]]:
 ```
 

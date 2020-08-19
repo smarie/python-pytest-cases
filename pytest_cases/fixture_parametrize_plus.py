@@ -22,15 +22,15 @@ from .common_others import AUTO
 from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, is_lazy, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
-    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval
+    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host
 
-from .fixture__creation import check_name_available, CHANGE, WARN, get_caller_module
+from .fixture__creation import check_name_available, CHANGE, WARN
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
     _make_unpack_fixture
 from .fixture_core2 import _create_param_fixture, fixture_plus
 
 
-def _fixture_product(caller_module,
+def _fixture_product(fixtures_dest,
                      name,                # type: str
                      fixtures_or_values,
                      fixture_positions,
@@ -44,7 +44,7 @@ def _fixture_product(caller_module,
     """
     Internal implementation for fixture products created by pytest parametrize plus.
 
-    :param caller_module:
+    :param fixtures_dest:
     :param name:
     :param fixtures_or_values:
     :param fixture_positions:
@@ -103,12 +103,12 @@ def _fixture_product(caller_module,
     fix = f_decorator(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
-    check_name_available(caller_module, name, if_name_exists=WARN, caller=caller)
-    setattr(caller_module, name, fix)
+    check_name_available(fixtures_dest, name, if_name_exists=WARN, caller=caller)
+    setattr(fixtures_dest, name, fix)
 
     # if unpacking is requested, do it here
     if unpack_into is not None:
-        _make_unpack_fixture(caller_module, argnames=unpack_into, fixture=name, hook=hook)
+        _make_unpack_fixture(fixtures_dest, argnames=unpack_into, fixture=name, hook=hook)
 
     return fix
 
@@ -141,7 +141,7 @@ def pytest_parametrize_plus(*args,
                             **kwargs):
     warn("`pytest_parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
          "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
-    return _parametrize_plus(*args, **kwargs)
+    return parametrize_plus(*args, **kwargs)
 
 
 class ParamAlternative(UnionFixtureAlternative):
@@ -341,8 +341,15 @@ def parametrize_plus(argnames=None,       # type: str
     :param args: additional {argnames: argvalues} definition
     :return:
     """
-    return _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, idgen=idgen, idstyle=idstyle, scope=scope,
-                             hook=hook, debug=debug, **args)
+    _decorate, needs_inject = _parametrize_plus(argnames, argvalues, indirect=indirect, ids=ids, idgen=idgen,
+                                                idstyle=idstyle, scope=scope, hook=hook, debug=debug, **args)
+    if needs_inject:
+        @inject_host
+        def _apply_parametrize_plus(f, host_class_or_module):
+            return _decorate(f, host_class_or_module)
+        return _apply_parametrize_plus
+    else:
+        return _decorate
 
 
 class InvalidIdTemplateException(Exception):
@@ -372,10 +379,13 @@ def _parametrize_plus(argnames=None,
                       idgen=_IDGEN,        # type: Union[str, Callable]
                       scope=None,          # type: str
                       hook=None,           # type: Callable[[Callable], Callable]
-                      _frame_offset=2,
                       debug=False,         # type: bool
                       **args):
+    """
 
+    :return: a tuple (decorator, needs_inject) where needs_inject is True if decorator has signature (f, host)
+        and False if decorator has signature (f)
+    """
     # idgen default
     if idgen is _IDGEN:
         # default: use the new id style only when some **args are provided
@@ -421,7 +431,7 @@ def _parametrize_plus(argnames=None,
         _decorator = pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
                                              ids=ids, scope=scope)
         if indirect:
-            return _decorator
+            return _decorator, False
         else:
             # wrap the decorator to check if the test function has the parameters as arguments
             def _apply(test_func):
@@ -432,7 +442,7 @@ def _parametrize_plus(argnames=None,
                                          "" % (p, test_func.__name__, s))
                 return _decorator(test_func)
 
-            return _apply
+            return _apply, False
 
     else:
         if indirect:
@@ -440,10 +450,9 @@ def _parametrize_plus(argnames=None,
                              "the `argvalues`.")
 
         if debug:
-            print("Fixture references found. Creating fixtures...")
+            print("Fixture references found. Creating references and fixtures...")
 
         # there are fixture references: we will create a specific decorator replacing the params with a "union" fixture
-        caller_module = get_caller_module(frame_offset=_frame_offset)
         param_names_str = '_'.join(argnames).replace(' ', '')
 
         # First define a few functions that will help us create the various fixtures to use in the final "union"
@@ -474,7 +483,7 @@ def _parametrize_plus(argnames=None,
             _tmp_make_id.i = -1
             return _tmp_make_id
 
-        def _create_params_alt(test_func_name, union_name, from_i, to_i, hook):  # noqa
+        def _create_params_alt(fh, test_func_name, union_name, from_i, to_i, hook):  # noqa
             """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
 
             # check if this is about a single value or several values
@@ -485,16 +494,14 @@ def _parametrize_plus(argnames=None,
 
                 # Create a unique fixture name
                 p_fix_name = "%s_%s_P%s" % (test_func_name, param_names_str, i)
-                p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
-                                                  caller=parametrize_plus)
+                p_fix_name = check_name_available(fh, p_fix_name, if_name_exists=CHANGE, caller=parametrize_plus)
 
                 if debug:
-                    print("Creating fixture %r to handle parameter %s" % (p_fix_name, i))
+                    print(" - Creating new fixture %r to handle parameter %s" % (p_fix_name, i))
 
                 # Create the fixture that will return the unique parameter value ("auto-simplify" flag)
                 # IMPORTANT that fixture is NOT parametrized so has no id nor marks: use argvalues not marked_argvalues
-                _create_param_fixture(caller_module, argname=p_fix_name, argvalues=argvalues[i:i+1], hook=hook,
-                                      auto_simplify=True)
+                _create_param_fixture(fh, argname=p_fix_name, argvalues=argvalues[i:i + 1], hook=hook, auto_simplify=True)
 
                 # Create the alternative
                 argvals = (argvalues[i],) if nb_params == 1 else argvalues[i]
@@ -507,11 +514,10 @@ def _parametrize_plus(argnames=None,
             else:
                 # Create a unique fixture name
                 p_fix_name = "%s_%s_is_P%stoP%s" % (test_func_name, param_names_str, from_i, to_i - 1)
-                p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE,
-                                                  caller=parametrize_plus)
+                p_fix_name = check_name_available(fh, p_fix_name, if_name_exists=CHANGE, caller=parametrize_plus)
 
                 if debug:
-                    print("Creating fixture %r to handle parameters %s to %s" % (p_fix_name, from_i, to_i - 1))
+                    print(" - Creating new fixture %r to handle parameters %s to %s" % (p_fix_name, from_i, to_i - 1))
 
                 # If an explicit list of ids was provided, slice it. Otherwise use the provided callable
                 try:
@@ -530,7 +536,7 @@ def _parametrize_plus(argnames=None,
                     _argvals = tuple(ParameterSet((vals, ), id=id, marks=marks or ())
                                      for vals, id, marks in zip(argvalues[from_i:to_i],
                                                                 p_ids[from_i:to_i], p_marks[from_i:to_i]))
-                _create_param_fixture(caller_module, argname=p_fix_name, argvalues=_argvals, ids=param_ids, hook=hook)
+                _create_param_fixture(fh, argname=p_fix_name, argvalues=_argvals, ids=param_ids, hook=hook)
 
                 # todo put back debug=debug above
 
@@ -546,7 +552,7 @@ def _parametrize_plus(argnames=None,
             f_fix_name = argvalues[i].fixture
 
             if debug:
-                print("Creating reference to fixture %r" % (f_fix_name,))
+                print(" - Creating reference to existing fixture %r" % (f_fix_name,))
 
             # Create the alternative
             f_fix_alt = FixtureParamAlternative(union_name=union_name, alternative_name=f_fix_name,
@@ -557,7 +563,7 @@ def _parametrize_plus(argnames=None,
 
             return f_fix_name, f_fix_alt
 
-        def _create_fixture_ref_product(union_name, i, fixture_ref_positions, test_func_name, hook):  # noqa
+        def _create_fixture_ref_product(fh, union_name, i, fixture_ref_positions, test_func_name, hook):  # noqa
 
             # If an explicit list of ids was provided, slice it. Otherwise use the provided callable
             try:
@@ -570,13 +576,13 @@ def _parametrize_plus(argnames=None,
 
             # Create a unique fixture name
             p_fix_name = "%s_%s_P%s" % (test_func_name, param_names_str, i)
-            p_fix_name = check_name_available(caller_module, p_fix_name, if_name_exists=CHANGE, caller=parametrize_plus)
+            p_fix_name = check_name_available(fh, p_fix_name, if_name_exists=CHANGE, caller=parametrize_plus)
 
             if debug:
-                print("Creating fixture %r to handle parameter %s that is a cross-product" % (p_fix_name, i))
+                print(" - Creating new fixture %r to handle parameter %s that is a cross-product" % (p_fix_name, i))
 
             # Create the fixture
-            _make_fixture_product(caller_module, name=p_fix_name, hook=hook, caller=parametrize_plus, ids=param_ids,
+            _make_fixture_product(fh, name=p_fix_name, hook=hook, caller=parametrize_plus, ids=param_ids,
                                   fixtures_or_values=param_values, fixture_positions=fixture_ref_positions)
 
             # Create the corresponding alternative
@@ -589,7 +595,7 @@ def _parametrize_plus(argnames=None,
             return p_fix_name, p_fix_alt
 
         # Then create the decorator per se
-        def parametrize_plus_decorate(test_func):
+        def parametrize_plus_decorate(test_func, fixtures_dest):
             """
             A decorator that wraps the test function so that instead of receiving the parameter names, it receives the
             new fixture. All other decorations are unchanged.
@@ -619,7 +625,7 @@ def _parametrize_plus(argnames=None,
             # style_template = "%s_param__%s"
             main_fixture_style_template = "%s_%s"
             fixture_union_name = main_fixture_style_template % (test_func_name, param_names_str)
-            fixture_union_name = check_name_available(caller_module, fixture_union_name, if_name_exists=CHANGE,
+            fixture_union_name = check_name_available(fixtures_dest, fixture_union_name, if_name_exists=CHANGE,
                                                       caller=parametrize_plus)
 
             # Retrieve (if ref) or create (for normal argvalues) the fixtures that we will union
@@ -633,7 +639,7 @@ def _parametrize_plus(argnames=None,
                     #  one for each consecutive group as shown below. This should not lead to different results but perf
                     #  might differ. Maybe add a parameter in the signature so that users can test it ?
                     #  this would make the ids more readable by removing the "P2toP3"-like ids
-                    p_fix_name, p_fix_alt = _create_params_alt(test_func_name=test_func_name, hook=hook,
+                    p_fix_name, p_fix_alt = _create_params_alt(fixtures_dest, test_func_name=test_func_name, hook=hook,
                                                                union_name=fixture_union_name, from_i=prev_i + 1, to_i=i)
                     fixture_alternatives.append((p_fix_name, p_fix_alt))
                     if explicit_ids_to_use is not None:
@@ -653,7 +659,8 @@ def _parametrize_plus(argnames=None,
 
                 else:
                     # argvalues[i] is a tuple, some of them being fixture_ref. create a fixture refering to all of them
-                    prod_fix_name, prod_fix_alt = _create_fixture_ref_product(union_name=fixture_union_name, i=i,
+                    prod_fix_name, prod_fix_alt = _create_fixture_ref_product(fixtures_dest,
+                                                                              union_name=fixture_union_name, i=i,
                                                                               fixture_ref_positions=j_list,
                                                                               test_func_name=test_func_name, hook=hook)
                     fixture_alternatives.append((prod_fix_name, prod_fix_alt))
@@ -665,8 +672,8 @@ def _parametrize_plus(argnames=None,
             # C/ handle last consecutive group of normal parameters, if any
             i = len(argvalues)  # noqa
             if i > prev_i + 1:
-                p_fix_name, p_fix_alt = _create_params_alt(test_func_name=test_func_name, union_name=fixture_union_name,
-                                                           from_i=prev_i + 1, to_i=i, hook=hook)
+                p_fix_name, p_fix_alt = _create_params_alt(fixtures_dest, test_func_name=test_func_name, hook=hook,
+                                                           union_name=fixture_union_name, from_i=prev_i + 1, to_i=i)
                 fixture_alternatives.append((p_fix_name, p_fix_alt))
                 if explicit_ids_to_use is not None:
                     if isinstance(p_fix_alt, SingleParamAlternative):
@@ -692,10 +699,11 @@ def _parametrize_plus(argnames=None,
 
             # Finally create a "main" fixture with a unique name for this test function
             if debug:
-                print("Creating final union fixture %r with alternatives %r" % (fixture_union_name, fix_alternatives))
+                print("Creating final union fixture %r with alternatives %r"
+                      % (fixture_union_name, UnionFixtureAlternative.to_list_of_fixture_names(fix_alternatives)))
 
             # note: the function automatically registers it in the module
-            _make_fixture_union(caller_module, name=fixture_union_name, hook=hook, caller=parametrize_plus,
+            _make_fixture_union(fixtures_dest, name=fixture_union_name, hook=hook, caller=parametrize_plus,
                                 fix_alternatives=fix_alternatives, unique_fix_alt_names=fix_alt_names,
                                 ids=explicit_ids_to_use or ids or ParamIdMakers.get(idstyle))
 
@@ -765,7 +773,7 @@ def _parametrize_plus(argnames=None,
             # return the new test function
             return wrapped_test_func
 
-        return parametrize_plus_decorate
+        return parametrize_plus_decorate, True
 
 
 def _get_argnames_argvalues(argnames=None, argvalues=None, **args):
