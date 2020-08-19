@@ -74,13 +74,14 @@ def param_fixture(argname,           # type: str
     elif len(argname.replace(' ', '')) == 0:
         raise ValueError("empty argname")
 
+    # todo what if this is called in a class ?
     caller_module = get_caller_module()
 
     return _create_param_fixture(caller_module, argname, argvalues, autouse=autouse, ids=ids, scope=scope,
                                  hook=hook, debug=debug, **kwargs)
 
 
-def _create_param_fixture(caller_module,
+def _create_param_fixture(fixtures_dest,
                           argname,           # type: str
                           argvalues,         # type: Sequence[Any]
                           autouse=False,     # type: bool
@@ -120,8 +121,8 @@ def _create_param_fixture(caller_module,
                            hook=hook, **kwargs)(__param_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
-    check_name_available(caller_module, argname, if_name_exists=WARN, caller=param_fixture)
-    setattr(caller_module, argname, fix)
+    check_name_available(fixtures_dest, argname, if_name_exists=WARN, caller=param_fixture)
+    setattr(fixtures_dest, argname, fix)
 
     return fix
 
@@ -183,7 +184,7 @@ def param_fixtures(argnames,          # type: str
                                       hook=hook, debug=debug, **kwargs)
 
 
-def _create_params_fixture(caller_module,
+def _create_params_fixture(fixtures_dest,
                            argnames_lst,      # type: Sequence[str]
                            argvalues,         # type: Sequence[Any]
                            autouse=False,     # type: bool
@@ -200,7 +201,7 @@ def _create_params_fixture(caller_module,
     root_fixture_name = "%s__param_fixtures_root" % ('_'.join(sorted(argnames_lst)))
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
-    root_fixture_name = check_name_available(caller_module, root_fixture_name, if_name_exists=CHANGE,
+    root_fixture_name = check_name_available(fixtures_dest, root_fixture_name, if_name_exists=CHANGE,
                                              caller=param_fixtures)
 
     if debug:
@@ -213,7 +214,7 @@ def _create_params_fixture(caller_module,
         return tuple(_kwargs[k] for k in argnames_lst)
 
     # Override once again the symbol with the correct contents
-    setattr(caller_module, root_fixture_name, _root_fixture)
+    setattr(fixtures_dest, root_fixture_name, _root_fixture)
 
     # finally create the sub-fixtures
     for param_idx, argname in enumerate(argnames_lst):
@@ -237,8 +238,8 @@ def _create_params_fixture(caller_module,
         fix = _create_fixture(param_idx)
 
         # add to module
-        check_name_available(caller_module, argname, if_name_exists=WARN, caller=param_fixtures)
-        setattr(caller_module, argname, fix)
+        check_name_available(fixtures_dest, argname, if_name_exists=WARN, caller=param_fixtures)
+        setattr(fixtures_dest, argname, fix)
 
         # collect to return the whole list eventually
         created_fixtures.append(fix)
@@ -305,6 +306,8 @@ def fixture_plus(scope="function",  # type: str
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: other keyword arguments for `@pytest.fixture`
     """
+    # todo what if this is called in a class ?
+
     # the offset is 3 because of @function_decorator (decopatch library)
     return _decorate_fixture_plus(fixture_func, scope=scope, autouse=autouse, name=name, unpack_into=unpack_into,
                                   hook=hook, _caller_module_offset_when_unpack=3, **kwargs)

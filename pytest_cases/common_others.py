@@ -1,3 +1,6 @@
+import functools
+import inspect
+from importlib import import_module
 from inspect import findsource
 import re
 
@@ -6,7 +9,7 @@ try:
 except ImportError:
     pass
 
-from .common_mini_six import string_types
+from .common_mini_six import string_types, PY3
 
 
 def get_code_first_line(f):
@@ -204,3 +207,56 @@ AUTO = object()
 
 AUTO2 = object()
 """Marker that alternate automatic defaults"""
+
+
+def get_function_host(func):
+    """
+    Returns the module or class where func is defined. Approximate method based on qname but "good enough"
+
+    :param func:
+    :return:
+    """
+    host = get_class_that_defined_method(func)
+    if host is None:
+        host = import_module(func.__module__)
+        # assert func in host
+
+    return host
+
+
+def get_class_that_defined_method(meth):
+    """ Adapted from https://stackoverflow.com/a/25959545/7262247 , to support python 2 too """
+    if isinstance(meth, functools.partial):
+        return get_class_that_defined_method(meth.func)
+
+    if inspect.ismethod(meth) or (inspect.isbuiltin(meth) and getattr(meth, '__self__', None) is not None
+                                  and getattr(meth.__self__, '__class__', None)):
+        for cls in inspect.getmro(meth.__self__.__class__):
+            if meth.__name__ in cls.__dict__:
+                return cls
+        meth = getattr(meth, '__func__', meth)  # fallback to __qualname__ parsing
+
+    if inspect.isfunction(meth):
+        cls = getattr(inspect.getmodule(meth),
+                      qname(meth).split('.<locals>', 1)[0].rsplit('.', 1)[0],
+                      None)
+        if isinstance(cls, type):
+            return cls
+
+    return getattr(meth, '__objclass__', None)  # handle special descriptor objects
+
+
+if PY3:
+    def qname(func):
+        return func.__qualname__
+else:
+    def qname(func):
+        """'good enough' python 2 implementation of __qualname__"""
+        try:
+            hostclass = func.im_class
+        except AttributeError:
+            # no host class
+            return "%s.%s" % (func.__module__, func.__name__)
+        else:
+            # host class: recurse (note that in python 2 nested classes do not have a way to know their parent class)
+            return "%s.%s" % (qname(hostclass), func.__name__)

@@ -17,6 +17,7 @@ import pytest
 from _pytest.python import Metafunc
 
 from .common_mini_six import string_types
+from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, has_pytest_param, \
     get_pytest_parametrize_marks
 from .common_pytest_lazy_values import is_lazy_value
@@ -643,3 +644,78 @@ def _cart_product_pytest(argnames_lists, argvalues):
             result.append((x_marks_lst, x_value_lst))
 
     return result
+
+
+def inject_host(apply_decorator):
+    """
+    A decorator for function with signature `apply_decorator(f, host)`, in order to inject 'host', the host of f.
+
+    Since it is not entirely feasible to detect the host in python, my first implementation was a bit complex: it was
+    returning an object with custom implementation of __call__ and __get__ methods, both reacting when pytest collection
+    happens.
+
+    That was very complex. Now we rely on an approximate but good enough alternative with `get_function_host`
+
+    :param apply_decorator:
+    :return:
+    """
+    # class _apply_decorator_with_host_tracking(object):
+    #     def __init__(self, _target):
+    #         # This is called when the decorator is applied on the target. Remember the target and result of paramz
+    #         self._target = _target
+    #         self.__wrapped__ = None
+    #
+    #     def __get__(self, obj, type_=None):
+    #         """
+    #         When the decorated test function or fixture sits in a cl
+    #         :param obj:
+    #         :param type_:
+    #         :return:
+    #         """
+    #         # We now know that the parametrized function/fixture self._target sits in obj (a class or a module)
+    #         # We can therefore apply our parametrization accordingly (we need a reference to this host container in
+    #         # order to store fixtures there)
+    #         if self.__wrapped__ is None:
+    #             self.__wrapped__ = 1  # means 'pending', to protect against infinite recursion
+    #             try:
+    #                 self.__wrapped__ = apply_decorator(self._target, obj)
+    #             except Exception as e:
+    #                 traceback = sys.exc_info()[2]
+    #                 reraise(BaseException, e.args, traceback)
+    #
+    #                 # path, lineno = get_fslocation_from_item(self)
+    #                 # warn_explicit(
+    #                 #     "Error parametrizing function %s : [%s] %s" % (self._target, e.__class__, e),
+    #                 #     category=None,
+    #                 #     filename=str(path),
+    #                 #     lineno=lineno + 1 if lineno is not None else None,
+    #                 # )
+    #                 #
+    #                 # @wraps(self._target)
+    #                 # def _exc_raiser(*args, **kwargs):
+    #                 #     raise e
+    #                 # # remove this metadata otherwise pytest will unpack it
+    #                 # del _exc_raiser.__wrapped__
+    #                 # self.__wrapped__ = _exc_raiser
+    #
+    #         return self.__wrapped__
+    #
+    #     def __getattribute__(self, item):
+    #         if item == '__call__':
+    #             # direct call means that the parametrized function sits in a module. import it
+    #             host_module = import_module(self._target.__module__)
+    #
+    #             # next time the __call__ attribute will be set so callable() will work
+    #             self.__call__ = self.__get__(host_module)
+    #             return self.__call__
+    #         else:
+    #             return object.__getattribute__(self, item)
+    #
+    # return _apply_decorator_with_host_tracking
+
+    def apply(test_or_fixture_func):
+        # approximate but far less complex to debug than above !
+        container = get_function_host(test_or_fixture_func)
+        return apply_decorator(test_or_fixture_func, container)
+
+    return apply
