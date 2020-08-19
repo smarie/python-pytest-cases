@@ -1,5 +1,11 @@
 # Changelog
 
+### 2.2.0 - Doc improvements + bugfix for cases requiring fixtures
+
+ - Improved documentation to explain why `@fixture` should be used instead of `@pytest.fixture`. Fixed [#125](https://github.com/smarie/python-pytest-cases/issues/125)
+
+ - Fixed ` ValueError: fixture is being applied more than once to the same function` when two functions parametrized with the same cases were sitting in the same file. Improved robustness when cases require fixtures, in particular when parametrized test/fixture sits in a class or when several of them sit in a class/module. Fixed [#126](https://github.com/smarie/python-pytest-cases/issues/126)
+
 ### 2.1.3 - Missing deprecation warning
 
  - Added missing deprecation warning on `@cases_generator`. Fixes [#124](https://github.com/smarie/python-pytest-cases/issues/124).
