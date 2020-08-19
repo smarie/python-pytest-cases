@@ -272,6 +272,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#220-doc-improvements-bugfix-for-cases-requiring-fixtures" class="md-nav__link">
+    2.2.0 - Doc improvements + bugfix for cases requiring fixtures
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#213-missing-deprecation-warning" class="md-nav__link">
     2.1.3 - Missing deprecation warning
   </a>
@@ -794,6 +801,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#220-doc-improvements-bugfix-for-cases-requiring-fixtures" class="md-nav__link">
+    2.2.0 - Doc improvements + bugfix for cases requiring fixtures
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#213-missing-deprecation-warning" class="md-nav__link">
     2.1.3 - Missing deprecation warning
   </a>
@@ -1304,6 +1318,15 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="220-doc-improvements-bugfix-for-cases-requiring-fixtures">2.2.0 - Doc improvements + bugfix for cases requiring fixtures<a class="headerlink" href="#220-doc-improvements-bugfix-for-cases-requiring-fixtures" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Improved documentation to explain why <code>@fixture</code> should be used instead of <code>@pytest.fixture</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/125">#125</a></p>
+</li>
+<li>
+<p>Fixed <code>ValueError: fixture is being applied more than once to the same function</code> when two functions parametrized with the same cases were sitting in the same file. Improved robustness when cases require fixtures, in particular when parametrized test/fixture sits in a class or when several of them sit in a class/module. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/126">#126</a></p>
+</li>
+</ul>
 <h3 id="213-missing-deprecation-warning">2.1.3 - Missing deprecation warning<a class="headerlink" href="#213-missing-deprecation-warning" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -1785,7 +1808,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.d1f5a259.min.js"></script>
-      <script src="../assets/javascripts/bundle.d5fec882.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copied": "Copied to clipboard"}</script>
+      <script src="../assets/javascripts/bundle.d5fec882.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "clipboard.copied": "Copied to clipboard", "search.result.other": "# matching documents", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.none": "No matching documents"}</script>
       
       <script>
         app = initialize({
