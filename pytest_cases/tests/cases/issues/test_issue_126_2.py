@@ -21,7 +21,7 @@ if has_pytest_param:
         def a_nested(self):
             return 2
 
-        def test_a(self, a):
+        def test_a_nested(self, a):
             assert a == 2
 
         @parametrize_with_cases('o', debug=True)
@@ -48,18 +48,32 @@ if has_pytest_param:
 
     def test_synthesis(module_results_dct):
         assert list(module_results_dct) == [
-             'test_a',
-             'test_foo_nested[o_is_a_]',
-             'test_foo_nested[o_is_b_-a=*]',
-             'test_foo_nested[o_is_b_-a=**]',
-             'test_foo_nested2[o_is_a_]',      # <- note that case fixture names are the same: correctly reused
-             'test_foo_nested2[o_is_b_-a=*]',
-             'test_foo_nested2[o_is_b_-a=**]',
-             'test_bar',
-             'test_foo[o_is_a_]',
-             'test_foo[o_is_b_-a=*]',
-             'test_foo[o_is_b_-a=**]',
-             'test_foo2[o_is_a_]',  # <- note that case fixture names are the same: correctly reused
-             'test_foo2[o_is_b_-a=*]',
-             'test_foo2[o_is_b_-a=**]'
+            # all tests in TestA class
+            'test_a_nested',
+            'test_foo_nested[o_is_a_]',
+            'test_foo_nested[o_is_b_-a=*]',
+            'test_foo_nested[o_is_b_-a=**]',
+            'test_foo_nested[o_is_a__]',
+            'test_foo_nested[o_is_b__-a=*]',
+            'test_foo_nested[o_is_b__-a=**]',
+            'test_foo_nested2[o_is_a_]',      # <- note that case fixture names are the same: correctly reused
+            'test_foo_nested2[o_is_b_-a=*]',
+            'test_foo_nested2[o_is_b_-a=**]',
+            'test_foo_nested2[o_is_a__]',
+            'test_foo_nested2[o_is_b__-a=*]',
+            'test_foo_nested2[o_is_b__-a=**]',
+            # all tests in the module
+            'test_bar',
+            'test_foo[o_is_a_]',
+            'test_foo[o_is_b_-a=*]',
+            'test_foo[o_is_b_-a=**]',
+            'test_foo[o_is_a__]',
+            'test_foo[o_is_b__-a=*]',
+            'test_foo[o_is_b__-a=**]',
+            'test_foo2[o_is_a_]',  # <- note that case fixture names are the same: correctly reused
+            'test_foo2[o_is_b_-a=*]',
+            'test_foo2[o_is_b_-a=**]',
+            'test_foo2[o_is_a__]',
+            'test_foo2[o_is_b__-a=*]',
+            'test_foo2[o_is_b__-a=**]'
         ]
