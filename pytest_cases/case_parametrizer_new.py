@@ -377,6 +377,7 @@ def get_or_create_case_fixture(case_id,       # type: str
 
     def funcopy(f):
         # apparently it is not possible to create an actual copy with copy() !
+        # Use makefun.partial which preserves the parametrization marks (we need them)
         return makefun.partial(f)
 
     if case_in_class:

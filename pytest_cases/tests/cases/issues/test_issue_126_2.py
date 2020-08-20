@@ -28,6 +28,10 @@ if has_pytest_param:
         def test_foo_nested(self, o):
             assert o == 'case!'
 
+        @parametrize_with_cases('o', debug=True)
+        def test_foo_nested2(self, o):
+            assert o == 'case!'
+
 
     def test_bar(a):
         assert a == 1
@@ -38,10 +42,24 @@ if has_pytest_param:
         assert o == 'case!'
 
 
+    @parametrize_with_cases('o', debug=True)
+    def test_foo2(o):
+        assert o == 'case!'
+
     def test_synthesis(module_results_dct):
-         assert list(module_results_dct) == [
+        assert list(module_results_dct) == [
              'test_a',
              'test_foo_nested[o_is_a_]',
+             'test_foo_nested[o_is_b_-a=*]',
+             'test_foo_nested[o_is_b_-a=**]',
+             'test_foo_nested2[o_is_a_]',      # <- note that case fixture names are the same: correctly reused
+             'test_foo_nested2[o_is_b_-a=*]',
+             'test_foo_nested2[o_is_b_-a=**]',
              'test_bar',
-             'test_foo[o_is_a_]'
+             'test_foo[o_is_a_]',
+             'test_foo[o_is_b_-a=*]',
+             'test_foo[o_is_b_-a=**]',
+             'test_foo2[o_is_a_]',  # <- note that case fixture names are the same: correctly reused
+             'test_foo2[o_is_b_-a=*]',
+             'test_foo2[o_is_b_-a=**]'
         ]
