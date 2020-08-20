@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.2.1 - setup.py fix to enforce dependency version
+
+ - Now enforcing usage of `makefun` 1.9.3 or above to avoid issue `AttributeError: 'functools.partial' object has no attribute '__module__'` mentioned in [#128](https://github.com/smarie/python-pytest-cases/issues/128)
+
 ### 2.2.0 - Doc improvements + bugfix for cases requiring fixtures
 
  - Improved documentation to explain why `@fixture` should be used instead of `@pytest.fixture`. Fixed [#125](https://github.com/smarie/python-pytest-cases/issues/125)
