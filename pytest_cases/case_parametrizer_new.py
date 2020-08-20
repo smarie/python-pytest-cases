@@ -390,6 +390,7 @@ def get_or_create_case_fixture(case_id,       # type: str
     else:
         if target_in_class:
             # case in module and target in class: create a static method
+            # TODO this is actually never called because host is never the class. To check.
             case_fun = staticmethod(case_fun)
         else:
             # none in class: direct copy

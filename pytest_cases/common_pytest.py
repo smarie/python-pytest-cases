@@ -714,7 +714,12 @@ def inject_host(apply_decorator):
     # return _apply_decorator_with_host_tracking
 
     def apply(test_or_fixture_func):
-        # approximate but far less complex to debug than above !
+        # approximate: always returns the module and not the class :(
+        #
+        # indeed when this is called, the function exists (and its qualname mentions the host class) but the
+        # host class is not yet created in the module, so it is not found by our `get_class_that_defined_method`
+        #
+        # but still ... this is far less complex to debug than the above attempt and it does not yet have side effects..
         container = get_function_host(test_or_fixture_func)
         return apply_decorator(test_or_fixture_func, container)
 
