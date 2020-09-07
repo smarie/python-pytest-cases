@@ -29,6 +29,6 @@ def test_argnames_from_invalid_type():
 
 def test_argnames_element_from_invalid_type():
     with pytest.raises(
-            TypeError, match="^all argnames should be a strings$"
+            TypeError, match="^all argnames should be strings$"
     ):
         parametrize_with_cases(argnames=["a", 2, "c"], cases=".")(lambda _: None)
