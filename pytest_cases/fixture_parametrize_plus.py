@@ -810,7 +810,7 @@ def _get_argnames_argvalues(argnames=None, argvalues=None, **args):
         raise TypeError("argnames should be a string, list or a tuple")
 
     if any([not isinstance(argname, str) for argname in argnames]):
-        raise TypeError("all argnames should be a strings")
+        raise TypeError("all argnames should be strings")
 
     if argvalues is None:
         raise ValueError("No argvalues provided while argnames are provided")
