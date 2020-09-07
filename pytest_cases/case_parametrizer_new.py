@@ -39,7 +39,7 @@ except:  # noqa
     pass
 
 
-def parametrize_with_cases(argnames,                # type: str
+def parametrize_with_cases(argnames,                # type: Union[str, List[str]]
                            cases=AUTO,              # type: Union[Callable, Type, ModuleRef]
                            prefix=CASE_PREFIX_FUN,  # type: str
                            glob=None,               # type: str
