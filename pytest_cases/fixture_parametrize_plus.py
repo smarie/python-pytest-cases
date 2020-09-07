@@ -802,9 +802,15 @@ def _get_argnames_argvalues(argnames=None, argvalues=None, **args):
             argvalues = [l[0] if not is_marked_parameter_value(l) else l for l in argvalues]
         return argnames, argvalues
 
-    elif isinstance(argnames, string_types):
+    if isinstance(argnames, string_types):
         # (2) argnames + argvalues, as usual. However **args can also be passed and should be added
         argnames = get_param_argnames_as_list(argnames)
+
+    if not isinstance(argnames, (list, tuple)):
+        raise TypeError("argnames should be a string, list or a tuple")
+
+    if any([not isinstance(argname, str) for argname in argnames]):
+        raise TypeError("all argnames should be a strings")
 
     if argvalues is None:
         raise ValueError("No argvalues provided while argnames are provided")
