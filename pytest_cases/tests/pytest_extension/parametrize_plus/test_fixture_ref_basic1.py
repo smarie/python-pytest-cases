@@ -1,3 +1,7 @@
+# Authors: Sylvain MARIE <sylvain.marie@se.com>
+#          + All contributors to <https://github.com/smarie/python-pytest-cases>
+#
+# License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
 from pytest_cases import pytest_parametrize_plus, pytest_fixture_plus, fixture_ref, parametrize_plus
 from pytest_cases.tests.conftest import global_fixture

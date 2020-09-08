@@ -1,3 +1,7 @@
+# Authors: Sylvain MARIE <sylvain.marie@se.com>
+#          + All contributors to <https://github.com/smarie/python-pytest-cases>
+#
+# License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 # Use true division operator always even in old python 2.x (used in `_extract_cases_from_module`)
 from __future__ import division
 

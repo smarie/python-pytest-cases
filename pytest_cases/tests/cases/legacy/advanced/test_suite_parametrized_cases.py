@@ -1,3 +1,7 @@
+# Authors: Sylvain MARIE <sylvain.marie@se.com>
+#          + All contributors to <https://github.com/smarie/python-pytest-cases>
+#
+# License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from pytest_cases import cases_data, CaseDataGetter, THIS_MODULE
 from pytest_steps import test_steps, StepsDataHolder
 try:  # python 3.5+

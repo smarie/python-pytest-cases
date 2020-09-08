@@ -1,3 +1,7 @@
+# Authors: Sylvain MARIE <sylvain.marie@se.com>
+#          + All contributors to <https://github.com/smarie/python-pytest-cases>
+#
+# License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from ..example_code import super_function_i_want_to_test, super_function_i_want_to_test2
 
 from pytest_cases import test_target, case_tags

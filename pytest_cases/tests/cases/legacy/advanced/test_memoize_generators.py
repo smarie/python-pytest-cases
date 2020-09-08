@@ -1,3 +1,7 @@
+# Authors: Sylvain MARIE <sylvain.marie@se.com>
+#          + All contributors to <https://github.com/smarie/python-pytest-cases>
+#
+# License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from pytest_cases import cases_data, THIS_MODULE, cases_generator, CaseDataGetter, get_all_cases_legacy
 from ..utils import nb_pytest_parameters, get_pytest_param
 

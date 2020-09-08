@@ -1,3 +1,7 @@
+# Authors: Sylvain MARIE <sylvain.marie@se.com>
+#          + All contributors to <https://github.com/smarie/python-pytest-cases>
+#
+# License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from .common_pytest_lazy_values import lazy_value
 from .common_others import unfold_expected_err, assert_exception, AUTO, AUTO2
 
