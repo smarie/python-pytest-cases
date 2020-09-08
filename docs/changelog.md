@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.2.2 - `@parametrize_with_cases` compatibility improvements
+
+ - `@parametrize_with_cases` now supports that `argnames` is a list or tuple, just as `@pytest.mark.parametrize` does. PR [#132](https://github.com/smarie/python-pytest-cases/pull/132), by [`@saroad2`](https://github.com/saroad2).
+
 ### 2.2.1 - setup.py fix to enforce dependency version
 
  - Now enforcing usage of `makefun` 1.9.3 or above to avoid issue `AttributeError: 'functools.partial' object has no attribute '__module__'` mentioned in [#128](https://github.com/smarie/python-pytest-cases/issues/128)
