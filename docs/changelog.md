@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.2.3 - Fixed issue with pytest `3.X`
+
+ - Fixed `TypeError: _idval() got an unexpected keyword argument 'item'` with `pytest` versions between 3.0.0 and 3.7.4. Fixed [#136](https://github.com/smarie/python-pytest-cases/issues/136)
+
 ### 2.2.2 - `@parametrize_with_cases` compatibility improvements
 
  - `@parametrize_with_cases` now supports that `argnames` is a list or tuple, just as `@pytest.mark.parametrize` does. PR [#132](https://github.com/smarie/python-pytest-cases/pull/132), by [`@saroad2`](https://github.com/saroad2).
