@@ -26,7 +26,7 @@ from .common_others import AUTO
 from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, is_lazy, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
-    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host
+    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, get_marked_parameter_values
 
 from .fixture__creation import check_name_available, CHANGE, WARN
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
@@ -698,6 +698,10 @@ def _parametrize_plus(argnames=None,
                     fix_alt_names.append(a)
                 else:
                     # this should only happen when the alternative is directly a fixture reference
+                    if is_marked_parameter_value(alt):
+                        alt = get_marked_parameter_values(alt)
+                        assert len(alt) == 1, "Error with fixture reference, please report"
+                        alt = alt[0]
                     assert isinstance(alt, FixtureParamAlternative), \
                         "Created fixture names are not unique, please report"
 
