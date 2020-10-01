@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.2.4 - Fixes issue 
+
+ - Fixed "Created fixture names are not unique, please report" error when duplicate fixture reference is provided in a pytest.param. Fixes [#138](https://github.com/smarie/python-pytest-cases/issues/138).
+
 ### 2.2.3 - Fixed issue with pytest `3.X`
 
  - Fixed `TypeError: _idval() got an unexpected keyword argument 'item'` with `pytest` versions between 3.0.0 and 3.7.4. Fixed [#136](https://github.com/smarie/python-pytest-cases/issues/136)
