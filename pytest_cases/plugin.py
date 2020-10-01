@@ -29,7 +29,7 @@ except ImportError:
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
-    get_pytest_scopenum, get_param_argnames_as_list
+    get_param_argnames_as_list
 
 from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
 
@@ -890,7 +890,20 @@ def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
     if nb_calls != len(nodes):
         raise ValueError("This should not happen !")
 
-    function_scope_num = get_pytest_function_scopenum()
+    # create ref lists of fixtures per scope
+    _not_always_used_func_scoped = []
+    # _not_always_used_other_scoped = []
+    _function_scope_num = get_pytest_function_scopenum()
+    for fixture_name in fix_closure_tree.get_not_always_used():
+        try:
+            fixdef = metafunc._arg2fixturedefs[fixture_name]  # noqa
+        except KeyError:
+            continue  # dont raise any error here and let pytest say "not found" later
+        else:
+            if fixdef[-1].scopenum == _function_scope_num:
+                _not_always_used_func_scoped.append(fixture_name)
+            # else:
+            #     _not_always_used_other_scoped.append(fixture_name)
 
     for i in range(nb_calls):
         c, n = calls[i], nodes[i]
@@ -921,39 +934,43 @@ def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
         #
         # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
         # in the `request`. TODO is there a better way?
-        for fixture_name in fix_closure_tree.get_not_always_used():
-            # (a) retrieve fixture scope
-            try:
-                fixdef = metafunc._arg2fixturedefs[fixture_name]  # noqa
-            except KeyError:
-                continue  # dont raise any error here and let pytest say "not found"
-            this_scopenum = fixdef[-1].scopenum
-
-            # (b) only do this for function-scoped fixtures, module or session scoped fixtures should remain active
-            if this_scopenum == function_scope_num:
-                if fixture_name not in c.params and fixture_name not in c.funcargs:
-                    if not n.requires(fixture_name):
-                        # explicitly add it as discarded by creating a parameter value for it.
-                        c.params[fixture_name] = NOT_USED
-                        c.indices[fixture_name] = 1
-                        c._arg2scopenum[fixture_name] = this_scopenum  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
-                    else:
-                        # explicitly add it as active
-                        c.params[fixture_name] = 'used'
-                        c.indices[fixture_name] = 0
-                        c._arg2scopenum[fixture_name] = this_scopenum  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
+        for fixture_name in _not_always_used_func_scoped:
+            if fixture_name not in c.params and fixture_name not in c.funcargs:
+                if not n.requires(fixture_name):
+                    # explicitly add it as discarded by creating a parameter value for it.
+                    c.params[fixture_name] = NOT_USED
+                    c.indices[fixture_name] = 1
+                    c._arg2scopenum[fixture_name] = _function_scope_num  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
+                else:
+                    # explicitly add it as active
+                    c.params[fixture_name] = 'used'
+                    c.indices[fixture_name] = 0
+                    c._arg2scopenum[fixture_name] = _function_scope_num  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
 
     # finally, if there are some session or module-scoped fixtures that
     # are used in *none* of the calls, they could be deactivated too
     # (see https://github.com/smarie/python-pytest-cases/issues/137)
     #
-    # for fixture_name in fix_closure_tree.get_not_always_used():
-    #     # (a) retrieve fixture scope
-    #     ...
-    #     # (b) for non function-scoped fixtures
-    #     if this_scopenum != function_scope_num:
-    #         # to do check if there is at least one call that actually uses the fixture and is not skipped...
-    #         # this seems a bit "too much" !! > WONT FIX
+    # for fixture_name in _not_always_used_other_scoped:
+    #     _scopenum = metafunc._arg2fixturedefs[fixture_name][-1].scopenum
+    #
+    #     # check if there is at least one call that actually uses the fixture and is not skipped...
+    #     # this seems a bit "too much" !! > WONT FIX
+    #     used = False
+    #     for i in range(nb_calls):
+    #         c, n = calls[i], nodes[i]
+    #         if fixture_name in c.params or fixture_name in c.funcargs or n.requires(fixture_name):
+    #             if not is_skipped_or_failed(c):  # HOW can we implement this based on call (and not item) ???
+    #                 used = True
+    #                 break
+    #
+    #     if not used:
+    #         # explicitly add it as discarded everywhere by creating a parameter value for it.
+    #         for i in range(nb_calls):
+    #             c = calls[i]
+    #             c.params[fixture_name] = NOT_USED
+    #             c.indices[fixture_name] = 0
+    #             c._arg2scopenum[fixture_name] = _scopenum  # noqa
 
 
 # def get_calls_for_partition(metafunc, super_closure, p_idx, pending):
