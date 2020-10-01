@@ -2,6 +2,13 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+#
+# This is a more complex version of test_fixture_union_setup_teardown3.py
+# but the idea is the same: find a configuration in which the "smart reordering" of pytest
+# can not group test nodes together, so that we have session- and module-scoped fixtures
+# used and not used, alternatively. The objective is to check that they are not called several times
+# in spite of them being used/not used alternatively in test nodes.
+#
 from collections import defaultdict
 
 from pytest_cases import fixture, fixture_union, parametrize

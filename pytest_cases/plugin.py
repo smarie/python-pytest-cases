@@ -890,7 +890,7 @@ def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
     if nb_calls != len(nodes):
         raise ValueError("This should not happen !")
 
-    # function_scope_num = get_pytest_function_scopenum()
+    function_scope_num = get_pytest_function_scopenum()
 
     for i in range(nb_calls):
         c, n = calls[i], nodes[i]
@@ -921,17 +921,16 @@ def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
         #
         # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
         # in the `request`. TODO is there a better way?
-        f_scope = get_pytest_function_scopenum()
         for fixture_name in fix_closure_tree.get_not_always_used():
+            # (a) retrieve fixture scope
             try:
                 fixdef = metafunc._arg2fixturedefs[fixture_name]  # noqa
             except KeyError:
                 continue  # dont raise any error here and let pytest say "not found"
-
             this_scopenum = fixdef[-1].scopenum
 
-            # only do this for function-scoped fixtures, module or session scoped fixtures should remain active
-            if this_scopenum == f_scope:
+            # (b) only do this for function-scoped fixtures, module or session scoped fixtures should remain active
+            if this_scopenum == function_scope_num:
                 if fixture_name not in c.params and fixture_name not in c.funcargs:
                     if not n.requires(fixture_name):
                         # explicitly add it as discarded by creating a parameter value for it.
@@ -943,6 +942,18 @@ def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
                         c.params[fixture_name] = 'used'
                         c.indices[fixture_name] = 0
                         c._arg2scopenum[fixture_name] = this_scopenum  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
+
+    # finally, if there are some session or module-scoped fixtures that
+    # are used in *none* of the calls, they could be deactivated too
+    # (see https://github.com/smarie/python-pytest-cases/issues/137)
+    #
+    # for fixture_name in fix_closure_tree.get_not_always_used():
+    #     # (a) retrieve fixture scope
+    #     ...
+    #     # (b) for non function-scoped fixtures
+    #     if this_scopenum != function_scope_num:
+    #         # to do check if there is at least one call that actually uses the fixture and is not skipped...
+    #         # this seems a bit "too much" !! > WONT FIX
 
 
 # def get_calls_for_partition(metafunc, super_closure, p_idx, pending):
