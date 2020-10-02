@@ -603,6 +603,8 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                 new_m.__name__ = m.__name__
                 CaseInfo.copy_info(m, new_m)
                 copy_pytest_marks(m, new_m, override=True)
+                # also recopy all marks from the holding class to the function
+                copy_pytest_marks(cls, new_m, override=False)
                 m = new_m
                 del new_m
 

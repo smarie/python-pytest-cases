@@ -81,15 +81,17 @@ class _LegacyMark:
 
 # ---------------- working on functions
 def copy_pytest_marks(from_f, to_f, override=False):
-    """Copy all pytest marks from a function to another"""
+    """Copy all pytest marks from a function or class to another"""
     from_marks = get_pytest_marks_on_function(from_f)
     to_marks = [] if override else get_pytest_marks_on_function(to_f)
+    # note: the new marks are appended *after* existing if no override
     to_f.pytestmark = to_marks + from_marks
 
 
 def get_pytest_marks_on_function(f, as_decorators=False):
     """
     Utility to return *ALL* pytest marks (not only parametrization) applied on a function
+    Note that this also works on classes
 
     :param f:
     :param as_decorators: transforms the marks into decorators before returning them
