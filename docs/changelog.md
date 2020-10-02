@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.2.5 - Marks are now correctly propagated from Case class
+
+ - Marks set on a case class are now propagated to cases in the class. So you can use for example [`pytest-pilot`](https://smarie.github.io/python-pytest-pilot/) more easily ! Fixes [#139](https://github.com/smarie/python-pytest-cases/issues/139)
+
 ### 2.2.4 - Fixes issue 
 
  - Fixed "Created fixture names are not unique, please report" error when duplicate fixture reference is provided in a pytest.param. Fixes [#138](https://github.com/smarie/python-pytest-cases/issues/138).
