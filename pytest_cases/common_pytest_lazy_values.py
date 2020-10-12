@@ -20,42 +20,12 @@ import pytest
 from .common_pytest_marks import get_pytest_marks_on_function, transform_marks_into_decorators
 
 
-pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
-if pytest53:
-    # in the latest versions of pytest, the default _idmaker returns the value of __name__ if it is available,
-    # even if an object is not a class nor a function. So we do not need to use any special trick.
-    _LazyValueBase = object
-else:
-    fake_base = int
-
-    class _LazyValueBase(int, object):
-        """
-        in this older version of pytest, the default _idmaker does *not* return the value of __name__ for
-        objects that are not functions not classes. However it *does* return str(obj) for objects that are
-        instances of bool, int or float. So that's why lazy_value inherits from int.
-        """
-        __slots__ = ()
-
-        def __new__(cls, *args, **kwargs):
-            """ Inheriting from int is a bit hard in python: we have to override __new__ """
-            obj = fake_base.__new__(cls, 111111)  # noqa
-            cls.__init__(obj, *args, **kwargs)  # noqa
-            return obj
-
-        def __getattribute__(self, item):
-            """Map all default attribute and method access to the ones in object, not in int"""
-            return object.__getattribute__(self, item)
-
-        def __repr__(self):
-            """Magic methods are not intercepted by __getattribute__ and need to be overridden manually.
-            We do not need all of them by at least override this one for easier debugging"""
-            return object.__repr__(self)
-
-
 class Lazy(object):
     """
     All lazy items should inherit from this for good pytest compliance (ids, marks, etc.)
     """
+    __slots__ = ()
+
     # @abstractmethod
     def get_id(self):
         """Return the id to use by pytest"""
@@ -118,8 +88,11 @@ def partial_to_str(partialfun):
     return "%s(%s)" % (partialfun.func.__name__, strargs)
 
 
+pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
+
+
 # noinspection PyPep8Naming
-class LazyValue(Lazy, _LazyValueBase):
+class _LazyValue(Lazy):
     """
     A reference to a value getter, to be used in `parametrize_plus`.
 
@@ -132,6 +105,13 @@ class LazyValue(Lazy, _LazyValueBase):
         # we can not define __slots__ since we extend int,
         # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
         pass
+
+    @classmethod
+    def copy_from(cls,
+                  obj  # type: _LazyValue
+                  ):
+        """Creates a copy of this _LazyValue"""
+        return cls(valuegetter=obj.valuegetter, id=obj._id, marks=obj._marks)
 
     # noinspection PyMissingConstructor
     def __init__(self,
@@ -189,7 +169,7 @@ class LazyValue(Lazy, _LazyValueBase):
         return [v for v in LazyTuple(self, nb_params)]
 
 
-class LazyTupleItem(Lazy, _LazyValueBase):
+class _LazyTupleItem(Lazy):
     """
     An item in a Lazy Tuple
     """
@@ -199,6 +179,13 @@ class LazyTupleItem(Lazy, _LazyValueBase):
         # we can not define __slots__ since we extend int,
         # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
         pass
+
+    @classmethod
+    def copy_from(cls,
+                  obj  # type: _LazyTupleItem
+                  ):
+        """Creates a copy of this _LazyTupleItem"""
+        return cls(host=obj.host, item=obj.item)
 
     # noinspection PyMissingConstructor
     def __init__(self,
@@ -278,6 +265,47 @@ class LazyTuple(Lazy):
                                 argvalue, item, e.__class__, e))
 
 
+if pytest53:
+    # in the latest versions of pytest, the default _idmaker returns the value of __name__ if it is available,
+    # even if an object is not a class nor a function. So we do not need to use any special trick with our
+    # lazy objects
+    LazyValue = _LazyValue
+    LazyTupleItem = _LazyTupleItem
+else:
+    # in this older version of pytest, the default _idmaker does *not* return the value of __name__ for
+    # objects that are not functions not classes. However it *does* return str(obj) for objects that are
+    # instances of bool, int or float. So that's why we make our lazy objects inherit from int.
+    fake_base = int
+
+    class _LazyValueBase(fake_base, object):
+
+        __slots__ = ()
+
+        def __new__(cls, *args, **kwargs):
+            """ Inheriting from int is a bit hard in python: we have to override __new__ """
+            obj = fake_base.__new__(cls, 111111)  # noqa
+            cls.__init__(obj, *args, **kwargs)  # noqa
+            return obj
+
+        def __getattribute__(self, item):
+            """Map all default attribute and method access to the ones in object, not in int"""
+            return object.__getattribute__(self, item)
+
+        def __repr__(self):
+            """Magic methods are not intercepted by __getattribute__ and need to be overridden manually.
+            We do not need all of them by at least override this one for easier debugging"""
+            return object.__repr__(self)
+
+    class LazyValue(_LazyValue, _LazyValueBase):
+        """Same than _LazyValue but inherits from int so that pytest calls str(o) for the id.
+        Note that we do it afterwards so that _LazyValue remains "pure" - pytest-harvest needs to reuse it"""
+        pass
+
+    class LazyTupleItem(_LazyTupleItem, _LazyValueBase):
+        """Same than _LazyTupleItem but inherits from int so that pytest calls str(o) for the id"""
+        pass
+
+
 def lazy_value(valuegetter,  # type: Callable[[], Any]
                id=None,      # type: str  # noqa
                marks=()      # type: Union[Any, Sequence[Any]]
@@ -301,14 +329,16 @@ def lazy_value(valuegetter,  # type: Callable[[], Any]
 
 def is_lazy_value(argval):
     try:
-        return isinstance(argval, LazyValue)
+        # note: we use the private and not public class here on purpose
+        return isinstance(argval, _LazyValue)
     except:
         return False
 
 
 def is_lazy(argval):
     try:
-        return isinstance(argval, (LazyValue, LazyTuple, LazyTupleItem))
+        # note: we use the private and not public classes here on purpose
+        return isinstance(argval, (_LazyValue, LazyTuple, _LazyTupleItem))
     except:
         return False
 
