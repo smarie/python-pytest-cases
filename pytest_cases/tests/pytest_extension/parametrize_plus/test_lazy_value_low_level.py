@@ -29,10 +29,19 @@ def test_value_ref():
     # now do the same test for lazy values used as a tuple of parameters
     at = lazy_value(foo).as_lazy_tuple(2)
 
+    # test when the tuple is unpacked into several parameters
     for i, a in enumerate(at):
         # test that ids will be correctly generated even on old pytest
         assert mini_idval(a, 'a', 1) == 'foo[%s]' % i
         assert ('LazyTupleItem(item=%s' % i) in repr(a)
+
+    # # test when the tuple is not unpacked -
+    # # note: this is not supposed to happen when @parametrize decorates a test function,
+    # # it only happens when @parametrize decorates a fixture - indeed in that case we generate the whole id ourselves
+    # assert mini_idval(at, 'a', 1) == 'a1'
+    # # test that retrieving the tuple does not loose the id
+    # at.value
+    # assert mini_idval(at, 'a', 1) == 'foo'
 
 
 pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
@@ -58,7 +67,7 @@ def test_lv_clone():
         assert not isinstance(lv2, int)
     else:
         assert isinstance(lv, int)
-        lv2 = lv.clone(keep_int_base=False)
+        lv2 = lv.clone(remove_int_base=True)
         assert lv == lv2
         assert not isinstance(lv2, int)
 
@@ -82,6 +91,6 @@ def test_lv_tuple_clone():
             assert not isinstance(lv2, int)
         else:
             assert isinstance(lv, int)
-            lv2 = lv.clone(keep_int_base=False)
+            lv2 = lv.clone(remove_int_base=True)
             assert lv == lv2
             assert not isinstance(lv2, int)

@@ -349,8 +349,8 @@ else:
         """Same than _LazyValue but inherits from int so that pytest calls str(o) for the id.
         Note that we do it afterwards so that _LazyValue remains "pure" - pytest-harvest needs to reuse it"""
 
-        def clone(self, keep_int_base=True):
-            if keep_int_base:
+        def clone(self, remove_int_base=False):
+            if not remove_int_base:
                 # return a type(self) (LazyValue or subclass)
                 return _LazyValue.clone(self)
             else:
@@ -360,8 +360,8 @@ else:
     class LazyTupleItem(_LazyTupleItem, _LazyValueBase):
         """Same than _LazyTupleItem but inherits from int so that pytest calls str(o) for the id"""
 
-        def clone(self, keep_int_base=False):
-            if keep_int_base:
+        def clone(self, remove_int_base=False):
+            if not remove_int_base:
                 # return a type(self) (LazyTupleItem or subclass)
                 return _LazyTupleItem.clone(self)
             else:
@@ -391,6 +391,7 @@ def lazy_value(valuegetter,  # type: Callable[[], Any]
 
 
 def is_lazy_value(argval):
+    """ Return True if `argval` is the *immediate* output of `lazy_value()` """
     try:
         # note: we use the private and not public class here on purpose
         return isinstance(argval, _LazyValue)
@@ -399,6 +400,11 @@ def is_lazy_value(argval):
 
 
 def is_lazy(argval):
+    """
+    Return True if `argval` is the outcome of processing a `lazy_value` through `@parametrize`
+    As opposed to `is_lazy_value`, this encompasses lazy tuples that are created when parametrizing several argnames
+    with the same `lazy_value()`.
+    """
     try:
         # note: we use the private and not public classes here on purpose
         return isinstance(argval, (_LazyValue, LazyTuple, _LazyTupleItem))
