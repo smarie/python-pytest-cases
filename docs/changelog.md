@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.3.0 - better `LazyValue` internal API
+
+ - new `clone(self, keep_int_base=False)` API on `LazyValue` and `LazyTupleItem` instances. With this new API, on old `pytest` `< 5.3`, other plugins such as `pytest-harvest` can easily clone the contents from lazy values without having them inherit from `int` - which was a dirty hack used by `pytest-cases` to trick `pytest` to generate acceptable test ids in these old pytest versions. Also improved the `LazyValue`, `LazyTuple` and `LazyTupleItem` object model with equality and repr. Fixes [pytest-harvest#43](https://github.com/smarie/python-pytest-harvest/issues/43)
+
 ### 2.2.5 - Marks are now correctly propagated from Case class
 
  - Marks set on a case class are now propagated to cases in the class. So you can use for example [`pytest-pilot`](https://smarie.github.io/python-pytest-pilot/) more easily ! Fixes [#139](https://github.com/smarie/python-pytest-cases/issues/139)
