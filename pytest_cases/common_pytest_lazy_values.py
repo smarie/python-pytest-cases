@@ -49,12 +49,10 @@ class Lazy(object):
 
     def __eq__(self, other):
         """Default equality method based on the _field_names"""
-        if isinstance(self, type(other)):
-            # self is a subclass of other
+        try:
             return all(getattr(self, k) == getattr(other, k) for k in self._field_names)
-        else:
-            # other is from a subclass of self
-            return super(type(self), self).__eq__(other)
+        except:
+            return False
 
     def __repr__(self):
         """Default repr method based on the _field_names"""
@@ -228,7 +226,7 @@ class _LazyTupleItem(Lazy):
         """Override the inherited method to avoid infinite recursion"""
         vals_to_display = (
             ('item', self.item),  # item number first for easier debug
-            ('tuple', self.host.value),  # lazy value tuple or retrieved tuple
+            ('tuple', self.host.value if self.host.retrieved else self.host.valuegetter),  # lazy value tuple or retrieved tuple
         )
         return "%s(%s)" % (self.__class__.__name__, ", ".join("%s=%r" % (k, v) for k, v in vals_to_display))
 
@@ -243,11 +241,16 @@ class LazyTuple(Lazy):
     """
     A wrapper representing a lazy_value used as a tuple = for several argvalues at once.
 
-     -
-       while not calling the lazy value
-     -
+    Its `.get()` method caches the tuple obtained from the value getter, so that it is not called several times (once
+    for each LazyTupleItem)
+
+    It is only used directly by pytest when a lazy_value is used in a @ parametrize to decorate a fixture.
+    Indeed in that case pytest does not unpack the tuple, we do it in our custom @fixture.
+
+    In all other cases (when @parametrize is used on a test function), pytest unpacks the tuple so it directly
+    manipulates the underlying LazyTupleItem instances.
     """
-    __slots__ = 'value', 'theoretical_size', 'retrieved'
+    __slots__ = 'valuegetter', 'theoretical_size', 'retrieved', 'value'
     _field_names = __slots__
 
     @classmethod
@@ -256,6 +259,8 @@ class LazyTuple(Lazy):
                   ):
         new_obj = cls(valueref=obj.value, theoretical_size=obj.theoretical_size)
         new_obj.retrieved = obj.retrieved
+        if new_obj.retrieved:
+            new_obj.value = obj.value
         return new_obj
 
     # noinspection PyMissingConstructor
@@ -263,26 +268,23 @@ class LazyTuple(Lazy):
                  valueref,         # type: Union[LazyValue, Sequence]
                  theoretical_size  # type: int
                  ):
-        self.value = valueref
+        self.valuegetter = valueref
         self.theoretical_size = theoretical_size
         self.retrieved = False
+        self.value = None
 
     def __len__(self):
         return self.theoretical_size
 
     def get_id(self):
         """return the id to use by pytest"""
-        if self.retrieved:
-            raise ValueError("id is lost once the tuple has been retrieved, this is ok since at this stage it should "
-                             "not be needed anymore...")
-        else:
-            return self.value.get_id()
+        return self.valuegetter.get_id()
 
     def get(self):
         """ Call the underlying value getter, then return the tuple (not self) """
         if not self.retrieved:
             # retrieve
-            self.value = self.value.get()
+            self.value = self.valuegetter.get()
             self.retrieved = True
         return self.value
 
@@ -303,7 +305,6 @@ class LazyTuple(Lazy):
 
     def force_getitem(self, item):
         """ Call the underlying value getter, then return self[i]. """
-        getter = self.value
         argvalue = self.get()
         try:
             return argvalue[item]
@@ -311,7 +312,7 @@ class LazyTuple(Lazy):
             raise ValueError("(lazy_value) The parameter value returned by `%r` is not compliant with the number"
                              " of argnames in parametrization (%s). A %s-tuple-like was expected. "
                              "Returned lazy argvalue is %r and argvalue[%s] raised %s: %s"
-                             % (getter.valuegetter, self.theoretical_size, self.theoretical_size,
+                             % (self.valuegetter, self.theoretical_size, self.theoretical_size,
                                 argvalue, item, e.__class__, e))
 
 
