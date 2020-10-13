@@ -272,7 +272,11 @@ class LazyTuple(Lazy):
 
     def get_id(self):
         """return the id to use by pytest"""
-        return self.value.get_id()
+        if self.retrieved:
+            raise ValueError("id is lost once the tuple has been retrieved, this is ok since at this stage it should "
+                             "not be needed anymore...")
+        else:
+            return self.value.get_id()
 
     def get(self):
         """ Call the underlying value getter, then return the tuple (not self) """
@@ -354,7 +358,7 @@ else:
                 # return a type(self) (LazyValue or subclass)
                 return _LazyValue.clone(self)
             else:
-                # return a _LazyValue
+                # return a _LazyValue without the int base from _LazyValueBase
                 return _LazyValue.copy_from(self)
 
     class LazyTupleItem(_LazyTupleItem, _LazyValueBase):
@@ -365,7 +369,7 @@ else:
                 # return a type(self) (LazyTupleItem or subclass)
                 return _LazyTupleItem.clone(self)
             else:
-                # return a _LazyTupleItem
+                # return a _LazyTupleItem without the int base from _LazyValueBase
                 return _LazyTupleItem.copy_from(self)
 
 
