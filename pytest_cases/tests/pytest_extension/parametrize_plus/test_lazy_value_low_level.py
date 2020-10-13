@@ -2,6 +2,10 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+from distutils.version import LooseVersion
+
+import pytest
+
 from pytest_cases import lazy_value
 from pytest_cases.common_pytest import mini_idval
 
@@ -14,9 +18,70 @@ def test_value_ref():
     :return:
     """
     def foo():
-        pass
+        return 1, 2
 
     a = lazy_value(foo)
 
+    # test that ids will be correctly generated even on old pytest
     assert mini_idval(a, 'a', 1) == 'foo'
-    assert 'lazy_value' in repr(a)
+    assert 'LazyValue' in repr(a)
+
+    # now do the same test for lazy values used as a tuple of parameters
+    at = lazy_value(foo).as_lazy_tuple(2)
+
+    for i, a in enumerate(at):
+        # test that ids will be correctly generated even on old pytest
+        assert mini_idval(a, 'a', 1) == 'foo[%s]' % i
+        assert ('LazyTupleItem(item=%s' % i) in repr(a)
+
+
+pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
+
+
+def test_lv_clone():
+    """ Test that the internal API allows other plugins such as pytest-harvest to easily clone a lazy value without
+    inheriting from the hack int base"""
+    def foo():
+        return 1
+
+    lv = lazy_value(foo, id="hi", marks=pytest.mark.skip)
+
+    assert str(lv) == "hi"
+    assert repr(lv).startswith("LazyValue(valuegetter=<function")
+    assert ">, _id='hi'," in repr(lv)
+    assert "'skip'" in repr(lv)
+
+    if pytest53:
+        assert not isinstance(lv, int)
+        lv2 = lv.clone()
+        assert lv == lv2
+        assert not isinstance(lv2, int)
+    else:
+        assert isinstance(lv, int)
+        lv2 = lv.clone(keep_int_base=False)
+        assert lv == lv2
+        assert not isinstance(lv2, int)
+
+
+def test_lv_tuple_clone():
+    """ Test that the internal API allows other plugins such as pytest-harvest to easily clone a lazy value without
+    inheriting from the hack int base (this test is for tuple """
+    def foo():
+        return 1, 2
+
+    lvt = lazy_value(foo, id="hi", marks=pytest.mark.skip).as_lazy_tuple(2)
+
+    for i, lv in enumerate(lvt):
+        assert str(lv) == "hi[%s]" % i
+        assert repr(lv).startswith("LazyTupleItem(item=%s, tuple=LazyValue(valuegetter=<function" % i)
+
+        if pytest53:
+            assert not isinstance(lv, int)
+            lv2 = lv.clone()
+            assert lv == lv2
+            assert not isinstance(lv2, int)
+        else:
+            assert isinstance(lv, int)
+            lv2 = lv.clone(keep_int_base=False)
+            assert lv == lv2
+            assert not isinstance(lv2, int)
