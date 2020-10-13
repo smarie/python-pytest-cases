@@ -35,13 +35,16 @@ def test_value_ref():
         assert mini_idval(a, 'a', 1) == 'foo[%s]' % i
         assert ('LazyTupleItem(item=%s' % i) in repr(a)
 
-    # # test when the tuple is not unpacked -
-    # # note: this is not supposed to happen when @parametrize decorates a test function,
-    # # it only happens when @parametrize decorates a fixture - indeed in that case we generate the whole id ourselves
-    # assert mini_idval(at, 'a', 1) == 'a1'
-    # # test that retrieving the tuple does not loose the id
-    # at.value
-    # assert mini_idval(at, 'a', 1) == 'foo'
+    # test when the tuple is not unpacked -
+    # note: this is not supposed to happen when @parametrize decorates a test function,
+    # it only happens when @parametrize decorates a fixture - indeed in that case we generate the whole id ourselves
+    assert str(at) == 'foo'
+    assert not at.retrieved
+    # test that retrieving the tuple does not loose the id
+    v = at.get()
+    assert v == (1, 2)
+    assert str(at) == 'foo'
+    assert at.retrieved
 
 
 pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
