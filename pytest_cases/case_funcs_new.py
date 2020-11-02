@@ -67,6 +67,9 @@ class CaseInfo(object):
                     case_info.id = case_func.__name__[len(prefix_for_ids):]
                 else:
                     case_info.id = case_func.__name__
+                # default case id for empty id
+                if len(case_info.id) == 0:
+                    case_info.id = "<empty_case_id>"
 
         return case_info
 
