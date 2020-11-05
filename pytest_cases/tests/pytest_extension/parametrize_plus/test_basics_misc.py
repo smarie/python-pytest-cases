@@ -18,6 +18,11 @@ from ...utils import skip
 
 
 def test_cart_product_pytest():
+    """
+    Convert cartesian product to cartesian product.
+
+    Args:
+    """
 
     # simple
     names_lst, values = cart_product_pytest(('a', 'b'), ([True], [1, 2]))
@@ -37,6 +42,11 @@ def test_cart_product_pytest():
 
     # lazy values
     def get_tuple():
+        """
+        Returns a tuple for a tuple tuple.
+
+        Args:
+        """
         return 3, 4
     names_lst, values = cart_product_pytest(('a', 'b,c'), ([True], [lazy_value(get_tuple, marks=skip), (1, 2)]))
     assert names_lst == ['a', 'b', 'c']
@@ -49,9 +59,20 @@ def test_cart_product_pytest():
 
 
 def test_argname_error():
+    """
+    Test if the error occurs on test.
+
+    Args:
+    """
     with pytest.raises(ValueError, match="parameter 'a' not found in test function signature"):
         @parametrize_plus("a", [True])
         def test_foo(b):
+            """
+            Test if b is not - b.
+
+            Args:
+                b: (todo): write your description
+            """
             pass
 
 
@@ -60,6 +81,12 @@ PY36 = sys.version_info >= (3, 6)
 
 @pytest.mark.parametrize("tuple_around_single", [False, True])
 def test_get_argnames_argvalues(tuple_around_single):
+    """
+    Get argvalues of argnames.
+
+    Args:
+        tuple_around_single: (todo): write your description
+    """
 
     # legacy way
     # -- 1 argname
@@ -136,6 +163,11 @@ def test_get_argnames_argvalues(tuple_around_single):
 
 
 def format_me(**kwargs):
+    """
+    Formats the formatted string.
+
+    Args:
+    """
     if 'a' in kwargs:
         return "a={a},b={b:3d}".format(**kwargs)
     else:
@@ -146,10 +178,25 @@ def format_me(**kwargs):
 @parametrize_plus("c", [2.1, 0.], idgen="c{c:.1f}")
 @parametrize_plus("d", [10], idgen=format_me)
 def test_idgen1(a, b, c, d):
+    """
+    Test if a and b
+
+    Args:
+        a: (todo): write your description
+        b: (todo): write your description
+        c: (todo): write your description
+        d: (todo): write your description
+    """
     pass
 
 
 def test_idgen1_synthesis(request):
+    """
+    Generate : pytest.
+
+    Args:
+        request: (todo): write your description
+    """
     results_dct = get_session_synthesis_dct(request, filter=test_idgen1, test_id_format='function')
     if sys.version_info >= (3, 6):
         if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
@@ -168,10 +215,24 @@ def test_idgen1_synthesis(request):
 
 @parametrize_plus(idgen="a={a},b={b:.1f} and {c:4d}", **{'a,b': ((True, 1.25), (True, 0.)), 'c': [-1, 2]})
 def test_alt_usage1(a, b, c):
+    """
+    Test if two usage of two roots
+
+    Args:
+        a: (todo): write your description
+        b: (todo): write your description
+        c: (todo): write your description
+    """
     pass
 
 
 def test_alt_usage1_synthesis(request):
+    """
+    Test out the alternative usage of the current session.
+
+    Args:
+        request: (todo): write your description
+    """
     results_dct = get_session_synthesis_dct(request, filter=test_alt_usage1, test_id_format='function')
     if sys.version_info > (3, 6):
         assert list(results_dct) == [
@@ -186,10 +247,22 @@ def test_alt_usage1_synthesis(request):
 
 @parametrize_plus(idgen="b{b:.1}", **{'b': (1.25, 0.)})
 def test_alt_usage2(b):
+    """
+    Test if an alternative usage string
+
+    Args:
+        b: (todo): write your description
+    """
     pass
 
 
 def test_alt_usage2_synthesis(request):
+    """
+    Shows alternative alternative alternative alternative alternative alternative usage.
+
+    Args:
+        request: (todo): write your description
+    """
     results_dct = get_session_synthesis_dct(request, filter=test_alt_usage2, test_id_format='function')
     assert list(results_dct) == [
         'test_alt_usage2[b1e+00]',

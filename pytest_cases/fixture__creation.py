@@ -20,11 +20,26 @@ class ExistingFixtureNameError(ValueError):
     Raised by `add_fixture_to_callers_module` when a fixture already exists in a module
     """
     def __init__(self, module, name, caller):
+        """
+        Initialize a module.
+
+        Args:
+            self: (todo): write your description
+            module: (str): write your description
+            name: (str): write your description
+            caller: (str): write your description
+        """
         self.module = module
         self.name = name
         self.caller = caller
 
     def __str__(self):
+        """
+        Returns a string representation of this call.
+
+        Args:
+            self: (todo): write your description
+        """
         return "Symbol `%s` already exists in module %s and therefore a corresponding fixture can not be created by " \
                "`%s`" % (self.name, self.module, self.caller)
 
@@ -59,6 +74,13 @@ def check_name_available(module,
     if name_changer is None:
         # default style for name changing. i starts with 1
         def name_changer(name, i):
+            """
+            Return the name of the name.
+
+            Args:
+                name: (str): write your description
+                i: (str): write your description
+            """
             return name + '_%s' % i
 
     ref_list = dir(module) + list(extra_forbidden_names)

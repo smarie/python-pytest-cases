@@ -106,6 +106,11 @@ def _create_param_fixture(fixtures_dest,
         # create the fixture - set its name so that the optional hook can read it easily
         @with_signature("%s()" % argname)
         def __param_fixture():
+            """
+            Decorator that returns a function that takes the result.
+
+            Args:
+            """
             return argvalue_to_return
 
         if debug:
@@ -116,6 +121,12 @@ def _create_param_fixture(fixtures_dest,
         # create the fixture - set its name so that the optional hook can read it easily
         @with_signature("%s(request)" % argname)
         def __param_fixture(request):
+            """
+            Fixture parameters of the request.
+
+            Args:
+                request: (todo): write your description
+            """
             return request.param
 
         if debug:
@@ -197,6 +208,19 @@ def _create_params_fixture(fixtures_dest,
                            hook=None,         # type: Callable[[Callable], Callable]
                            debug=False,       # type: bool
                            **kwargs):
+    """
+    Creates a fixture.
+
+    Args:
+        fixtures_dest: (str): write your description
+        argnames_lst: (str): write your description
+        argvalues: (todo): write your description
+        autouse: (bool): write your description
+        ids: (list): write your description
+        scope: (str): write your description
+        hook: (str): write your description
+        debug: (bool): write your description
+    """
     argnames = ','.join(argnames_lst)
     created_fixtures = []
 
@@ -215,6 +239,12 @@ def _create_params_fixture(fixtures_dest,
     @pytest.mark.parametrize(argnames, argvalues, ids=ids)
     @with_signature("%s(%s)" % (root_fixture_name, argnames))
     def _root_fixture(**_kwargs):
+        """
+        Return a tuple of all the root ).
+
+        Args:
+            _kwargs: (dict): write your description
+        """
         return tuple(_kwargs[k] for k in argnames_lst)
 
     # Override once again the symbol with the correct contents
@@ -226,6 +256,12 @@ def _create_params_fixture(fixtures_dest,
         # To fix late binding issue with `param_idx` we add an extra layer of scope: a factory function
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(_param_idx):
+            """
+            Creates a function that can be used to create a function.
+
+            Args:
+                _param_idx: (str): write your description
+            """
 
             if debug:
                 print("Creating nonparametrized 'view' fixture %r returning %r[%s]" % (argname, root_fixture_name, _param_idx))
@@ -233,6 +269,12 @@ def _create_params_fixture(fixtures_dest,
             @fixture_plus(name=argname, scope=scope, autouse=autouse, hook=hook, **kwargs)
             @with_signature("%s(%s)" % (argname, root_fixture_name))
             def _param_fixture(**_kwargs):
+                """
+                Returns a list of all the parameters.
+
+                Args:
+                    _kwargs: (dict): write your description
+                """
                 params = _kwargs.pop(root_fixture_name)
                 return params[_param_idx]
 
@@ -259,6 +301,11 @@ def _create_params_fixture(fixtures_dest,
 @pytest.hookimpl(optionalhook=True)
 def pytest_fixture_plus(*args,
                         **kwargs):
+    """
+    Decorator for pytest. pytest.
+
+    Args:
+    """
     warn("`pytest_fixture_plus` is deprecated. Please use the new alias `fixture_plus`. "
          "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
     if len(args) == 1:
@@ -266,6 +313,12 @@ def pytest_fixture_plus(*args,
             return _decorate_fixture_plus(args[0], _caller_module_offset_when_unpack=2, **kwargs)
 
     def _fixture_plus(f):
+        """
+        Return a function fixture function f.
+
+        Args:
+            f: (todo): write your description
+        """
         return _decorate_fixture_plus(f, *args, _caller_module_offset_when_unpack=2, **kwargs)
     return _fixture_plus
 
@@ -453,6 +506,13 @@ def _decorate_fixture_plus(fixture_func,
 
     # --common routine used below. Fills kwargs with the appropriate names and values from fixture_params
     def _map_arguments(*_args, **_kwargs):
+        """
+        Map a list of arguments.
+
+        Args:
+            _args: (todo): write your description
+            _kwargs: (dict): write your description
+        """
         request = _kwargs['request'] if func_needs_request else _kwargs.pop('request')
 
         # populate the parameters
@@ -477,6 +537,13 @@ def _decorate_fixture_plus(fixture_func,
         # normal function with return statement
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*_args, **_kwargs):
+            """
+            Decorator for the wrapped function.
+
+            Args:
+                _args: (tuple): write your description
+                _kwargs: (dict): write your description
+            """
             if not is_used_request(_kwargs['request']):
                 return NOT_USED
             else:
@@ -487,6 +554,13 @@ def _decorate_fixture_plus(fixture_func,
         # generator function (with a yield statement)
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*_args, **_kwargs):
+            """
+            Decorator that wraps a list of arguments.
+
+            Args:
+                _args: (tuple): write your description
+                _kwargs: (dict): write your description
+            """
             if not is_used_request(_kwargs['request']):
                 yield NOT_USED
             else:

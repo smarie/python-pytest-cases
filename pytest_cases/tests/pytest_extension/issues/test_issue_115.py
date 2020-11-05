@@ -6,10 +6,21 @@ import pytest
 
 
 def iterate():
+    """
+    Iterate over all items of the iterable.
+
+    Args:
+    """
     for i in range(10):
         yield i
 
 
 @pytest.mark.parametrize("idx", iterate())
 def test_fn(idx):
+    """
+    Decorator to run a test function.
+
+    Args:
+        idx: (int): write your description
+    """
     pass

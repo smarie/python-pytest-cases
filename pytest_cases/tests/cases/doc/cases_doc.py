@@ -16,10 +16,21 @@ def two_positive_ints():
 class CasesFoo:
     @classmethod
     def case_toto(cls):
+        """
+        Returns a totototo instance.
+
+        Args:
+            cls: (todo): write your description
+        """
         return
 
     @staticmethod
     def case_foo():
+        """
+        Returns a list of all the case.
+
+        Args:
+        """
         return
 
     @case(id="hello")

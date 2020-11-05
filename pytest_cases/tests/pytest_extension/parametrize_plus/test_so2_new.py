@@ -15,6 +15,11 @@ dbB_setup = False
 
 @fixture(scope="module")
 def dbA():
+    """
+    Context manager to temporarily sets
+
+    Args:
+    """
     #do setup
     global dbA_setup
     assert not dbA_setup
@@ -25,11 +30,23 @@ def dbA():
 
 @parametrize(idx=dbA_keys)
 def item_from_A(dbA, idx):
+    """
+    Yields the item from a database.
+
+    Args:
+        dbA: (todo): write your description
+        idx: (todo): write your description
+    """
     yield dbA[idx]
 
 
 @fixture(scope="module")
 def dbB():
+    """
+    Context manager to create a context manager.
+
+    Args:
+    """
     #do setup
     global dbB_setup
     assert not dbB_setup
@@ -40,10 +57,23 @@ def dbB():
 
 @parametrize(idx=dbB_keys)
 def item_from_B(dbB, idx):
+    """
+    Yields the first.
+
+    Args:
+        dbB: (todo): write your description
+        idx: (todo): write your description
+    """
     yield dbB[idx]
 
 
 @parametrize_with_cases('data', prefix='item_', cases='.')
 def test_data(data):
+    """
+    Print out the data
+
+    Args:
+        data: (array): write your description
+    """
     print(data)
     #do test

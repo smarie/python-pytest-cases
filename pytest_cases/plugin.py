@@ -77,11 +77,26 @@ class FixtureDefsCache(object):
     __slots__ = 'fm', 'nodeid', 'cached_fix_defs'
 
     def __init__(self, fm, nodeid):
+        """
+        Initialize the cache.
+
+        Args:
+            self: (todo): write your description
+            fm: (str): write your description
+            nodeid: (str): write your description
+        """
         self.fm = fm
         self.nodeid = nodeid
         self.cached_fix_defs = dict()
 
     def get_fixture_defs(self, fixname):
+        """
+        Return a list of the cached fixmes.
+
+        Args:
+            self: (todo): write your description
+            fixname: (str): write your description
+        """
         try:
             # try to retrieve it from cache
             fixdefs = self.cached_fix_defs[fixname]
@@ -114,6 +129,14 @@ class FixtureClosureNode(object):
                  fixture_defs_mgr=None,   # type: FixtureDefsCache
                  parent_node=None         # type: FixtureClosureNode
                  ):
+        """
+        Initialize a module.
+
+        Args:
+            self: (todo): write your description
+            fixture_defs_mgr: (str): write your description
+            parent_node: (todo): write your description
+        """
         if fixture_defs_mgr is None:
             if parent_node is None:
                 raise ValueError("root node should have a fixture defs manager")
@@ -134,6 +157,12 @@ class FixtureClosureNode(object):
     # ------ tree ------------------
 
     def get_leaves(self):
+        """
+        Return a list of all leaves of this node.
+
+        Args:
+            self: (str): write your description
+        """
         if self.has_split():
             return [n for c in self.children for n in c.get_leaves()]
         else:
@@ -160,6 +189,12 @@ class FixtureClosureNode(object):
         return str_repr
 
     def __repr__(self):
+        """
+        Return a repr representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.to_str()
 
     # ---- getters to read the "super" closure (used in SuperClosure)
@@ -180,6 +215,12 @@ class FixtureClosureNode(object):
         if try_to_sort and LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
             f_scope = get_pytest_function_scopenum()
             def sort_by_scope(kv_pair):  # noqa
+                """
+                Returns a new scope.
+
+                Args:
+                    kv_pair: (str): write your description
+                """
                 fixture_name, fixture_defs = kv_pair
                 return fixture_defs[-1].scopenum if fixture_defs is not None else f_scope
             items = sorted(list(items), key=sort_by_scope)
@@ -228,6 +269,12 @@ class FixtureClosureNode(object):
         self._build_closure(self.fixture_defs_mgr, initial_fixture_names, ignore_args=ignore_args)
 
     def is_closure_built(self):
+        """
+        : return : true if_defs_defs.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.fixture_defs is not None
 
     def already_knows_fixture(self, fixture_name):
@@ -371,6 +418,12 @@ class FixtureClosureNode(object):
                 new_c._build_closure(fixture_defs_mgr, pending_for_child, ignore_args=ignore_args)
 
     def has_split(self):
+        """
+        Return true if the split has split.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.split_fixture_name is not None
 
     # ----------- for calls parametrization
@@ -440,6 +493,12 @@ class FixtureClosureNode(object):
         return alternatives
 
     def _get_alternatives(self):
+        """
+        Returns a list of alternative alternative alternative alternative variables.
+
+        Args:
+            self: (todo): write your description
+        """
         if self.has_split():
             alternatives_list = []
             for c_idx, (c_split_alternative, c_node) in enumerate(zip(self.split_fixture_alternatives, self.children)):
@@ -477,6 +536,13 @@ class SuperClosure(MutableSequence):
     def __init__(self,
                  root_node  # type: FixtureClosureNode
                  ):
+        """
+        Initialize all the nodes.
+
+        Args:
+            self: (todo): write your description
+            root_node: (todo): write your description
+        """
         # if we wish to drop the tree - but we do not anymore to get a better paramz order
         # filters_list, partitions_list = root_node._get_alternatives()
 
@@ -532,9 +598,22 @@ class SuperClosure(MutableSequence):
     # ---- list (MutableSequence) facade: behaves like a list of fixture names ------
 
     def __len__(self):
+        """
+        Returns the length of the field.
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.all_fixture_defs)
 
     def __getitem__(self, i):
+        """
+        Returns the value of the list
+
+        Args:
+            self: (todo): write your description
+            i: (todo): write your description
+        """
         # return the key (fixture name) associated with the i-th pair
         # try:
         #     return next(islice(self.all_fixture_defs.keys(), i, i+1))
@@ -543,6 +622,14 @@ class SuperClosure(MutableSequence):
         return list(self.all_fixture_defs.keys())[i]
 
     def __setitem__(self, i, o):
+        """
+        Sets the item.
+
+        Args:
+            self: (todo): write your description
+            i: (todo): write your description
+            o: (todo): write your description
+        """
         # try:
         #     # pytest performs a full replacement using [:] so we handle at least this case
         #     full_replace = i == slice(None, None, None)
@@ -567,9 +654,24 @@ class SuperClosure(MutableSequence):
                                   "as the partitions inside it do not have the same size")
 
     def __delitem__(self, i):
+        """
+        Remove an item at index i.
+
+        Args:
+            self: (todo): write your description
+            i: (todo): write your description
+        """
         self.remove(self[i])
 
     def insert(self, index, object):
+        """
+        Inserts an object at index.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+            object: (todo): write your description
+        """
         # if index == 0:
         #     print()
         # elif index == len(self):
@@ -580,6 +682,13 @@ class SuperClosure(MutableSequence):
                                   " Please report this so that we can find a suitable solution for your need.")
 
     def remove(self, value):
+        """
+        Remove the given * value from the list.
+
+        Args:
+            self: (todo): write your description
+            value: (todo): write your description
+        """
         # try:
         #     del self.all_fixture_defs[value]
         # except KeyError:
@@ -709,6 +818,12 @@ class UnionParamz(namedtuple('UnionParamz', ['union_fixture_name', 'alternative_
     __slots__ = ()
 
     def __str__(self):
+        """
+        Returns a string representation of this alternative.
+
+        Args:
+            self: (todo): write your description
+        """
         return "[UNION] %s=[%s], ids=%s, scope=%s, kwargs=%s" \
                "" % (self.union_fixture_name, ','.join([str(a) for a in self.alternative_names]),
                      self.ids, self.scope, self.kwargs)
@@ -720,6 +835,12 @@ class NormalParamz(namedtuple('NormalParamz', ['argnames', 'argvalues', 'indirec
     __slots__ = ()
 
     def __str__(self):
+        """
+        Return a string representation of this call.
+
+        Args:
+            self: (todo): write your description
+        """
         return "[NORMAL] %s=[%s], indirect=%s, ids=%s, scope=%s, kwargs=%s" \
                "" % (self.argnames, self.argvalues, self.indirect, self.ids, self.scope, self.kwargs)
 
@@ -786,6 +907,13 @@ class CallsReactor(object):
     __slots__ = 'metafunc', '_pending', '_call_list'
 
     def __init__(self, metafunc):
+        """
+        Initialize the metrics.
+
+        Args:
+            self: (todo): write your description
+            metafunc: (todo): write your description
+        """
         self.metafunc = metafunc
         self._pending = []
         self._call_list = None
@@ -795,6 +923,13 @@ class CallsReactor(object):
     def append(self,
                parametrization  # type: Union[UnionParamz, NormalParamz]
                ):
+        """
+        Append a new parameter to the list.
+
+        Args:
+            self: (todo): write your description
+            parametrization: (str): write your description
+        """
         self._pending.append(parametrization)
 
     def print_parametrization_list(self):
@@ -804,9 +939,22 @@ class CallsReactor(object):
     # -- list facade --
 
     def __iter__(self):
+        """
+        Returns an iterator over all the iterator.
+
+        Args:
+            self: (todo): write your description
+        """
         return iter(self.calls_list)
 
     def __getitem__(self, item):
+        """
+        Return the item from the cache.
+
+        Args:
+            self: (todo): write your description
+            item: (str): write your description
+        """
         return self.calls_list[item]
 
     @property
@@ -870,6 +1018,14 @@ class CallsReactor(object):
 
 
 def get_calls_for_tree(metafunc, fix_closure_tree, pending):
+    """
+    Get a list of calls from the tree will be processed.
+
+    Args:
+        metafunc: (todo): write your description
+        fix_closure_tree: (str): write your description
+        pending: (array): write your description
+    """
     calls, nodes = _process_node(metafunc, fix_closure_tree, pending.copy(), [])
     _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending)
     return calls
@@ -1221,6 +1377,12 @@ def _process_node(metafunc, current_node, pending, calls):
 
 
 def flatten_list(lst):
+    """
+    Flatten a list of lists.
+
+    Args:
+        lst: (todo): write your description
+    """
     return [v for nested_list in lst for v in nested_list]
 
 
@@ -1262,6 +1424,12 @@ _OPTIONS = {
 
 # @hookspec(historic=True)
 def pytest_addoption(parser):
+    """
+    Adds a pytest_addoption option.
+
+    Args:
+        parser: (todo): write your description
+    """
     group = parser.getgroup('pytest-cases ordering', 'pytest-cases reordering options', after='general')
     help_str = """String specifying one of the reordering alternatives to use. Should be one of :
  - %s""" % ("\n - ".join(["%s: %s" % (k, v) for k, v in _OPTIONS.items()]))
@@ -1272,6 +1440,12 @@ def pytest_addoption(parser):
 
 # @hookspec(historic=True)
 def pytest_configure(config):
+    """
+    Configure pytest_configure.
+
+    Args:
+        config: (todo): write your description
+    """
     # validate the config
     allowed_values = ('normal', 'skip')
     reordering_choice = config.getoption(_OPTION_NAME)

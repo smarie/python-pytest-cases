@@ -9,11 +9,22 @@ from pytest_cases import fixture_ref, pytest_parametrize_plus, pytest_fixture_pl
 @pytest_fixture_plus
 @pytest_parametrize_plus("variant", ['A', 'B'])
 def book1(variant):
+    """
+    Returns a variant of a variant.
+
+    Args:
+        variant: (todo): write your description
+    """
     return variant
 
 
 @pytest.fixture
 def book2():
+    """
+    Returns the : meth : class : ~tax.
+
+    Args:
+    """
     return
 
 
@@ -24,10 +35,22 @@ def book2():
     fixture_ref(book2),
 ])
 def test_get_or_create_book(name):
+    """
+    Todo : pypi.
+
+    Args:
+        name: (str): write your description
+    """
     print(name)
 
 
 def test_synthesis(module_results_dct):
+    """
+    Test if the test results.
+
+    Args:
+        module_results_dct: (todo): write your description
+    """
     assert list(module_results_dct) == ['test_get_or_create_book[name_is_book1-A]',
                                         'test_get_or_create_book[name_is_book1-B]',
                                         'test_get_or_create_book[name_is_P1toP2-hi]',

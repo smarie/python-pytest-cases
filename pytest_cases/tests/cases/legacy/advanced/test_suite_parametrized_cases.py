@@ -69,6 +69,14 @@ def test_suite_parametrized_cases(test_step,
                                   case_data,  # type: CaseDataGetter
                                   steps_data  # type: StepsDataHolder
                                   ):
+    """
+    Assign test test test test test case.
+
+    Args:
+        test_step: (todo): write your description
+        case_data: (dict): write your description
+        steps_data: (todo): write your description
+    """
 
     # Get the data for this particular case
     ins, expected_o, expected_e = case_data.get(test_step.__name__)

@@ -14,6 +14,12 @@ except ImportError:
 # @lru_cache(maxsize=3)
 @cases_generator("case {i}", i=range(3), lru_cache=True)
 def case_gen(i):
+    """
+    Generate a case of the case
+
+    Args:
+        i: (todo): write your description
+    """
     # type: (...) -> CaseData
     print("generating case " + str(i))
     ins = i
@@ -24,6 +30,12 @@ def case_gen(i):
 @cases_data(module=THIS_MODULE)
 def test_a(case_data  # type: CaseDataGetter
            ):
+    """
+    \ test case case.
+
+    Args:
+        case_data: (dict): write your description
+    """
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
 
@@ -34,6 +46,12 @@ def test_a(case_data  # type: CaseDataGetter
 @cases_data(module=THIS_MODULE)
 def test_b(case_data   # type: CaseDataGetter
            ):
+    """
+    Test for test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
 

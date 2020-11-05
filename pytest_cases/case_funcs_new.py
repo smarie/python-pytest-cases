@@ -35,12 +35,27 @@ class CaseInfo(object):
                  marks=(),  # type: Tuple[MarkDecorator]
                  tags=()    # type: Tuple[Any]
                  ):
+        """
+        Initialize the tags.
+
+        Args:
+            self: (todo): write your description
+            id: (str): write your description
+            marks: (str): write your description
+            tags: (str): write your description
+        """
         self.id = id
         self.marks = marks
         self.tags = ()
         self.add_tags(tags)
 
     def __repr__(self):
+        """
+        Return a human - readable representation.
+
+        Args:
+            self: (todo): write your description
+        """
         return "CaseInfo(id=%r,marks=%r,tags=%r)" % (self.id, self.marks, self.tags)
 
     @classmethod
@@ -109,6 +124,14 @@ class CaseInfo(object):
 
     @classmethod
     def copy_info(cls, from_case_func, to_case_func):
+        """
+        Copy case info to case_func.
+
+        Args:
+            cls: (todo): write your description
+            from_case_func: (bool): write your description
+            to_case_func: (todo): write your description
+        """
         case_info = cls.get_from(from_case_func)
         if case_info is not None:
             cp = copy(case_info)

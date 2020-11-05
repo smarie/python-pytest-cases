@@ -13,10 +13,23 @@ has_pytest_param = hasattr(pytest, 'param')
 @pytest.mark.parametrize("arg1", ["one", "two"])
 @pytest.mark.parametrize("arg2", ["one", "two"])
 def myfix(arg1, arg2):
+    """
+    Return the two arguments arg1 and arg2.
+
+    Args:
+        arg1: (todo): write your description
+        arg2: (str): write your description
+    """
     return arg1, arg2
 
 
 def test_one(myfix):
+    """
+    Test the test test
+
+    Args:
+        myfix: (str): write your description
+    """
     assert myfix[0] in {"one", "two"}
     assert myfix[1] in {"one", "two"}
     print(myfix)
@@ -39,11 +52,23 @@ if not has_pytest_param:
     # > no go
 
     def test_warning_pytest2():
+        """
+        Evaluate python 2.
+
+        Args:
+        """
         with pytest.raises(ValueError) as exc_info:
             @pytest_fixture_plus
             @pytest.mark.parametrize("arg2", [0], ids=str)
             @pytest.mark.parametrize("arg1", [1])
             def a(arg1, arg2):
+                """
+                Compute the difference between two arguments.
+
+                Args:
+                    arg1: (todo): write your description
+                    arg2: (str): write your description
+                """
                 return arg1, arg2
         assert "Unfortunately with this old pytest version it" in str(exc_info.value)
 
@@ -56,10 +81,24 @@ else:
         pytest.param(5, 6, id="skipped", marks=pytest.mark.skip)
     ])
     def myfix2(arg1, arg2, arg3):
+        """
+        Fixme : class : two arguments.
+
+        Args:
+            arg1: (todo): write your description
+            arg2: (str): write your description
+            arg3: (str): write your description
+        """
         return arg1, arg2, arg3
 
 
     def test_two(myfix2):
+        """
+        Test if two two integers
+
+        Args:
+            myfix2: (str): write your description
+        """
         assert myfix2 in {(1, 2, 0), (3, 4, 0), (5, 6, 0)}
         print(myfix2)
 
@@ -69,10 +108,24 @@ else:
         pytest.param(5, 6, id="a")
     ], ids=['ignored_id'])
     def myfix3(arg1, arg2):
+        """
+        Fixme : pyfix3fix.
+
+        Args:
+            arg1: (todo): write your description
+            arg2: (str): write your description
+        """
         return arg1, arg2
 
 
     def test_three(myfix2, myfix3):
+        """
+        Test if the test
+
+        Args:
+            myfix2: (str): write your description
+            myfix3: (str): write your description
+        """
         assert myfix2 in {(1, 2, 0), (3, 4, 0), (5, 6, 0)}
         print(myfix2)
 

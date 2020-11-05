@@ -14,12 +14,24 @@ from pytest_cases import cases_data, pytest_fixture_plus, cases_generator, THIS_
 # ----- "case functions" : they could be in other modules
 @cases_generator("data{name}", name=['1_a', '2_a', '3_a'])
 def case_datasetA(name):
+    """
+    Generate a case - insensitive case name.
+
+    Args:
+        name: (str): write your description
+    """
     # here you would grab the data
     return "data" + name
 
 
 @cases_generator("data{name}", name=['1_b', '2_b', '3_b'])
 def case_datasetB(name):
+    """
+    Generate a case - insensitive case - insensitive name.
+
+    Args:
+        name: (str): write your description
+    """
     # here you would grab the data
     return "data" + name
 # -----
@@ -27,23 +39,47 @@ def case_datasetB(name):
 
 @lru_cache()
 def setup_dataset(db):
+    """
+    Setup the database
+
+    Args:
+        db: (todo): write your description
+    """
     # this is run once per db thanks to the lru_cache decorator
     print("setup for %s" % db)
 
 @lru_cache()
 def finalize_dataset(db):
+    """
+    Finalize the database.
+
+    Args:
+        db: (todo): write your description
+    """
     # this is run once per db thanks to the lru_cache decorator
     print("teardown for %s" % db)
 
 @pytest_fixture_plus(scope="module")
 @cases_data(module=THIS_MODULE)
 def data(case_data):
+    """
+    Generate dataset.
+
+    Args:
+        case_data: (dict): write your description
+    """
     setup_dataset(case_data.f)
     yield case_data.get()
     finalize_dataset(case_data.f)
 
 
 def test_data(data):
+    """
+    Test if the data is a valid data.
+
+    Args:
+        data: (array): write your description
+    """
     # do test
     pass
 

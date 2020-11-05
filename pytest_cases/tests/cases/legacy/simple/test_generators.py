@@ -12,6 +12,11 @@ except ImportError:
 
 
 def case_simple():
+    """
+    Return a case case case case.
+
+    Args:
+    """
     # type: (...) -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
@@ -29,6 +34,13 @@ def case_simple():
 
 @cases_generator("test with i={i}, j={j} and name template", i=range(2), j=range(3))
 def case_simple_generator(i, j):
+    """
+    Generate a simple generator.
+
+    Args:
+        i: (todo): write your description
+        j: (todo): write your description
+    """
     # type: (...) -> CaseData
     ins = dict(a=i, b=j)
     outs = i+1, j+1
@@ -37,6 +49,13 @@ def case_simple_generator(i, j):
 
 @cases_generator("test with i={i}, j={j} and names callable provider", i=range(2), j=range(3))
 def case_simple_generator_callable_name(i, j):
+    """
+    Generate a generator function that generator.
+
+    Args:
+        i: (todo): write your description
+        j: (todo): write your description
+    """
     # type: (...) -> CaseData
     ins = dict(a=i, b=j)
     outs = i+1, j+1
@@ -48,6 +67,13 @@ names_list = ["test with i={i}, j={j} and explicit names list".format(i=i, j=j) 
 
 @cases_generator(names_list, i=range(2), j=range(3))
 def case_simple_generator_explicit_name_list(i, j):
+    """
+    Returns a generator that returns a generator generator.
+
+    Args:
+        i: (todo): write your description
+        j: (todo): write your description
+    """
     # type: (...) -> CaseData
     ins = dict(a=i, b=j)
     outs = i+1, j+1
@@ -57,6 +83,12 @@ def case_simple_generator_explicit_name_list(i, j):
 @cases_data(module=THIS_MODULE)
 def test_with_cases_decorated(case_data  # type: CaseDataGetter
                               ):
+    """
+    Assign test test test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()

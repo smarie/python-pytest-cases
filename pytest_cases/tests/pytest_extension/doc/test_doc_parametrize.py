@@ -8,10 +8,20 @@ from pytest_cases import parametrize_plus, fixture_plus, fixture_ref, lazy_value
 
 @pytest.fixture
 def world_str():
+    """
+    Èi̇·åıĸçºçº¿¿
+
+    Args:
+    """
     return 'world'
 
 
 def whatfun():
+    """
+    Return the function that will be used as a function.
+
+    Args:
+    """
     return 'what'
 
 
@@ -19,6 +29,12 @@ def whatfun():
 @parametrize_plus('who', [fixture_ref(world_str),
                                  'you'])
 def greetings(who):
+    """
+    Returns a string.
+
+    Args:
+        who: (todo): write your description
+    """
     return 'hello ' + who
 
 
@@ -28,4 +44,11 @@ def greetings(who):
                                fixture_ref(greetings)])
 @pytest.mark.parametrize('ending', ['?', '!'])
 def test_prints(main_msg, ending):
+    """
+    Test if the main test.
+
+    Args:
+        main_msg: (str): write your description
+        ending: (str): write your description
+    """
     print(main_msg + ending)

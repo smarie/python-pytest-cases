@@ -10,6 +10,12 @@ from pytest_cases.common_pytest import get_callspecs, has_pytest_param
 if not has_pytest_param:
     @pytest.mark.parametrize('new_style', [False, True])
     def test_getcallspecs(new_style):
+        """
+        Test for the callspecs of the given style.
+
+        Args:
+            new_style: (str): write your description
+        """
         if new_style:
             parametrizer = parametrize(a=[1, pytest.mark.skipif(True)(('12',))], idgen="a={a}")
         else:
@@ -17,6 +23,12 @@ if not has_pytest_param:
 
         @parametrizer
         def test_foo(a):
+            """
+            Test if a and b.
+
+            Args:
+                a: (todo): write your description
+            """
             pass
 
         calls = get_callspecs(test_foo)
@@ -34,6 +46,12 @@ if not has_pytest_param:
 else:
     @pytest.mark.parametrize('new_style', [False, True])
     def test_getcallspecs(new_style):
+        """
+        Test if all the callspecs for a given.
+
+        Args:
+            new_style: (str): write your description
+        """
         if new_style:
             parametrizer = parametrize(a=[1, pytest.param('12', marks=pytest.mark.skip)], idgen="a={a}")
         else:
@@ -41,6 +59,12 @@ else:
 
         @parametrizer
         def test_foo(a):
+            """
+            Test if a and b.
+
+            Args:
+                a: (todo): write your description
+            """
             pass
 
         calls = get_callspecs(test_foo)

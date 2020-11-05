@@ -10,6 +10,12 @@ state = -1
 
 @pytest_fixture_plus
 def a(request):
+    """
+    A context manager for the state of the state.
+
+    Args:
+        request: (todo): write your description
+    """
     global state
     assert state == 3
     state = 0
@@ -19,6 +25,12 @@ def a(request):
 
 @pytest_fixture_plus
 def b(request):
+    """
+    A context manager that yields a context manager.
+
+    Args:
+        request: (todo): write your description
+    """
     global state
     state = 2
     yield
@@ -33,8 +45,19 @@ c = fixture_union('c', [b, a])
 
 
 def test_all(c):
+    """
+    Test if c is_all
+
+    Args:
+        c: (todo): write your description
+    """
     pass
 
 
 def test_synthesis():
+    """
+    Test if a test.
+
+    Args:
+    """
     assert state == 1

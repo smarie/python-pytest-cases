@@ -51,6 +51,13 @@ class _ParametrizationMark:
     __slots__ = "param_names", "param_values", "param_ids"
 
     def __init__(self, mark):
+        """
+        Initialize the parameter.
+
+        Args:
+            self: (todo): write your description
+            mark: (str): write your description
+        """
         bound = get_parametrize_signature().bind(*mark.args, **mark.kwargs)
         try:
             remaining_kwargs = bound.arguments['kwargs']
@@ -75,6 +82,12 @@ class _LegacyMark:
     __slots__ = "args", "kwargs"
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the class.
+
+        Args:
+            self: (todo): write your description
+        """
         self.args = args
         self.kwargs = kwargs
 
@@ -161,6 +174,13 @@ if not has_pytest_param:
     # if not this is how it was done
     # see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize
     def make_marked_parameter_value(argvalues_tuple, marks):
+        """
+        Make a function that takes a function that takes the value.
+
+        Args:
+            argvalues_tuple: (todo): write your description
+            marks: (todo): write your description
+        """
         if len(marks) > 1:
             raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
         else:
@@ -175,6 +195,13 @@ if not has_pytest_param:
 else:
     # Otherwise pytest.param exists, it is easier
     def make_marked_parameter_value(argvalues_tuple, marks):
+        """
+        Make a function that creates a function that takes a value.
+
+        Args:
+            argvalues_tuple: (todo): write your description
+            marks: (todo): write your description
+        """
         if not isinstance(argvalues_tuple, tuple):
             raise TypeError("argvalues must be a tuple !")
 

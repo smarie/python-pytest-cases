@@ -16,6 +16,12 @@ except ImportError:
 
 def case_simple(version  # type: str
                 ):
+    """
+    Returns a simple case
+
+    Args:
+        version: (str): write your description
+    """
     # type: (...) -> CaseData
     print("using version " + version)
     ins = dict(a=1, b=2)
@@ -25,6 +31,12 @@ def case_simple(version  # type: str
 
 def case_simple2(version  # type: str
                  ):
+    """
+    Convert a case to snake case
+
+    Args:
+        version: (str): write your description
+    """
     # type: (...) -> CaseData
     print("using version " + version)
     ins = dict(a=1, b=2)
@@ -35,6 +47,14 @@ def case_simple2(version  # type: str
 @cases_generator(i=range(2), j=range(2))
 def case_gen(version,  # type: str,
              i, j):
+    """
+    Generate a case instruction
+
+    Args:
+        version: (str): write your description
+        i: (todo): write your description
+        j: (todo): write your description
+    """
     # type: (...) -> CaseData
     print("using version " + version)
     ins = dict(a=i, b=j)

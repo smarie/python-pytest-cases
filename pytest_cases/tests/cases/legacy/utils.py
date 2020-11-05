@@ -3,6 +3,12 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 def nb_pytest_parameters(f):
+    """
+    Decorator for pytest if f is a pytestmark.
+
+    Args:
+        f: (todo): write your description
+    """
     try:
         # new pytest
         return len(f.pytestmark)
@@ -12,6 +18,13 @@ def nb_pytest_parameters(f):
 
 
 def get_pytest_param(f, i):
+    """
+    Get pytestmark parameter.
+
+    Args:
+        f: (todo): write your description
+        i: (todo): write your description
+    """
     try:
         # new pytest
         return f.pytestmark[i].args

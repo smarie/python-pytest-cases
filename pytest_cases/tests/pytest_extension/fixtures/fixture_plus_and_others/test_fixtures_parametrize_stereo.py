@@ -17,9 +17,23 @@ CFG_TYPES = [list, dict]
 
 class StateAsserter:
     def __init__(self):
+        """
+        Initialize the state.
+
+        Args:
+            self: (todo): write your description
+        """
         self.current_state = 0
 
     def assert_state_and_move(self, path, cfg_factory):
+        """
+        Asserts that the given path exists.
+
+        Args:
+            self: (todo): write your description
+            path: (str): write your description
+            cfg_factory: (todo): write your description
+        """
         # path should be the second parameter, changin every two
         assert path == STEREO_PATHS[self.current_state % 2]
         # types should be the first, changing every 4
@@ -33,9 +47,23 @@ else:
     # for old versions of pytest, the execution order seems harder to get strictly
     class UnOrderedStateAsserter:
         def __init__(self):
+            """
+            Initialize all the product
+
+            Args:
+                self: (todo): write your description
+            """
             self.all_remaining = list(product(STEREO_PATHS, CFG_TYPES))
 
         def assert_state_and_move(self, path, cfg_factory):
+            """
+            Check if the given path exists.
+
+            Args:
+                self: (todo): write your description
+                path: (str): write your description
+                cfg_factory: (todo): write your description
+            """
             # just check that this state has not been reached yet and remove it
             self.all_remaining.remove((path, cfg_factory))
 
@@ -76,6 +104,14 @@ b = StateAsserter()
 @pytest.mark.parametrize("path", STEREO_PATHS)
 @pytest.mark.parametrize("cfg_factory", CFG_TYPES)   # not actual params
 def test_reference_test(path, cfg_factory, request):
+    """
+    Test if the test to a test exists.
+
+    Args:
+        path: (str): write your description
+        cfg_factory: (todo): write your description
+        request: (todo): write your description
+    """
     # a reference test, just to check (visually :) ) that the order of parameterized executions is the same
     b.assert_state_and_move(path=path, cfg_factory=cfg_factory)
 
@@ -86,6 +122,12 @@ c = StateAsserter()
 
 
 def _id(x):
+    """
+    Return the id of an id
+
+    Args:
+        x: (todo): write your description
+    """
     cfg_factory, path = x
     return "{cfg_factory}-{path}".format(path=path, cfg_factory=cfg_factory.__name__)
 
@@ -109,6 +151,12 @@ def stereo_cfg_2(path, request, cfg_factory):
 
 
 def test_stereo_one_global_parametrizer(stereo_cfg_2):
+    """
+    R test test_stereo_2zer.
+
+    Args:
+        stereo_cfg_2: (todo): write your description
+    """
     pass
 
 

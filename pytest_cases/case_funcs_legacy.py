@@ -61,6 +61,12 @@ def case_tags(*tags  # type: Any
 
     # we have to use "nested" mode for this decorator because in the decorator signature we have a var-positional
     def _apply(case_func):
+        """
+        Applies a function to case.
+
+        Args:
+            case_func: (todo): write your description
+        """
         CaseInfo.get_from(case_func, create=True).add_tags(tags)
         return case_func
 
@@ -94,10 +100,22 @@ _GENERATOR_FIELD = '__cases_generator__'
 
 
 def is_case_generator(f):
+    """
+    Returns a generator that f that is a generator.
+
+    Args:
+        f: (str): write your description
+    """
     return hasattr(f, _GENERATOR_FIELD)
 
 
 def get_case_generator_details(f):
+    """
+    Return details for details
+
+    Args:
+        f: (todo): write your description
+    """
     return getattr(f, _GENERATOR_FIELD, False)
 
 

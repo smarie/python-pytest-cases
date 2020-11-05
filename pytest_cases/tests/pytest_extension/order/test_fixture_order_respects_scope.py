@@ -14,11 +14,21 @@ data = {}
 
 @pytest.fixture(scope='module')
 def clean_data():
+    """
+    Clean the data.
+
+    Args:
+    """
     data.clear()
 
 
 @pytest.fixture(autouse=True)
 def add_data():
+    """
+    Add data to the list.
+
+    Args:
+    """
     data.update(value=True)
 
 
@@ -26,4 +36,9 @@ def add_data():
                     reason="This bug was not fixed in old pytest.")
 @pytest.mark.usefixtures('clean_data')
 def test_value():
+    """
+    Set the test value
+
+    Args:
+    """
     assert data.get('value')

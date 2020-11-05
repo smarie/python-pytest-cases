@@ -12,10 +12,21 @@ from pytest_cases import fixture, fixture_union
 
 @fixture(autouse=True)
 def a():
+    """
+    Returns a function that returns a function
+
+    Args:
+    """
     return
 
 
 def test_issue116(request):
+    """
+    Removes issue116.
+
+    Args:
+        request: (todo): write your description
+    """
     normal_closure = request._pyfuncitem._fixtureinfo.names_closure
     assert isinstance(normal_closure, list)
     normal_closure.remove('a')
@@ -28,12 +39,24 @@ super_closure = None
 
 
 def test_super_closure_edits(request, b):
+    """
+    Add the test is_closure_closure_ed.
+
+    Args:
+        request: (todo): write your description
+        b: (todo): write your description
+    """
     # save for later
     global super_closure
     super_closure = request._pyfuncitem._fixtureinfo.names_closure
 
 
 def test_super_closure_edits2():
+    """
+    Test if the super_closure_closure.
+
+    Args:
+    """
     global super_closure
     assert isinstance(super_closure, SuperClosure)
     super_closure = copy(super_closure)

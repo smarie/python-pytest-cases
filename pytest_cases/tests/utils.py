@@ -8,7 +8,19 @@ from pytest_cases.common_pytest import has_pytest_param
 
 if has_pytest_param:
     def skip(*argvals):
+        """
+        Decorator for pytest
+
+        Args:
+            argvals: (list): write your description
+        """
         return pytest.param(*argvals, marks=pytest.mark.skip)
 else:
     def skip(*argvals):
+        """
+        Decorator to skip the command.
+
+        Args:
+            argvals: (list): write your description
+        """
         return pytest.mark.skip(argvals)

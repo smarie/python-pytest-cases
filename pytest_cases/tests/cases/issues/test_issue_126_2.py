@@ -12,45 +12,106 @@ from pytest_cases import parametrize_with_cases
 if has_pytest_param:
     @pytest.fixture
     def b():
+        """
+        Return the b ( b.
+
+        Args:
+        """
         return -1
 
 
     @pytest.fixture(name='a')
     def a_in_module():
+        """
+        A module that returns the module
+
+        Args:
+        """
         return 1
 
 
     class TestA:
         @pytest.fixture(name='a')
         def a_nested(self):
+            """
+            Return a list of nested list of the two lists.
+
+            Args:
+                self: (todo): write your description
+            """
             return 2
 
         def test_a_nested(self, a):
+            """
+            Test if a is not_a.
+
+            Args:
+                self: (todo): write your description
+                a: (array): write your description
+            """
             assert a == 2
 
         @parametrize_with_cases('o', debug=True)
         def test_foo_nested(self, o):
+            """
+            !
+
+            Args:
+                self: (todo): write your description
+                o: (todo): write your description
+            """
             assert o == 'case!'
 
         @parametrize_with_cases('o', debug=True)
         def test_foo_nested2(self, o):
+            """
+            !
+
+            Args:
+                self: (todo): write your description
+                o: (todo): write your description
+            """
             assert o == 'case!'
 
 
     def test_bar(a):
+        """
+        Test if a is a bar.
+
+        Args:
+            a: (todo): write your description
+        """
         assert a == 1
 
 
     @parametrize_with_cases('o', debug=True)
     def test_foo(o):
+        """
+        !
+
+        Args:
+            o: (todo): write your description
+        """
         assert o == 'case!'
 
 
     @parametrize_with_cases('o', debug=True)
     def test_foo2(o):
+        """
+        !
+
+        Args:
+            o: (todo): write your description
+        """
         assert o == 'case!'
 
     def test_synthesis(module_results_dct):
+        """
+        Synthesis results.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         assert list(module_results_dct) == [
             # all tests in TestA class
             'test_a_nested',

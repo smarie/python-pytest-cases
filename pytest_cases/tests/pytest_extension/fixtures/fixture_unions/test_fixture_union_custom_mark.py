@@ -26,10 +26,22 @@ if has_pytest_param:
 
 
     def test_foo(c):
+        """
+        Test if c : class : py : meth : ~. c_foo.
+
+        Args:
+            c: (todo): write your description
+        """
         pass
 
 
     def test_synthesis(module_results_dct):
+        """
+        Test for test_synthesis.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         # TODO most probably the skip mark on b seeems to mess with the union behaviour.
         assert list(module_results_dct) == [
             'test_foo[A-1]',

@@ -22,9 +22,23 @@ class InfiniteInput(Exception):
     """
 
     def __init__(self, name):
+        """
+        Initialize an input.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         super(InfiniteInput, self).__init__(name)
 
     def __eq__(self, other):
+        """
+        Determine if two arguments are equal.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         return self.args == other.args
 
 

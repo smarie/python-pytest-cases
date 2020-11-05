@@ -9,6 +9,11 @@ from pytest_cases import pytest_parametrize_plus, pytest_fixture_plus, fixture_r
 
 @pytest.fixture
 def a():
+    """
+    Æł¥åıĸè½¬¦ä¸ĭ¶æģģ
+
+    Args:
+    """
     return 'a'
 
 
@@ -16,6 +21,12 @@ def a():
 @pytest_parametrize_plus('second_letter', [fixture_ref('a'),
                                            'o'])
 def b(second_letter):
+    """
+    Returns a string of two strings.
+
+    Args:
+        second_letter: (todo): write your description
+    """
     # second_letter = 'a'
     return 'b' + second_letter
 
@@ -26,6 +37,13 @@ def b(second_letter):
                                  'o'])
 @pytest.mark.parametrize('bar', ['bar'])
 def test_foo(arg, bar):
+    """
+    Test if test test.
+
+    Args:
+        arg: (todo): write your description
+        bar: (todo): write your description
+    """
     assert bar == 'bar'
     assert arg in ['z',
                    'a',
@@ -35,6 +53,12 @@ def test_foo(arg, bar):
 
 
 def test_synthesis(module_results_dct):
+    """
+    Test if the test results.
+
+    Args:
+        module_results_dct: (todo): write your description
+    """
     assert list(module_results_dct) == ['test_foo[arg_is_z-bar]',
                                         'test_foo[arg_is_a-bar]',
                                         'test_foo[arg_is_b-second_letter_is_a-bar]',

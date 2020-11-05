@@ -30,6 +30,12 @@ from .fixture__creation import get_caller_module, check_name_available, WARN
 
 class _NotUsed:
     def __repr__(self):
+        """
+        Return a repr representation of a repr__.
+
+        Args:
+            self: (todo): write your description
+        """
         return "pytest_cases.NOT_USED"
 
 
@@ -43,14 +49,35 @@ class UnionIdMakers(object):
     """
     @classmethod
     def nostyle(cls, param):
+        """
+        Return the nostyle parameter.
+
+        Args:
+            cls: (todo): write your description
+            param: (todo): write your description
+        """
         return param.alternative_name
 
     @classmethod
     def explicit(cls, param):
+        """
+        Returns an encoded function name for the given a parameter.
+
+        Args:
+            cls: (todo): write your description
+            param: (todo): write your description
+        """
         return "%s_is_%s" % (param.union_name, param.alternative_name)
 
     @classmethod
     def compact(cls, param):
+        """
+        Compact the function parameter for the parameter.
+
+        Args:
+            cls: (todo): write your description
+            param: (todo): write your description
+        """
         return "U%s" % param.alternative_name
 
     @classmethod
@@ -79,6 +106,14 @@ class UnionFixtureAlternative(object):
                  union_name,
                  alternative_name,
                  ):
+        """
+        Initialize a new union.
+
+        Args:
+            self: (todo): write your description
+            union_name: (str): write your description
+            alternative_name: (str): write your description
+        """
         self.union_name = union_name
         self.alternative_name = alternative_name
 
@@ -89,11 +124,23 @@ class UnionFixtureAlternative(object):
     #     return self.alternative_name
 
     def __repr__(self):
+        """
+        Return a human - readable representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         return "%s<%s=%s>" % (self.__class__.__name__, self.union_name, self.alternative_name)
 
     @staticmethod
     def to_list_of_fixture_names(alternatives_lst  # type: List[UnionFixtureAlternative]
                                  ):
+        """
+        Converts a list of alternative list to a list.
+
+        Args:
+            alternatives_lst: (todo): write your description
+        """
         res = []
         for f in alternatives_lst:
             if is_marked_parameter_value(f):
@@ -110,9 +157,22 @@ class InvalidParamsList(Exception):
     __slots__ = 'params',
 
     def __init__(self, params):
+        """
+        Initialize the parameters
+
+        Args:
+            self: (todo): write your description
+            params: (dict): write your description
+        """
         self.params = params
 
     def __str__(self):
+        """
+        Return a string representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         return "Invalid parameters list (`argvalues`) in pytest parametrize: %s" % self.params
 
 
@@ -184,6 +244,11 @@ def ignore_unused(fixture_func):
         # normal function with return statement
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
+            """
+            Decorator for the wrapped request if the request.
+
+            Args:
+            """
             request = kwargs['request'] if func_needs_request else kwargs.pop('request')
             if is_used_request(request):
                 return fixture_func(*args, **kwargs)
@@ -194,6 +259,11 @@ def ignore_unused(fixture_func):
         # generator function (with a yield statement)
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
+            """
+            Decorator that returns a generator.
+
+            Args:
+            """
             request = kwargs['request'] if func_needs_request else kwargs.pop('request')
             if is_used_request(request):
                 for res in fixture_func(*args, **kwargs):
@@ -326,6 +396,13 @@ def _fixture_union(fixtures_dest,
     # a parameter the name of the fixture to use
     @with_signature("%s(%s, request)" % (name, ', '.join(unique_fix_alt_names)))
     def _new_fixture(request, **all_fixtures):
+        """
+        Creates a new alternative.
+
+        Args:
+            request: (todo): write your description
+            all_fixtures: (str): write your description
+        """
         # ignore the "not used" marks, like in @ignore_unused
         if not is_used_request(request):
             return NOT_USED
@@ -433,10 +510,22 @@ def _unpack_fixture(fixtures_dest,  # type: ModuleType
         # To fix late binding issue with `value_idx` we add an extra layer of scope: a factory function
         # See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
         def _create_fixture(_value_idx):
+            """
+            Creates a function that creates a function that creates a function.
+
+            Args:
+                _value_idx: (str): write your description
+            """
             # no need to autouse=True: this fixture does not bring any added value in terms of setup.
             @pytest_fixture(name=argname, scope=scope, autouse=False, hook=hook)
             @with_signature("%s(%s, request)" % (argname, source_f_name))
             def _param_fixture(request, **kwargs):
+                """
+                Extracts the value of the request.
+
+                Args:
+                    request: (todo): write your description
+                """
                 # ignore the "not used" marks, like in @ignore_unused
                 if not is_used_request(request):
                     return NOT_USED

@@ -161,6 +161,13 @@ class AssertException(object):
     __slots__ = ('expected_exception', 'err_type', 'err_ptrn', 'err_inst', 'err_checker')
 
     def __init__(self, expected_exception):
+        """
+        Initialize the error object
+
+        Args:
+            self: (todo): write your description
+            expected_exception: (todo): write your description
+        """
         # First see what we need to assert
         err_type, err_ptrn, err_inst, err_checker = unfold_expected_err(expected_exception)
         self.expected_exception = expected_exception
@@ -170,9 +177,24 @@ class AssertException(object):
         self.err_checker = err_checker
 
     def __enter__(self):
+        """
+        Enter the callable
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Exit the given exception.
+
+        Args:
+            self: (todo): write your description
+            exc_type: (todo): write your description
+            exc_val: (todo): write your description
+            exc_tb: (todo): write your description
+        """
         if exc_type is None:
             # bad: no exception caught
             raise AssertionError("DID NOT RAISE any BaseException")
@@ -252,6 +274,12 @@ def get_class_that_defined_method(meth):
 
 if PY3:
     def qname(func):
+        """
+        Return the name of a function.
+
+        Args:
+            func: (todo): write your description
+        """
         return func.__qualname__
 else:
     def qname(func):

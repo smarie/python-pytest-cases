@@ -67,6 +67,12 @@ def case_simple_error_callable():
     ins = dict(a=1, b=inf)
 
     def is_good_error(e):
+        """
+        Return true if the error is an error.
+
+        Args:
+            e: (todo): write your description
+        """
         return type(e) is InfiniteInput and e.args == ('b',)
 
     return ins, None, is_good_error

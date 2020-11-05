@@ -18,6 +18,11 @@ def test_value_ref():
     :return:
     """
     def foo():
+        """
+        Determine of two sequences.
+
+        Args:
+        """
         return 1, 2
 
     a = lazy_value(foo)
@@ -54,6 +59,11 @@ def test_lv_clone():
     """ Test that the internal API allows other plugins such as pytest-harvest to easily clone a lazy value without
     inheriting from the hack int base"""
     def foo():
+        """
+        Return a list of the first item.
+
+        Args:
+        """
         return 1
 
     lv = lazy_value(foo, id="hi", marks=pytest.mark.skip)
@@ -79,6 +89,11 @@ def test_lv_tuple_clone():
     """ Test that the internal API allows other plugins such as pytest-harvest to easily clone a lazy value without
     inheriting from the hack int base (this test is for tuple """
     def foo():
+        """
+        Determine of two sequences.
+
+        Args:
+        """
         return 1, 2
 
     lvt = lazy_value(foo, id="hi", marks=pytest.mark.skip).as_lazy_tuple(2)

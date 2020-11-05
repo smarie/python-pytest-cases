@@ -11,6 +11,12 @@ import subprocess
 
 
 def check_cmd(cmd):
+    """
+    Run a command.
+
+    Args:
+        cmd: (str): write your description
+    """
     assert isinstance(cmd, str), "cmd should be a string"
     assert cmd in {"pip", "conda"}, "cmd should be conda or pip. Unknown: " + str(cmd)
 

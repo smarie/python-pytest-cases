@@ -11,6 +11,11 @@ except ImportError:
 
 
 def case_simple():
+    """
+    Return a case case case case.
+
+    Args:
+    """
     # type: (...) -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
@@ -18,6 +23,11 @@ def case_simple():
 
 
 def case_simple2():
+    """
+    Return a simple case 2nd2 case.
+
+    Args:
+    """
     # type: (...) -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
@@ -27,6 +37,12 @@ def case_simple2():
 @cases_data(cases=case_simple)
 def test_with_cases_decorated(case_data  # type: CaseDataGetter
                               ):
+    """
+    Assign test test test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
@@ -40,6 +56,12 @@ def test_with_cases_decorated(case_data  # type: CaseDataGetter
 @cases_data(cases=[case_simple, case_simple2])
 def test_with_cases_decorated2(case_data  # type: CaseDataGetter
                                ):
+    """
+    R test test test test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
@@ -65,6 +87,11 @@ def load_file(file_name):
 
 
 def case_1():
+    """
+    Returns the case as - insensitive case
+
+    Args:
+    """
     # type: (...) -> CaseData
     ins = load_file('file1')
     outs, err = None, None
@@ -72,6 +99,11 @@ def case_1():
 
 
 def case_2():
+    """
+    Convert case
+
+    Args:
+    """
     # type: (...) -> CaseData
     ins = load_file('file2')
     outs, err = None, None
@@ -79,6 +111,11 @@ def case_2():
 
 
 def case_3():
+    """
+    Load case case file
+
+    Args:
+    """
     # type: (...) -> CaseData
     ins = load_file('file3')
     outs, err = None, None
@@ -88,6 +125,12 @@ def case_3():
 @cases_data(cases=[case_1, case_2])
 def test_a(case_data  # type: CaseDataGetter
            ):
+    """
+    Test for test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
 
@@ -98,6 +141,12 @@ def test_a(case_data  # type: CaseDataGetter
 @cases_data(cases=[case_2, case_3])
 def test_b(case_data    # type: CaseDataGetter
            ):
+    """
+    Evaluate the test.
+
+    Args:
+        case_data: (dict): write your description
+    """
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
 
@@ -108,6 +157,12 @@ def test_b(case_data    # type: CaseDataGetter
 @cases_data(cases=[case_1, case_2, case_3])
 def test_c(case_data    # type: CaseDataGetter
            ):
+    """
+    Test for test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
 

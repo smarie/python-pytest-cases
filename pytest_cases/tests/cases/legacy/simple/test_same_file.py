@@ -12,6 +12,11 @@ except ImportError:
 
 
 def case_simple():
+    """
+    Return a case case case case.
+
+    Args:
+    """
     # type: () -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
@@ -19,6 +24,11 @@ def case_simple():
 
 
 def case_simple2():
+    """
+    Return a simple case 2nd2 case.
+
+    Args:
+    """
     # type: () -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
@@ -28,6 +38,12 @@ def case_simple2():
 @cases_data(module=THIS_MODULE)
 def test_with_cases_decorated(case_data  # type: CaseDataGetter
                               ):
+    """
+    Assign test test test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()

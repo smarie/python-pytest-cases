@@ -30,7 +30,19 @@ from .common_pytest_lazy_values import is_lazy_value
 # A decorator that will work to create a fixture containing 'yield', whatever the pytest version, and supports hooks
 if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
     def pytest_fixture(hook=None, **kwargs):
+        """
+        Decorator for pytestring into a function.
+
+        Args:
+            hook: (todo): write your description
+        """
         def _decorate(f):
+            """
+            Decorate a decorator.
+
+            Args:
+                f: (todo): write your description
+            """
             # call hook if needed
             if hook is not None:
                 f = hook(f)
@@ -42,6 +54,12 @@ else:
     def pytest_fixture(hook=None, name=None, **kwargs):
         """Generator-aware pytest.fixture decorator for legacy pytest versions"""
         def _decorate(f):
+            """
+            Decorate decorator for a generator.
+
+            Args:
+                f: (todo): write your description
+            """
             if name is not None:
                 # 'name' argument is not supported in this old version, use the __name__ trick.
                 f.__name__ = name
@@ -59,6 +77,12 @@ else:
 
 
 def remove_duplicates(lst):
+    """
+    Remove duplicates from a list.
+
+    Args:
+        lst: (todo): write your description
+    """
     dset = set()
     # relies on the fact that dset.add() always returns None.
     return [item for item in lst
@@ -157,6 +181,12 @@ def get_fixture_scope(fixture_fun):
 # ---------------- working on pytest nodes (e.g. Function)
 
 def is_function_node(node):
+    """
+    Check if a function is a function node.
+
+    Args:
+        node: (todo): write your description
+    """
     try:
         node.function  # noqa
         return True
@@ -358,15 +388,39 @@ try:  # pytest 3.x+
     from _pytest.mark import ParameterSet  # noqa
 
     def is_marked_parameter_value(v):
+        """
+        Checks whether v is a parameter or not.
+
+        Args:
+            v: (todo): write your description
+        """
         return isinstance(v, ParameterSet)
 
     def get_marked_parameter_marks(v):
+        """
+        Get the value of a parameter
+
+        Args:
+            v: (todo): write your description
+        """
         return v.marks
 
     def get_marked_parameter_values(v):
+        """
+        Get a list of a given parameter.
+
+        Args:
+            v: (todo): write your description
+        """
         return v.values
 
     def get_marked_parameter_id(v):
+        """
+        Get the parameter id from the given parameter
+
+        Args:
+            v: (todo): write your description
+        """
         return v.id
 
 except ImportError:  # pytest 2.x
@@ -393,22 +447,52 @@ except ImportError:  # pytest 2.x
             return marks[0](val)
 
     def is_marked_parameter_value(v):
+        """
+        Returns true if the value is a parameter.
+
+        Args:
+            v: (todo): write your description
+        """
         return isinstance(v, MarkDecorator)
 
     def get_marked_parameter_marks(v):
+        """
+        Returns the list of parameters ---------- v parameters
+
+        Args:
+            v: (todo): write your description
+        """
         return [v]
 
     def get_marked_parameter_values(v):
+        """
+        Get the value of the given parameter.
+
+        Args:
+            v: (todo): write your description
+        """
         if v.name in ('skip', 'skipif'):
             return v.args[-1]  # see MetaFunc.parametrize in pytest 2 to be convinced :)
         else:
             raise ValueError("Unsupported mark")
 
     def get_marked_parameter_id(v):
+        """
+        Gets the parameter value
+
+        Args:
+            v: (todo): write your description
+        """
         return v.kwargs.get('id', None)
 
 
 def get_pytest_nodeid(metafunc):
+    """
+    Return the pytest node id from pytestunc node
+
+    Args:
+        metafunc: (todo): write your description
+    """
     try:
         return metafunc.definition.nodeid
     except AttributeError:
@@ -423,10 +507,21 @@ except ImportError:
 
 
 def get_pytest_scopenum(scope_str):
+    """
+    Return the scopenum for the given scope.
+
+    Args:
+        scope_str: (str): write your description
+    """
     return pt_scopes.index(scope_str)
 
 
 def get_pytest_function_scopenum():
+    """
+    Return the pytest_function_scopes for a pytest.
+
+    Args:
+    """
     return pt_scopes.index("function")
 
 
@@ -521,12 +616,26 @@ class MiniFuncDef(object):
     __slots__ = ('nodeid',)
 
     def __init__(self, nodeid):
+        """
+        Initialize a node.
+
+        Args:
+            self: (todo): write your description
+            nodeid: (str): write your description
+        """
         self.nodeid = nodeid
 
 
 class MiniMetafunc(Metafunc):
     # noinspection PyMissingConstructor
     def __init__(self, func):
+        """
+        Initialize the function.
+
+        Args:
+            self: (todo): write your description
+            func: (callable): write your description
+        """
         self.config = None
         self.function = func
         self.definition = MiniFuncDef(func.__name__)
@@ -543,10 +652,22 @@ class MiniMetafunc(Metafunc):
 
     @property
     def is_parametrized(self):
+        """
+        Returns true if the parameter is a parameter
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.pmarks) > 0
 
     @property
     def requires_fixtures(self):
+        """
+        Returns true if the user has completed
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.required_fixtures) > 0
 
     def update_callspecs(self):
@@ -611,6 +732,13 @@ def cart_product_pytest(argnames, argvalues):
 
 
 def _cart_product_pytest(argnames_lists, argvalues):
+    """
+    Cart_product_pytest ( argnames_lists ) yields a list of lists.
+
+    Args:
+        argnames_lists: (str): write your description
+        argvalues: (list): write your description
+    """
     result = []
 
     # first perform the sub cartesian product with entries [1:]
@@ -717,6 +845,12 @@ def inject_host(apply_decorator):
     # return _apply_decorator_with_host_tracking
 
     def apply(test_or_fixture_func):
+        """
+        Decorator to apply a function.
+
+        Args:
+            test_or_fixture_func: (bool): write your description
+        """
         # approximate: always returns the module and not the class :(
         #
         # indeed when this is called, the function exists (and its qualname mentions the host class) but the

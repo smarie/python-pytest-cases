@@ -111,12 +111,24 @@ class CaseDataFromFunction(CaseDataGetter):
         self.function_kwargs = function_kwargs
 
     def __str__(self):
+        """
+        Return the case string
+
+        Args:
+            self: (todo): write your description
+        """
         if self.case_name is not None:
             return self.case_name
         else:
             return self.f.__name__
 
     def __repr__(self):
+        """
+        Return a repr representation of - repr.
+
+        Args:
+            self: (todo): write your description
+        """
         return "Test Case Data generator - [" + str(self) + "] - " + str(self.f)
 
     def get_marks(self):
@@ -300,17 +312,39 @@ class InvalidNamesTemplateException(Exception):
     Raised when a `@cases_generator` is used with an improper name template and formatting fails.
     """
     def __init__(self, cases_func, names_template, params):
+        """
+        Initialize the function.
+
+        Args:
+            self: (todo): write your description
+            cases_func: (todo): write your description
+            names_template: (str): write your description
+            params: (dict): write your description
+        """
         self.cases_func = cases_func
         self.names_template = names_template
         self.params = params
         super(InvalidNamesTemplateException, self).__init__()
 
     def __str__(self):
+        """
+        Return a string representation of this function.
+
+        Args:
+            self: (todo): write your description
+        """
         return "Error creating the case name for case generator <%s> using name template '%s' with parameter values " \
                "%s. Please check the name template." % (self.cases_func.__name__, self.names_template, self.params)
 
 
 def _get_case_getter_s(has_tag=None, filter=None):
+    """
+    Get all case - insensitive case case.
+
+    Args:
+        has_tag: (str): write your description
+        filter: (str): write your description
+    """
     if filter is not None and not callable(filter):
         raise ValueError("`filter` should be a callable starting in pytest-cases 0.8.0. If you wish to provide a single"
                          " tag to match, use `has_tag` instead.")
@@ -352,6 +386,12 @@ def _get_case_getter_s(has_tag=None, filter=None):
                     _formatter = names
 
                     def names(**params):
+                        """
+                        Return the names of the formatter.
+
+                        Args:
+                            params: (dict): write your description
+                        """
                         try:
                             return _formatter.format(**params)
                         except Exception:

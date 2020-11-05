@@ -11,6 +11,11 @@ except ImportError:
 
 
 def case_simple():
+    """
+    Case case case.
+
+    Args:
+    """
     # type: () -> MultipleStepsCaseData
     ins = dict(a=1, b=2)
 
@@ -22,6 +27,11 @@ def case_simple():
 
 
 def case_simple2():
+    """
+    Return a simple case case
+
+    Args:
+    """
     # type: () -> MultipleStepsCaseData
     ins = dict(a=-1, b=2)
 

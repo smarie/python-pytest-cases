@@ -17,6 +17,11 @@ if has_pytest_param:
     @pytest.fixture
     @saved_fixture
     def a():
+        """
+        Æł¥åıĸè½¬¦ä¸ĭ¶æģģ
+
+        Args:
+        """
         return 'a'
 
 
@@ -24,6 +29,12 @@ if has_pytest_param:
     @saved_fixture
     @pytest.mark.parametrize('i', [5, 6])
     def b(i):
+        """
+        Returns a string representation of a string
+
+        Args:
+            i: (int): write your description
+        """
         return 'b%s' % i
 
 
@@ -32,10 +43,23 @@ if has_pytest_param:
                               fixture_ref(b)],
                       hook=saved_fixture)
     def test_fixture_ref1(arg):
+        """
+        R test ref1 ref1.
+
+        Args:
+            arg: (todo): write your description
+        """
         assert arg in ['a', 'b5', 'b6', 'c']
 
 
     def test_synthesis1(request, fixture_store):
+        """
+        Perform a test.
+
+        Args:
+            request: (todo): write your description
+            fixture_store: (str): write your description
+        """
         results_dct1 = get_session_synthesis_dct(request, filter=test_fixture_ref1, test_id_format='function',
                                                  fixture_store=fixture_store, flatten=True)
         assert [(k, v['test_fixture_ref1_arg']) for k, v in results_dct1.items()] == [
@@ -52,6 +76,11 @@ if has_pytest_param:
     @pytest.fixture
     @saved_fixture
     def c():
+        """
+        Return a string with the c - c.
+
+        Args:
+        """
         return 'c', 'd'
 
 
@@ -61,11 +90,25 @@ if has_pytest_param:
                                   fixture_ref(c)
                                   ])
     def test_fixture_ref2(foo, bar):
+        """
+        Test ref2. ref2.
+
+        Args:
+            foo: (todo): write your description
+            bar: (todo): write your description
+        """
         assert foo in ['a', 2, 'c']
         assert bar in {'a': (1, ), 2: ('b5', 'b6'), 'c': ('d',)}[foo]
 
 
     def test_synthesis2(request, fixture_store):
+        """
+        Test for flnthesis.
+
+        Args:
+            request: (todo): write your description
+            fixture_store: (todo): write your description
+        """
         results_dct2 = get_session_synthesis_dct(request, filter=test_fixture_ref2, test_id_format='function',
                                                  fixture_store=fixture_store, flatten=True)
         assert list(results_dct2) == [

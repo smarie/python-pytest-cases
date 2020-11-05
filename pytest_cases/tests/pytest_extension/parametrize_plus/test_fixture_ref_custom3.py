@@ -13,11 +13,22 @@ has_pytest_param = hasattr(pytest, 'param')
 if has_pytest_param:
     @pytest.fixture
     def a():
+        """
+        Æł¥åıĸè½¬¦ä¸ĭ¶æģģ
+
+        Args:
+        """
         return 'a'
 
 
     @pytest.fixture(params=['r', 't'], ids="b={}".format)
     def b(request):
+        """
+        Return a string representation of the request.
+
+        Args:
+            request: (todo): write your description
+        """
         return "b%s" % request.param
 
     @parametrize_plus('foo', [1,
@@ -29,9 +40,21 @@ if has_pytest_param:
                               fixture_ref(a)
                               ], ids=[str(i) for i in range(7)])
     def test_id(foo):
+        """
+        Returns the id
+
+        Args:
+            foo: (todo): write your description
+        """
         pass
 
     def test_synthesis(module_results_dct):
+        """
+        Test for test results to see if needed.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         # make sure the id and skip mark were taken into account
         assert list(module_results_dct) == [
             'test_id[0]',

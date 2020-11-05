@@ -10,6 +10,12 @@ f_list = []
 
 
 def my_hook(fixture_fun):
+    """
+    Decor function to run the hook.
+
+    Args:
+        fixture_fun: (str): write your description
+    """
     print(fixture_fun)
     f_list.append(fixture_fun.__name__)
     return fixture_fun
@@ -17,6 +23,11 @@ def my_hook(fixture_fun):
 
 @fixture_plus(hook=my_hook)
 def foo():
+    """
+    Determine of two lists.
+
+    Args:
+    """
     return 2, 1
 
 
@@ -33,10 +44,24 @@ u = fixture_union("u", (o, p), hook=my_hook)
 @parametrize_plus("arg", [fixture_ref(u),
                           fixture_ref(p1)])
 def test_a(arg, p2, p3):
+    """
+    Test if arg is an arg )
+
+    Args:
+        arg: (todo): write your description
+        p2: (int): write your description
+        p3: (int): write your description
+    """
     pass
 
 
 def test_synthesis(module_results_dct):
+    """
+    Test for test results.
+
+    Args:
+        module_results_dct: (todo): write your description
+    """
     assert list(module_results_dct) == [
         'test_a[arg_is_u-u_is_o-3-4]',
         'test_a[arg_is_u-u_is_p-3-4]',

@@ -12,6 +12,11 @@ if has_pytest_param:
     pytest_param = pytest.param
 else:
     def pytest_param(*args, **kwargs):
+        """
+        Decorator to specify a function to pytest function.
+
+        Args:
+        """
         return args
 
 
@@ -23,10 +28,25 @@ my_parameter2 = param_fixture("my_parameter2", [3, 4])  # Returning value
 
 @pytest.fixture
 def fixture_uses_param(my_parameter, my_parameter2):
+    """
+    Returns a list of the given the first_param
+
+    Args:
+        my_parameter: (str): write your description
+        my_parameter2: (todo): write your description
+    """
     return my_parameter, my_parameter2
 
 
 def test_uses_param(my_parameter, my_parameter2, fixture_uses_param):
+    """
+    : parameter_parameter
+
+    Args:
+        my_parameter: (str): write your description
+        my_parameter2: (todo): write your description
+        fixture_uses_param: (todo): write your description
+    """
     # check that the parameter injected in both is the same
     assert my_parameter, my_parameter2 == fixture_uses_param
 
@@ -41,10 +61,25 @@ arg3 = param_fixture("arg3", [5, 6])
 
 @pytest.fixture
 def fixture_uses_param2(arg2):
+    """
+    Returns a list of - two arguments.
+
+    Args:
+        arg2: (todo): write your description
+    """
     return arg2
 
 
 def test_uses_param2(arg1, arg2, arg3, fixture_uses_param2):
+    """
+    Test if two arguments.
+
+    Args:
+        arg1: (todo): write your description
+        arg2: (todo): write your description
+        arg3: (todo): write your description
+        fixture_uses_param2: (todo): write your description
+    """
     # check that the parameter injected in both is the same
     assert arg2 == fixture_uses_param2
     assert arg1, arg2 in [(1, 2), (3, 4)]

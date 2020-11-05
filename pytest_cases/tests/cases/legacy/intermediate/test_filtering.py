@@ -13,6 +13,11 @@ except ImportError:
 
 @case_tags('a', 'b')
 def case_a_and_b():
+    """
+    Return a new case and a 2 - tuple of the case
+
+    Args:
+    """
     # type: () -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
@@ -21,6 +26,11 @@ def case_a_and_b():
 
 @case_tags('a')
 def case_a():
+    """
+    Returns a new case that is equal integers.
+
+    Args:
+    """
     # type: () -> CaseData
     ins = dict(a=1, b=2)
     outs = 2, 3
@@ -28,6 +38,12 @@ def case_a():
 
 
 def my_tag_filter(case_func):
+    """
+    Decorator that returns only the tags.
+
+    Args:
+        case_func: (todo): write your description
+    """
     tags = case_func._pytestcase.tags
     return 'a' in tags or 'b' in tags
 
@@ -35,6 +51,12 @@ def my_tag_filter(case_func):
 @cases_data(module=THIS_MODULE, filter=my_tag_filter)
 def test_with_cases_a_or_b(case_data  # type: CaseDataGetter
                            ):
+    """
+    Evaluate test case test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
@@ -48,6 +70,12 @@ def test_with_cases_a_or_b(case_data  # type: CaseDataGetter
 @cases_data(module=THIS_MODULE, filter=my_tag_filter)
 def test_with_cases_a_and_b(case_data  # type: CaseDataGetter
                             ):
+    """
+    Evaluate test case test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
 
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()

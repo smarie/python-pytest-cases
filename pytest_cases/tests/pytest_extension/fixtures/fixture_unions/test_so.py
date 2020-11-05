@@ -9,6 +9,12 @@ from pytest_cases import fixture_union, pytest_fixture_plus, NOT_USED
 
 @pytest_fixture_plus(params=[1, 2, 3])
 def lower(request):
+    """
+    Return the lower - case.
+
+    Args:
+        request: (todo): write your description
+    """
     return "i" * request.param
 
 
@@ -18,6 +24,12 @@ def lower(request):
 
 @pytest.fixture(params=[1, 2])
 def upper(request):
+    """
+    Return the upper value of the request.
+
+    Args:
+        request: (todo): write your description
+    """
     # Just for the remark: this fixture does not use pytest_fixture_plus
     # so we have to explicitly discard the 'NOT_USED' cases
     if request.param is not NOT_USED:
@@ -28,6 +40,12 @@ fixture_union('all', ['lower', 'upper'])
 
 
 def test_all(all):
+    """
+    Print all test test test test test files
+
+    Args:
+        all: (int): write your description
+    """
     print(all)
 
 

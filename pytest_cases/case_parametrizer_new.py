@@ -133,6 +133,12 @@ def create_glob_name_filter(glob_str  # type: str
     name_matcher = re.compile(glob_str.replace("*", ".*"))
 
     def _glob_name_filter(case_fun):
+        """
+        Returns true if case matches case_funob.
+
+        Args:
+            case_fun: (todo): write your description
+        """
         case_fun_id = case_fun._pytestcase.id
         assert case_fun_id is not None
         return name_matcher.match(case_fun_id)
@@ -370,6 +376,13 @@ def get_or_create_case_fixture(case_id,       # type: str
             existing_fixture_names.append(get_fixture_name(symb))
 
     def name_changer(name, i):
+        """
+        Return a changer name.
+
+        Args:
+            name: (str): write your description
+            i: (str): write your description
+        """
         return name + '_' * i
 
     # start with name = case_id and find a name that does not exist
@@ -380,6 +393,12 @@ def get_or_create_case_fixture(case_id,       # type: str
         print("Case function %s > Creating fixture %r in %s" % (qname(true_case_func), fix_name, target_host))
 
     def funcopy(f):
+        """
+        Decorator to make a function callable from the given function.
+
+        Args:
+            f: (todo): write your description
+        """
         # apparently it is not possible to create an actual copy with copy() !
         # Use makefun.partial which preserves the parametrization marks (we need them)
         return makefun.partial(f)
@@ -461,12 +480,24 @@ def import_default_cases_module(f, alt_name=False):
 
 
 def hasinit(obj):
+    """
+    Returns true if object has an attribute.
+
+    Args:
+        obj: (todo): write your description
+    """
     init = getattr(obj, "__init__", None)
     if init:
         return init != object.__init__
 
 
 def hasnew(obj):
+    """
+    Returns true if obj is a new object.
+
+    Args:
+        obj: (todo): write your description
+    """
     new = getattr(obj, "__new__", None)
     if new:
         return new != object.__new__
@@ -569,6 +600,12 @@ def _extract_cases_from_module_or_class(module=None,                      # type
     # List members - only keep the functions from the module file (not the imported ones)
     if module is not None:
         def _of_interest(f):
+            """
+            Returns true if f is a module
+
+            Args:
+                f: (todo): write your description
+            """
             # check if the function is actually *defined* in this module (not imported from elsewhere)
             # Note: we used code.co_filename == module.__file__ in the past
             # but on some targets the file changes to a cached one so this does not work reliably,
@@ -579,6 +616,12 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                 return False
     else:
         def _of_interest(x):  # noqa
+            """
+            Return true if x is a list of - like
+
+            Args:
+                x: (todo): write your description
+            """
             return True
 
     for m_name, m in getmembers(container, _of_interest):

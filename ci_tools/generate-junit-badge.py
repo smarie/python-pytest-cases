@@ -16,6 +16,16 @@ import xunitparser
 
 class TestStats(object):
     def __init__(self, success_percentage, success, runned, skipped):
+        """
+        Initialize a new percentage.
+
+        Args:
+            self: (todo): write your description
+            success_percentage: (str): write your description
+            success: (bool): write your description
+            runned: (todo): write your description
+            skipped: (list): write your description
+        """
         self.success_percentage = success_percentage
         self.success = success
         self.runned = runned

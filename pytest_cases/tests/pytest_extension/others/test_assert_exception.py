@@ -8,6 +8,11 @@ from pytest_cases import assert_exception
 
 
 def test_assert_exception():
+    """
+    Asserts that the given test is a test.
+
+    Args:
+    """
     # good type
     with assert_exception(ValueError):
         raise ValueError()
@@ -36,6 +41,13 @@ def test_assert_exception():
     # good instance - equality check
     class MyExc(Exception):
         def __eq__(self, other):
+            """
+            Determine if other is equal.
+
+            Args:
+                self: (todo): write your description
+                other: (todo): write your description
+            """
             return vars(self) == vars(other)
 
     with assert_exception(MyExc('hello')):

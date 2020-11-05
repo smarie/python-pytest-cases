@@ -8,27 +8,58 @@ from pytest_cases import fixture, parametrize, fixture_union, fixture_ref
 @fixture(autouse=True)
 @parametrize(ie=[-1, 1])
 def e(ie):
+    """
+    Returns a human - like object
+
+    Args:
+        ie: (int): write your description
+    """
     return "e%s" % ie
 
 
 @fixture
 def d():
+    """
+    Return the d
+
+    Args:
+    """
     return "d"
 
 
 @fixture
 def c():
+    """
+    Return the c : parameter
+
+    Args:
+    """
     return "c"
 
 
 @fixture
 @parametrize(ia=[0, 1])
 def a(c, d, ia):
+    """
+    Return a - > b.
+
+    Args:
+        c: (int): write your description
+        d: (int): write your description
+        ia: (todo): write your description
+    """
     return "a%s" % ia + c + d
 
 
 @parametrize(i2=['x', 'z'])
 def test_2(a, i2):
+    """
+    Èi̇·åıĸæł¥
+
+    Args:
+        a: (array): write your description
+        i2: (array): write your description
+    """
     assert (a + i2) in ("a0cdx", "a0cdz", "a1cdx", "a1cdz")
 
 
@@ -40,6 +71,13 @@ def test_2(a, i2):
 @parametrize(ib=['x', 'z'])
 @parametrize(ub=(fixture_ref(a), fixture_ref(c)))
 def b(ub, ib):
+    """
+    Convert a b to a b
+
+    Args:
+        ub: (int): write your description
+        ib: (int): write your description
+    """
     return "b%s" % ib + ub
 
 
@@ -50,12 +88,24 @@ super_closure = None
 
 
 def test_1(u, request):
+    """
+    Test the test test test test test_closure.
+
+    Args:
+        u: (array): write your description
+        request: (todo): write your description
+    """
     # store for later
     global super_closure
     super_closure = request._pyfuncitem.fixturenames
 
 
 def test_closure():
+    """
+    Èi̇·åıĸæ¡µ.
+
+    Args:
+    """
     # make sure that the closure tree looks good
     global super_closure
     assert str(super_closure) == """SuperClosure with 3 alternative closures:

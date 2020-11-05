@@ -16,6 +16,11 @@ DA = None
 
 @pytest_fixture_plus(scope="module")
 def datasetA():
+    """
+    Context manager to the global dataset.
+
+    Args:
+    """
     global DA
 
     # setup the database connection
@@ -34,6 +39,13 @@ def datasetA():
 @pytest_fixture_plus(scope="module")
 @pytest.mark.parametrize('data_index', range(len(datasets_contents['datasetA'])), ids="idx={}".format)
 def data_from_datasetA(datasetA, data_index):
+    """
+    Return dataset from a dataset. dataset.
+
+    Args:
+        datasetA: (todo): write your description
+        data_index: (todo): write your description
+    """
     assert datasetA == 'DA'
     return datasets_contents['datasetA'][data_index]
 
@@ -43,6 +55,11 @@ DB = None
 
 @pytest_fixture_plus(scope="module")
 def datasetB():
+    """
+    Context manager for global dataset.
+
+    Args:
+    """
     global DB
 
     # setup the database connection
@@ -61,6 +78,13 @@ def datasetB():
 @pytest_fixture_plus(scope="module")
 @pytest.mark.parametrize('data_index', range(len(datasets_contents['datasetB'])), ids="idx={}".format)
 def data_from_datasetB(datasetB, data_index):
+    """
+    Return dataset from dataset.
+
+    Args:
+        datasetB: (todo): write your description
+        data_index: (todo): write your description
+    """
     assert datasetB == 'DB'
     return datasets_contents['datasetB'][data_index]
 
@@ -68,5 +92,11 @@ def data_from_datasetB(datasetB, data_index):
 @pytest_parametrize_plus('data', [fixture_ref('data_from_datasetA'),
                                   fixture_ref('data_from_datasetB')])
 def test_databases(data):
+    """
+    Test if the given data.
+
+    Args:
+        data: (array): write your description
+    """
     # do test
     print(data)

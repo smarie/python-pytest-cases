@@ -16,6 +16,11 @@ def test_get_pytest_marks():
 
     @skip_mark
     def case_func():
+        """
+        Returns a function func.
+
+        Args:
+        """
         pass
 
     # extract the marks from a case function

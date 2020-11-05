@@ -18,6 +18,15 @@ super_closure = None
 
 
 def test_fixture_union_harder(c, a, d, request):
+    """
+    Prints the union of the union.
+
+    Args:
+        c: (todo): write your description
+        a: (todo): write your description
+        d: (todo): write your description
+        request: (todo): write your description
+    """
     # save super closure for later
     global super_closure
     super_closure = request._pyfuncitem.fixturenames
@@ -25,6 +34,12 @@ def test_fixture_union_harder(c, a, d, request):
 
 
 def test_synthesis(module_results_dct):
+    """
+    Test for test results.
+
+    Args:
+        module_results_dct: (todo): write your description
+    """
     assert list(module_results_dct) == ["test_fixture_union_harder[c_is_a-x-d_is_b-1]",
                                         "test_fixture_union_harder[c_is_a-x-d_is_b-2]",
                                         "test_fixture_union_harder[c_is_a-x-d_is_a]",
@@ -42,6 +57,11 @@ def test_synthesis(module_results_dct):
 
 
 def test_super_closure():
+    """
+    Tests is a super_closure.
+
+    Args:
+    """
     global super_closure
 
     # make sure that the closure tree looks good

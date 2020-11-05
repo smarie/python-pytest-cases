@@ -10,10 +10,21 @@ from pytest_cases import parametrize_plus, lazy_value, fixture_plus, fixture_ref
 @fixture_plus
 @parametrize_plus("i", [5, 7])
 def bfix(i):
+    """
+    Bfix bfix
+
+    Args:
+        i: (int): write your description
+    """
     return -i
 
 
 def val():
+    """
+    Returns the value of the given function.
+
+    Args:
+    """
     return 1
 
 
@@ -28,6 +39,12 @@ if not has_pytest_param:
 
 
     def test_synthesis2(module_results_dct):
+        """
+        Convert a module_results_synt2.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         assert list(module_results_dct) == ['test_foo_single[a_is_val]',
                                             'test_foo_single[a_is_bfix-5]',
                                             'test_foo_single[a_is_bfix-7]',
@@ -47,6 +64,12 @@ else:
 
 
     def test_synthesis2(module_results_dct):
+        """
+        Convert a test results.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         assert list(module_results_dct) == ['test_foo_single[a_is_val]',
                                             'test_foo_single[a_is_bfix-5]',
                                             'test_foo_single[a_is_bfix-7]',

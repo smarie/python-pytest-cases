@@ -25,6 +25,11 @@ def load_file(file_name):
 
 @case_tags('a')
 def case_1():
+    """
+    Returns the case as - insensitive case
+
+    Args:
+    """
     # type: () -> CaseData
     ins = load_file('file1')
     outs, err = None, None
@@ -33,6 +38,11 @@ def case_1():
 
 @case_tags('a', 'b')
 def case_2():
+    """
+    Convert case
+
+    Args:
+    """
     # type: () -> CaseData
     ins = load_file('file2')
     outs, err = None, None
@@ -41,6 +51,11 @@ def case_2():
 
 @case_tags('b', 'c')
 def case_3():
+    """
+    Load case case file
+
+    Args:
+    """
     # type: () -> CaseData
     ins = load_file('file3')
     outs, err = None, None
@@ -50,6 +65,12 @@ def case_3():
 @cases_data(module=THIS_MODULE, has_tag='a')
 def test_a(case_data  # type: CaseDataGetter
            ):
+    """
+    Test for test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
 
@@ -60,6 +81,12 @@ def test_a(case_data  # type: CaseDataGetter
 @cases_data(module=THIS_MODULE, has_tag='b')
 def test_b(case_data  # type: CaseDataGetter
            ):
+    """
+    Evaluate the test.
+
+    Args:
+        case_data: (dict): write your description
+    """
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
 
@@ -70,6 +97,12 @@ def test_b(case_data  # type: CaseDataGetter
 @cases_data(module=THIS_MODULE)
 def test_c(case_data  # type: CaseDataGetter
            ):
+    """
+    Test for test case.
+
+    Args:
+        case_data: (dict): write your description
+    """
     # 1- Grab the test case data
     i, expected_o, expected_e = case_data.get()
 

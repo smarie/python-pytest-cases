@@ -11,15 +11,30 @@ has_pytest_param = hasattr(pytest, 'param')
 
 
 def valtuple():
+    """
+    Return a tuple of ( x y ) tuples.
+
+    Args:
+    """
     return 1, 2
 
 
 @pytest.mark.skipif(not has_pytest_param, reason="well")
 def val_skipped_on_old_pytest():
+    """
+    Convert python 2. xtest_old.
+
+    Args:
+    """
     return "what"
 
 
 def val():
+    """
+    Returns the value of the given function.
+
+    Args:
+    """
     return 1
 
 
@@ -40,6 +55,12 @@ if not has_pytest_param:
 
 
     def test_synthesis(module_results_dct):
+        """
+        Test if a module_results.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         assert list(module_results_dct) == ['test_foo_single[val]',
                                             'test_foo_single[A]',
                                             'test_foo_multi[valtuple[0]-valtuple[1]]',  # normal: lazy_value is used for the whole tuple
@@ -60,6 +81,11 @@ else:
     flag = False
 
     def valtuple_only_right_when_lazy():
+        """
+        Return a tuple with the first two numeric.
+
+        Args:
+        """
         global flag
         if flag:
             return 0, -1
@@ -67,6 +93,11 @@ else:
             raise ValueError("not yet ready ! you should call me later ")
 
     def valtuple_toskip():
+        """
+        Convert a tuple of integers representing a tuple of integers.
+
+        Args:
+        """
         return 15, 2
 
 
@@ -83,6 +114,12 @@ else:
 
 
     def test_synthesis2(module_results_dct):
+        """
+        Converts results of the results.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         assert list(module_results_dct) == ['test_foo_single[val]',
                                             'test_foo_single[B]',
                                             'test_foo_single[C]',

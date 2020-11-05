@@ -145,6 +145,15 @@ class _LazyValue(Lazy):
                  id=None,      # type: str  # noqa
                  marks=()      # type: Union[Any, Sequence[Any]]
                  ):
+        """
+        Initialize an instance.
+
+        Args:
+            self: (todo): write your description
+            valuegetter: (todo): write your description
+            id: (str): write your description
+            marks: (str): write your description
+        """
         self.valuegetter = valuegetter
         self._id = id
         if isinstance(marks, (tuple, list, set)):
@@ -186,12 +195,32 @@ class _LazyValue(Lazy):
                 return vg.__name__
 
     def get(self):
+        """
+        Returns the value of the field.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.valuegetter()
 
     def as_lazy_tuple(self, nb_params):
+        """
+        Convenience function to lazy.
+
+        Args:
+            self: (todo): write your description
+            nb_params: (dict): write your description
+        """
         return LazyTuple(self, nb_params)
 
     def as_lazy_items_list(self, nb_params):
+        """
+        Convert a list of lazy.
+
+        Args:
+            self: (todo): write your description
+            nb_params: (dict): write your description
+        """
         return [v for v in LazyTuple(self, nb_params)]
 
 
@@ -219,6 +248,14 @@ class _LazyTupleItem(Lazy):
                  host,  # type: LazyTuple
                  item   # type: int
                  ):
+        """
+        Initialize a new host.
+
+        Args:
+            self: (todo): write your description
+            host: (str): write your description
+            item: (todo): write your description
+        """
         self.host = host
         self.item = item
 
@@ -231,9 +268,21 @@ class _LazyTupleItem(Lazy):
         return "%s(%s)" % (self.__class__.__name__, ", ".join("%s=%r" % (k, v) for k, v in vals_to_display))
 
     def get_id(self):
+        """
+        Returns the id of this item.
+
+        Args:
+            self: (todo): write your description
+        """
         return "%s[%s]" % (self.host.get_id(), self.item)
 
     def get(self):
+        """
+        Get the host s host
+
+        Args:
+            self: (todo): write your description
+        """
         return self.host.force_getitem(self.item)
 
 
@@ -257,6 +306,13 @@ class LazyTuple(Lazy):
     def copy_from(cls,
                   obj  # type: LazyTuple
                   ):
+        """
+        Returns a copy of this object.
+
+        Args:
+            cls: (todo): write your description
+            obj: (todo): write your description
+        """
         new_obj = cls(valueref=obj.value, theoretical_size=obj.theoretical_size)
         new_obj.retrieved = obj.retrieved
         if new_obj.retrieved:
@@ -268,12 +324,26 @@ class LazyTuple(Lazy):
                  valueref,         # type: Union[LazyValue, Sequence]
                  theoretical_size  # type: int
                  ):
+        """
+        Initialize the value.
+
+        Args:
+            self: (todo): write your description
+            valueref: (str): write your description
+            theoretical_size: (int): write your description
+        """
         self.valuegetter = valueref
         self.theoretical_size = theoretical_size
         self.retrieved = False
         self.value = None
 
     def __len__(self):
+        """
+        Returns the length of the logical length.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.theoretical_size
 
     def get_id(self):
@@ -355,6 +425,13 @@ else:
         Note that we do it afterwards so that _LazyValue remains "pure" - pytest-harvest needs to reuse it"""
 
         def clone(self, remove_int_base=False):
+            """
+            Returns a copy of this array.
+
+            Args:
+                self: (todo): write your description
+                remove_int_base: (bool): write your description
+            """
             if not remove_int_base:
                 # return a type(self) (LazyValue or subclass)
                 return _LazyValue.clone(self)
@@ -366,6 +443,13 @@ else:
         """Same than _LazyTupleItem but inherits from int so that pytest calls str(o) for the id"""
 
         def clone(self, remove_int_base=False):
+            """
+            Returns a copy of this item.
+
+            Args:
+                self: (todo): write your description
+                remove_int_base: (bool): write your description
+            """
             if not remove_int_base:
                 # return a type(self) (LazyTupleItem or subclass)
                 return _LazyTupleItem.clone(self)

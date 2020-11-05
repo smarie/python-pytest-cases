@@ -16,9 +16,21 @@ if has_pytest_param:
 
 
     def test_foo(a):
+        """
+        Test if a and b.
+
+        Args:
+            a: (todo): write your description
+        """
         pass
 
 
     def test_synthesis(module_results_dct):
+        """
+        Test if a module_results_dcthesis.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         # id taken into account as well as skip mark (module_results_dct filters on non-skipped)
         assert list(module_results_dct) == ['test_foo[1]', 'test_foo[22]']

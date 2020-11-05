@@ -57,9 +57,26 @@ def with_metaclass(meta, *bases):
     class metaclass(type):
 
         def __new__(cls, name, this_bases, d):
+            """
+            Create a new : param name.
+
+            Args:
+                cls: (todo): write your description
+                name: (str): write your description
+                this_bases: (list): write your description
+                d: (todo): write your description
+            """
             return meta(name, bases, d)
 
         @classmethod
         def __prepare__(cls, name, this_bases):
+            """
+            Prepare the given name.
+
+            Args:
+                cls: (todo): write your description
+                name: (str): write your description
+                this_bases: (todo): write your description
+            """
             return meta.__prepare__(name, bases)
     return type.__new__(metaclass, 'temporary_class', (), {})

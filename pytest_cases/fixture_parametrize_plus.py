@@ -84,6 +84,12 @@ def _fixture_product(fixtures_dest,
         raise ValueError("Empty fixture products are not permitted")
 
     def _tuple_generator(all_fixtures):
+        """
+        Yields a generator lists of a generator calls.
+
+        Args:
+            all_fixtures: (str): write your description
+        """
         for i in range(_tuple_size):
             fix_at_pos_i = f_names[i]
             if fix_at_pos_i is None:
@@ -97,6 +103,12 @@ def _fixture_product(fixtures_dest,
     # then generate the body of our product fixture. It will require all of its dependent fixtures
     @with_signature("(%s)" % ', '.join(all_names))
     def _new_fixture(**all_fixtures):
+        """
+        Creates a generator that will generate a new generator.
+
+        Args:
+            all_fixtures: (str): write your description
+        """
         return tuple(_tuple_generator(all_fixtures))
 
     _new_fixture.__name__ = name
@@ -129,9 +141,22 @@ class fixture_ref(object):  # noqa
     __slots__ = 'fixture',
 
     def __init__(self, fixture):
+        """
+        Initialize the fixture.
+
+        Args:
+            self: (todo): write your description
+            fixture: (str): write your description
+        """
         self.fixture = get_fixture_name(fixture)
 
     def __repr__(self):
+        """
+        Return a human - readable representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         return "fixture_ref<%s>" % self.fixture
 
 
@@ -143,6 +168,11 @@ class fixture_ref(object):  # noqa
 @pytest.hookimpl(optionalhook=True)
 def pytest_parametrize_plus(*args,
                             **kwargs):
+    """
+    Convenience function to pytesttest.
+
+    Args:
+    """
     warn("`pytest_parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
          "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
     return parametrize_plus(*args, **kwargs)
@@ -157,11 +187,26 @@ class ParamAlternative(UnionFixtureAlternative):
                  alternative_name,
                  argnames,
                  ):
+        """
+        Init the union of the union.
+
+        Args:
+            self: (todo): write your description
+            union_name: (str): write your description
+            alternative_name: (str): write your description
+            argnames: (str): write your description
+        """
         super(ParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name)
         self.argnames = argnames
 
     @property
     def argnames_str(self):
+        """
+        Return a string representation of the argumentnames.
+
+        Args:
+            self: (todo): write your description
+        """
         return '_'.join(self.argnames)
 
 
@@ -176,12 +221,29 @@ class SingleParamAlternative(ParamAlternative):
                  argvalues_index,
                  argvalues
                  ):
+        """
+        Initialize the union of the union.
+
+        Args:
+            self: (todo): write your description
+            union_name: (str): write your description
+            alternative_name: (str): write your description
+            argnames: (str): write your description
+            argvalues_index: (int): write your description
+            argvalues: (todo): write your description
+        """
         super(SingleParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
                                                      argnames=argnames)
         self.argvalues_index = argvalues_index
         self.argvalues = argvalues
 
     def get_id(self):
+        """
+        Return the index of the argument
+
+        Args:
+            self: (todo): write your description
+        """
         # return "-".join(self.argvalues)
         return mini_idvalset(self.argnames, self.argvalues, idx=self.argvalues_index)
 
@@ -197,6 +259,17 @@ class MultiParamAlternative(ParamAlternative):
                  argvalues_index_from,
                  argvalues_index_to
                  ):
+        """
+        Init the index with index_name.
+
+        Args:
+            self: (todo): write your description
+            union_name: (str): write your description
+            alternative_name: (str): write your description
+            argnames: (str): write your description
+            argvalues_index_from: (int): write your description
+            argvalues_index_to: (int): write your description
+        """
         super(MultiParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
                                                     argnames=argnames)
         self.argvalues_index_from = argvalues_index_from
@@ -213,6 +286,16 @@ class FixtureParamAlternative(ParamAlternative):
                  argnames,
                  argvalues_index,
                  ):
+        """
+        Init the union of the union.
+
+        Args:
+            self: (todo): write your description
+            union_name: (str): write your description
+            alternative_name: (str): write your description
+            argnames: (str): write your description
+            argvalues_index: (int): write your description
+        """
         super(FixtureParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
                                                       argnames=argnames)
         self.argvalues_index = argvalues_index
@@ -228,6 +311,16 @@ class ProductParamAlternative(ParamAlternative):
                  argnames,
                  argvalues_index,
                  ):
+        """
+        Initialize the union of the union of the union.
+
+        Args:
+            self: (todo): write your description
+            union_name: (str): write your description
+            alternative_name: (str): write your description
+            argnames: (str): write your description
+            argvalues_index: (int): write your description
+        """
         super(ProductParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
                                                       argnames=argnames)
         self.argvalues_index = argvalues_index
@@ -243,6 +336,12 @@ class ParamIdMakers(object):
     @staticmethod
     def explicit(param  # type: ParamAlternative
                  ):
+        """
+        Convert a string representation of the given parameter.
+
+        Args:
+            param: (todo): write your description
+        """
         if isinstance(param, SingleParamAlternative):
             # return "%s_is_P%s" % (param.param_name, param.argvalues_index)
             return "%s_is_%s" % (param.argnames_str, param.get_id())
@@ -350,6 +449,13 @@ def parametrize_plus(argnames=None,       # type: str
     if needs_inject:
         @inject_host
         def _apply_parametrize_plus(f, host_class_or_module):
+            """
+            Decorate a function to a function f.
+
+            Args:
+                f: (todo): write your description
+                host_class_or_module: (todo): write your description
+            """
             return _decorate(f, host_class_or_module)
         return _apply_parametrize_plus
     else:
@@ -361,15 +467,36 @@ class InvalidIdTemplateException(Exception):
     Raised when a string template provided in an `idgen` raises an error
     """
     def __init__(self, idgen, params, caught):
+        """
+        Initialize the generator.
+
+        Args:
+            self: (todo): write your description
+            idgen: (todo): write your description
+            params: (dict): write your description
+            caught: (todo): write your description
+        """
         self.idgen = idgen
         self.params = params
         self.caught = caught
         super(InvalidIdTemplateException, self).__init__()
 
     def __str__(self):
+        """
+        Return a human - readable representation of the object.
+
+        Args:
+            self: (todo): write your description
+        """
         return repr(self)
 
     def __repr__(self):
+        """
+        Return a representation of this representation.
+
+        Args:
+            self: (todo): write your description
+        """
         return "Error generating test id using name template '%s' with parameter values " \
                "%r. Please check the name template. Caught: %s - %s" \
                % (self.idgen, self.params, self.caught.__class__, self.caught)
@@ -398,6 +525,11 @@ def _parametrize_plus(argnames=None,
     if idgen is AUTO:
         # note: we use a "trick" here with mini_idval to get the appropriate result
         def _make_ids(**args):
+            """
+            Yield ids. ids.
+
+            Args:
+            """
             for n, v in args.items():
                 if isinstance(v, fixture_ref):
                     yield "%s_is_%s" % (n, v.fixture)
@@ -439,6 +571,12 @@ def _parametrize_plus(argnames=None,
         else:
             # wrap the decorator to check if the test function has the parameters as arguments
             def _apply(test_func):
+                """
+                Decor to test_func.
+
+                Args:
+                    test_func: (todo): write your description
+                """
                 s = signature(test_func)
                 for p in argnames:
                     if p not in s.parameters:
@@ -474,6 +612,12 @@ def _parametrize_plus(argnames=None,
             """
             # create a new make id function with its own local counter of parameter
             def _tmp_make_id(argvals):
+                """
+                Makes a unique id from argvals.
+
+                Args:
+                    argvals: (todo): write your description
+                """
                 _tmp_make_id.i += 1
                 if _tmp_make_id.i >= nb_positions:
                     raise ValueError("Internal error, please report")
@@ -552,6 +696,13 @@ def _parametrize_plus(argnames=None,
             return p_fix_name, p_fix_alt
 
         def _create_fixture_ref_alt(union_name, i):  # noqa
+            """
+            Create a fixture fixture.
+
+            Args:
+                union_name: (str): write your description
+                i: (str): write your description
+            """
             # Get the referenced fixture name
             f_fix_name = argvalues[i].fixture
 
@@ -568,6 +719,17 @@ def _parametrize_plus(argnames=None,
             return f_fix_name, f_fix_alt
 
         def _create_fixture_ref_product(fh, union_name, i, fixture_ref_positions, test_func_name, hook):  # noqa
+            """
+            Creates a reference to a function.
+
+            Args:
+                fh: (todo): write your description
+                union_name: (str): write your description
+                i: (todo): write your description
+                fixture_ref_positions: (str): write your description
+                test_func_name: (str): write your description
+                hook: (todo): write your description
+            """
 
             # If an explicit list of ids was provided, slice it. Otherwise use the provided callable
             try:
@@ -735,6 +897,11 @@ def _parametrize_plus(argnames=None,
 
             # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
             def replace_paramfixture_with_values(kwargs):  # noqa
+                """
+                Replace kwargs with kwargs.
+
+                Args:
+                """
                 # remove the created fixture value
                 encompassing_fixture = kwargs.pop(fixture_union_name)
                 # and add instead the parameter values
@@ -750,6 +917,11 @@ def _parametrize_plus(argnames=None,
                 # normal test function with return statement
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):  # noqa
+                    """
+                    Decorator to cast_func.
+
+                    Args:
+                    """
                     if kwargs.get(fixture_union_name, None) is NOT_USED:
                         # TODO why this ? it is probably useless: this fixture
                         #  is private and will never end up in another union
@@ -762,6 +934,11 @@ def _parametrize_plus(argnames=None,
                 # generator test function (with one or several yield statements)
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):  # noqa
+                    """
+                    A generator that the test_func.
+
+                    Args:
+                    """
                     if kwargs.get(fixture_union_name, None) is NOT_USED:
                         # TODO why this ? it is probably useless: this fixture
                         #  is private and will never end up in another union
@@ -852,6 +1029,12 @@ def _gen_ids(argnames, argvalues, idgen):
         _formatter = idgen
 
         def gen_id_using_str_formatter(**params):
+            """
+            : param params : string with - like object :
+
+            Args:
+                params: (dict): write your description
+            """
             try:
                 return _formatter.format(**params)
             except Exception as e:

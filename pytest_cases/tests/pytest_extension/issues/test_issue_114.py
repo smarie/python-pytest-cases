@@ -9,6 +9,11 @@ used = False
 
 @pytest.fixture(autouse=True)
 def one():
+    """
+    Return the first result.
+
+    Args:
+    """
     global used
     used = True
     pass
@@ -16,9 +21,20 @@ def one():
 
 @pytest.fixture(params=[1, 2])
 def two():
+    """
+    Returns a new thread.
+
+    Args:
+    """
     pass
 
 
 def test_me(two):
+    """
+    Decorator that ising.
+
+    Args:
+        two: (array): write your description
+    """
     global used
     assert used

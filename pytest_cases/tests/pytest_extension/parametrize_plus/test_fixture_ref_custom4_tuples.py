@@ -13,11 +13,21 @@ has_pytest_param = hasattr(pytest, 'param')
 if has_pytest_param:
     @pytest.fixture
     def a():
+        """
+        Æł¥åıĸè½¬¦ä¸ĭ¶æģģ
+
+        Args:
+        """
         return 'a'
 
 
     @pytest.fixture
     def b():
+        """
+        Returns a string representation of a b.
+
+        Args:
+        """
         return 'b'
 
 
@@ -29,10 +39,23 @@ if has_pytest_param:
                                     ("c", 1),
                                     ], debug=True)
     def test_id_tuple(arg1, arg2):
+        """
+        Test if the test id is a tuple.
+
+        Args:
+            arg1: (todo): write your description
+            arg2: (todo): write your description
+        """
         assert arg1 in ['a', 'b', 'c'] and arg2 == 1
 
 
     def test_synthesis(module_results_dct):
+        """
+        Test if the test results to test results.
+
+        Args:
+            module_results_dct: (todo): write your description
+        """
         # make sure the id and skip mark were taken into account
         assert list(module_results_dct) == [
             'test_id_tuple[arg1_arg2_is_P0toP1-testID]',

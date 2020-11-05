@@ -111,6 +111,12 @@ def test_run_all_tests(test_to_run, testdir):
 
 
 def get_pytest_prepare_config(dynamic=False):
+    """
+    Prepare config.
+
+    Args:
+        dynamic: (str): write your description
+    """
     import py
     import shlex
     if dynamic:
@@ -140,6 +146,12 @@ def get_pytest_prepare_config(dynamic=False):
         import sys
         from _pytest.config import get_config
         def real_prepare_config(args=None, plugins=None):
+            """
+            Prepare real real config.
+
+            Args:
+                plugins: (todo): write your description
+            """
             if args is None:
                 args = sys.argv[1:]
             elif isinstance(args, py.path.local):
@@ -167,4 +179,10 @@ def get_pytest_prepare_config(dynamic=False):
 
 
 def process_cmdargs(cmdargs):
+    """
+    Process command line arguments.
+
+    Args:
+        cmdargs: (todo): write your description
+    """
     return shlex.split(cmdargs)

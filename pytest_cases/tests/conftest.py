@@ -65,4 +65,9 @@ def pytest_ignore_collect(path, config):
 
 @pytest.fixture
 def global_fixture():
+    """
+    Return the global global global global function.
+
+    Args:
+    """
     return 'global'

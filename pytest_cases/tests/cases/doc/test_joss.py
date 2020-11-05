@@ -8,6 +8,11 @@ from pytest_cases import parametrize, parametrize_with_cases
 
 
 def data_a():
+    """
+    Èi̇·åıĸåĩº¿
+
+    Args:
+    """
     # a simple test case is a function.
     # You can read or generate the data here
     return "<data>"
@@ -15,12 +20,23 @@ def data_a():
 
 @parametrize(p=range(2))
 def data_b(p):
+    """
+    Return a b.
+
+    Args:
+        p: (int): write your description
+    """
     # test cases can be easily parametrized
     # and can require fixtures (database connections...)
     return "<data%s>" % p
 
 
 def algo_a():
+    """
+    Returns the result of a signal
+
+    Args:
+    """
     # you can use different prefixes for different *kind* of test cases
     # (algorithms, datasets, users, etc.)
     return 1
@@ -29,6 +45,14 @@ def algo_a():
 @parametrize_with_cases("algo", cases=".", prefix="algo_")
 @parametrize_with_cases("data", cases=".", prefix="data_")
 def test_evaluation(algo, data, results_bag):
+    """
+    Evaluate the test.
+
+    Args:
+        algo: (todo): write your description
+        data: (array): write your description
+        results_bag: (todo): write your description
+    """
     # you can use results_bag from `pytest_harvest` to collect performance metrics
     # (here you would actually use the algorithm on the data !)
     results_bag.perf = random()
