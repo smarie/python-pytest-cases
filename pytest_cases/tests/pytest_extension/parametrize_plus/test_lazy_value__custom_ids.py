@@ -16,7 +16,7 @@ def id_generator(**objs):
     # return "-".join("%s=%s" % (k, v) for k, v in objs.items())
     # to get deterministic results we need this:
     if len(objs) > 1:
-        assert objs.keys() == {'a', 'b'}
+        assert set(objs.keys()) == {'a', 'b'}
         return "-".join("%s=%s" % (k, objs[k]) for k in ('a', 'b'))
     else:
         return "-".join("%s=%s" % (k, v) for k, v in objs.items())
