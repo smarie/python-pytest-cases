@@ -125,19 +125,24 @@ class _LazyValue(Lazy):
     fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
     """
     if pytest53:
-        __slots__ = 'valuegetter', '_id', '_marks'
+        __slots__ = 'valuegetter', '_id', '_marks', 'retrieved', 'value'
         _field_names = __slots__
     else:
-        # we can not define __slots__ since we extend int,
+        # we can not define __slots__ since we'll extend int in a subclass
         # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
-        _field_names = 'valuegetter', '_id', '_marks'
+        _field_names = 'valuegetter', '_id', '_marks', 'retrieved', 'value'
 
     @classmethod
     def copy_from(cls,
                   obj  # type: _LazyValue
                   ):
         """Creates a copy of this _LazyValue"""
-        return cls(valuegetter=obj.valuegetter, id=obj._id, marks=obj._marks)
+        new_obj = cls(valuegetter=obj.valuegetter, id=obj._id, marks=obj._marks)
+        # make sure the copy will not need to retrieve the result if already done
+        new_obj.retrieved = obj.retrieved
+        if new_obj.retrieved:
+            new_obj.value = obj.value
+        return new_obj
 
     # noinspection PyMissingConstructor
     def __init__(self,
@@ -151,6 +156,8 @@ class _LazyValue(Lazy):
             self._marks = marks
         else:
             self._marks = (marks, )
+        self.retrieved = False
+        self.value = None
 
     def get_marks(self, as_decorators=False):
         """
@@ -186,13 +193,24 @@ class _LazyValue(Lazy):
                 return vg.__name__
 
     def get(self):
-        return self.valuegetter()
+        """ Call the underlying value getter, then return the result value (not self). With a cache mechanism """
+        if not self.retrieved:
+            # retrieve
+            self.value = self.valuegetter()
+            self.retrieved = True
+
+        return self.value
 
     def as_lazy_tuple(self, nb_params):
-        return LazyTuple(self, nb_params)
+        res = LazyTuple(self, nb_params)
+        if self.retrieved:
+            # make sure the tuple will not need to retrieve the result if already done
+            res.retrieved = True
+            res.value = self.value
+        return res
 
     def as_lazy_items_list(self, nb_params):
-        return [v for v in LazyTuple(self, nb_params)]
+        return [v for v in self.as_lazy_tuple(nb_params)]
 
 
 class _LazyTupleItem(Lazy):
@@ -203,7 +221,7 @@ class _LazyTupleItem(Lazy):
         __slots__ = 'host', 'item'
         _field_names = __slots__
     else:
-        # we can not define __slots__ since we extend int,
+        # we can not define __slots__ since we'll extend int in a subclass
         # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
         _field_names = 'host', 'item'
 
@@ -258,6 +276,7 @@ class LazyTuple(Lazy):
                   obj  # type: LazyTuple
                   ):
         new_obj = cls(valueref=obj.value, theoretical_size=obj.theoretical_size)
+        # make sure the copy will not need to retrieve the result if already done
         new_obj.retrieved = obj.retrieved
         if new_obj.retrieved:
             new_obj.value = obj.value
@@ -281,7 +300,7 @@ class LazyTuple(Lazy):
         return self.valuegetter.get_id()
 
     def get(self):
-        """ Call the underlying value getter, then return the tuple (not self) """
+        """ Call the underlying value getter, then return the result tuple (not self). With a cache mechanism """
         if not self.retrieved:
             # retrieve
             self.value = self.valuegetter.get()

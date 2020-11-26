@@ -2,7 +2,7 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from .common_pytest_lazy_values import lazy_value
+from .common_pytest_lazy_values import lazy_value, is_lazy
 from .common_others import unfold_expected_err, assert_exception, AUTO, AUTO2
 
 from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
@@ -46,7 +46,7 @@ __all__ = [
     # -- fixture core2
     'pytest_fixture_plus', 'fixture_plus', 'fixture', 'param_fixtures', 'param_fixture',
     # -- fixture parametrize plus
-    'pytest_parametrize_plus', 'parametrize_plus', 'parametrize', 'fixture_ref', 'lazy_value',
+    'pytest_parametrize_plus', 'parametrize_plus', 'parametrize', 'fixture_ref', 'lazy_value', 'is_lazy',
 
     # V1 - DEPRECATED symbols
     # --cases_funcs

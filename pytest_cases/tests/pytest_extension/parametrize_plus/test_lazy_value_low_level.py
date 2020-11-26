@@ -5,9 +5,13 @@
 from distutils.version import LooseVersion
 
 import pytest
+from pytest_cases.common_pytest_lazy_values import LazyValue, LazyTuple
 
 from pytest_cases import lazy_value
 from pytest_cases.common_pytest import mini_idval
+
+
+_called = 0
 
 
 def test_value_ref():
@@ -17,7 +21,11 @@ def test_value_ref():
     as overriding __name__ is enough.
     :return:
     """
+    global _called
+
     def foo():
+        global _called
+        _called += 1
         return 1, 2
 
     a = lazy_value(foo)
@@ -26,25 +34,45 @@ def test_value_ref():
     assert mini_idval(a, 'a', 1) == 'foo'
     assert 'LazyValue' in repr(a)
 
+    # test that that calls work and the cache works even across copies
+    assert a.get() == (1, 2)
+    assert a.get() == (1, 2)
+    assert LazyValue.copy_from(a).get() == (1, 2)
+    assert _called == 1
+
     # now do the same test for lazy values used as a tuple of parameters
-    at = lazy_value(foo).as_lazy_tuple(2)
+    new_lv = lazy_value(foo)
+    assert not new_lv.retrieved
+    assert a.retrieved
 
-    # test when the tuple is unpacked into several parameters
-    for i, a in enumerate(at):
-        # test that ids will be correctly generated even on old pytest
-        assert mini_idval(a, 'a', 1) == 'foo[%s]' % i
-        assert ('LazyTupleItem(item=%s' % i) in repr(a)
+    for src in new_lv, a:
+        _called = 0 if not src.retrieved else 1
+        at = src.as_lazy_tuple(2)
 
-    # test when the tuple is not unpacked -
-    # note: this is not supposed to happen when @parametrize decorates a test function,
-    # it only happens when @parametrize decorates a fixture - indeed in that case we generate the whole id ourselves
-    assert str(at) == 'foo'
-    assert not at.retrieved
-    # test that retrieving the tuple does not loose the id
-    v = at.get()
-    assert v == (1, 2)
-    assert str(at) == 'foo'
-    assert at.retrieved
+        # test when the tuple is unpacked into several parameters
+        if not at.retrieved:
+            for i, a in enumerate(at):
+                # test that ids will be correctly generated even on old pytest
+                assert mini_idval(a, 'a', 1) == 'foo[%s]' % i
+                assert ('LazyTupleItem(item=%s' % i) in repr(a)
+        else:
+            # this does not happen in real usage but in case a plugin messes with this
+            assert tuple(at) == (1, 2)
+
+        # test when the tuple is not unpacked -
+        # note: this is not supposed to happen when @parametrize decorates a test function,
+        # it only happens when @parametrize decorates a fixture - indeed in that case we generate the whole id ourselves
+        assert str(at) == 'foo'
+
+        # assert that calls work and the cache works even across copies
+        assert at.get() == (1, 2)
+        assert at.get() == (1, 2)
+        assert LazyTuple.copy_from(at).get() == (1, 2)
+        assert _called == 1
+
+        # test that retrieving the tuple does not loose the id
+        assert str(at) == 'foo'
+        assert at.retrieved
 
 
 pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
