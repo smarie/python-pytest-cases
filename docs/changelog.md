@@ -1,5 +1,14 @@
 # Changelog
 
+### 2.4.0 - various fixes for test ids and lazy values
+
+ - `is_lazy` is now part of public API, and `_LazyValue` now has a cache mechanism like `_LazyTuple`. Fixes [#143](https://github.com/smarie/python-pytest-cases/issues/143)
+
+ - `@parametrize`: custom `ids` are now correctly taken into account when a single `lazy_value`is used for a tuple of parameters. This issue could be seen also with `@parametrize_with_cases`: `idgen` does not seem to be taken into account when cases are unpacked into a tuple. Fixes [#144](https://github.com/smarie/python-pytest-cases/issues/144).
+
+ - Empty case ids are now replaced with `'<empty_case_id>'` to avoid ambiguous interpretation of test ids. Fixes [#142](https://github.com/smarie/python-pytest-cases/issues/142).
+
+
 ### 2.3.0 - better `LazyValue` internal API
 
  - new `clone(self, remove_int_base=False)` API on `LazyValue` and `LazyTupleItem` instances. With this new API, on old `pytest` `< 5.3`, other plugins such as `pytest-harvest` can easily clone the contents from lazy values without having them inherit from `int` - which was a dirty hack used by `pytest-cases` to trick `pytest` to generate acceptable test ids in these old pytest versions. Also improved the `LazyValue`, `LazyTuple` and `LazyTupleItem` object model with equality and repr. Fixes [pytest-harvest#43](https://github.com/smarie/python-pytest-harvest/issues/43)
