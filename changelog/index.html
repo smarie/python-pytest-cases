@@ -8,8 +8,9 @@
       
       
       
+      
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
     
     
       
@@ -17,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.19190aaf.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6910b76c.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.24b84193.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.196e0c26.min.css">
         
       
     
@@ -101,7 +102,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
       <label class="md-search__icon md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
@@ -275,6 +276,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#240-various-fixes-for-test-ids-and-lazy-values" class="md-nav__link">
+    2.4.0 - various fixes for test ids and lazy values
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#230-better-lazyvalue-internal-api" class="md-nav__link">
@@ -846,6 +854,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#240-various-fixes-for-test-ids-and-lazy-values" class="md-nav__link">
+    2.4.0 - various fixes for test ids and lazy values
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#230-better-lazyvalue-internal-api" class="md-nav__link">
     2.3.0 - better LazyValue internal API
   </a>
@@ -1402,6 +1417,18 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="240-various-fixes-for-test-ids-and-lazy-values">2.4.0 - various fixes for test ids and lazy values<a class="headerlink" href="#240-various-fixes-for-test-ids-and-lazy-values" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><code>is_lazy</code> is now part of public API, and <code>_LazyValue</code> now has a cache mechanism like <code>_LazyTuple</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/143">#143</a></p>
+</li>
+<li>
+<p><code>@parametrize</code>: custom <code>ids</code> are now correctly taken into account when a single <code>lazy_value</code>is used for a tuple of parameters. This issue could be seen also with <code>@parametrize_with_cases</code>: <code>idgen</code> does not seem to be taken into account when cases are unpacked into a tuple. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/144">#144</a>.</p>
+</li>
+<li>
+<p>Empty case ids are now replaced with <code>'&lt;empty_case_id&gt;'</code> to avoid ambiguous interpretation of test ids. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/142">#142</a>.</p>
+</li>
+</ul>
 <h3 id="230-better-lazyvalue-internal-api">2.3.0 - better <code>LazyValue</code> internal API<a class="headerlink" href="#230-better-lazyvalue-internal-api" title="Permanent link">&para;</a></h3>
 <ul>
 <li>new <code>clone(self, remove_int_base=False)</code> API on <code>LazyValue</code> and <code>LazyTupleItem</code> instances. With this new API, on old <code>pytest</code> <code>&lt; 5.3</code>, other plugins such as <code>pytest-harvest</code> can easily clone the contents from lazy values without having them inherit from <code>int</code> - which was a dirty hack used by <code>pytest-cases</code> to trick <code>pytest</code> to generate acceptable test ids in these old pytest versions. Also improved the <code>LazyValue</code>, <code>LazyTuple</code> and <code>LazyTupleItem</code> object model with equality and repr. Fixes <a href="https://github.com/smarie/python-pytest-harvest/issues/43">pytest-harvest#43</a></li>
@@ -1915,8 +1942,8 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
       
     </div>
     
-      <script src="../assets/javascripts/vendor.7e0ee788.min.js"></script>
-      <script src="../assets/javascripts/bundle.c1ccee15.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "search.result.term.missing": "Missing", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.config.lang": "en", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.config.pipeline": "trimmer, stopWordFilter"}</script>
+      <script src="../assets/javascripts/vendor.fd16492e.min.js"></script>
+      <script src="../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"search.result.other": "# matching documents", "clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter", "search.placeholder": "Search", "search.config.separator": "[\\s\\-]+", "search.result.term.missing": "Missing", "search.result.more.other": "# more on this page", "search.config.lang": "en", "search.result.none": "No matching documents", "search.result.more.one": "1 more on this page", "clipboard.copy": "Copy to clipboard"}</script>
       
       <script>
         app = initialize({

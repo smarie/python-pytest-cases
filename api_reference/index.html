@@ -8,8 +8,9 @@
       
       
       
+      
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.2">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
     
     
       
@@ -17,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.19190aaf.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6910b76c.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.24b84193.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.196e0c26.min.css">
         
       
     
@@ -101,7 +102,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
       <label class="md-search__icon md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
@@ -376,6 +377,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#is_lazy" class="md-nav__link">
+    is_lazy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fixture_ref" class="md-nav__link">
     fixture_ref
   </a>
@@ -536,6 +544,13 @@
           <li class="md-nav__item">
   <a href="#lazy_value" class="md-nav__link">
     lazy_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_lazy" class="md-nav__link">
+    is_lazy
   </a>
   
 </li>
@@ -863,6 +878,7 @@
 
 <p>A reference to a value getter (an argvalue-providing callable), to be used in <a href="#parametrize"><code>@parametrize</code></a>.</p>
 <p>A <code>lazy_value</code> is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.</p>
+<p>By default the associated id is the name of the <code>valuegetter</code> callable, but a specific <code>id</code> can be provided otherwise. Note that this <code>id</code> does not take precedence over custom <code>ids</code> or <code>idgen</code> passed to <code>@parametrize</code>.</p>
 <p>Note that a <code>lazy_value</code> can be included in a <code>pytest.param</code> without problem. In that case the id defined by <code>pytest.param</code> will take precedence over the one defined in <code>lazy_value</code> if any. The marks, however, will all be kept wherever they are defined.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -870,6 +886,12 @@
 <li><code>id</code>: an optional id. Otherwise <code>valuegetter.__name__</code> will be used by default</li>
 <li><code>marks</code>: optional marks. <code>valuegetter</code> marks will also be preserved.</li>
 </ul>
+<h3 id="is_lazy"><code>is_lazy</code><a class="headerlink" href="#is_lazy" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_lazy</span><span class="p">(</span><span class="n">argval</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+
+<p>Return <code>True</code> if <code>argval</code> is the outcome of processing a <code>lazy_value</code> through <code>@parametrize</code>. This encompasses parameters that are items of lazy tuples that are created when parametrizing several argnames with the same <code>lazy_value()</code>.</p>
 <h3 id="fixture_ref"><code>fixture_ref</code><a class="headerlink" href="#fixture_ref" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">fixture_ref</span><span class="p">(</span><span class="n">fixture</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Fixture</span><span class="p">]</span>
                 <span class="p">)</span>
@@ -943,8 +965,8 @@
       
     </div>
     
-      <script src="../assets/javascripts/vendor.7e0ee788.min.js"></script>
-      <script src="../assets/javascripts/bundle.c1ccee15.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "search.config.separator": "[\\s\\-]+", "search.result.term.missing": "Missing", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.config.lang": "en", "clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.config.pipeline": "trimmer, stopWordFilter"}</script>
+      <script src="../assets/javascripts/vendor.fd16492e.min.js"></script>
+      <script src="../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"search.result.other": "# matching documents", "clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "search.config.pipeline": "trimmer, stopWordFilter", "search.placeholder": "Search", "search.config.separator": "[\\s\\-]+", "search.result.term.missing": "Missing", "search.result.more.other": "# more on this page", "search.config.lang": "en", "search.result.none": "No matching documents", "search.result.more.one": "1 more on this page", "clipboard.copy": "Copy to clipboard"}</script>
       
       <script>
         app = initialize({
