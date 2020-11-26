@@ -315,6 +315,8 @@ A reference to a value getter (an argvalue-providing callable), to be used in [`
 
 A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
 
+By default the associated id is the name of the `valuegetter` callable, but a specific `id` can be provided otherwise. Note that this `id` does not take precedence over custom `ids` or `idgen` passed to `@parametrize`.
+
 Note that a `lazy_value` can be included in a `pytest.param` without problem. In that case the id defined by `pytest.param` will take precedence over the one defined in `lazy_value` if any. The marks, however, will all be kept wherever they are defined.
 
 **Parameters**
@@ -323,6 +325,13 @@ Note that a `lazy_value` can be included in a `pytest.param` without problem. In
  - `id`: an optional id. Otherwise `valuegetter.__name__` will be used by default
  - `marks`: optional marks. `valuegetter` marks will also be preserved.
 
+### `is_lazy`
+
+```python
+def is_lazy(argval) -> bool
+```
+
+Return `True` if `argval` is the outcome of processing a `lazy_value` through `@parametrize`. This encompasses parameters that are items of lazy tuples that are created when parametrizing several argnames with the same `lazy_value()`.
 
 ### `fixture_ref`
 

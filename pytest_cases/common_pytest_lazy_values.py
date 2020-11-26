@@ -384,6 +384,9 @@ def lazy_value(valuegetter,  # type: Callable[[], Any]
     A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
     fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
 
+    By default the associated id is the name of the `valuegetter` callable, but a specific `id` can be provided
+    otherwise. Note that this `id` does not take precedence over custom `ids` or `idgen` passed to @parametrize.
+
     Note that a `lazy_value` can be included in a `pytest.param` without problem. In that case the id defined by
     `pytest.param` will take precedence over the one defined in `lazy_value` if any. The marks, however,
     will all be kept wherever they are defined.
