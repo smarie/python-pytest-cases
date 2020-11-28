@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.5.0 - case ids `glob` match improvements
+
+ - Improved description for the `glob` argument in `@parametrize_with_cases`. Also made the implementation escape all regex special characters so that they can't be used. Finally a pattern should now match the entire case id (previously, a partial match would work if it was at the beginning of the string). One step towards [#147](https://github.com/smarie/python-pytest-cases/issues/147)
+
 ### 2.4.0 - various fixes for test ids and lazy values
 
  - `is_lazy` is now part of public API, and `_LazyValue` now has a cache mechanism like `_LazyTuple`. Fixes [#143](https://github.com/smarie/python-pytest-cases/issues/143)
