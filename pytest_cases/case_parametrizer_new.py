@@ -126,11 +126,16 @@ def create_glob_name_filter(glob_str  # type: str
                             ):
     """
     Creates a glob-like matcher for the name of case functions
+    The only special character that is supported is `*` and it can not be
+    escaped. However it can be used multiple times in an expression.
 
-    :param case_fun:
+    :param glob_str: for example `*_success` or `*_*`
     :return:
     """
-    name_matcher = re.compile(glob_str.replace("*", ".*"))
+    # escape all special regex characters, then find the (escaped) stars and turn them into the regex star .*
+    re_str = re.escape(glob_str).replace("\\*", ".*")
+    # add "end" special regex char
+    name_matcher = re.compile(re_str + "$")
 
     def _glob_name_filter(case_fun):
         case_fun_id = case_fun._pytestcase.id
@@ -162,8 +167,10 @@ def get_all_cases(parametrization_target,  # type: Callable
         explicitly provided in the list, they can have any name and do not need to follow this `*Case*` pattern.
     :param prefix: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to
         denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
-    :param glob: an optional glob-like pattern for case ids, for example "*_success" or "*_failure". Note that this
-        is applied on the case id, and therefore if it is customized through `@case(id=...)` it should be taken into
+    :param glob: a matching pattern for case ids, for example `*_success` or `*_failure`. The only special character
+        that can be used for now in this pattern is `*`, it can not be escaped, and it can be used several times in the
+        same expression. The pattern should match the entire case id for the case to be selected. Note that this is
+        applied on the case id, and therefore if it is customized through `@case(id=...)` it will be taken into
         account.
     :param has_tag: a single tag or a tuple, set, list of tags that should be matched by the ones set with the `@case`
         decorator on the case function(s) to be selected.

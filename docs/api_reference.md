@@ -72,7 +72,7 @@ argvalues = get_parametrize_args(host_class_or_module_of_f, cases_funs)
 
  - `prefix`: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
 
- - `glob`: an optional glob-like pattern for case ids, for example "*_success" or "*_failure". Note that this is applied on the case id, and therefore if it is customized through [`@case(id=...)`](#case) it should be taken into account.
+ - `glob`: a matching pattern for case ids, for example `*_success` or `*_failure`. The only special character that can be used for now in this pattern is `*`, it can not be escaped, and it can be used several times in the same expression. The pattern should match the entire case id for the case to be selected. Note that this is applied on the case id, and therefore if it is customized through [`@case(id=...)`](#case) it will be taken into account.
 
  - `has_tag`: a single tag or a tuple, set, list of tags that should be matched by the ones set with the [`@case`](#case) decorator on the case function(s) to be selected.
 
