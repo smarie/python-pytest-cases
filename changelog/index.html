@@ -278,6 +278,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#250-case-ids-glob-match-improvements" class="md-nav__link">
+    2.5.0 - case ids glob match improvements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#240-various-fixes-for-test-ids-and-lazy-values" class="md-nav__link">
     2.4.0 - various fixes for test ids and lazy values
   </a>
@@ -854,6 +861,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#250-case-ids-glob-match-improvements" class="md-nav__link">
+    2.5.0 - case ids glob match improvements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#240-various-fixes-for-test-ids-and-lazy-values" class="md-nav__link">
     2.4.0 - various fixes for test ids and lazy values
   </a>
@@ -1417,6 +1431,10 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="250-case-ids-glob-match-improvements">2.5.0 - case ids <code>glob</code> match improvements<a class="headerlink" href="#250-case-ids-glob-match-improvements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Improved description for the <code>glob</code> argument in <code>@parametrize_with_cases</code>. Also made the implementation escape all regex special characters so that they can't be used. Finally a pattern should now match the entire case id (previously, a partial match would work if it was at the beginning of the string). One step towards <a href="https://github.com/smarie/python-pytest-cases/issues/147">#147</a></li>
+</ul>
 <h3 id="240-various-fixes-for-test-ids-and-lazy-values">2.4.0 - various fixes for test ids and lazy values<a class="headerlink" href="#240-various-fixes-for-test-ids-and-lazy-values" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -1943,7 +1961,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.fd16492e.min.js"></script>
-      <script src="../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.placeholder": "Search", "clipboard.copied": "Copied to clipboard", "search.result.more.other": "# more on this page", "search.result.placeholder": "Type to start searching", "search.result.one": "1 matching document", "search.result.more.one": "1 more on this page", "search.config.lang": "en", "search.result.none": "No matching documents", "clipboard.copy": "Copy to clipboard", "search.result.term.missing": "Missing", "search.config.separator": "[\\s\\-]+"}</script>
+      <script src="../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"search.placeholder": "Search", "search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.result.placeholder": "Type to start searching", "search.result.other": "# matching documents", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.none": "No matching documents", "search.result.more.other": "# more on this page", "clipboard.copied": "Copied to clipboard", "search.result.term.missing": "Missing", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page"}</script>
       
       <script>
         app = initialize({
