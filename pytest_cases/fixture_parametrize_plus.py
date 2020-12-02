@@ -39,7 +39,7 @@ def _fixture_product(fixtures_dest,
                      fixtures_or_values,
                      fixture_positions,
                      scope="function",    # type: str
-                     ids=None,            # type: Union[Callable, List[str]]
+                     ids=None,            # type: Union[Callable, List[str], Generator[str, None, None]]
                      unpack_into=None,    # type: Iterable[str]
                      autouse=False,       # type: bool
                      hook=None,           # type: Callable[[Callable], Callable]
@@ -378,7 +378,7 @@ class InvalidIdTemplateException(Exception):
 def _parametrize_plus(argnames=None,
                       argvalues=None,
                       indirect=False,      # type: bool
-                      ids=None,            # type: Union[Callable, List[str]]
+                      ids=None,            # type: Union[Callable, List[str], Generator[str, None, None]]
                       idstyle='explicit',  # type: str
                       idgen=_IDGEN,        # type: Union[str, Callable]
                       scope=None,          # type: str

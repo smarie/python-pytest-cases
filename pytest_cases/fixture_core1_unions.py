@@ -17,14 +17,14 @@ except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
 try:  # type hints, python 3+
-    from typing import Callable, Union, Optional, Any, List, Iterable, Sequence  # noqa
+    from typing import Callable, Union, Optional, Any, List, Iterable, Sequence, Generator  # noqa
     from types import ModuleType  # noqa
 except ImportError:
     pass
 
 from .common_mini_six import string_types
 from .common_pytest import get_fixture_name, is_marked_parameter_value, get_marked_parameter_values, pytest_fixture, \
-    extract_parameterset_info, get_param_argnames_as_list, get_fixture_scope
+    extract_parameterset_info, get_param_argnames_as_list, get_fixture_scope, resolve_ids
 from .fixture__creation import get_caller_module, check_name_available, WARN
 
 
@@ -208,7 +208,7 @@ def fixture_union(name,                # type: str
                   fixtures,            # type: Iterable[Union[str, Callable]]
                   scope="function",    # type: str
                   idstyle='explicit',  # type: Optional[str]
-                  ids=None,            # type: Union[Callable, List[str]]
+                  ids=None,            # type: Union[Callable, List[str], Generator[str, None, None]]
                   unpack_into=None,    # type: Iterable[str]
                   autouse=False,       # type: bool
                   hook=None,           # type: Callable[[Callable], Callable]
@@ -292,7 +292,7 @@ def _fixture_union(fixtures_dest,
                    unique_fix_alt_names,  # type: List[str]
                    scope="function",      # type: str
                    idstyle="explicit",    # type: str
-                   ids=None,              # type: Union[Callable, List[str]]
+                   ids=None,              # type: Union[Callable, List[str], Generator[str, None, None]]
                    autouse=False,         # type: bool
                    hook=None,             # type: Callable[[Callable], Callable]
                    caller=fixture_union,  # type: Callable
@@ -338,9 +338,15 @@ def _fixture_union(fixtures_dest,
                 raise TypeError("Union Fixture %s received invalid parameter type: %s. Please report this issue."
                                 "" % (name, _alternative.__class__))
 
+    if ids is None:
+        ids = UnionIdMakers.get(idstyle)
+    else:
+        # resolve possibly infinite generators of ids here
+        ids = resolve_ids(ids, fix_alternatives)
+
     # finally create the fixture per se.
     _make_fix = pytest_fixture(scope=scope, params=fix_alternatives, autouse=autouse,
-                               ids=ids or UnionIdMakers.get(idstyle), hook=hook, **kwargs)
+                               ids=ids, hook=hook, **kwargs)
     new_union_fix = _make_fix(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424

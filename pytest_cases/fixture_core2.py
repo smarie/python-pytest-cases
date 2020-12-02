@@ -20,14 +20,15 @@ except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
 try:  # type hints, python 3+
-    from typing import Callable, Union, Any, List, Iterable, Sequence  # noqa
+    from typing import Callable, Union, Any, List, Iterable, Sequence, Generator  # noqa
     from types import ModuleType  # noqa
 except ImportError:
     pass
 
 from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_parametrize_marks, make_marked_parameter_value, get_param_argnames_as_list, \
-    analyze_parameter_set, combine_ids, is_marked_parameter_value, get_marked_parameter_values, pytest_fixture
+    analyze_parameter_set, combine_ids, is_marked_parameter_value, get_marked_parameter_values, pytest_fixture, \
+    resolve_ids
 from .fixture__creation import get_caller_module, check_name_available, WARN, CHANGE
 from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _make_unpack_fixture
 
@@ -35,7 +36,7 @@ from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _mak
 def param_fixture(argname,           # type: str
                   argvalues,         # type: Iterable[Any]
                   autouse=False,     # type: bool
-                  ids=None,          # type: Union[Callable, List[str]]
+                  ids=None,          # type: Union[Callable, List[str], Generator[str, None, None]]
                   scope="function",  # type: str
                   hook=None,         # type: Callable[[Callable], Callable]
                   debug=False,       # type: bool
@@ -89,7 +90,7 @@ def _create_param_fixture(fixtures_dest,
                           argname,           # type: str
                           argvalues,         # type: Sequence[Any]
                           autouse=False,     # type: bool
-                          ids=None,          # type: Union[Callable, List[str]]
+                          ids=None,          # type: Union[Callable, List[str], Generator[str, None, None]]
                           scope="function",  # type: str
                           hook=None,         # type: Callable[[Callable], Callable]
                           auto_simplify=False,
@@ -134,7 +135,7 @@ def _create_param_fixture(fixtures_dest,
 def param_fixtures(argnames,          # type: str
                    argvalues,         # type: Iterable[Any]
                    autouse=False,     # type: bool
-                   ids=None,          # type: Union[Callable, List[str]]
+                   ids=None,          # type: Union[Callable, List[str], Generator[str, None, None]]
                    scope="function",  # type: str
                    hook=None,         # type: Callable[[Callable], Callable]
                    debug=False,       # type: bool
@@ -192,7 +193,7 @@ def _create_params_fixture(fixtures_dest,
                            argnames_lst,      # type: Sequence[str]
                            argvalues,         # type: Sequence[Any]
                            autouse=False,     # type: bool
-                           ids=None,          # type: Union[Callable, List[str]]
+                           ids=None,          # type: Union[Callable, List[str], Generator[str, None, None]]
                            scope="function",  # type: str
                            hook=None,         # type: Callable[[Callable], Callable]
                            debug=False,       # type: bool
@@ -376,6 +377,11 @@ def _decorate_fixture_plus(fixture_func,
     if len(parametrizer_marks) < 1:
         # make the fixture union-aware
         wrapped_fixture_func = ignore_unused(fixture_func)
+
+        # resolve possibly infinite generators of ids here
+        if 'params' in kwargs and 'ids' in kwargs:
+            if kwargs['ids'] is not None:
+                kwargs['ids'] = resolve_ids(kwargs['ids'], kwargs['params'])
 
         # transform the created wrapper into a fixture
         return pytest_fixture(scope=scope, autouse=autouse, hook=hook, **kwargs)(wrapped_fixture_func)

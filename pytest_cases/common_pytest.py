@@ -223,10 +223,8 @@ def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomput
     """
     if global_ids is not None:
         # overridden at global pytest.mark.parametrize level - this takes precedence.
-        try:  # an explicit list of ids ?
-            p_ids = list(id for id, v in zip(global_ids, argvalues))
-        except TypeError:  # a callable to apply on the values
-            p_ids = list(global_ids(v) for v in argvalues)
+        # resolve possibly infinite generators of ids here
+        p_ids = resolve_ids(global_ids, argvalues)
     else:
         # default: values-based
         if precomputed_ids is not None:
@@ -240,6 +238,16 @@ def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomput
     for i, _id in enumerate(id_marks):
         if _id is not None:
             p_ids[i] = _id
+    return p_ids
+
+
+def resolve_ids(ids, argvalues):
+    """Returns the list of ids to use by a parametrized fixture, based on the `ids` parameter and the `argvalues`"""
+
+    try:  # an explicit list or generator of ids ?
+        p_ids = list(id for id, v in zip(ids, argvalues))
+    except TypeError:  # a callable to apply on the values
+        p_ids = list(ids(v) for v in argvalues)
     return p_ids
 
 
