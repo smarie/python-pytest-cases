@@ -35,22 +35,40 @@ def test_value_ref():
     assert 'LazyValue' in repr(a)
 
     # test that that calls work and the cache works even across copies
-    assert a.get() == (1, 2)
-    assert a.get() == (1, 2)
-    assert LazyValue.copy_from(a).get() == (1, 2)
+    class FakeRequest:
+        class FakeNode:
+            pass
+        
+        def __init__(self):
+            self.node = FakeRequest.FakeNode()
+
+    fake_request = FakeRequest()
+    assert a.get(fake_request) == (1, 2)
+    assert a.get(fake_request) == (1, 2)
     assert _called == 1
+    assert LazyValue.copy_from(a).get(fake_request) == (1, 2)
+    assert _called == 1
+    fake_request2 = FakeRequest()
+    assert a.get(fake_request2) == (1, 2)
+    assert _called == 2
+    assert LazyValue.copy_from(a).get(fake_request2) == (1, 2)
+    assert _called == 2
+    # reset cache context and counter for next steps
+    a.get(fake_request)
+    _called = 1
 
     # now do the same test for lazy values used as a tuple of parameters
     new_lv = lazy_value(foo)
-    assert not new_lv.retrieved
-    assert a.retrieved
+    assert not new_lv.has_cached_value()
+    assert a.has_cached_value()
 
     for src in new_lv, a:
-        _called = 0 if not src.retrieved else 1
+        # set the counter according to the state of the cache
+        _called = 0 if not src.has_cached_value() else 1
         at = src.as_lazy_tuple(2)
 
         # test when the tuple is unpacked into several parameters
-        if not at.retrieved:
+        if not at.has_cached_value():
             for i, a in enumerate(at):
                 # test that ids will be correctly generated even on old pytest
                 assert mini_idval(a, 'a', 1) == 'foo[%s]' % i
@@ -65,14 +83,19 @@ def test_value_ref():
         assert str(at) == 'foo'
 
         # assert that calls work and the cache works even across copies
-        assert at.get() == (1, 2)
-        assert at.get() == (1, 2)
-        assert LazyTuple.copy_from(at).get() == (1, 2)
+        assert at.get(fake_request) == (1, 2)
+        assert at.get(fake_request) == (1, 2)
         assert _called == 1
+        assert LazyTuple.copy_from(at).get(fake_request) == (1, 2)
+        assert _called == 1
+
+        assert at.get(fake_request2) == (1, 2)
+        assert LazyTuple.copy_from(at).get(fake_request2) == (1, 2)
+        assert _called == 2
 
         # test that retrieving the tuple does not loose the id
         assert str(at) == 'foo'
-        assert at.retrieved
+        assert at.has_cached_value()
 
 
 pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")

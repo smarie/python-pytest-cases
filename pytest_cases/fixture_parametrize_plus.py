@@ -83,21 +83,21 @@ def _fixture_product(fixtures_dest,
     if len(all_names) < 1:
         raise ValueError("Empty fixture products are not permitted")
 
-    def _tuple_generator(all_fixtures):
+    def _tuple_generator(request, all_fixtures):
         for i in range(_tuple_size):
             fix_at_pos_i = f_names[i]
             if fix_at_pos_i is None:
                 # fixed value
                 # note: wouldnt it be almost as efficient but more readable to *always* call handle_lazy_args?
-                yield get_lazy_args(fixtures_or_values[i]) if has_lazy_vals else fixtures_or_values[i]
+                yield get_lazy_args(fixtures_or_values[i], request) if has_lazy_vals else fixtures_or_values[i]
             else:
                 # fixture value
                 yield all_fixtures[fix_at_pos_i]
 
     # then generate the body of our product fixture. It will require all of its dependent fixtures
-    @with_signature("(%s)" % ', '.join(all_names))
-    def _new_fixture(**all_fixtures):
-        return tuple(_tuple_generator(all_fixtures))
+    @with_signature("(request, %s)" % ', '.join(all_names))
+    def _new_fixture(request, **all_fixtures):
+        return tuple(_tuple_generator(request, all_fixtures))
 
     _new_fixture.__name__ = name
 

@@ -4,6 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from distutils.version import LooseVersion
 from functools import partial
+import weakref
 
 try:  # python 3.3+
     from inspect import signature
@@ -35,7 +36,7 @@ class Lazy(object):
         raise NotImplementedError()
 
     # @abstractmethod
-    def get(self):
+    def get(self, request):
         """Return the value to use by pytest"""
         raise NotImplementedError()
 
@@ -123,14 +124,21 @@ class _LazyValue(Lazy):
 
     A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
     fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+
+    The `self.get(request)` method can be used to get the value for the current pytest context. This value will
+    be cached so that plugins can call it several time without triggering new calls to the underlying function.
+    So the underlying function will be called exactly once per test node.
+
+    See https://github.com/smarie/python-pytest-cases/issues/149
+    and https://github.com/smarie/python-pytest-cases/issues/143
     """
     if pytest53:
-        __slots__ = 'valuegetter', '_id', '_marks', 'retrieved', 'value'
+        __slots__ = 'valuegetter', '_id', '_marks', 'cached_value_context', 'cached_value'
         _field_names = __slots__
     else:
         # we can not define __slots__ since we'll extend int in a subclass
         # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
-        _field_names = 'valuegetter', '_id', '_marks', 'retrieved', 'value'
+        _field_names = 'valuegetter', '_id', '_marks', 'cached_value_context', 'cached_value'
 
     @classmethod
     def copy_from(cls,
@@ -139,9 +147,9 @@ class _LazyValue(Lazy):
         """Creates a copy of this _LazyValue"""
         new_obj = cls(valuegetter=obj.valuegetter, id=obj._id, marks=obj._marks)
         # make sure the copy will not need to retrieve the result if already done
-        new_obj.retrieved = obj.retrieved
-        if new_obj.retrieved:
-            new_obj.value = obj.value
+        if obj.has_cached_value():
+            new_obj.cached_value_context = obj.cached_value_context
+            new_obj.cached_value = obj.cached_value
         return new_obj
 
     # noinspection PyMissingConstructor
@@ -156,8 +164,8 @@ class _LazyValue(Lazy):
             self._marks = marks
         else:
             self._marks = (marks, )
-        self.retrieved = False
-        self.value = None
+        self.cached_value_context = None
+        self.cached_value = None
 
     def get_marks(self, as_decorators=False):
         """
@@ -192,22 +200,32 @@ class _LazyValue(Lazy):
             else:
                 return vg.__name__
 
-    def get(self):
-        """ Call the underlying value getter, then return the result value (not self). With a cache mechanism """
-        if not self.retrieved:
-            # retrieve
-            self.value = self.valuegetter()
-            self.retrieved = True
+    def get(self, request):
+        """
+        Calls the underlying value getter function `self.valuegetter` and returns the result.
 
-        return self.value
+        This result is cached to ensure that the underlying getter function is called exactly once for each
+        pytest node. Note that we do not cache across calls to preserve the pytest spirit of "no leakage
+        across test nodes" especially when the value is mutable.
+
+        See https://github.com/smarie/python-pytest-cases/issues/149
+        and https://github.com/smarie/python-pytest-cases/issues/143
+        """
+        if self.cached_value_context is None or self.cached_value_context() is not request.node:
+            # retrieve the value by calling the function
+            self.cached_value = self.valuegetter()
+            # remember the pytest context of the call with a weak reference to avoir gc issues
+            self.cached_value_context = weakref.ref(request.node)
+
+        return self.cached_value
+
+    def has_cached_value(self):
+        """Return True if there is a cached value in self.value, but with no guarantee that it corresponds to the
+        current request"""
+        return self.cached_value_context is not None
 
     def as_lazy_tuple(self, nb_params):
-        res = LazyTuple(self, nb_params)
-        if self.retrieved:
-            # make sure the tuple will not need to retrieve the result if already done
-            res.retrieved = True
-            res.value = self.value
-        return res
+        return LazyTuple(self, nb_params)
 
     def as_lazy_items_list(self, nb_params):
         return [v for v in self.as_lazy_tuple(nb_params)]
@@ -244,15 +262,15 @@ class _LazyTupleItem(Lazy):
         """Override the inherited method to avoid infinite recursion"""
         vals_to_display = (
             ('item', self.item),  # item number first for easier debug
-            ('tuple', self.host.value if self.host.retrieved else self.host.valuegetter),  # lazy value tuple or retrieved tuple
+            ('tuple', self.host.cached_value if self.host.has_cached_value() else self.host._lazyvalue),  # lazy value tuple or cached tuple
         )
         return "%s(%s)" % (self.__class__.__name__, ", ".join("%s=%r" % (k, v) for k, v in vals_to_display))
 
     def get_id(self):
         return "%s[%s]" % (self.host.get_id(), self.item)
 
-    def get(self):
-        return self.host.force_getitem(self.item)
+    def get(self, request):
+        return self.host.force_getitem(self.item, request)
 
 
 class LazyTuple(Lazy):
@@ -268,44 +286,42 @@ class LazyTuple(Lazy):
     In all other cases (when @parametrize is used on a test function), pytest unpacks the tuple so it directly
     manipulates the underlying LazyTupleItem instances.
     """
-    __slots__ = 'valuegetter', 'theoretical_size', 'retrieved', 'value'
+    __slots__ = '_lazyvalue', 'theoretical_size'
     _field_names = __slots__
 
     @classmethod
     def copy_from(cls,
                   obj  # type: LazyTuple
                   ):
-        new_obj = cls(valueref=obj.value, theoretical_size=obj.theoretical_size)
-        # make sure the copy will not need to retrieve the result if already done
-        new_obj.retrieved = obj.retrieved
-        if new_obj.retrieved:
-            new_obj.value = obj.value
-        return new_obj
+        # clone the inner lazy value
+        value_copy = obj._lazyvalue.clone()
+        return cls(valueref=value_copy, theoretical_size=obj.theoretical_size)
 
     # noinspection PyMissingConstructor
     def __init__(self,
-                 valueref,         # type: Union[LazyValue, Sequence]
+                 valueref,         # type: _LazyValue
                  theoretical_size  # type: int
                  ):
-        self.valuegetter = valueref
+        self._lazyvalue = valueref
         self.theoretical_size = theoretical_size
-        self.retrieved = False
-        self.value = None
 
     def __len__(self):
         return self.theoretical_size
 
     def get_id(self):
         """return the id to use by pytest"""
-        return self.valuegetter.get_id()
+        return self._lazyvalue.get_id()
 
-    def get(self):
-        """ Call the underlying value getter, then return the result tuple (not self). With a cache mechanism """
-        if not self.retrieved:
-            # retrieve
-            self.value = self.valuegetter.get()
-            self.retrieved = True
-        return self.value
+    def get(self, request):
+        """ Call the underlying value getter, then return the result tuple value (not self). """
+        return self._lazyvalue.get(request)
+
+    def has_cached_value(self):
+        return self._lazyvalue.has_cached_value()
+
+    @property
+    def cached_value(self):
+        return self._lazyvalue.cached_value
 
     def __getitem__(self, item):
         """
@@ -313,25 +329,25 @@ class LazyTuple(Lazy):
         a facade (a LazyTupleItem), so that pytest can store this item independently wherever needed, without
         yet calling the value getter.
         """
-        if self.retrieved:
+        if self._lazyvalue.has_cached_value():
             # this is never called by pytest, but keep it for debugging
-            return self.value[item]
+            return self._lazyvalue.cached_value[item]
         elif item >= self.theoretical_size:
             raise IndexError(item)
         else:
             # do not retrieve yet: return a facade
             return LazyTupleItem(self, item)
 
-    def force_getitem(self, item):
+    def force_getitem(self, item, request):
         """ Call the underlying value getter, then return self[i]. """
-        argvalue = self.get()
+        argvalue = self.get(request)
         try:
             return argvalue[item]
         except TypeError as e:
             raise ValueError("(lazy_value) The parameter value returned by `%r` is not compliant with the number"
                              " of argnames in parametrization (%s). A %s-tuple-like was expected. "
                              "Returned lazy argvalue is %r and argvalue[%s] raised %s: %s"
-                             % (self.valuegetter, self.theoretical_size, self.theoretical_size,
+                             % (self._lazyvalue, self.theoretical_size, self.theoretical_size,
                                 argvalue, item, e.__class__, e))
 
 
@@ -402,6 +418,7 @@ def lazy_value(valuegetter,  # type: Callable[[], Any]
 
     A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
     fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+    The underlying function will be called exactly once per test node.
 
     By default the associated id is the name of the `valuegetter` callable, but a specific `id` can be provided
     otherwise. Note that this `id` does not take precedence over custom `ids` or `idgen` passed to @parametrize.
@@ -439,8 +456,12 @@ def is_lazy(argval):
         return False
 
 
-def get_lazy_args(argval):
-    """ Possibly calls the lazy values contained in argval if needed, before returning it"""
+def get_lazy_args(argval, request):
+    """
+    Possibly calls the lazy values contained in argval if needed, before returning it.
+    Since the lazy values cache their result to ensure that their underlying function is called only once
+    per test node, the `request` argument here is mandatory.
+    """
 
     try:
         _is_lazy = is_lazy(argval)
@@ -448,6 +469,6 @@ def get_lazy_args(argval):
         return argval
     else:
         if _is_lazy:
-            return argval.get()
+            return argval.get(request)
         else:
             return argval

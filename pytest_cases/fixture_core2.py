@@ -469,12 +469,12 @@ def _decorate_fixture_plus(fixture_func,
         for p_names, fixture_param_value in zip(params_names_or_name_combinations, _params):
             if len(p_names) == 1:
                 # a single parameter for that generated fixture (@pytest.mark.parametrize with a single name)
-                _kwargs[p_names[0]] = get_lazy_args(fixture_param_value)
+                _kwargs[p_names[0]] = get_lazy_args(fixture_param_value, request)
             else:
                 # several parameters for that generated fixture (@pytest.mark.parametrize with several names)
                 # unpack all of them and inject them in the kwargs
                 for old_p_name, old_p_value in zip(p_names, fixture_param_value):
-                    _kwargs[old_p_name] = get_lazy_args(old_p_value)
+                    _kwargs[old_p_name] = get_lazy_args(old_p_value, request)
 
         return _args, _kwargs
 

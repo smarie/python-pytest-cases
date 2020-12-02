@@ -313,7 +313,7 @@ def lazy_value(valuegetter: Callable[[], Any],
 
 A reference to a value getter (an argvalue-providing callable), to be used in [`@parametrize`](#parametrize).
 
-A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
+A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument. The underlying function will be called exactly once per test node.
 
 By default the associated id is the name of the `valuegetter` callable, but a specific `id` can be provided otherwise. Note that this `id` does not take precedence over custom `ids` or `idgen` passed to `@parametrize`.
 
