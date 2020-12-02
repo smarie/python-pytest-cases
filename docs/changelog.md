@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.7.1 - `@pytest.mark.usefixtures` can be used on case functions 
+
+ - `@pytest.mark.usefixtures` can be now be used on case functions. Fixes [#152](https://github.com/smarie/python-pytest-cases/issues/152).
+
 ### 2.7.0 - `@parametrize_with_cases` now supports id customization
 
  - `@parametrize_with_cases` now explicitly supports all id customization methods (`ids`, `idgen` and `idstyle`) supported by `@parametrize` (`ids`, `idgen` and `idstyle`). Updated documentation accordingly. Fixed [#151](https://github.com/smarie/python-pytest-cases/issues/151)
