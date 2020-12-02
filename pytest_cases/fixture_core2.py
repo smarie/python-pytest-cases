@@ -20,7 +20,7 @@ except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
 try:  # type hints, python 3+
-    from typing import Callable, Union, Any, List, Iterable, Sequence, Generator  # noqa
+    from typing import Callable, Union, Any, List, Iterable, Sequence  # noqa
     from types import ModuleType  # noqa
 except ImportError:
     pass
@@ -36,7 +36,7 @@ from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _mak
 def param_fixture(argname,           # type: str
                   argvalues,         # type: Iterable[Any]
                   autouse=False,     # type: bool
-                  ids=None,          # type: Union[Callable, List[str], Generator[str, None, None]]
+                  ids=None,          # type: Union[Callable, Iterable[str]]
                   scope="function",  # type: str
                   hook=None,         # type: Callable[[Callable], Callable]
                   debug=False,       # type: bool
@@ -90,7 +90,7 @@ def _create_param_fixture(fixtures_dest,
                           argname,           # type: str
                           argvalues,         # type: Sequence[Any]
                           autouse=False,     # type: bool
-                          ids=None,          # type: Union[Callable, List[str], Generator[str, None, None]]
+                          ids=None,          # type: Union[Callable, Iterable[str]]
                           scope="function",  # type: str
                           hook=None,         # type: Callable[[Callable], Callable]
                           auto_simplify=False,
@@ -135,7 +135,7 @@ def _create_param_fixture(fixtures_dest,
 def param_fixtures(argnames,          # type: str
                    argvalues,         # type: Iterable[Any]
                    autouse=False,     # type: bool
-                   ids=None,          # type: Union[Callable, List[str], Generator[str, None, None]]
+                   ids=None,          # type: Union[Callable, Iterable[str]]
                    scope="function",  # type: str
                    hook=None,         # type: Callable[[Callable], Callable]
                    debug=False,       # type: bool
@@ -193,7 +193,7 @@ def _create_params_fixture(fixtures_dest,
                            argnames_lst,      # type: Sequence[str]
                            argvalues,         # type: Sequence[Any]
                            autouse=False,     # type: bool
-                           ids=None,          # type: Union[Callable, List[str], Generator[str, None, None]]
+                           ids=None,          # type: Union[Callable, Iterable[str]]
                            scope="function",  # type: str
                            hook=None,         # type: Callable[[Callable], Callable]
                            debug=False,       # type: bool

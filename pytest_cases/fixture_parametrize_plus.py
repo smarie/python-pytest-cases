@@ -13,7 +13,7 @@ except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
 try:
-    from typing import Union, Callable, List, Any, Sequence, Optional, Generator  # noqa
+    from typing import Union, Callable, List, Any, Sequence, Optional  # noqa
 
 except ImportError:
     pass
@@ -39,7 +39,7 @@ def _fixture_product(fixtures_dest,
                      fixtures_or_values,
                      fixture_positions,
                      scope="function",    # type: str
-                     ids=None,            # type: Union[Callable, List[str], Generator[str, None, None]]
+                     ids=None,            # type: Union[Callable, Iterable[str]]
                      unpack_into=None,    # type: Iterable[str]
                      autouse=False,       # type: bool
                      hook=None,           # type: Callable[[Callable], Callable]
@@ -283,7 +283,7 @@ _IDGEN = object()
 def parametrize_plus(argnames=None,       # type: str
                      argvalues=None,      # type: Iterable[Any]
                      indirect=False,      # type: bool
-                     ids=None,            # type: Union[Callable, List[str], Generator[str, None, None]]
+                     ids=None,            # type: Union[Callable, Iterable[str]]
                      idstyle='explicit',  # type: str
                      idgen=_IDGEN,        # type: Union[str, Callable]
                      scope=None,          # type: str
@@ -378,7 +378,7 @@ class InvalidIdTemplateException(Exception):
 def _parametrize_plus(argnames=None,
                       argvalues=None,
                       indirect=False,      # type: bool
-                      ids=None,            # type: Union[Callable, List[str], Generator[str, None, None]]
+                      ids=None,            # type: Union[Callable, Iterable[str]]
                       idstyle='explicit',  # type: str
                       idgen=_IDGEN,        # type: Union[str, Callable]
                       scope=None,          # type: str

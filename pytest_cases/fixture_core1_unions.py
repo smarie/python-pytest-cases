@@ -17,7 +17,7 @@ except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
 try:  # type hints, python 3+
-    from typing import Callable, Union, Optional, Any, List, Iterable, Sequence, Generator  # noqa
+    from typing import Callable, Union, Optional, Any, List, Iterable, Sequence  # noqa
     from types import ModuleType  # noqa
 except ImportError:
     pass
@@ -208,7 +208,7 @@ def fixture_union(name,                # type: str
                   fixtures,            # type: Iterable[Union[str, Callable]]
                   scope="function",    # type: str
                   idstyle='explicit',  # type: Optional[str]
-                  ids=None,            # type: Union[Callable, List[str], Generator[str, None, None]]
+                  ids=None,            # type: Union[Callable, Iterable[str]]
                   unpack_into=None,    # type: Iterable[str]
                   autouse=False,       # type: bool
                   hook=None,           # type: Callable[[Callable], Callable]
@@ -292,7 +292,7 @@ def _fixture_union(fixtures_dest,
                    unique_fix_alt_names,  # type: List[str]
                    scope="function",      # type: str
                    idstyle="explicit",    # type: str
-                   ids=None,              # type: Union[Callable, List[str], Generator[str, None, None]]
+                   ids=None,              # type: Union[Callable, Iterable[str]]
                    autouse=False,         # type: bool
                    hook=None,             # type: Callable[[Callable], Callable]
                    caller=fixture_union,  # type: Callable
