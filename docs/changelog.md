@@ -1,5 +1,11 @@
 # Changelog
 
+### 2.6.0 - better cache for lazy values and support for infinite id generators
+
+ - `lazy_value` parameters are now cached by pytest node id only. So plugins can access the value without triggering an extra function call, but a new call is triggered for each pytest node, so as to prevent mutable object leakage across tests. Fixed [#149](https://github.com/smarie/python-pytest-cases/issues/149) while ensuring no regression for [#143](https://github.com/smarie/python-pytest-cases/issues/143).
+ 
+ - The `ids` argument of `parametrize` now accepts a (possibly infinite) generator of ids, e.g. (`f"foo{i}" for i in itertools.count()`), just as `pytest` does. This was not always the case, inparticular when parametrizing a `@fixture`. The `ids` arguments of `fixture_union`, `param_fixture[s]`, etc. now also support this pattern. Fixed [#148](https://github.com/smarie/python-pytest-cases/issues/148)
+
 ### 2.5.0 - case ids `glob` match improvements
 
  - Improved description for the `glob` argument in `@parametrize_with_cases`. Also made the implementation escape all regex special characters so that they can't be used. Finally a pattern should now match the entire case id (previously, a partial match would work if it was at the beginning of the string). One step towards [#147](https://github.com/smarie/python-pytest-cases/issues/147)

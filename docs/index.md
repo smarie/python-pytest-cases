@@ -418,7 +418,11 @@ def test_foo(c):
 
 ### b- Caching cases
 
-After starting to reuse cases in several test functions, you might end-up thinking *"why do I have to spend the data parsing/generation time several times ? It is the same case."*. There are several ways to solve this issue:
+After starting to reuse cases in several test functions, you might end-up thinking *"why do I have to spend the data parsing/generation time several times ? It is the same case."*. 
+
+`pytest-cases` follows the same philosophy than `pytest`: each test node should be independent. Therefore case functions are called for each test case. This ensures that mutable objects can not leak across tests, for example.
+
+That being said, **if you are certain that your tests do not modify your cases data**, there are several ways to solve this issue:
 
  - the easiest way is to **use fixtures with a broad scope**, as explained [above](#a-test-fixtures). However in some parametrization scenarii, `pytest` does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome
  
@@ -447,7 +451,7 @@ def test_caching(cached_a, d):
  
  - finally, you might wish to persist some cases on disk in order for example to avoid downloading them again from their original source, and/or to avoid costly processing on every pytest session. For this, the perfect match for you is to use [`joblib`'s excellent `Memory` cache](https://joblib.readthedocs.io/en/latest/memory.html). 
 
-
+!!! warning "If you add a cache mechanism, make sure that your test functions do not modify the returned objects !"
 
 ## Main features / benefits
 
