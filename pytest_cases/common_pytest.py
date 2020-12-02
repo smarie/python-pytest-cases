@@ -224,7 +224,7 @@ def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomput
     if global_ids is not None:
         # overridden at global pytest.mark.parametrize level - this takes precedence.
         # resolve possibly infinite generators of ids here
-        p_ids = resolve_ids(global_ids, argvalues)
+        p_ids = resolve_ids(global_ids, argvalues, full_resolve=True)
     else:
         # default: values-based
         if precomputed_ids is not None:
@@ -241,14 +241,23 @@ def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomput
     return p_ids
 
 
-def resolve_ids(ids, argvalues):
-    """Returns the list of ids to use by a parametrized fixture, based on the `ids` parameter and the `argvalues`"""
+def resolve_ids(ids, argvalues, full_resolve=False):
+    """
+    Resolves the `ids` argument of a parametrized fixture.
 
+    If `full_resolve` is False (default), iterable ids will be resolved, but not callable ids. This is useful if the
+    `argvalues` have not yet been cleaned of possible `pytest.param` wrappers.
+
+    If `full_resolve` is True, callable ids will be called using the argvalues, so the result is guaranteed to be a
+    list.
+    """
     try:  # an explicit list or generator of ids ?
-        p_ids = list(id for id, v in zip(ids, argvalues))
+        return list(id for id, v in zip(ids, argvalues))
     except TypeError:  # a callable to apply on the values
-        p_ids = list(ids(v) for v in argvalues)
-    return p_ids
+        if full_resolve:
+            return list(ids(v) for v in argvalues)
+        else:
+            return ids
 
 
 def make_test_ids_from_param_values(param_names,
