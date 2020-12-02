@@ -554,7 +554,8 @@ class MiniMetafunc(Metafunc):
         self.pmarks = get_pytest_parametrize_marks(self.function)
         if self.is_parametrized:
             self.update_callspecs()
-            self.required_fixtures = set(self.fixturenames) - set(self._calls[0].funcargs)
+            # preserve order
+            self.required_fixtures = tuple(f for f in self.fixturenames if f not in self._calls[0].funcargs)
         else:
             self.required_fixtures = self.fixturenames
 
