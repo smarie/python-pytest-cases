@@ -4,6 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import functools
 import inspect
+import makefun
 from importlib import import_module
 from inspect import findsource
 import re
@@ -264,3 +265,25 @@ else:
         else:
             # host class: recurse (note that in python 2 nested classes do not have a way to know their parent class)
             return "%s.%s" % (qname(hostclass), func.__name__)
+
+
+# if sys.version_info > (3, ):
+def funcopy(f):
+    # see https://stackoverflow.com/a/6527746/7262247
+    # and https://stackoverflow.com/a/13503277/7262247
+    # apparently it is not possible to create an actual copy with copy() !
+    # Use makefun.partial which preserves the parametrization marks (we need them)
+    return makefun.partial(f)
+    # fun = FunctionType(f.__code__, f.__globals__, f.__name__, f.__defaults__, f.__closure__)
+    # fun.__dict__.update(f.__dict__)
+    # fun = functools.update_wrapper(fun, f)
+    # fun.__kwdefaults__ = f.__kwdefaults__
+    # return fun
+# else:
+#     def funcopy(f):
+#         fun = FunctionType(f.func_code, f.func_globals, name=f.func_name, argdefs=f.func_defaults,
+#                            closure=f.func_closure)
+#         fun.__dict__.update(f.__dict__)
+#         fun = functools.update_wrapper(fun, f)
+#         fun.__kwdefaults__ = f.__kwdefaults__
+#         return fun

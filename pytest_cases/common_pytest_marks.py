@@ -2,6 +2,8 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+import itertools
+
 import warnings
 from distutils.version import LooseVersion
 
@@ -112,6 +114,37 @@ def get_pytest_marks_on_function(f, as_decorators=False):
         return transform_marks_into_decorators(mks, function_marks=True)
     else:
         return mks
+
+
+def get_pytest_usefixture_marks(f):
+    # pytest > 3.2.0
+    marks = getattr(f, 'pytestmark', None)
+    if marks is not None:
+        return tuple(itertools.chain.from_iterable(
+            mark.args for mark in marks if mark.name == 'usefixtures'
+        ))
+    else:
+        # older versions
+        mark_info = getattr(f, 'usefixtures', None)
+        if mark_info is not None:
+            return mark_info.args
+        else:
+            return ()
+
+
+def remove_pytest_mark(f, mark_name):
+    marks = getattr(f, 'pytestmark', None)
+    if marks is not None:
+        # pytest > 3.2.0
+        new_marks = [m for m in marks if m.name != mark_name]
+        setattr(f, 'pytestmark', new_marks)
+    else:
+        # older versions
+        try:
+            delattr(f, mark_name)
+        except AttributeError:
+            pass
+    return f
 
 
 def get_pytest_parametrize_marks(f):

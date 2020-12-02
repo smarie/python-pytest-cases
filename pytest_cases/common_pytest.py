@@ -4,6 +4,8 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from __future__ import division
 
+from makefun import add_signature_parameters, wraps
+
 try:  # python 3.3+
     from inspect import signature, Parameter
 except ImportError:
@@ -23,7 +25,7 @@ from _pytest.python import Metafunc
 from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, has_pytest_param, \
-    get_pytest_parametrize_marks
+    get_pytest_parametrize_marks, get_pytest_usefixture_marks
 from .common_pytest_lazy_values import is_lazy_value
 
 
@@ -550,6 +552,10 @@ class MiniMetafunc(Metafunc):
         self._calls = []
         # non-default parameters
         self.fixturenames = getfuncargnames(func)
+        # add declared used fixtures with @pytest.mark.usefixtures
+        self.fixturenames_not_in_sig = [f for f in get_pytest_usefixture_marks(func) if f not in self.fixturenames]
+        if self.fixturenames_not_in_sig:
+            self.fixturenames = tuple(self.fixturenames_not_in_sig + list(self.fixturenames))
         # get parametrization marks
         self.pmarks = get_pytest_parametrize_marks(self.function)
         if self.is_parametrized:
@@ -586,6 +592,41 @@ class MiniMetafunc(Metafunc):
             # noinspection PyProtectedMember
             for c in self._calls:
                 c.marks = list(c.keywords.values())
+
+
+def add_fixture_params(func, new_names):
+    """Creates a wrapper of the given function with additional arguments"""
+
+    old_sig = signature(func)
+
+    # prepend all new parameters if needed
+    for n in new_names:
+        if n in old_sig.parameters:
+            raise ValueError("argument named %s already present in signature" % n)
+    new_sig = add_signature_parameters(old_sig,
+                                       first=[Parameter(n, kind=Parameter.POSITIONAL_OR_KEYWORD) for n in new_names])
+
+    assert not isgeneratorfunction(func)
+
+    # normal function with return statement
+    @wraps(func, new_sig=new_sig)
+    def wrapped_func(**kwargs):
+        for n in new_names:
+            kwargs.pop(n)
+        return func(**kwargs)
+
+    # else:
+    #     # generator function (with a yield statement)
+    #     @wraps(fixture_func, new_sig=new_sig)
+    #     def wrapped_fixture_func(*args, **kwargs):
+    #         request = kwargs['request'] if func_needs_request else kwargs.pop('request')
+    #         if is_used_request(request):
+    #             for res in fixture_func(*args, **kwargs):
+    #                 yield res
+    #         else:
+    #             yield NOT_USED
+
+    return wrapped_func
 
 
 def get_callspecs(func):

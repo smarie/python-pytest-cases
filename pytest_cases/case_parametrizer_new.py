@@ -5,13 +5,11 @@
 # Use true division operator always even in old python 2.x (used in `_extract_cases_from_module`)
 from __future__ import division
 
-from functools import partial
+import functools
 from importlib import import_module
 from inspect import getmembers, isfunction, ismethod
 import re
 from warnings import warn
-
-import makefun
 
 try:
     from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
@@ -19,10 +17,10 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
-from .common_others import get_code_first_line, AUTO, AUTO2, qname
-from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value
+from .common_others import get_code_first_line, AUTO, AUTO2, qname, funcopy
+from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark
 from .common_pytest_lazy_values import lazy_value
-from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host
+from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params
 
 from . import fixture
 from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CaseInfo, CASE_PREFIX_FUN
@@ -305,19 +303,26 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         if not meta.is_parametrized:
             # single unparametrized case function
             if debug:
-                case_fun_str = qname(case_fun.func if isinstance(case_fun, partial) else case_fun)
+                case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
                 print("Case function %s > 1 lazy_value() with id %s and marks %s" % (case_fun_str, case_id, case_marks))
             return (lazy_value(case_fun, id=case_id, marks=case_marks),)
         else:
             # parametrized. create one version of the callable for each parametrized call
             if debug:
-                case_fun_str = qname(case_fun.func if isinstance(case_fun, partial) else case_fun)
+                case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
                 print("Case function %s > tuple of lazy_value() with ids %s and marks %s"
                       % (case_fun_str, ["%s-%s" % (case_id, c.id) for c in meta._calls], [c.marks for c in meta._calls]))
-            return tuple(lazy_value(partial(case_fun, **c.funcargs), id="%s-%s" % (case_id, c.id), marks=c.marks)
+            return tuple(lazy_value(functools.partial(case_fun, **c.funcargs),
+                                    id="%s-%s" % (case_id, c.id), marks=c.marks)
                          for c in meta._calls)
     else:
-        # at least a required fixture:
+        # at least a required fixture (direct req or through @pytest.mark.usefixtures ):
+        # handle @pytest.mark.usefixtures by creating a wrapper where the fixture is added to the signature
+        if meta.fixturenames_not_in_sig:
+            # create a wrapper with an explicit requirement for the fixtures
+            case_fun = add_fixture_params(case_fun, meta.fixturenames_not_in_sig)
+            # remove the `usefixtures` mark
+            remove_pytest_mark(case_fun, "usefixtures")
         # create or reuse a fixture in the host (pytest collector: module or class) of the parametrization target
         fix_name = get_or_create_case_fixture(case_id, case_fun, host_class_or_module, debug)
 
@@ -327,7 +332,7 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         # reference that case fixture
         argvalues_tuple = (fixture_ref(fix_name),)
         if debug:
-            case_fun_str = qname(case_fun.func if isinstance(case_fun, partial) else case_fun)
+            case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
             print("Case function %s > fixture_ref(%r) with marks %s" % (case_fun_str, fix_name, case_marks))
         return make_marked_parameter_value(argvalues_tuple, marks=case_marks) if case_marks else argvalues_tuple
 
@@ -358,8 +363,8 @@ def get_or_create_case_fixture(case_id,       # type: str
                          " %s. If you did not decorate it but still see this error, please report this issue"
                          % case_fun)
 
-    # source
-    case_in_class = isinstance(case_fun, partial) and hasattr(case_fun, 'host_class')
+    # source: detect a functools.partial wrapper created by us because of a host class
+    case_in_class = isinstance(case_fun, functools.partial) and hasattr(case_fun, 'host_class')
     true_case_func = case_fun.func if case_in_class else case_fun
     # case_host = case_fun.host_class if case_in_class else import_module(case_fun.__module__)
 
@@ -396,11 +401,6 @@ def get_or_create_case_fixture(case_id,       # type: str
 
     if debug:
         print("Case function %s > Creating fixture %r in %s" % (qname(true_case_func), fix_name, target_host))
-
-    def funcopy(f):
-        # apparently it is not possible to create an actual copy with copy() !
-        # Use makefun.partial which preserves the parametrization marks (we need them)
-        return makefun.partial(f)
 
     if case_in_class:
         if target_in_class:
@@ -614,7 +614,7 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                     # skip it
                     continue
                 # partialize the function to get one without the 'self' argument
-                new_m = partial(m, cls())
+                new_m = functools.partial(m, cls())
                 # remember the class
                 new_m.host_class = cls
                 # we have to recopy all metadata concerning the case function
