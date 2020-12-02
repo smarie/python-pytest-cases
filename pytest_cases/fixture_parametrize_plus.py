@@ -26,11 +26,12 @@ from .common_others import AUTO
 from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, is_lazy, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
-    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, get_marked_parameter_values
+    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, get_marked_parameter_values, \
+    resolve_ids
 
 from .fixture__creation import check_name_available, CHANGE, WARN
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
-    _make_unpack_fixture
+    _make_unpack_fixture, UnionIdMakers
 from .fixture_core2 import _create_param_fixture, fixture_plus
 
 
@@ -126,13 +127,49 @@ class fixture_ref(object):  # noqa
     A reference to a fixture, to be used in `@parametrize_plus`.
     You can create it from a fixture name or a fixture object (function).
     """
-    __slots__ = 'fixture',
+    __slots__ = 'fixture', 'theoretical_size'
 
     def __init__(self, fixture):
         self.fixture = get_fixture_name(fixture)
+        self.theoretical_size = None  # we dont know yet, will be filled by @parametrize
 
     def __repr__(self):
         return "fixture_ref<%s>" % self.fixture
+
+    def _check_iterable(self):
+        """Raise a TypeError if this fixture reference is not iterable, that is, it does not represent a tuple"""
+        if self.theoretical_size is None:
+            raise TypeError("This fixture_ref has not yet been initialized")
+        if self.theoretical_size == 1:
+            raise TypeError("This fixture_ref does not represent a tuple of arguments, it is not iterable")
+
+    def __len__(self):
+        self._check_iterable()
+        return self.theoretical_size
+
+    def __getitem__(self, item):
+        """
+        Returns an item in the tuple described by this fixture_ref.
+        This is just a facade, a FixtureRefItem.
+        Note: this is only used when a custom `idgen` is passed to @parametrized
+        """
+        self._check_iterable()
+        return FixtureRefItem(self, item)
+
+
+class FixtureRefItem(object):
+    """An item in a fixture_ref when this fixture_ref is used as a tuple."""
+    __slots__ = 'host', 'item'
+
+    def __init__(self,
+                 host,  # type: fixture_ref
+                 item   # type: int
+                 ):
+        self.host = host
+        self.item = item
+
+    def __repr__(self):
+        return "%r[%s]" % (self.host, self.item)
 
 
 # Fix for https://github.com/smarie/python-pytest-cases/issues/71
@@ -233,16 +270,21 @@ class ProductParamAlternative(ParamAlternative):
         self.argvalues_index = argvalues_index
 
 
-class ParamIdMakers(object):
-    """ 'Enum' of id styles for param ids """
+class ParamIdMakers(UnionIdMakers):
+    """ 'Enum' of id styles for param ids
 
-    # @staticmethod
-    # def nostyle(param):
-    #     return param.alternative_name
+    It extends UnionIdMakers so that the 'explicit' style can properly handle the special fixture alternatives we create
+    in @parametrize
+    """
+    @classmethod
+    def compact(cls, param):
+        """Overriden to replace the P with an U."""
+        return "P%s" % param.alternative_name
 
-    @staticmethod
-    def explicit(param  # type: ParamAlternative
+    @classmethod
+    def explicit(cls, param  # type: ParamAlternative
                  ):
+        """Overridden to handle the fixtures we create for parameters in @parametrize """
         if isinstance(param, SingleParamAlternative):
             # return "%s_is_P%s" % (param.param_name, param.argvalues_index)
             return "%s_is_%s" % (param.argnames_str, param.get_id())
@@ -255,27 +297,6 @@ class ParamIdMakers(object):
         else:
             raise TypeError("Unsupported alternative: %r" % param)
 
-    # @staticmethod
-    # def compact(param):
-    #     return "U%s" % param.alternative_name
-
-    @classmethod
-    def get(cls, style  # type: str
-            ):
-        # type: (...) -> Callable[[Any], str]
-        """
-        Returns a function that one can use as the `ids` argument in parametrize, applying the given id style.
-        See https://github.com/smarie/python-pytest-cases/issues/41
-
-        :param style:
-        :return:
-        """
-        style = style or 'nostyle'
-        try:
-            return getattr(cls, style)
-        except AttributeError:
-            raise ValueError("Unknown style: %r" % style)
-
 
 _IDGEN = object()
 
@@ -284,7 +305,7 @@ def parametrize_plus(argnames=None,       # type: str
                      argvalues=None,      # type: Iterable[Any]
                      indirect=False,      # type: bool
                      ids=None,            # type: Union[Callable, Iterable[str]]
-                     idstyle='explicit',  # type: str
+                     idstyle='explicit',  # type: Optional[str]
                      idgen=_IDGEN,        # type: Union[str, Callable]
                      scope=None,          # type: str
                      hook=None,           # type: Callable[[Callable], Callable]
@@ -329,13 +350,16 @@ def parametrize_plus(argnames=None,       # type: str
 
     :param argnames: same as in pytest.mark.parametrize
     :param argvalues: same as in pytest.mark.parametrize except that `fixture_ref` and `lazy_value` are supported
-    :param indirect: same as in pytest.mark.parametrize
+    :param indirect: same as in pytest.mark.parametrize. Note that it is not recommended and is not guaranteed to work
+        in complex parametrization scenarii.
     :param ids: same as in pytest.mark.parametrize. Note that an alternative way to create ids exists with `idgen`. Only
         one non-None `ids` or `idgen should be provided.
     :param idgen: an id formatter. Either a string representing a template, or a callable receiving all argvalues
         at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when
-        `ids` is not provided (None).
-    :param idstyle: style of ids to be used in generated "union" fixtures. See `fixture_union` for details.
+        `ids` is not provided (None). You can use the special `AUTO` formatter to generate an automatic id with
+        template <name>=<value>-<name2>=<value2>-etc.
+    :param idstyle: style of ids to be used in the "union" fixtures generated by `@parametrize` when some cases require
+        fixtures. One of 'compact', 'explicit' or None/'nostyle'. See `ParamIdMakers` for details
     :param scope: same as in pytest.mark.parametrize
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
         will be called everytime a fixture is about to be created. It will receive a single argument (the function
@@ -379,7 +403,7 @@ def _parametrize_plus(argnames=None,
                       argvalues=None,
                       indirect=False,      # type: bool
                       ids=None,            # type: Union[Callable, Iterable[str]]
-                      idstyle='explicit',  # type: str
+                      idstyle='explicit',  # type: Optional[str]
                       idgen=_IDGEN,        # type: Union[str, Callable]
                       scope=None,          # type: str
                       hook=None,           # type: Callable[[Callable], Callable]
@@ -399,10 +423,7 @@ def _parametrize_plus(argnames=None,
         # note: we use a "trick" here with mini_idval to get the appropriate result
         def _make_ids(**args):
             for n, v in args.items():
-                if isinstance(v, fixture_ref):
-                    yield "%s_is_%s" % (n, v.fixture)
-                else:
-                    yield "%s=%s" % (n, mini_idval(val=v, argname='', idx=v))
+                yield "%s=%s" % (n, mini_idval(val=v, argname='', idx=v))
 
         idgen = lambda **args: "-".join(_make_ids(**args))
 
@@ -431,6 +452,9 @@ def _parametrize_plus(argnames=None,
             print(" - argnames: %s" % initial_argnames)
             print(" - argvalues: %s" % marked_argvalues)
             print(" - ids: %s" % ids)
+
+        # handle infinite iterables like latest pytest, for convenience
+        ids = resolve_ids(ids, marked_argvalues)
 
         # no fixture reference: shortcut, do as usual (note that the hook wont be called since no fixture is created)
         _decorator = pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
@@ -619,6 +643,9 @@ def _parametrize_plus(argnames=None,
             except TypeError:
                 explicit_ids_to_use = None
 
+            # idstyle callable for generated parameter fixture alternatives
+            idstyle_callable = ParamIdMakers.get(idstyle)
+
             # first check if the test function has the parameters as arguments
             old_sig = signature(test_func)
             for p in argnames:
@@ -652,7 +679,7 @@ def _parametrize_plus(argnames=None,
                             explicit_ids_to_use.append(ids[prev_i + 1])
                         else:
                             # the ids provided by the user are propagated to the params of this fix, so we need an id
-                            explicit_ids_to_use.append(ParamIdMakers.explicit(p_fix_alt))
+                            explicit_ids_to_use.append(idstyle_callable(p_fix_alt))
 
                 # B/ Now handle the fixture ref at position <i>
                 if j_list is None:
@@ -685,7 +712,7 @@ def _parametrize_plus(argnames=None,
                         explicit_ids_to_use.append(ids[prev_i + 1])
                     else:
                         # the ids provided by the user are propagated to the params of this fix, so we need an id
-                        explicit_ids_to_use.append(ParamIdMakers.explicit(p_fix_alt))
+                        explicit_ids_to_use.append(idstyle_callable(p_fix_alt))
 
             # TO DO if fixtures_to_union has length 1, simplify ? >> No, we leave such "optimization" to the end user
 
@@ -714,7 +741,7 @@ def _parametrize_plus(argnames=None,
             # note: the function automatically registers it in the module
             _make_fixture_union(fixtures_dest, name=fixture_union_name, hook=hook, caller=parametrize_plus,
                                 fix_alternatives=fix_alternatives, unique_fix_alt_names=fix_alt_names,
-                                ids=explicit_ids_to_use or ids or ParamIdMakers.get(idstyle))
+                                ids=explicit_ids_to_use or ids or idstyle_callable)
 
             # --create the new test function's signature that we want to expose to pytest
             # it is the same than existing, except that we want to replace all parameters with the new fixture
@@ -907,6 +934,8 @@ def _process_argvalues(argnames, marked_argvalues, nb_params, has_custom_ids):
                     marked_argvalues[i] = ParameterSet(values=(argvalues[i],), id=p_ids[i], marks=p_marks[i])
 
             elif isinstance(v, fixture_ref):
+                # Fix the referenced fixture length
+                v.theoretical_size = nb_params
                 fixture_indices.append((i, None))
 
     elif nb_params > 1:
@@ -918,6 +947,8 @@ def _process_argvalues(argnames, marked_argvalues, nb_params, has_custom_ids):
             if is_lazy_value(v):
                 _lazyvalue_used_as_tuple = True
             elif isinstance(v, fixture_ref):
+                # Fix the referenced fixture length
+                v.theoretical_size = nb_params
                 _fixtureref_used_as_tuple = True
             elif len(v) == 1 and is_lazy_value(v[0]):
                 # same than above but it was in a pytest.param
@@ -927,6 +958,8 @@ def _process_argvalues(argnames, marked_argvalues, nb_params, has_custom_ids):
                 # same than above but it was in a pytest.param
                 _fixtureref_used_as_tuple = True
                 argvalues[i] = v = v[0]
+                # Fix the referenced fixture length
+                v.theoretical_size = nb_params
 
             # B/ Now process it
             if _lazyvalue_used_as_tuple:

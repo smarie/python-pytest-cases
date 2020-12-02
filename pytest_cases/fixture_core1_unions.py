@@ -291,7 +291,7 @@ def _fixture_union(fixtures_dest,
                    fix_alternatives,      # type: Sequence[UnionFixtureAlternative]
                    unique_fix_alt_names,  # type: List[str]
                    scope="function",      # type: str
-                   idstyle="explicit",    # type: str
+                   idstyle="explicit",    # type: Optional[str]
                    ids=None,              # type: Union[Callable, Iterable[str]]
                    autouse=False,         # type: bool
                    hook=None,             # type: Callable[[Callable], Callable]
