@@ -26,8 +26,8 @@ from .common_others import AUTO
 from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, is_lazy, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
-    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, get_marked_parameter_values, \
-    resolve_ids
+    extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, \
+    get_marked_parameter_values, resolve_ids
 
 from .fixture__creation import check_name_available, CHANGE, WARN
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
@@ -538,8 +538,11 @@ def _parametrize_plus(argnames=None,
                                                    argnames=argnames, argvalues_index=i, argvalues=argvals)
                 # Finally copy the custom id/marks on the ParamAlternative if any
                 if is_marked_parameter_value(marked_argvalues[i]):
+                    # TODO to support pytest 2 we should rather use our ParameterSet instead of pytest.param
                     p_fix_alt = pytest.param(p_fix_alt, id=marked_argvalues[i].id, marks=marked_argvalues[i].marks)
-
+                    # p_fix_alt = ParameterSet(values=(p_fix_alt,),
+                    #                          id=get_marked_parameter_id(marked_argvalues[i]),
+                    #                          marks=get_marked_parameter_marks(marked_argvalues[i]))
             else:
                 # Create a unique fixture name
                 p_fix_name = "%s_%s_is_P%stoP%s" % (test_func_name, param_names_str, from_i, to_i - 1)
