@@ -224,7 +224,7 @@ def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomput
     if global_ids is not None:
         # overridden at global pytest.mark.parametrize level - this takes precedence.
         try:  # an explicit list of ids ?
-            p_ids = list(global_ids)
+            p_ids = list(id for id, v in zip(global_ids, argvalues))
         except TypeError:  # a callable to apply on the values
             p_ids = list(global_ids(v) for v in argvalues)
     else:

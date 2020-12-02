@@ -13,7 +13,7 @@ except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
 try:
-    from typing import Union, Callable, List, Any, Sequence, Optional  # noqa
+    from typing import Union, Callable, List, Any, Sequence, Optional, Generator  # noqa
 
 except ImportError:
     pass
@@ -283,7 +283,7 @@ _IDGEN = object()
 def parametrize_plus(argnames=None,       # type: str
                      argvalues=None,      # type: Iterable[Any]
                      indirect=False,      # type: bool
-                     ids=None,            # type: Union[Callable, List[str]]
+                     ids=None,            # type: Union[Callable, List[str], Generator[str, None, None]]
                      idstyle='explicit',  # type: str
                      idgen=_IDGEN,        # type: Union[str, Callable]
                      scope=None,          # type: str
