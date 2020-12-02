@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.7.0 - `@parametrize_with_cases` now supports id customization
+
+ - `@parametrize_with_cases` now explicitly supports all id customization methods (`ids`, `idgen` and `idstyle`) supported by `@parametrize` (`ids`, `idgen` and `idstyle`). Updated documentation accordingly. Fixed [#151](https://github.com/smarie/python-pytest-cases/issues/151)
+
 ### 2.6.0 - better cache for lazy values and support for infinite id generators
 
  - `lazy_value` parameters are now cached by pytest node id only. So plugins can access the value without triggering an extra function call, but a new call is triggered for each pytest node, so as to prevent mutable object leakage across tests. Fixed [#149](https://github.com/smarie/python-pytest-cases/issues/149) while ensuring no regression for [#143](https://github.com/smarie/python-pytest-cases/issues/143).
