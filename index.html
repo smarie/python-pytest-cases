@@ -1079,7 +1079,9 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 
 
 <h3 id="b-caching-cases">b- Caching cases<a class="headerlink" href="#b-caching-cases" title="Permanent link">&para;</a></h3>
-<p>After starting to reuse cases in several test functions, you might end-up thinking <em>"why do I have to spend the data parsing/generation time several times ? It is the same case."</em>. There are several ways to solve this issue:</p>
+<p>After starting to reuse cases in several test functions, you might end-up thinking <em>"why do I have to spend the data parsing/generation time several times ? It is the same case."</em>. </p>
+<p><code>pytest-cases</code> follows the same philosophy than <code>pytest</code>: each test node should be independent. Therefore case functions are called for each test case. This ensures that mutable objects can not leak across tests, for example.</p>
+<p>That being said, <strong>if you are certain that your tests do not modify your cases data</strong>, there are several ways to solve this issue:</p>
 <ul>
 <li>the easiest way is to <strong>use fixtures with a broad scope</strong>, as explained <a href="#a-test-fixtures">above</a>. However in some parametrization scenarii, <code>pytest</code> does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome</li>
 </ul>
@@ -1112,6 +1114,9 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 <p>finally, you might wish to persist some cases on disk in order for example to avoid downloading them again from their original source, and/or to avoid costly processing on every pytest session. For this, the perfect match for you is to use <a href="https://joblib.readthedocs.io/en/latest/memory.html"><code>joblib</code>'s excellent <code>Memory</code> cache</a>. </p>
 </li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">If you add a cache mechanism, make sure that your test functions do not modify the returned objects !</p>
+</div>
 <h2 id="main-features-benefits">Main features / benefits<a class="headerlink" href="#main-features-benefits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -1189,7 +1194,7 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
     </div>
     
       <script src="assets/javascripts/vendor.fd16492e.min.js"></script>
-      <script src="assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"search.config.pipeline": "trimmer, stopWordFilter", "search.result.none": "No matching documents", "clipboard.copied": "Copied to clipboard", "search.result.term.missing": "Missing", "search.result.other": "# matching documents", "search.result.one": "1 matching document", "search.placeholder": "Search", "search.result.more.other": "# more on this page", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.result.more.one": "1 more on this page", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching"}</script>
+      <script src="assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"search.config.pipeline": "trimmer, stopWordFilter", "search.result.none": "No matching documents", "clipboard.copied": "Copied to clipboard", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.one": "1 matching document", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.term.missing": "Missing", "search.config.lang": "en", "search.result.more.other": "# more on this page", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching"}</script>
       
       <script>
         app = initialize({
