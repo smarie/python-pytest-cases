@@ -22,7 +22,7 @@ import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
 from .common_mini_six import string_types
-from .common_others import AUTO
+from .common_others import AUTO, robust_isinstance
 from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, is_lazy, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
@@ -127,14 +127,30 @@ class fixture_ref(object):  # noqa
     A reference to a fixture, to be used in `@parametrize_plus`.
     You can create it from a fixture name or a fixture object (function).
     """
-    __slots__ = 'fixture', 'theoretical_size'
+    __slots__ = 'fixture', 'theoretical_size', '_id'
 
-    def __init__(self, fixture):
+    def __init__(self,
+                 fixture,  # type: Union[str, Callable]
+                 id=None,  # type: str  # noqa
+                 ):
+        """
+
+        :param fixture: the name of the fixture to reference, or the fixture function itself
+        :param id: an optional custom id to override the fixture name in ids
+        """
         self.fixture = get_fixture_name(fixture)
+        self._id = id
         self.theoretical_size = None  # we dont know yet, will be filled by @parametrize
 
+    def get_name_for_id(self):
+        """return the name to use in ids."""
+        return self._id or self.fixture
+
     def __repr__(self):
-        return "fixture_ref<%s>" % self.fixture
+        if self._id is not None:
+            return "fixture_ref<%s, id=%s>" % (self.fixture, self._id)
+        else:
+            return "fixture_ref<%s>" % self.fixture
 
     def _check_iterable(self):
         """Raise a TypeError if this fixture reference is not iterable, that is, it does not represent a tuple"""
@@ -186,116 +202,161 @@ def pytest_parametrize_plus(*args,
 
 
 class ParamAlternative(UnionFixtureAlternative):
-    """Defines an "alternative", used to parametrize a fixture union in the context of parametrize_plus"""
+    """Defines an "alternative", used to parametrize a fixture union in the context of parametrize_plus
+
+    It is similar to a union fixture alternative, except that it also remembers the parameter argnames.
+    They are used to generate the test id corresponding to this alternative. See `_get_minimal_id` implementations.
+    `ParamIdMakers` overrides some of the idstyles in `UnionIdMakers` so as to adapt them to these `ParamAlternative`
+    objects.
+    """
     __slots__ = ('argnames', )
 
     def __init__(self,
-                 union_name,
-                 alternative_name,
-                 argnames,
+                 union_name,        # type: str
+                 alternative_name,  # type: str
+                 param_index,       # type: int
+                 argnames,          # type: Sequence[str]
                  ):
-        super(ParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name)
+        """
+
+        :param union_name: the name of the union fixture created by @parametrize to switch between param alternatives
+        :param alternative_name: the name of the fixture created by @parametrize to represent this alternative
+        :param param_index: the index of this parameter in the list of argvalues passed to @parametrize
+        :param argnames: the list of parameter names in @parametrize
+        """
+        super(ParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
+                                               alternative_index=param_index)
         self.argnames = argnames
 
     @property
     def argnames_str(self):
         return '_'.join(self.argnames)
 
+    def _get_minimal_id(self):
+        """Subclasses should return the smallest id representing this parametrize fixture union alternative"""
+        raise NotImplementedError()
+
+    def get_id(self, prepend_index=True):
+        """Overrides the method in UnionFixtureAlternative so that users distinguish the two"""
+        if prepend_index:
+            return "P%s/%s" % (self.alternative_index, self._get_minimal_id())
+        else:
+            return self._get_minimal_id()
+
 
 class SingleParamAlternative(ParamAlternative):
     """alternative class for single parameter value"""
-    __slots__ = 'argvalues_index', 'argvalues'
+    __slots__ = 'argval',
 
     def __init__(self,
-                 union_name,
-                 alternative_name,
-                 argnames,
-                 argvalues_index,
-                 argvalues
+                 union_name,        # type: str
+                 alternative_name,  # type: str
+                 param_index,       # type: int
+                 argnames,          # type: Sequence[str]
+                 argval             # type: Any
                  ):
+        """
+        :param union_name: the name of the union fixture created by @parametrize to switch between param alternatives
+        :param alternative_name: the name of the fixture created by @parametrize to represent this alternative
+        :param param_index: the index of this parameter in the list of argvalues passed to @parametrize
+        :param argnames: the list of parameter names in @parametrize
+        :param argval: the value used by this parameter
+        """
         super(SingleParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
-                                                     argnames=argnames)
-        self.argvalues_index = argvalues_index
-        self.argvalues = argvalues
+                                                     param_index=param_index, argnames=argnames)
+        self.argval = argval
 
-    def get_id(self):
-        # return "-".join(self.argvalues)
-        return mini_idvalset(self.argnames, self.argvalues, idx=self.argvalues_index)
+    def _get_minimal_id(self):
+        """Since this alternative has no further parametrization (simplification for 1-param alternative),
+        we create here the equivalent of the id of the argvalue if it was used as a parameter"""
+        return mini_idvalset(self.argnames, self.argval, idx=self.alternative_index)
 
 
 class MultiParamAlternative(ParamAlternative):
     """alternative class for multiple parameter values"""
-    __slots__ = 'argvalues_index_from', 'argvalues_index_to'
+    __slots__ = 'param_index_from', 'param_index_to'
 
     def __init__(self,
-                 union_name,
-                 alternative_name,
-                 argnames,
-                 argvalues_index_from,
-                 argvalues_index_to
+                 union_name,        # type: str
+                 alternative_name,  # type: str
+                 argnames,          # type: Sequence[str]
+                 param_index_from,  # type: int
+                 param_index_to     # type: int
                  ):
+        """
+
+        :param union_name: the name of the union fixture created by @parametrize to switch between param alternatives
+        :param alternative_name: the name of the fixture created by @parametrize to represent this alternative
+        :param argnames: the list of parameter names in @parametrize
+        :param param_index_from: the beginning index of the parameters covered by <alternative_name> in the list of
+            argvalues passed to @parametrize
+        :param param_index_to: the ending index of the parameters covered by <alternative_name> in the list of
+            argvalues passed to @parametrize
+        """
+        # set the param_index to be None since here we represent several indices
         super(MultiParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
-                                                    argnames=argnames)
-        self.argvalues_index_from = argvalues_index_from
-        self.argvalues_index_to = argvalues_index_to
+                                                    argnames=argnames, param_index=None  # noqa
+                                                    )
+        self.param_index_from = param_index_from
+        self.param_index_to = param_index_to
+
+    def get_id(self, prepend_index=True):
+        """The minimal id is empty since the parameters appear on the referenced fixture"""
+        if prepend_index:
+            return "P%stoP%s" % (self.param_index_from, self.param_index_to - 1)
+        else:
+            return ""
 
 
-class FixtureParamAlternative(ParamAlternative):
+class FixtureParamAlternative(SingleParamAlternative):
     """alternative class for a single parameter containing a fixture ref"""
-    __slots__ = 'argvalues_index',
 
     def __init__(self,
-                 union_name,
-                 alternative_name,
-                 argnames,
-                 argvalues_index,
+                 union_name,   # type: str
+                 fixture_ref,  # type: fixture_ref
+                 argnames,     # type: Sequence[str]
+                 param_index,  # type: int
                  ):
-        super(FixtureParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
-                                                      argnames=argnames)
-        self.argvalues_index = argvalues_index
+        """
+        :param union_name: the name of the union fixture created by @parametrize to switch between param alternatives
+        :param param_index: the index of this parameter in the list of argvalues passed to @parametrize
+        :param argnames: the list of parameter names in @parametrize
+        :param fixture_ref: the fixture reference used in this alternative
+        """
+        # set alternative_name using the fixture name in fixture_ref
+        super(FixtureParamAlternative, self).__init__(union_name=union_name,
+                                                      alternative_name=fixture_ref.fixture,
+                                                      argnames=argnames, param_index=param_index,
+                                                      argval=fixture_ref)
+
+    def _get_minimal_id(self):
+        # ask the fixture_ref for an id: it can be the fixture name or a custom id
+        return self.argval.get_name_for_id()
 
 
-class ProductParamAlternative(ParamAlternative):
+class ProductParamAlternative(SingleParamAlternative):
     """alternative class for a single product parameter containing fixture refs"""
-    __slots__ = 'argvalues_index'
 
-    def __init__(self,
-                 union_name,
-                 alternative_name,
-                 argnames,
-                 argvalues_index,
-                 ):
-        super(ProductParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
-                                                      argnames=argnames)
-        self.argvalues_index = argvalues_index
+    def _get_minimal_id(self):
+        """Similar to SingleParamAlternative: create an id representing this tuple, since the fixture wont be
+        parametrized"""
+        argval = tuple(t if not robust_isinstance(t, fixture_ref) else t.get_name_for_id() for t in self.argval)
+        return mini_idvalset(self.argnames, argval, idx=self.alternative_index)
 
 
 class ParamIdMakers(UnionIdMakers):
     """ 'Enum' of id styles for param ids
 
-    It extends UnionIdMakers so that the 'explicit' style can properly handle the special fixture alternatives we create
+    It extends UnionIdMakers to adapt to the special fixture alternatives `ParamAlternative` we create
     in @parametrize
     """
     @classmethod
-    def compact(cls, param):
-        """Overriden to replace the P with an U."""
-        return "P%s" % param.alternative_name
-
-    @classmethod
-    def explicit(cls, param  # type: ParamAlternative
+    def explicit(cls,
+                 param  # type: ParamAlternative
                  ):
-        """Overridden to handle the fixtures we create for parameters in @parametrize """
-        if isinstance(param, SingleParamAlternative):
-            # return "%s_is_P%s" % (param.param_name, param.argvalues_index)
-            return "%s_is_%s" % (param.argnames_str, param.get_id())
-        elif isinstance(param, MultiParamAlternative):
-            return "%s_is_P%stoP%s" % (param.argnames_str, param.argvalues_index_from, param.argvalues_index_to - 1)
-        elif isinstance(param, FixtureParamAlternative):
-            return "%s_is_%s" % (param.argnames_str, param.alternative_name)
-        elif isinstance(param, ProductParamAlternative):
-            return "%s_is_P%s" % (param.argnames_str, param.argvalues_index)
-        else:
-            raise TypeError("Unsupported alternative: %r" % param)
+        """Same than parent but display the argnames as prefix instead of the fixture union name generated by
+        @parametrize, because the latter is too complex (for unicity reasons)"""
+        return "%s_is_%s" % (param.argnames_str, param.get_id(prepend_index=True))
 
 
 _IDGEN = object()
@@ -535,7 +596,7 @@ def _parametrize_plus(argnames=None,
                 # Create the alternative
                 argvals = (argvalues[i],) if nb_params == 1 else argvalues[i]
                 p_fix_alt = SingleParamAlternative(union_name=union_name, alternative_name=p_fix_name,
-                                                   argnames=argnames, argvalues_index=i, argvalues=argvals)
+                                                   argnames=argnames, param_index=i, argval=argvals)
                 # Finally copy the custom id/marks on the ParamAlternative if any
                 if is_marked_parameter_value(marked_argvalues[i]):
                     # TODO to support pytest 2 we should rather use our ParameterSet instead of pytest.param
@@ -574,7 +635,7 @@ def _parametrize_plus(argnames=None,
 
                 # Create the corresponding alternative
                 p_fix_alt = MultiParamAlternative(union_name=union_name, alternative_name=p_fix_name, argnames=argnames,
-                                                  argvalues_index_from=from_i, argvalues_index_to=to_i)
+                                                  param_index_from=from_i, param_index_to=to_i)
                 # no need to copy the custom id/marks to the ParamAlternative: they were passed above already
 
             return p_fix_name, p_fix_alt
@@ -587,8 +648,8 @@ def _parametrize_plus(argnames=None,
                 print(" - Creating reference to existing fixture %r" % (f_fix_name,))
 
             # Create the alternative
-            f_fix_alt = FixtureParamAlternative(union_name=union_name, alternative_name=f_fix_name,
-                                                argnames=argnames, argvalues_index=i)
+            f_fix_alt = FixtureParamAlternative(union_name=union_name, fixture_ref=argvalues[i],
+                                                argnames=argnames, param_index=i)
             # Finally copy the custom id/marks on the ParamAlternative if any
             if is_marked_parameter_value(marked_argvalues[i]):
                 f_fix_alt = pytest.param(f_fix_alt, id=marked_argvalues[i].id, marks=marked_argvalues[i].marks)
@@ -619,7 +680,7 @@ def _parametrize_plus(argnames=None,
 
             # Create the corresponding alternative
             p_fix_alt = ProductParamAlternative(union_name=union_name, alternative_name=p_fix_name,
-                                                argnames=argnames, argvalues_index=i)
+                                                argval=argvalues[i], argnames=argnames, param_index=i)
             # copy the custom id/marks to the ParamAlternative if any
             if is_marked_parameter_value(marked_argvalues[i]):
                 p_fix_alt = pytest.param(p_fix_alt, id=marked_argvalues[i].id, marks=marked_argvalues[i].marks)

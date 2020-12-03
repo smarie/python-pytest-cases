@@ -329,8 +329,8 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         # if meta.is_parametrized:
         #     nothing to do, the parametrization marks are already there
 
-        # reference that case fixture
-        argvalues_tuple = (fixture_ref(fix_name),)
+        # reference that case fixture, and preserve the case id in the associated id whatever the generated fixture name
+        argvalues_tuple = (fixture_ref(fix_name, id=case_id),)
         if debug:
             case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
             print("Case function %s > fixture_ref(%r) with marks %s" % (case_fun_str, fix_name, case_marks))

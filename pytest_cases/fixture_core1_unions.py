@@ -42,21 +42,30 @@ class UnionIdMakers(object):
     The enum defining all possible id styles for union fixture parameters ("alternatives")
     """
     @classmethod
-    def nostyle(cls, param):
-        return param.alternative_name
+    def nostyle(cls,
+                param  # type: UnionFixtureAlternative
+                ):
+        """ ids are <fixture_name> """
+        return param.get_id(prepend_index=False)
 
     @classmethod
-    def explicit(cls, param):
-        return "%s_is_%s" % (param.union_name, param.alternative_name)
+    def explicit(cls,
+                 param  # type: UnionFixtureAlternative
+                 ):
+        """ ids are <union_name>_is_<fixture_name> """
+        return "%s_is_%s" % (param.union_name, param.get_id(prepend_index=True))
 
     @classmethod
-    def compact(cls, param):
-        return "U%s" % param.alternative_name
+    def compact(cls,
+                param  # type: UnionFixtureAlternative
+                ):
+        """ ids are U<index>/<fixture_name> """
+        return param.get_id(prepend_index=True)
 
     @classmethod
     def get(cls, style  # type: str
             ):
-        # type: (...) -> Callable[[Any], str]
+        # type: (...) -> Callable[[UnionFixtureAlternative], str]
         """
         Returns a function that one can use as the `ids` argument in parametrize, applying the given id style.
         See https://github.com/smarie/python-pytest-cases/issues/41
@@ -73,14 +82,30 @@ class UnionIdMakers(object):
 
 class UnionFixtureAlternative(object):
     """Defines an "alternative", used to parametrize a fixture union"""
-    __slots__ = 'union_name', 'alternative_name'
+    __slots__ = 'union_name', 'alternative_name', 'alternative_index'
 
     def __init__(self,
-                 union_name,
-                 alternative_name,
+                 union_name,        # type: str
+                 alternative_name,  # type: str
+                 alternative_index  # type: int
                  ):
+        """
+
+        :param union_name: the name of the union fixture
+        :param alternative_name: the name of the fixture that will be used by the union fixture when this alternative
+            is active
+        :param alternative_index: the index of the alternative, used for ids generation
+        """
         self.union_name = union_name
         self.alternative_name = alternative_name
+        self.alternative_index = alternative_index
+
+    def get_id(self, prepend_index=True):
+        """Used by the id makers to get the alternative id. Defaults to the alternative name"""
+        if prepend_index:
+            return "U%s/%s" % (self.alternative_index, self.alternative_name)
+        else:
+            return self.alternative_name
 
     # def __str__(self):
     #     # although this would be great to have a default id directly, it may be
@@ -89,7 +114,8 @@ class UnionFixtureAlternative(object):
     #     return self.alternative_name
 
     def __repr__(self):
-        return "%s<%s=%s>" % (self.__class__.__name__, self.union_name, self.alternative_name)
+        return "%s<%s=#%s=%s>" % (self.__class__.__name__, self.union_name, self.alternative_index,
+                                  self.alternative_name)
 
     @staticmethod
     def to_list_of_fixture_names(alternatives_lst  # type: List[UnionFixtureAlternative]
@@ -260,9 +286,9 @@ def fixture_union(name,                # type: str
     # create all alternatives and reapply the marks on them
     fix_alternatives = []
     f_names_args = []
-    for _name, _id, _mark in zip(f_names, custom_pids, p_marks):
+    for _idx, (_name, _id, _mark) in enumerate(zip(f_names, custom_pids, p_marks)):
         # create the alternative object
-        alternative = UnionFixtureAlternative(union_name=name, alternative_name=_name)
+        alternative = UnionFixtureAlternative(union_name=name, alternative_name=_name, alternative_index=_idx)
 
         # remove duplicates in the fixture arguments: each is required only once by the union fixture to create
         if _name in f_names_args:

@@ -287,3 +287,10 @@ def funcopy(f):
 #         fun = functools.update_wrapper(fun, f)
 #         fun.__kwdefaults__ = f.__kwdefaults__
 #         return fun
+
+
+def robust_isinstance(o, cls):
+    try:
+        return isinstance(o, cls)
+    except:  # noqa
+        return False
