@@ -102,7 +102,9 @@ def _create_param_fixture(fixtures_dest,
         # Simplification: do not parametrize the fixture, it will directly return the single value
         argvalue_to_return = argvalues[0]
         if is_marked_parameter_value(argvalue_to_return):
-            argvalue_to_return = get_marked_parameter_values(argvalue_to_return)
+            # Warning in that case the argvalues should not be a pytest.param.
+            # argvalue_to_return = get_marked_parameter_values(argvalue_to_return)
+            raise ValueError("When auto_simplify=True the argvalue can not be a pytest.param")
 
         # create the fixture - set its name so that the optional hook can read it easily
         @with_signature("%s()" % argname)

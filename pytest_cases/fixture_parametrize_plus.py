@@ -529,7 +529,7 @@ def _parametrize_plus(argnames=None,
                     print(" - Creating new fixture %r to handle parameter %s" % (p_fix_name, i))
 
                 # Create the fixture that will return the unique parameter value ("auto-simplify" flag)
-                # IMPORTANT that fixture is NOT parametrized so has no id nor marks: use argvalues not marked_argvalues
+                # IMPORTANT auto_simplify=True we create a NON-parametrized fixture. use argvalues not marked_argvalues
                 _create_param_fixture(fh, argname=p_fix_name, argvalues=argvalues[i:i + 1], hook=hook, auto_simplify=True)
 
                 # Create the alternative
