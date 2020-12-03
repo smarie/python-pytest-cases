@@ -4,7 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
 
-from pytest_cases import parametrize_plus, pytest_fixture_plus, fixture_ref
+from pytest_cases import parametrize, pytest_fixture_plus, fixture_ref
 
 
 @pytest.fixture
@@ -18,13 +18,29 @@ def b(arg):
     return "B%s" % arg
 
 
-@parametrize_plus("arg1,arg2", [('1', None),
-                                (None, '2'),
-                                fixture_ref('a'),
-                                ('4', '4'),
-                                ('3', fixture_ref('b'))
-                                ])
+argvalues = [
+    ('1', None),
+    (None, '2'),
+    fixture_ref('a'),
+    fixture_ref('a', id="aaa"),
+    ('4', '4'),
+    ('1', fixture_ref('a')),
+    ('3', fixture_ref('b'))
+]
+
+
+@parametrize("arg1,arg2", argvalues)
 def test_foo(arg1, arg2):
+    print(arg1, arg2)
+
+
+@parametrize("arg1,arg2", argvalues, idstyle='compact')
+def test_foo_compact(arg1, arg2):
+    print(arg1, arg2)
+
+
+@parametrize("arg1,arg2", argvalues, idstyle=None)
+def test_foo_nostyle(arg1, arg2):
     print(arg1, arg2)
 
 
@@ -34,7 +50,8 @@ def test_synthesis(module_results_dct):
         'test_foo[arg1_arg2_is_P0toP1-1-None]',
         'test_foo[arg1_arg2_is_P0toP1-None-2]',
         'test_foo[arg1_arg2_is_a]',
+        'test_foo[arg1_arg2_is_aaa]',
         'test_foo[arg1_arg2_is_4-4]',
-        'test_foo[arg1_arg2_is_P4-1]',
-        'test_foo[arg1_arg2_is_P4-2]'
+        'test_foo[arg1_arg2_is_P5-1]',
+        'test_foo[arg1_arg2_is_P5-2]'
     ]
