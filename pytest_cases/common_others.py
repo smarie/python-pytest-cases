@@ -269,6 +269,18 @@ else:
 
 # if sys.version_info > (3, ):
 def funcopy(f):
+    """
+
+    >>> def foo():
+    ...     return 1
+    >>> foo.att = 2
+    >>> f = funcopy(foo)
+    >>> f.att
+    2
+    >>> f()
+    1
+
+    """
     # see https://stackoverflow.com/a/6527746/7262247
     # and https://stackoverflow.com/a/13503277/7262247
     # apparently it is not possible to create an actual copy with copy() !
