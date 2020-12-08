@@ -325,9 +325,9 @@ function filter_table(elem) {
     not_found_message.hidden = !all_rows_hidden;
 }
 </script>
-    <p>Report generated on 02-Dec-2020 at 17:54:03</p>
+    <p>Report generated on 08-Dec-2020 at 22:45:21</p>
     <h2>Summary</h2>
-    <p>631 tests ran in 3.49 seconds. </p>
+    <p>631 tests ran in 3.98 seconds. </p>
     <p>(Un)check the boxes to filter the results.</p><input checked="true" data-test-result="passed" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">631 passed</span> <input checked="true" data-test-result="skipped" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">25 skipped</span> <input checked="true" data-test-result="failed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span> <input checked="true" data-test-result="error" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span> <input checked="true" data-test-result="xfailed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span> <input checked="true" data-test-result="xpassed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span> <input checked="true" data-test-result="rerun" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="rerun">0 rerun</span> 
     <h2>Results</h2>
     <table id="results-table">
@@ -939,7 +939,16 @@ function filter_table(elem) {
       <tbody class="skipped results-table-row">
         <tr>
           <td class="col-result">Skipped</td>
-          <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi[simple_generator-a=5-b=5-who=you[0]-simple_generator-a=5-b=5-who=you[1]]::setup</td>
+          <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi[simple_generator-who=you-a=5-b=5[0]-simple_generator-who=you-a=5-b=5[1]]::setup</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="log">(&#x27;pytest_cases/tests/cases/doc/test_generators.py&#x27;, 47, &#x27;Skipped: unconditional skip&#x27;)<br/></div></td></tr></tbody>
+      <tbody class="skipped results-table-row">
+        <tr>
+          <td class="col-result">Skipped</td>
+          <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi[simple_generator-who=you-a=10-b=10[0]-simple_generator-who=you-a=10-b=10[1]]::setup</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -948,25 +957,16 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi[simple_generator-a=5-b=5-who=there[0]-simple_generator-a=5-b=5-who=there[1]]</td>
+          <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi[simple_generator-who=there-a=5-b=5[0]-simple_generator-who=there-a=5-b=5[1]]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
             <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="skipped results-table-row">
-        <tr>
-          <td class="col-result">Skipped</td>
-          <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi[simple_generator-a=10-b=10-who=you[0]-simple_generator-a=10-b=10-who=you[1]]::setup</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="5">
-            <div class="log">(&#x27;pytest_cases/tests/cases/doc/test_generators.py&#x27;, 47, &#x27;Skipped: unconditional skip&#x27;)<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi[simple_generator-a=10-b=10-who=there[0]-simple_generator-a=10-b=10-who=there[1]]</td>
+          <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi[simple_generator-who=there-a=10-b=10[0]-simple_generator-who=there-a=10-b=10[1]]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1353,7 +1353,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/issues/test_issue_151.py::test_create_fixture_alt_id2bis[inputs=fixture_ref&lt;simple&gt;[0]-request_data=fixture_ref&lt;simple&gt;[1]]</td>
+          <td class="col-name">pytest_cases/tests/cases/issues/test_issue_151.py::test_create_fixture_alt_id2bis[request_data=fixture_ref&lt;simple&gt;[1]-inputs=fixture_ref&lt;simple&gt;[0]]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1637,7 +1637,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[1.0.0-case_gen__i=0, j=0]</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[1.0.0-case_gen__j=0, i=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1647,7 +1647,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[1.0.0-case_gen__i=0, j=1]</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[1.0.0-case_gen__j=0, i=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1657,7 +1657,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[1.0.0-case_gen__i=1, j=0]</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[1.0.0-case_gen__j=1, i=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1667,7 +1667,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[1.0.0-case_gen__i=1, j=1]</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[1.0.0-case_gen__j=1, i=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1697,7 +1697,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[2.0.0-case_gen__i=0, j=0]</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[2.0.0-case_gen__j=0, i=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1707,7 +1707,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[2.0.0-case_gen__i=0, j=1]</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[2.0.0-case_gen__j=0, i=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1717,7 +1717,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[2.0.0-case_gen__i=1, j=0]</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[2.0.0-case_gen__j=1, i=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -1727,7 +1727,7 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[2.0.0-case_gen__i=1, j=1]</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/advanced/test_parameters.py::test_with_parameters[2.0.0-case_gen__j=1, i=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -2198,24 +2198,6 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=1 and name template]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="5">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=2 and name template]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="5">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=1, j=0 and name template]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
@@ -2225,7 +2207,25 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=1 and name template]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=1, j=1 and name template]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=2 and name template]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -2252,24 +2252,6 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=1 and names callable provider]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="5">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=2 and names callable provider]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="5">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=1, j=0 and names callable provider]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
@@ -2279,7 +2261,25 @@ function filter_table(elem) {
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=1 and names callable provider]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=1, j=1 and names callable provider]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/cases/legacy/simple/test_generators.py::test_with_cases_decorated[test with i=0, j=2 and names callable provider]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -2483,7 +2483,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setup for &lt;function case_datasetA at 0x7fde68026ae8&gt;
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setup for &lt;function case_datasetA at 0x7f73b90a6a60&gt;
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -2493,7 +2493,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>teardown for &lt;function case_datasetA at 0x7fde68026ae8&gt;
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>teardown for &lt;function case_datasetA at 0x7f73b90a6a60&gt;
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -2512,7 +2512,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setup for &lt;function case_datasetB at 0x7fde68026b70&gt;
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setup for &lt;function case_datasetB at 0x7f73b90a6ae8&gt;
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -2522,7 +2522,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>teardown for &lt;function case_datasetB at 0x7fde68026b70&gt;
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>teardown for &lt;function case_datasetB at 0x7f73b90a6ae8&gt;
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -5066,7 +5066,7 @@ b3
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/pytest_extension/meta/test_all.py::test_run_all_tests[session_optim]</td>
-          <td class="col-duration">0.11</td>
+          <td class="col-duration">0.13</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
@@ -5087,39 +5087,39 @@ def pytest_configure(config):
     config.pluginmanager.register(DynamicFixturePlugin(), &apos;flavor-fixture&apos;)
 
 
-Testing that running pytest on file session_optim.py with config file /home/travis/build/smarie/python-pytest-cases/pytest_cases/tests/pytest_extension/meta/raw/session_optim/conf.py results in {&apos;failed&apos;: 0, &apos;passed&apos;: 10, &apos;skipped&apos;: 0}.
+Testing that running pytest on file session_optim.py with config file /home/travis/build/smarie/python-pytest-cases/pytest_cases/tests/pytest_extension/meta/raw/session_optim/conf.py results in {&apos;passed&apos;: 10, &apos;skipped&apos;: 0, &apos;failed&apos;: 0}.
 For debug, temp dir is: /tmp/pytest-of-travis/pytest-0/testdir/test_run_all_tests0
 ============================= test session starts ==============================
 platform linux -- Python 3.5.6, pytest-2.9.2, py-1.9.0, pluggy-0.3.1
 rootdir: /tmp/pytest-of-travis/pytest-0/testdir/test_run_all_tests0, inifile: 
-plugins: steps-1.7.3, logging-2015.11.4, html-1.9.0, harvest-1.10.0, cases-2.7.1
+plugins: steps-1.7.3, logging-2015.11.4, html-1.9.0, harvest-1.10.0, cases-2.7.2.dev4+g8febdee
 collected 10 items
 
 test_run_all_tests.py ..........
 
-========================== 10 passed in 0.07 seconds ===========================
+========================== 10 passed in 0.08 seconds ===========================
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/pytest_extension/meta/test_all.py::test_run_all_tests[reorder_skip]</td>
-          <td class="col-duration">0.15</td>
+          <td class="col-duration">0.13</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>
-Testing that running pytest on file reorder_skip.py with config file /home/travis/build/smarie/python-pytest-cases/pytest_cases/tests/pytest_extension/meta/raw/reorder_skip/conf.py results in {&apos;failed&apos;: 0, &apos;passed&apos;: 3, &apos;skipped&apos;: 0}.
+Testing that running pytest on file reorder_skip.py with config file /home/travis/build/smarie/python-pytest-cases/pytest_cases/tests/pytest_extension/meta/raw/reorder_skip/conf.py results in {&apos;passed&apos;: 3, &apos;skipped&apos;: 0, &apos;failed&apos;: 0}.
 For debug, temp dir is: /tmp/pytest-of-travis/pytest-0/testdir/test_run_all_tests1
 ============================= test session starts ==============================
 platform linux -- Python 3.5.6, pytest-2.9.2, py-1.9.0, pluggy-0.3.1
 rootdir: /tmp/pytest-of-travis/pytest-0/testdir/test_run_all_tests1, inifile: 
-plugins: steps-1.7.3, logging-2015.11.4, html-1.9.0, harvest-1.10.0, cases-2.7.1
+plugins: steps-1.7.3, logging-2015.11.4, html-1.9.0, harvest-1.10.0, cases-2.7.2.dev4+g8febdee
 collected 4 items
 
 test_run_all_tests.py ...
 
 ==================== 1 tests deselected by &quot;-m &apos;not black&apos;&quot; ====================
-==================== 3 passed, 1 deselected in 0.05 seconds ====================
+==================== 3 passed, 1 deselected in 0.04 seconds ====================
 </div></td></tr></tbody>
       <tbody class="skipped results-table-row">
         <tr>
@@ -5163,18 +5163,18 @@ reprovision created: flavor1 vxlan
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/order/session_optim/test_reorder_default_normal.py::test[flavor2-vxlan]</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/order/session_optim/test_reorder_default_normal.py::test[flavor1-vlan]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>flavor created: flavor2
-reprovision created: flavor2 vxlan
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>encap created: vlan
+reprovision created: flavor1 vlan
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/order/session_optim/test_reorder_default_normal.py::test2[flavor2-vxlan]</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/order/session_optim/test_reorder_default_normal.py::test2[flavor1-vlan]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -5188,7 +5188,7 @@ reprovision created: flavor2 vxlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>encap created: vlan
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>flavor created: flavor2
 reprovision created: flavor2 vlan
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -5203,18 +5203,18 @@ reprovision created: flavor2 vlan
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/order/session_optim/test_reorder_default_normal.py::test[flavor1-vlan]</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/order/session_optim/test_reorder_default_normal.py::test[flavor2-vxlan]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>flavor created: flavor1
-reprovision created: flavor1 vlan
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>encap created: vxlan
+reprovision created: flavor2 vxlan
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/order/session_optim/test_reorder_default_normal.py::test2[flavor1-vlan]</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/order/session_optim/test_reorder_default_normal.py::test2[flavor2-vxlan]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -6155,7 +6155,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.9046701845072976
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.0835138745280315
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6165,7 +6165,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.4330481164098826
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.07416285599676764
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6175,7 +6175,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.24701295894022002
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.12119108257247002
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6185,7 +6185,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.63738605559516
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.6887950687044272
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6195,7 +6195,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.00407220669658559
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.7861746943060727
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6205,7 +6205,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.848930363559445
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.10615448575974595
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6215,7 +6215,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.03573998702334802
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.6689608696829369
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6225,7 +6225,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.7155838898092319
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.5880719366490447
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6235,7 +6235,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.8395609376664799
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.054650530180760826
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6245,7 +6245,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.22175940174525377
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.2924022128600293
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6271,26 +6271,6 @@ setting up dataset B
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2.py::test_databases[data_is_data_from_datasetA-idx=1]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data2_a
-</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2.py::test_databases[data_is_data_from_datasetA-idx=2]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data3_a
-</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2.py::test_databases[data_is_data_from_datasetB-idx=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
@@ -6311,14 +6291,22 @@ setting up dataset B
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2_dynamic.py::test_databases[data_is_data_from_DB-idx=0]</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2.py::test_databases[data_is_data_from_datasetA-idx=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setting up dataset DB
-setting up dataset DA
------------------------------ Captured stdout call -----------------------------<br/>data1_b
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data2_a
+</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2.py::test_databases[data_is_data_from_datasetA-idx=2]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data3_a
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6328,17 +6316,19 @@ setting up dataset DA
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setting up dataset DA
+setting up dataset DB
+----------------------------- Captured stdout call -----------------------------<br/>data1_a
+</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2_dynamic.py::test_databases[data_is_data_from_DB-idx=1]</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2_dynamic.py::test_databases[data_is_data_from_DB-idx=0]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data2_b
-</div></td></tr></tbody>
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -6358,6 +6348,16 @@ setting up dataset DA
         <tr>
           <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data3_a
+</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2_dynamic.py::test_databases[data_is_data_from_DB-idx=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data2_b
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -6433,16 +6433,6 @@ setting up dataset B
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2_simplified.py::test_databases[data_is_data_from_datasetB-idx=1]</td>
-          <td class="col-duration">0.00</td>
-          <td class="col-links"></td></tr>
-        <tr>
-          <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data2_b
-</div></td></tr></tbody>
-      <tbody class="passed results-table-row">
-        <tr>
-          <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2_simplified.py::test_databases[data_is_data_from_datasetA-idx=1]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
@@ -6459,4 +6449,14 @@ setting up dataset B
         <tr>
           <td class="extra" colspan="5">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data3_a
+</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_so2_simplified.py::test_databases[data_is_data_from_datasetB-idx=1]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="5">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>data2_b
 </div></td></tr></tbody></table></body></html>
