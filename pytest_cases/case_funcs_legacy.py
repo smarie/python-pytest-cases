@@ -74,8 +74,8 @@ def test_target(target  # type: Any
     A simple decorator to declare that a case function is associated with a particular target.
 
     >>> @test_target(int)
-    >>> def case_to_test_int():
-    >>>     ...
+    ... def case_to_test_int():
+    ...     pass
 
     This is actually an alias for `@case_tags(target)`, that some users may find a bit more readable.
 
@@ -122,11 +122,11 @@ def cases_generator(names=None,           # type: Union[str, Callable[[Any], str
     parameters will be passed to the decorated function.
 
     >>> @cases_generator("test with i={i}", i=range(10))
-    >>> def case_10_times(i):
-    >>>     ''' Generates 10 cases '''
-    >>>     ins = dict(a=i, b=i+1)
-    >>>     outs = i+1, i+2
-    >>>     return ins, outs, None
+    ... def case_10_times(i):
+    ...     ''' Generates 10 cases '''
+    ...     ins = dict(a=i, b=i+1)
+    ...     outs = i+1, i+2
+    ...     return ins, outs, None
 
     :param names: a name template, that will be transformed into the case name using
         `names.format(**params)` for each case, where `params` is the dictionary of parameter values for this

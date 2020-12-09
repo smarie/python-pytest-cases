@@ -61,7 +61,7 @@ def pytest_runtest_setup(item):
 
     # now item.funcargs exists so we can handle it
     if hasattr(item, "funcargs"):
-        item.funcargs = {argname: get_lazy_args(argvalue, item._request)
+        item.funcargs = {argname: get_lazy_args(argvalue, item)
                          for argname, argvalue in item.funcargs.items()}
 
 

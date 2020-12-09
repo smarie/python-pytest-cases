@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.7.2 - Bugfix with doctest
+
+ - Fixed `AttributeError: 'DoctestItem' object has no attribute '_request'` when executing doctests. Fixes [#156](https://github.com/smarie/python-pytest-cases/issues/156)
+
 ### 2.7.1 - `@pytest.mark.usefixtures` can be used on case functions 
 
  - `@pytest.mark.usefixtures` can be now be used on case functions. Fixes [#152](https://github.com/smarie/python-pytest-cases/issues/152).

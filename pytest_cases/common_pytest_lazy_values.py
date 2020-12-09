@@ -36,8 +36,8 @@ class Lazy(object):
         raise NotImplementedError()
 
     # @abstractmethod
-    def get(self, request):
-        """Return the value to use by pytest"""
+    def get(self, request_or_item):
+        """Return the actual value to use by pytest in the given context"""
         raise NotImplementedError()
 
     def __str__(self):
@@ -200,7 +200,7 @@ class _LazyValue(Lazy):
             else:
                 return vg.__name__
 
-    def get(self, request):
+    def get(self, request_or_item):
         """
         Calls the underlying value getter function `self.valuegetter` and returns the result.
 
@@ -210,12 +210,16 @@ class _LazyValue(Lazy):
 
         See https://github.com/smarie/python-pytest-cases/issues/149
         and https://github.com/smarie/python-pytest-cases/issues/143
+
+        :param request_or_item: the context of this call: either a pytest request or test node item.
         """
-        if self.cached_value_context is None or self.cached_value_context() is not request.node:
+        node = get_test_node(request_or_item)
+
+        if self.cached_value_context is None or self.cached_value_context() is not node:
             # retrieve the value by calling the function
             self.cached_value = self.valuegetter()
             # remember the pytest context of the call with a weak reference to avoir gc issues
-            self.cached_value_context = weakref.ref(request.node)
+            self.cached_value_context = weakref.ref(node)
 
         return self.cached_value
 
@@ -269,8 +273,14 @@ class _LazyTupleItem(Lazy):
     def get_id(self):
         return "%s[%s]" % (self.host.get_id(), self.item)
 
-    def get(self, request):
-        return self.host.force_getitem(self.item, request)
+    def get(self, request_or_item):
+        """ Call the underlying value getter if needed (cache), then return the result tuple item value (not self).
+
+        See _LazyValue.get for details
+
+        :param request_or_item: the context of this call: either a pytest request or test node item.
+        """
+        return self.host.force_getitem(self.item, request_or_item)
 
 
 class LazyTuple(Lazy):
@@ -312,9 +322,13 @@ class LazyTuple(Lazy):
         """return the id to use by pytest"""
         return self._lazyvalue.get_id()
 
-    def get(self, request):
-        """ Call the underlying value getter, then return the result tuple value (not self). """
-        return self._lazyvalue.get(request)
+    def get(self, request_or_item):
+        """ Call the underlying value getter if needed (cache), then return the result tuple value (not self).
+        See _LazyValue.get for details
+
+        :param request_or_item: the context of this call: either a pytest request or test node item.
+        """
+        return self._lazyvalue.get(request_or_item)
 
     def has_cached_value(self):
         return self._lazyvalue.has_cached_value()
@@ -456,11 +470,13 @@ def is_lazy(argval):
         return False
 
 
-def get_lazy_args(argval, request):
+def get_lazy_args(argval, request_or_item):
     """
     Possibly calls the lazy values contained in argval if needed, before returning it.
     Since the lazy values cache their result to ensure that their underlying function is called only once
     per test node, the `request` argument here is mandatory.
+
+    :param request_or_item: the context of this call: either a pytest request or item
     """
 
     try:
@@ -469,6 +485,20 @@ def get_lazy_args(argval, request):
         return argval
     else:
         if _is_lazy:
-            return argval.get(request)
+            return argval.get(request_or_item)
         else:
             return argval
+
+
+def get_test_node(request_or_item):
+    """
+    Return the test node, typically a _pytest.Function.
+    Provided arg may be the node already, or the pytest request
+
+    :param request_or_item:
+    :return:
+    """
+    try:
+        return request_or_item.node
+    except AttributeError:
+        return request_or_item
