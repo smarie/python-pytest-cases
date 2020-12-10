@@ -32,6 +32,152 @@ def case_hi():
  - `marks`: optional pytest marks to add on the case. Note that decorating the function directly with the mark also works, and if marks are provided in both places they are merged.
 
 
+### `copy_case_info`
+
+```python
+def copy_case_info(from_fun,  # type: Callable
+                   to_fun     # type: Callable
+                   ):
+```
+
+Copies all information from case function `from_fun` to `to_fun`.
+
+
+### `set_case_id`
+
+```python
+def set_case_id(id,        # type: str
+                case_func  # type: Callable
+                ):
+```
+
+Sets an explicit id on case function `case_func`.
+
+
+### `get_case_id`
+
+```python
+def get_case_id(case_func,                      # type: Callable
+                prefix_for_default_ids='case_'  # type: str
+                ):
+```
+
+Return the case id associated with this case function.
+
+If a custom id is not present, a case id is automatically created from the function name based on removing the provided prefix if present at the beginning of the function name. If the resulting case id is empty, "<empty_case_id>" will be returned.
+
+
+**Parameters:**
+
+ - `case_func`: the case function to get a case id for.
+ 
+ - `prefix_for_default_ids`: this prefix that will be removed if present on the function name to form the default case id.
+
+
+### `get_case_marks`
+
+```python
+def get_case_marks(case_func,                         # type: Callable
+                   concatenate_with_fun_marks=False,  # type: bool
+                   as_decorators=False                # type: bool
+                   ):
+```
+
+Return the marks that are on the case function.
+
+There are currently two ways to place a mark on a case function: either with `@pytest.mark.<name>` or in `@case(marks=...)`. This function returns a list of marks containing either both (if `concatenate_with_fun_marks` is `True`) or only the ones set with `@case` (`concatenate_with_fun_marks` is `False`, default).
+
+**Parameters:**
+
+ - `case_func`: the case function
+
+ - `concatenate_with_fun_marks`: if `False` (default) only the marks declared in `@case` will be returned. Otherwise a concatenation of marks in `@case` and on the function (for example directly with `@pytest.mark.<mk>`) will be returned.
+
+ - `as_decorators`: when `True`, the marks (`MarkInfo`) will be transformed into `MarkDecorators` before being returned. Otherwise (default) the marks are returned as is.
+
+
+### `get_case_tags`
+
+```python
+def get_case_tags(case_func  # type: Callable
+                  ):
+```
+
+Return the tags on this case function or an empty tuple.
+
+**Parameters:**
+
+ - `case_func`: the case function
+
+
+### `matches_tag_query`
+
+```python
+def matches_tag_query(case_fun,      # type: Callable
+                      has_tag=None,  # type: Union[str, Iterable[str]]
+                      filter=None,   # type: Union[Callable[[Callable], bool], Iterable[Callable[[Callable], bool]]]  # noqa
+                      ):
+```
+
+This function is the one used by `@parametrize_with_cases` to filter the case functions collected. It can be used manually for tests/debug.
+
+Returns True if the case function is selected by the query:
+
+ - if `has_tag` contains one or several tags, they should ALL be present in the tags set on `case_fun` (`get_case_tags`)
+
+ - if `filter` contains one or several filter callables, they are all called in sequence and the `case_fun` is only selected if ALL of them return a `True` truth value
+
+**Parameters:**
+
+ - `case_fun`: the case function
+
+ - `has_tag`: one or several tags that should ALL be present in the tags set on `case_fun` for it to be selected.
+
+ - `filter`: one or several filter callables that will be called in sequence. If all of them return a `True` truth value, `case_fun` is selected.
+
+
+### `is_case_class`
+
+```python
+def is_case_class(cls,                         # type: Any
+                  case_marker_in_name='Case',  # type: str
+                  check_name=True              # type: bool
+                  ):
+```
+
+This function is the one used by `@parametrize_with_cases` to collect cases within classes. It can be used manually for tests/debug.
+
+Returns True if the given object is a class and, if `check_name=True` (default), if its name contains `case_marker_in_name`.
+
+**Parameters:**
+
+ - `cls`: the object to check
+    
+ - `case_marker_in_name`: the string that should be present in a class name so that it is selected. Default is 'Case'.
+
+ - `check_name`: a boolean (default True) to enforce that the name contains the word `case_marker_in_name`. If False, any class will lead to a `True` result whatever its name.
+
+### `is_case_function`
+
+```python
+def is_case_function(f,                 # type: Any
+                     prefix='case_',    # type: str
+                     check_prefix=True  # type: bool
+                     ):
+```
+
+This function is the one used by `@parametrize_with_cases` to collect cases. It can be used manually for tests/debug.
+    
+Returns True if the provided object is a function or callable and, if `check_prefix=True` (default), if it starts with `prefix`.
+
+**Parameters:**
+
+ - `f`: the object to check
+    
+ - `prefix`: the string that should be present at the beginning of a function name so that it is selected. Default is 'case_'.
+
+ - `check_prefix`: if this boolean is True (default), the prefix will be checked. If False, any function will lead to a `True` result whatever its name.
+
 ## 2 - Cases collection
 
 ### `@parametrize_with_cases`

@@ -19,7 +19,7 @@ try:  # python 3.5+
 except ImportError:
     pass
 
-from .case_funcs_new import CaseInfo
+from .case_funcs_new import case
 
 
 @function_decorator
@@ -61,7 +61,7 @@ def case_tags(*tags  # type: Any
 
     # we have to use "nested" mode for this decorator because in the decorator signature we have a var-positional
     def _apply(case_func):
-        CaseInfo.get_from(case_func, create=True).add_tags(tags)
+        case_func = case(tags=tags)(case_func)
         return case_func
 
     return _apply
