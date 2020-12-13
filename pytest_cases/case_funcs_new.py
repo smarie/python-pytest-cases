@@ -73,7 +73,11 @@ class _CaseInfo(object):
                   case_func  # type: Callable
                   ):
         """attach this case_info to the given case function"""
-        setattr(case_func, CASE_FIELD, self)
+        if inspect.ismethod(case_func):
+            # we have a bound method; direct setattr will fail; attach to underlying function:
+            return self.attach_to(case_func.__func__)
+        else:
+            setattr(case_func, CASE_FIELD, self)
 
     def add_tags(self,
                  tags  # type: Union[Any, Union[List, Set, Tuple]]
