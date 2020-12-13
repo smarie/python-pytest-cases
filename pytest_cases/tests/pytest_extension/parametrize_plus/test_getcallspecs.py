@@ -11,9 +11,9 @@ if not has_pytest_param:
     @pytest.mark.parametrize('new_style', [False, True])
     def test_getcallspecs(new_style):
         if new_style:
-            parametrizer = parametrize(a=[1, pytest.mark.skipif(True)(('12',))], idgen="a={a}")
+            parametrizer = parametrize(a=[1, pytest.mark.skipif(True)('12')], idgen="a={a}")
         else:
-            parametrizer = parametrize('a', [1, pytest.mark.skipif(True)(('12',))], ids=['oh', 'my'])
+            parametrizer = parametrize('a', [1, pytest.mark.skipif(True)('12')], ids=['oh', 'my'])
 
         @parametrizer
         def test_foo(a):

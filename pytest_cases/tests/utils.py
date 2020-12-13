@@ -11,4 +11,8 @@ if has_pytest_param:
         return pytest.param(*argvals, marks=pytest.mark.skip)
 else:
     def skip(*argvals):
-        return pytest.mark.skip(argvals)
+        if len(argvals) > 1:
+            # we have to keep the tuple
+            return pytest.mark.skip(argvals)
+        else:
+            return pytest.mark.skip(*argvals)

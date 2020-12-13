@@ -24,6 +24,6 @@ def test_basic_union(c):
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == ["test_basic_union[c_is_first]",
-                                        "test_basic_union[c_is_second-a]",
-                                        "test_basic_union[c_is_second-b]"]
+    assert list(module_results_dct) == ["test_basic_union[/first]",
+                                        "test_basic_union[/second-a]",
+                                        "test_basic_union[/second-b]"]

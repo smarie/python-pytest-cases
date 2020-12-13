@@ -28,7 +28,7 @@ def case_a():
 
 
 def my_tag_filter(case_func):
-    tags = case_func._pytestcase.tags
+    tags = get_case_tags(case_func)
     return 'a' in tags or 'b' in tags
 
 

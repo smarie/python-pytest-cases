@@ -6,7 +6,7 @@ from math import sqrt
 import pytest
 
 from pytest_cases.common_pytest_marks import has_pytest_param
-from pytest_cases import parametrize_with_cases
+from pytest_cases import parametrize_with_cases, get_case_id
 
 
 def case_int_success():
@@ -44,11 +44,11 @@ def test_synthesis(module_results_dct):
 
 def create_filter(sub_str):
     def my_filter(case_func):
-        return sub_str in case_func._pytestcase.id
+        return sub_str in get_case_id(case_func)
     return my_filter
 
 
-@parametrize_with_cases("data", cases='.', filter=lambda case_func: "success" in case_func._pytestcase.id)
+@parametrize_with_cases("data", cases='.', filter=lambda case_func: "success" in get_case_id(case_func))
 def test_good_datasets2(data):
     assert sqrt(data) > 0
 

@@ -123,11 +123,11 @@ def test_foo(d, request):
 def test_synthesis(module_results_dct):
     assert all(torn_down.values())
     assert list(module_results_dct) == [
-        'test_foo[d_is_F1M1s1s2]',
-        'test_foo[d_is_F2-i=0]',
-        'test_foo[d_is_F2-i=1]',
-        'test_foo[d_is_F3s2s3]',
-        'test_foo[d_is_F4M2s1s3]'
+        'test_foo[/F1M1s1s2]',
+        'test_foo[/F2-i=0]',
+        'test_foo[/F2-i=1]',
+        'test_foo[/F3s2s3]',
+        'test_foo[/F4M2s1s3]'
     ]
 
     function_scoped = ('F1M1s1s2', 'F2(0)', 'F2(1)', 'F3s2s3', 'F4M2s1s3')

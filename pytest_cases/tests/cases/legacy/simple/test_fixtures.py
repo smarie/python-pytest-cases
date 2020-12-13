@@ -6,7 +6,8 @@ from distutils.version import LooseVersion
 import pytest
 from ..simple import test_main_cases
 
-from pytest_cases import unfold_expected_err, cases_fixture, cases_data, pytest_fixture_plus
+from pytest_cases import unfold_expected_err, cases_fixture, cases_data, fixture
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 
 from ..example_code import super_function_i_want_to_test
 
@@ -47,8 +48,8 @@ def test_with_cases_decorated_legacy(my_case_fixture_legacy):
             err_checker(err_info.value)
 
 
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
-    @pytest_fixture_plus
+if PYTEST3_OR_GREATER:
+    @fixture
     @cases_data(module=test_main_cases)
     @pytest.mark.parametrize('a', [True])
     def my_case_fixture(case_data, a, request):
@@ -56,7 +57,7 @@ if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
         return case_data.get()
 else:
     # we cant double-parametrize with pytest 2.x: the ids get messed up
-    @pytest_fixture_plus
+    @fixture
     @cases_data(module=test_main_cases)
     # @pytest.mark.parametrize('a', [True])
     def my_case_fixture(case_data, request):

@@ -2,9 +2,9 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from distutils.version import LooseVersion
-
 import pytest
+
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 from pytest_cases import fixture_union
 
 
@@ -33,22 +33,22 @@ def test_foo2(v):
 
 
 def test_synthesis(module_results_dct):
-    if LooseVersion(pytest.__version__) < LooseVersion('3.0.0'):
+    if not PYTEST3_OR_GREATER:
         # the way to make ids uniques in case of duplicates was different in old pytest
         assert list(module_results_dct) == [
             'test_foo[1]',
             'test_foo[2]',
             'test_foo[3]',
-            'test_foo2[0v_is_a]',
-            'test_foo2[1v_is_b]',
-            'test_foo2[2v_is_a]'
+            'test_foo2[0/a]',
+            'test_foo2[1/b]',
+            'test_foo2[2/a]'
         ]
     else:
         assert list(module_results_dct) == [
             'test_foo[1]',
             'test_foo[2]',
             'test_foo[3]',
-            'test_foo2[v_is_a0]',
-            'test_foo2[v_is_b]',
-            'test_foo2[v_is_a1]'
+            'test_foo2[/a0]',
+            'test_foo2[/b]',
+            'test_foo2[/a1]'
         ]

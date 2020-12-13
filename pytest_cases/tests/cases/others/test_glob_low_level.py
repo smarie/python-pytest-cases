@@ -10,7 +10,6 @@ def test_glob_low_level():
         @case(id=id)
         def _f():
             pass
-        # CaseInfo(id=id).attach_to(_f)
         return _f
 
     filtr = create_glob_name_filter("o*_success")

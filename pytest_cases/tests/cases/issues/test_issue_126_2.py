@@ -54,30 +54,31 @@ if has_pytest_param:
         assert list(module_results_dct) == [
             # all tests in TestA class
             'test_a_nested',
-            'test_foo_nested[o_is_a_]',
-            'test_foo_nested[o_is_b_-a=*]',
-            'test_foo_nested[o_is_b_-a=**]',
-            'test_foo_nested[o_is_a__]',
-            'test_foo_nested[o_is_b__-a=*]',
-            'test_foo_nested[o_is_b__-a=**]',
-            'test_foo_nested2[o_is_a_]',      # <- note that case fixture names are the same: correctly reused
-            'test_foo_nested2[o_is_b_-a=*]',
-            'test_foo_nested2[o_is_b_-a=**]',
-            'test_foo_nested2[o_is_a__]',
-            'test_foo_nested2[o_is_b__-a=*]',
-            'test_foo_nested2[o_is_b__-a=**]',
+            # in the test_issue_126_2_cases.py, there are two cases with id "a" and two with id "b"
+            'test_foo_nested[a0]',
+            'test_foo_nested[b0-a=*]',
+            'test_foo_nested[b0-a=**]',
+            'test_foo_nested[a1]',
+            'test_foo_nested[b1-a=*]',
+            'test_foo_nested[b1-a=**]',
+            'test_foo_nested2[a0]',      # <- note that case names are the same than above: correctly reused
+            'test_foo_nested2[b0-a=*]',
+            'test_foo_nested2[b0-a=**]',
+            'test_foo_nested2[a1]',
+            'test_foo_nested2[b1-a=*]',
+            'test_foo_nested2[b1-a=**]',
             # all tests in the module
             'test_bar',
-            'test_foo[o_is_a_]',
-            'test_foo[o_is_b_-a=*]',
-            'test_foo[o_is_b_-a=**]',
-            'test_foo[o_is_a__]',
-            'test_foo[o_is_b__-a=*]',
-            'test_foo[o_is_b__-a=**]',
-            'test_foo2[o_is_a_]',  # <- note that case fixture names are the same: correctly reused
-            'test_foo2[o_is_b_-a=*]',
-            'test_foo2[o_is_b_-a=**]',
-            'test_foo2[o_is_a__]',
-            'test_foo2[o_is_b__-a=*]',
-            'test_foo2[o_is_b__-a=**]'
+            'test_foo[a0]',
+            'test_foo[b0-a=*]',
+            'test_foo[b0-a=**]',
+            'test_foo[a1]',
+            'test_foo[b1-a=*]',
+            'test_foo[b1-a=**]',
+            'test_foo2[a0]',  # <- note that case fixture names are the same: correctly reused
+            'test_foo2[b0-a=*]',
+            'test_foo2[b0-a=**]',
+            'test_foo2[a1]',
+            'test_foo2[b1-a=*]',
+            'test_foo2[b1-a=**]'
         ]

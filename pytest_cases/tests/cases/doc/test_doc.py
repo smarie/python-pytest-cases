@@ -180,9 +180,5 @@ def test_foo_parametrize_fixture(c):
 
 def test_foo_parametrize_fixture_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_parametrize_fixture, test_id_format='function')
-    if has_pytest_param:
-        assert list(results_dct) == ['test_foo_parametrize_fixture[two_positive_ints]',
-                                     'test_foo_parametrize_fixture[two_negative_ints]']
-    else:
-        assert list(results_dct) == ['test_foo_parametrize_fixture[two_positive_ints[0]-two_positive_ints[1]]',
-                                     'test_foo_parametrize_fixture[two_negative_ints[0]-two_negative_ints[1]]']
+    assert list(results_dct) == ['test_foo_parametrize_fixture[two_positive_ints]',
+                                 'test_foo_parametrize_fixture[two_negative_ints]']

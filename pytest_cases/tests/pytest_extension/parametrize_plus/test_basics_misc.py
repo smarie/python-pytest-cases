@@ -3,18 +3,31 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import sys
-from distutils.version import LooseVersion
 
 import pytest
 
-from pytest_cases import parametrize_plus, lazy_value
+from pytest_cases import parametrize, lazy_value
 from pytest_harvest import get_session_synthesis_dct
 
 from pytest_cases.common_pytest import has_pytest_param, cart_product_pytest, get_marked_parameter_values, \
-    extract_parameterset_info
+    extract_parameterset_info, extract_pset_info_single
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 from pytest_cases.common_pytest_lazy_values import is_lazy
 from pytest_cases.fixture_parametrize_plus import _get_argnames_argvalues
 from ...utils import skip
+
+
+def test_extract_pset_info():
+    x_id, x_marks, x_value = extract_pset_info_single(1, 1)
+    assert x_id is None
+    assert x_marks is None
+    assert x_value == 1
+
+    x_id, x_marks, x_value = extract_pset_info_single(1, skip(1))
+    assert x_id is None
+    assert len(x_marks) == 1
+    assert x_marks[0].name == "skip"
+    assert x_value == 1
 
 
 def test_cart_product_pytest():
@@ -32,7 +45,7 @@ def test_cart_product_pytest():
     # marks
     names_lst, values = cart_product_pytest(('a,b', 'c'), ([(True, 1)], [skip(1), 2]))
     assert names_lst == ['a', 'b', 'c']
-    assert get_marked_parameter_values(values[0]) == (True, 1, 1)
+    assert get_marked_parameter_values(values[0], nbargs=3) == (True, 1, 1)
     assert values[1] == (True, 1, 2)
 
     # lazy values
@@ -50,7 +63,7 @@ def test_cart_product_pytest():
 
 def test_argname_error():
     with pytest.raises(ValueError, match="parameter 'a' not found in test function signature"):
-        @parametrize_plus("a", [True])
+        @parametrize("a", [True])
         def test_foo(b):
             pass
 
@@ -142,9 +155,9 @@ def format_me(**kwargs):
         return "{d}yes".format(**kwargs)
 
 
-@parametrize_plus("a,b", [(True, -1), (False, 3)], idgen=format_me)
-@parametrize_plus("c", [2.1, 0.], idgen="c{c:.1f}")
-@parametrize_plus("d", [10], idgen=format_me)
+@parametrize("a,b", [(True, -1), (False, 3)], idgen=format_me)
+@parametrize("c", [2.1, 0.], idgen="c{c:.1f}")
+@parametrize("d", [10], idgen=format_me)
 def test_idgen1(a, b, c, d):
     pass
 
@@ -152,7 +165,7 @@ def test_idgen1(a, b, c, d):
 def test_idgen1_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_idgen1, test_id_format='function')
     if sys.version_info >= (3, 6):
-        if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+        if PYTEST3_OR_GREATER:
             assert list(results_dct) == [
                 'test_idgen1[10yes-c2.1-a=True,b= -1]',
                 'test_idgen1[10yes-c2.1-a=False,b=  3]',
@@ -166,7 +179,7 @@ def test_idgen1_synthesis(request):
         assert len(results_dct) == 4
 
 
-@parametrize_plus(idgen="a={a},b={b:.1f} and {c:4d}", **{'a,b': ((True, 1.25), (True, 0.)), 'c': [-1, 2]})
+@parametrize(idgen="a={a},b={b:.1f} and {c:4d}", **{'a,b': ((True, 1.25), (True, 0.)), 'c': [-1, 2]})
 def test_alt_usage1(a, b, c):
     pass
 
@@ -184,7 +197,7 @@ def test_alt_usage1_synthesis(request):
         assert len(results_dct) == 4
 
 
-@parametrize_plus(idgen="b{b:.1}", **{'b': (1.25, 0.)})
+@parametrize(idgen="b{b:.1}", **{'b': (1.25, 0.)})
 def test_alt_usage2(b):
     pass
 

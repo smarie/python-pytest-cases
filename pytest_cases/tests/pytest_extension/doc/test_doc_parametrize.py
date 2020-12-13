@@ -3,7 +3,7 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
-from pytest_cases import parametrize_plus, fixture_plus, fixture_ref, lazy_value
+from pytest_cases import parametrize, fixture, fixture_ref, lazy_value
 
 
 @pytest.fixture
@@ -15,14 +15,14 @@ def whatfun():
     return 'what'
 
 
-@fixture_plus
-@parametrize_plus('who', [fixture_ref(world_str),
+@fixture
+@parametrize('who', [fixture_ref(world_str),
                                  'you'])
 def greetings(who):
     return 'hello ' + who
 
 
-@parametrize_plus('main_msg', ['nothing',
+@parametrize('main_msg', ['nothing',
                                fixture_ref(world_str),
                                lazy_value(whatfun),
                                fixture_ref(greetings)])

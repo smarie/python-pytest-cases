@@ -2,13 +2,13 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from pytest_cases import pytest_fixture_plus, fixture_union
+from pytest_cases import fixture, fixture_union
 
 
 state = -1
 
 
-@pytest_fixture_plus
+@fixture
 def a(request):
     global state
     assert state == 3
@@ -17,7 +17,7 @@ def a(request):
     state = 1
 
 
-@pytest_fixture_plus
+@fixture
 def b(request):
     global state
     state = 2
@@ -27,7 +27,7 @@ def b(request):
 
 c = fixture_union('c', [b, a])
 
-# @pytest_fixture_plus
+# @fixture
 # def c(b, a):
 #     pass
 
