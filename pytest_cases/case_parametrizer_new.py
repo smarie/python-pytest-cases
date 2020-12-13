@@ -18,13 +18,22 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_others import get_code_first_line, AUTO, qname, funcopy
-from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks
+from .common_pytest_marks import make_marked_parameter_value, remove_pytest_mark, filter_marks
 from .common_pytest_lazy_values import lazy_value
 from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params
 
 from . import fixture
-from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CASE_PREFIX_FUN, copy_case_info, \
-    get_case_id, get_case_marks, GEN_BY_US
+from .case_funcs_new import (
+    CASE_PREFIX_FUN,
+    GEN_BY_US,
+    matches_tag_query,
+    is_case_function,
+    is_case_class,
+    is_case_class_unbound_method,
+    case_func_from_case_class_method,
+    get_case_id,
+    get_case_marks,
+)
 from .fixture__creation import check_name_available, CHANGE
 from .fixture_parametrize_plus import fixture_ref, _parametrize_plus
 
@@ -262,7 +271,10 @@ def get_all_cases(parametrization_target,  # type: Callable
             cases_funs += new_cases
         elif callable(c):
             # function
-            if is_case_function(c, check_prefix=False):  # do not check prefix, it was explicitly passed
+            # do not check prefix, it was explicitly passed
+            if is_case_class_unbound_method(c, check_prefix=False):
+                cases_funs.append(case_func_from_case_class_method(c))
+            elif is_case_function(c, check_prefix=False):
                 cases_funs.append(c)
             else:
                 raise ValueError("Unsupported case function: %r" % c)
@@ -678,18 +690,7 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                     # nothing to do: no need to partialize a 'self' argument
                     pass
                 else:
-                    # partialize the function to get one without the 'self' argument
-                    new_m = functools.partial(m, cls())
-                    # remember the class
-                    setattr(new_m, _HOST_CLS_ATTR, cls)
-                    # we have to recopy all metadata concerning the case function
-                    new_m.__name__ = m.__name__
-                    copy_case_info(m, new_m)
-                    copy_pytest_marks(m, new_m, override=True)
-                    # also recopy all marks from the holding class to the function
-                    copy_pytest_marks(cls, new_m, override=False)
-                    m = new_m
-                    del new_m
+                    m = case_func_from_case_class_method(m, cls)
 
             if _case_param_factory is None:
                 # Nominal usage: put the case in the dictionary

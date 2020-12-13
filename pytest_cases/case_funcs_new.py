@@ -2,8 +2,12 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+
+import functools
+import inspect
 from copy import copy
 
+import six
 from decopatch import function_decorator, DECORATED
 
 try:  # python 3.5+
@@ -13,7 +17,12 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest import safe_isclass
-from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, markdecorators_to_markinfos
+from .common_pytest_marks import (
+    get_pytest_marks_on_function,
+    markdecorators_as_tuple,
+    markdecorators_to_markinfos,
+    copy_pytest_marks
+)
 
 try:
     from _pytest.mark.structures import MarkDecorator, Mark
@@ -297,6 +306,25 @@ def case(id=None,             # type: str  # noqa
     return case_func
 
 
+class CaseGroupMeta(type):
+    """
+    Metaclass for case classes (classes that group several case functions).
+
+    Adds some attributes to the case functions so that they can be identified as part
+    of a case class vs a standalone case function.
+    """
+
+    # name of attribute of the case function in which to store the host case class
+    CASE_CLASS_ATTRIBUTE = "host_class"
+
+    def __new__(mcs, name, bases, namespace):
+        cls = super(CaseGroupMeta, mcs).__new__(mcs, name, bases, namespace)
+        for _, member in inspect.getmembers(cls, is_case_function):
+            func = six.get_unbound_function(member)
+            setattr(func, mcs.CASE_CLASS_ATTRIBUTE, cls)
+        return cls
+
+
 def is_case_class(cls,                                  # type: Any
                   case_marker_in_name=CASE_PREFIX_CLS,  # type: str
                   check_name=True                       # type: bool
@@ -315,7 +343,10 @@ def is_case_class(cls,                                  # type: Any
         If False, any class will lead to a `True` result whatever its name.
     :return: True if this is a case class
     """
-    return safe_isclass(cls) and (not check_name or case_marker_in_name in cls.__name__)
+    return (
+        isinstance(cls, CaseGroupMeta)
+        or safe_isclass(cls) and (not check_name or case_marker_in_name in cls.__name__)
+    )
 
 
 GEN_BY_US = '_pytestcases_gen'
@@ -348,3 +379,55 @@ def is_case_function(f,                       # type: Any
         return False
     else:
         return f.__name__.startswith(prefix) if check_prefix else True
+
+
+def is_case_class_unbound_method(f, **kwargs):
+    """
+    Whether the given object is a case function defined in a case class.
+
+    Being a case function is a necessary condition for being an unbound case class
+    method.
+
+    :param f: Object to check.
+    :param kwargs: Other keyword arguments to pass to :func:`is_case_function`.
+    """
+    return (
+        is_case_function(f, **kwargs)
+        and getattr(f, CaseGroupMeta.CASE_CLASS_ATTRIBUTE, None) is not None
+        and not _is_bound_method(f)  # we only want to consider unbound methods
+    )
+
+
+def _is_bound_method(f):
+    """Whether f is a bound method"""
+    try:
+        return six.get_method_self(f) is not None
+    except AttributeError:
+        return False
+
+
+def case_func_from_case_class_method(case_method, cls=None):
+    """
+    Partialize an unbound case method from a case class to get a static case function.
+
+    :param case_method:
+    :param cls: Case class in which ``case_method`` was defined. If None, it will be
+                deduced from the attributes added by :class:`CaseGroupMeta`.
+    :return: A static (i.e. no ``self`` parameter) case function wrapped around the
+             given case method.
+    """
+    cls = cls if cls is not None else getattr(case_method, CaseGroupMeta.CASE_CLASS_ATTRIBUTE)
+    case_method = six.get_unbound_function(case_method)
+    # partialize the function to get one without the 'self' argument
+    partialised = functools.partial(case_method, cls())
+    # remember the class
+    setattr(partialised, CaseGroupMeta.CASE_CLASS_ATTRIBUTE, cls)
+    # we have to recopy all metadata concerning the case function
+    partialised = functools.update_wrapper(wrapper=partialised, wrapped=case_method)
+    if hasattr(partialised, "__wrapped__"):
+        del partialised.__wrapped__  # see pytest-dev/pytest #8164
+    copy_case_info(case_method, partialised)
+    copy_pytest_marks(case_method, partialised, override=True)
+    # also recopy all marks from the holding class to the function
+    copy_pytest_marks(cls, partialised, override=False)
+    return partialised
