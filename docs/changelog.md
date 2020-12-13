@@ -1,5 +1,12 @@
 # Changelog
 
+### 2.8.0 - harmonization of ids and public API for cases info
+
+ - Major refactoring of the way ids and marks are handled in `fixture_union`, `@parametrize` and `@parametrize_with_cases`. See [documentation](./index.md) for details. Fixed [#154](https://github.com/smarie/python-pytest-cases/issues/154)
+
+ - New public API to manipulate information about a case function: `copy_case_info`, `set_case_id`, `get_case_id`, `get_case_marks`,
+    `get_case_tags`, `matches_tag_query`, `is_case_class`, `is_case_function`. See [API reference](./api_reference.md).
+
 ### 2.7.2 - Bugfix with doctest
 
  - Fixed `AttributeError: 'DoctestItem' object has no attribute '_request'` when executing doctests. Fixes [#156](https://github.com/smarie/python-pytest-cases/issues/156)
