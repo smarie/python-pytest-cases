@@ -4,7 +4,6 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from __future__ import division
 
-from distutils.version import LooseVersion
 from inspect import isgeneratorfunction
 from itertools import product
 from warnings import warn
@@ -27,8 +26,8 @@ except ImportError:
 
 from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_parametrize_marks, make_marked_parameter_value, get_param_argnames_as_list, \
-    analyze_parameter_set, combine_ids, is_marked_parameter_value, get_marked_parameter_values, pytest_fixture, \
-    resolve_ids
+    combine_ids, is_marked_parameter_value, pytest_fixture, resolve_ids, extract_parameterset_info, make_test_ids
+from .common_pytest_marks import PYTEST3_OR_GREATER
 from .fixture__creation import get_caller_module, check_name_available, WARN, CHANGE
 from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _make_unpack_fixture
 
@@ -357,7 +356,7 @@ def _decorate_fixture_plus(fixture_func,
     """
     if name is not None:
         # Compatibility for the 'name' argument
-        if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+        if PYTEST3_OR_GREATER:
             # pytest version supports "name" keyword argument
             kwargs['name'] = name
         elif name is not None:
@@ -382,8 +381,7 @@ def _decorate_fixture_plus(fixture_func,
 
         # resolve possibly infinite generators of ids here
         if 'params' in kwargs and 'ids' in kwargs:
-            if kwargs['ids'] is not None:
-                kwargs['ids'] = resolve_ids(kwargs['ids'], kwargs['params'])
+            kwargs['ids'] = resolve_ids(kwargs['ids'], kwargs['params'], full_resolve=False)
 
         # transform the created wrapper into a fixture
         return pytest_fixture(scope=scope, autouse=autouse, hook=hook, **kwargs)(wrapped_fixture_func)
@@ -411,8 +409,12 @@ def _decorate_fixture_plus(fixture_func,
         # remember the argnames
         params_names_or_name_combinations.append(pmark.param_names)
 
-        # analyse contents, extract marks and custom ids, apply custom ids
-        _paramids, _pmarks, _pvalues = analyze_parameter_set(pmark=pmark, check_nb=True)
+        # separate specific configuration (pytest.param()) from the values
+        custom_pids, _pmarks, _pvalues = extract_parameterset_info(pmark.param_names, pmark.param_values, check_nb=True)
+
+        # get the ids by merging/creating the various possibilities
+        _paramids = make_test_ids(argnames=pmark.param_names, argvalues=_pvalues,
+                                  global_ids=pmark.param_ids, id_marks=custom_pids)
 
         # Finally store the ids, marks, and values for this parameterset
         params_ids.append(_paramids)

@@ -12,10 +12,22 @@ try:  # python 3.3+
 except ImportError:
     from funcsigs import signature  # noqa
 
+try:
+    from typing import Iterable, Optional, Tuple, List, Set, Union, Sequence  # noqa
+except ImportError:
+    pass
 
 import pytest
 
+try:
+    from _pytest.mark.structures import MarkDecorator, Mark  # noqa
+except ImportError:
+    pass
+
 from .common_mini_six import string_types
+
+
+PYTEST3_OR_GREATER = LooseVersion(pytest.__version__) >= LooseVersion('3.0.0')
 
 
 def get_param_argnames_as_list(argnames):
@@ -90,6 +102,12 @@ def copy_pytest_marks(from_f, to_f, override=False):
     to_f.pytestmark = to_marks + from_marks
 
 
+def filter_marks(marks,
+                 remove  # type: str
+                 ):
+    return [m for m in marks if m.name != remove]
+
+
 def get_pytest_marks_on_function(f, as_decorators=False):
     """
     Utility to return *ALL* pytest marks (not only parametrization) applied on a function
@@ -111,7 +129,7 @@ def get_pytest_marks_on_function(f, as_decorators=False):
 
     # in the new version of pytest the marks have to be transformed into decorators explicitly
     if as_decorators:
-        return transform_marks_into_decorators(mks, function_marks=True)
+        return markinfos_to_markdecorators(mks, function_marks=True)
     else:
         return mks
 
@@ -201,10 +219,12 @@ if not has_pytest_param:
                 raise TypeError("argvalues must be a tuple !")
 
             # get a decorator for each of the markinfo
-            marks_mod = transform_marks_into_decorators(marks, function_marks=False)
+            marks_mod = markinfos_to_markdecorators(marks, function_marks=False)
 
-            # decorate. Warning: the argvalue MUST be in a tuple
-            return marks_mod[0](argvalues_tuple)
+            # decorate. We need to distinguish between single value and multiple values
+            # indeed in pytest 2 a single arg passed to the decorator is passed directly
+            # (for example: @pytest.mark.skip(1) in parametrize)
+            return marks_mod[0](argvalues_tuple) if len(argvalues_tuple) > 1 else marks_mod[0](argvalues_tuple[0])
 else:
     # Otherwise pytest.param exists, it is easier
     def make_marked_parameter_value(argvalues_tuple, marks):
@@ -212,18 +232,21 @@ else:
             raise TypeError("argvalues must be a tuple !")
 
         # get a decorator for each of the markinfo
-        marks_mod = transform_marks_into_decorators(marks, function_marks=False)
+        marks_mod = markinfos_to_markdecorators(marks, function_marks=False)
 
         # decorate
         return pytest.param(*argvalues_tuple, marks=marks_mod)
 
 
-def transform_marks_into_decorators(marks, function_marks=False):
+def markinfos_to_markdecorators(marks,                # type: Iterable[Mark]
+                                function_marks=False  # type: bool
+                                ):
     """
-    Transforms the provided marks (MarkInfo) obtained from marked cases, into MarkDecorator so that they can
-    be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.
+    Transforms the provided marks (MarkInfo or Mark in recent pytest) obtained from marked cases, into MarkDecorator so
+    that they can be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.
 
     :param marks:
+    :param function_marks:
     :return:
     """
     marks_mod = []
@@ -232,9 +255,10 @@ def transform_marks_into_decorators(marks, function_marks=False):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             for m in marks:
+                # create a dummy new MarkDecorator named "MarkDecorator" for reference
                 md = pytest.mark.MarkDecorator()
 
-                if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+                if PYTEST3_OR_GREATER:
                     if isinstance(m, type(md)):
                         # already a decorator, we can use it
                         marks_mod.append(m)
@@ -259,3 +283,29 @@ def transform_marks_into_decorators(marks, function_marks=False):
     except Exception as e:
         warnings.warn("Caught exception while trying to mark case: [%s] %s" % (type(e), e))
     return marks_mod
+
+
+def markdecorators_as_tuple(marks  # type: Optional[Union[MarkDecorator, Tuple[MarkDecorator, ...], List[MarkDecorator], Set[MarkDecorator]]]
+                            ):
+    # type: (...) -> Tuple[MarkDecorator, ...]
+    """
+    Internal routine used to normalize marks received from users in a `marks=` parameter
+
+    :param marks:
+    :return:
+    """
+    if isinstance(marks, (tuple, list, set)):
+        return tuple(marks)
+    elif marks is not None:
+        return (marks,)
+
+
+def markdecorators_to_markinfos(marks  # type: Sequence[MarkDecorator]
+                                ):
+    if PYTEST3_OR_GREATER:
+        return tuple(m.mark for m in marks)
+    else:
+        if len(marks) == 0:
+            return ()
+        else:
+            raise NotImplementedError("TODO")

@@ -46,24 +46,24 @@ class UnionIdMakers(object):
                 param  # type: UnionFixtureAlternative
                 ):
         """ ids are <fixture_name> """
-        return param.get_id(prepend_index=False)
-
-    @classmethod
-    def explicit(cls,
-                 param  # type: UnionFixtureAlternative
-                 ):
-        """ ids are <union_name>_is_<fixture_name> """
-        return "%s_is_%s" % (param.union_name, param.get_id(prepend_index=True))
+        return param.get_alternative_id()
 
     @classmethod
     def compact(cls,
                 param  # type: UnionFixtureAlternative
                 ):
-        """ ids are U<index>/<fixture_name> """
-        return param.get_id(prepend_index=True)
+        """ ids are /<fixture_name> """
+        return "/%s" % (param.get_alternative_id(),)
 
     @classmethod
-    def get(cls, style  # type: str
+    def explicit(cls,
+                 param  # type: UnionFixtureAlternative
+                 ):
+        """ ids are <union_name>/<fixture_name> """
+        return "%s/%s" % (param.get_union_id(), param.get_alternative_id())
+
+    @classmethod
+    def get(cls, style  # type: Union[str, Callable]
             ):
         # type: (...) -> Callable[[UnionFixtureAlternative], str]
         """
@@ -73,11 +73,16 @@ class UnionIdMakers(object):
         :param style:
         :return:
         """
-        style = style or 'nostyle'
-        try:
-            return getattr(cls, style)
-        except AttributeError:
-            raise ValueError("Unknown style: %r" % style)
+        if style is None or isinstance(style, string_types):
+            # return one of the styles from the class
+            style = style or 'nostyle'
+            try:
+                return getattr(cls, style)
+            except AttributeError:
+                raise ValueError("Unknown style: %r" % style)
+        else:
+            # assume a callable: return it directly
+            return style
 
 
 class UnionFixtureAlternative(object):
@@ -100,22 +105,25 @@ class UnionFixtureAlternative(object):
         self.alternative_name = alternative_name
         self.alternative_index = alternative_index
 
-    def get_id(self, prepend_index=True):
-        """Used by the id makers to get the alternative id. Defaults to the alternative name"""
-        if prepend_index:
-            return "U%s/%s" % (self.alternative_index, self.alternative_name)
-        else:
-            return self.alternative_name
+    def get_union_id(self):
+        """Used by the id makers"""
+        return self.union_name
 
-    # def __str__(self):
-    #     # although this would be great to have a default id directly, it may be
-    #     # very confusion for debugging so I prefer that we use id_maker('none')
-    #     # to make this default behaviour explicit and not pollute the debugging process
-    #     return self.alternative_name
+    def get_alternative_idx(self):
+        """Used by the id makers"""
+        return self.alternative_index
+
+    def get_alternative_id(self):
+        """Used by the id makers to get the minimal (no style) id. Defaults to the alternative name"""
+        return self.alternative_name
+
+    def __str__(self):
+        # This string representation can be used as an id if you pass `ids=str` to fixture_union for example
+        return "%s/%s/%s" % (self.get_union_id(), self.get_alternative_idx(), self.get_alternative_id())
 
     def __repr__(self):
-        return "%s<%s=#%s=%s>" % (self.__class__.__name__, self.union_name, self.alternative_index,
-                                  self.alternative_name)
+        return "%s(union_name=%s, alternative_index=%s, alternative_name=%s)" \
+               % (self.__class__.__name__, self.union_name, self.alternative_index, self.alternative_name)
 
     @staticmethod
     def to_list_of_fixture_names(alternatives_lst  # type: List[UnionFixtureAlternative]
@@ -123,7 +131,7 @@ class UnionFixtureAlternative(object):
         res = []
         for f in alternatives_lst:
             if is_marked_parameter_value(f):
-                f = get_marked_parameter_values(f)[0]
+                f = get_marked_parameter_values(f, nbargs=1)[0]
             res.append(f.alternative_name)
         return res
 
@@ -160,7 +168,7 @@ def is_fixture_union_params(params):
                 return False
             p0 = params[0]
             if is_marked_parameter_value(p0):
-                p0 = get_marked_parameter_values(p0)[0]
+                p0 = get_marked_parameter_values(p0, nbargs=1)[0]
             return isinstance(p0, UnionFixtureAlternative)
     except:  # noqa
         # be conservative
@@ -233,7 +241,7 @@ def ignore_unused(fixture_func):
 def fixture_union(name,                # type: str
                   fixtures,            # type: Iterable[Union[str, Callable]]
                   scope="function",    # type: str
-                  idstyle='explicit',  # type: Optional[str]
+                  idstyle='compact',   # type: Optional[Union[str, Callable]]
                   ids=None,            # type: Union[Callable, Iterable[str]]
                   unpack_into=None,    # type: Iterable[str]
                   autouse=False,       # type: bool
@@ -317,7 +325,7 @@ def _fixture_union(fixtures_dest,
                    fix_alternatives,      # type: Sequence[UnionFixtureAlternative]
                    unique_fix_alt_names,  # type: List[str]
                    scope="function",      # type: str
-                   idstyle="explicit",    # type: Optional[str]
+                   idstyle="compact",     # type: Optional[Union[str, Callable]]
                    ids=None,              # type: Union[Callable, Iterable[str]]
                    autouse=False,         # type: bool
                    hook=None,             # type: Callable[[Callable], Callable]
@@ -368,10 +376,10 @@ def _fixture_union(fixtures_dest,
         ids = UnionIdMakers.get(idstyle)
     else:
         # resolve possibly infinite generators of ids here
-        ids = resolve_ids(ids, fix_alternatives)
+        ids = resolve_ids(ids, fix_alternatives, full_resolve=False)
 
     # finally create the fixture per se.
-    _make_fix = pytest_fixture(scope=scope, params=fix_alternatives, autouse=autouse,
+    _make_fix = pytest_fixture(scope=scope or "function", params=fix_alternatives, autouse=autouse,
                                ids=ids, hook=hook, **kwargs)
     new_union_fix = _make_fix(_new_fixture)
 

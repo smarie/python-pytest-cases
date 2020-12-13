@@ -13,8 +13,12 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest import safe_isclass
-from .common_pytest_marks import get_pytest_marks_on_function, transform_marks_into_decorators
+from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, markdecorators_to_markinfos
 
+try:
+    from _pytest.mark.structures import MarkDecorator, Mark
+except ImportError:
+    pass
 
 CASE_FIELD = '_pytestcase'
 
@@ -28,11 +32,11 @@ class _CaseInfo(object):
 
     def __init__(self,
                  id=None,   # type: str
-                 marks=(),  # type: Tuple[MarkInfo]
+                 marks=(),  # type: Tuple[MarkDecorator, ...]
                  tags=()    # type: Tuple[Any]
                  ):
         self.id = id
-        self.marks = tuple(marks)  # type: Tuple[MarkInfo]
+        self.marks = marks
         self.tags = ()
         self.add_tags(tags)
 
@@ -171,16 +175,16 @@ def get_case_marks(case_func,                         # type: Callable
     :return:
     """
     _ci = _CaseInfo.get_from(case_func)
-    _ci_marks = _ci.marks if _ci is not None else None
+    if _ci is None:
+        _ci_marks = None
+    else:
+        _ci_marks = _ci.marks if as_decorators else markdecorators_to_markinfos(_ci.marks)
 
     if not concatenate_with_fun_marks:
         return _ci_marks
     else:
         fun_marks = get_pytest_marks_on_function(case_func, as_decorators=as_decorators)
-        if _ci_marks:
-            return (transform_marks_into_decorators(_ci_marks) if as_decorators else _ci_marks) + fun_marks
-        else:
-            return fun_marks
+        return (_ci_marks + fun_marks) if _ci_marks else fun_marks
 
 
 # def add_case_tags(case_func,
@@ -266,7 +270,7 @@ def _tags_match_query(tags,    # type: Iterable[str]
 @function_decorator
 def case(id=None,             # type: str  # noqa
          tags=None,           # type: Union[Any, Iterable[Any]]
-         marks=(),            # type: Union[MarkInfo, Iterable[MarkInfo]]
+         marks=(),            # type: Union[MarkDecorator, Tuple[MarkDecorator, ...], List[MarkDecorator], Set[MarkDecorator]]
          case_func=DECORATED  # noqa
          ):
     """
@@ -287,6 +291,7 @@ def case(id=None,             # type: str  # noqa
         also works, and if marks are provided in both places they are merged.
     :return:
     """
+    marks = markdecorators_as_tuple(marks)
     case_info = _CaseInfo(id, marks, tags)
     case_info.attach_to(case_func)
     return case_func

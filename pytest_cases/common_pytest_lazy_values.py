@@ -12,13 +12,18 @@ except ImportError:
     from funcsigs import signature  # noqa
 
 try:
-    from typing import Union, Callable, List, Any, Sequence, Optional  # noqa
+    from typing import Union, Callable, List, Set, Tuple, Any, Sequence, Optional  # noqa
+except ImportError:
+    pass
+
+try:
+    from _pytest.mark.structures import MarkDecorator, Mark  # noqa
 except ImportError:
     pass
 
 import pytest
 
-from .common_pytest_marks import get_pytest_marks_on_function, transform_marks_into_decorators
+from .common_pytest_marks import get_pytest_marks_on_function, markinfos_to_markdecorators, markdecorators_as_tuple
 
 
 class Lazy(object):
@@ -156,14 +161,11 @@ class _LazyValue(Lazy):
     def __init__(self,
                  valuegetter,  # type: Callable[[], Any]
                  id=None,      # type: str  # noqa
-                 marks=()      # type: Union[Any, Sequence[Any]]
+                 marks=None,   # type: Union[MarkDecorator, Tuple[MarkDecorator, ...], List[MarkDecorator], Set[MarkDecorator]]
                  ):
         self.valuegetter = valuegetter
         self._id = id
-        if isinstance(marks, (tuple, list, set)):
-            self._marks = marks
-        else:
-            self._marks = (marks, )
+        self._marks = markdecorators_as_tuple(marks)
         self.cached_value_context = None
         self.cached_value = None
 
@@ -171,14 +173,15 @@ class _LazyValue(Lazy):
         """
         Overrides default implementation to return the marks that are on the case function
 
-        :param as_decorators: when True, the marks will be transformed into MarkDecorators before being
+        :param as_decorators: when True, the marks (MarkInfo) will be transformed into MarkDecorators before being
             returned
         :return:
         """
         valuegetter_marks = get_pytest_marks_on_function(self.valuegetter, as_decorators=as_decorators)
 
         if self._marks:
-            return transform_marks_into_decorators(self._marks) + valuegetter_marks
+            self_marks = markinfos_to_markdecorators(self._marks, function_marks=True) if as_decorators else self._marks
+            return self_marks + valuegetter_marks
         else:
             return valuegetter_marks
 

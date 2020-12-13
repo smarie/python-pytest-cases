@@ -25,12 +25,12 @@ from _pytest.python import Metafunc
 from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, has_pytest_param, \
-    get_pytest_parametrize_marks, get_pytest_usefixture_marks
-from .common_pytest_lazy_values import is_lazy_value
+    get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER
+from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
 # A decorator that will work to create a fixture containing 'yield', whatever the pytest version, and supports hooks
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+if PYTEST3_OR_GREATER:
     def pytest_fixture(hook=None, **kwargs):
         def _decorate(f):
             # call hook if needed
@@ -243,7 +243,11 @@ def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomput
     return p_ids
 
 
-def resolve_ids(ids, argvalues, full_resolve=False):
+def resolve_ids(ids,                # type: Optional[Union[Callable, Iterable[str]]]
+                argvalues,          # type: Sized(Any)
+                full_resolve=False  # type: bool
+                ):
+    # type: (...) -> Union[List[str], Callable]
     """
     Resolves the `ids` argument of a parametrized fixture.
 
@@ -253,13 +257,32 @@ def resolve_ids(ids, argvalues, full_resolve=False):
     If `full_resolve` is True, callable ids will be called using the argvalues, so the result is guaranteed to be a
     list.
     """
-    try:  # an explicit list or generator of ids ?
-        return list(id for id, v in zip(ids, argvalues))
-    except TypeError:  # a callable to apply on the values
+    try:
+        # an explicit list or generator of ids ?
+        iter(ids)
+    except TypeError:
+        # a callable to apply on the values
         if full_resolve:
-            return list(ids(v) for v in argvalues)
+            return [ids(v) for v in argvalues]
         else:
+            # return the callable without resolving
             return ids
+    else:
+        # iterable.
+        try:
+            # a sized container ? (list, set, tuple)
+            nb_ids = len(ids)
+            # convert to list
+            ids = list(ids)
+        except TypeError:
+            # a generator. Consume it
+            ids = [id for id, v in zip(ids, argvalues)]
+            nb_ids = len(ids)
+
+        if nb_ids != len(argvalues):
+            raise ValueError("Explicit list or generator of `ids` provided has a different length (%s) than the number "
+                             "of argvalues (%s). Ids provided: %r" % (len(ids), len(argvalues), ids))
+        return ids
 
 
 def make_test_ids_from_param_values(param_names,
@@ -296,37 +319,37 @@ def make_test_ids_from_param_values(param_names,
 
 
 # ---- ParameterSet api ---
-def analyze_parameter_set(pmark=None, argnames=None, argvalues=None, ids=None, check_nb=True):
-    """
-    analyzes a parameter set passed either as a pmark or as distinct
-    (argnames, argvalues, ids) to extract/construct the various ids, marks, and
-    values
-
-    See also pytest.Metafunc.parametrize method, that calls in particular
-    pytest.ParameterSet._for_parametrize and _pytest.python._idvalset
-
-    :param pmark:
-    :param argnames:
-    :param argvalues:
-    :param ids:
-    :param check_nb: a bool indicating if we should raise an error if len(argnames) > 1 and any argvalue has
-         a different length than len(argnames)
-    :return: ids, marks, values
-    """
-    if pmark is not None:
-        if any(a is not None for a in (argnames, argvalues, ids)):
-            raise ValueError("Either provide a pmark OR the details")
-        argnames = pmark.param_names
-        argvalues = pmark.param_values
-        ids = pmark.param_ids
-
-    # extract all parameters that have a specific configuration (pytest.param())
-    custom_pids, p_marks, p_values = extract_parameterset_info(argnames, argvalues, check_nb=check_nb)
-
-    # get the ids by merging/creating the various possibilities
-    p_ids = make_test_ids(argnames=argnames, argvalues=p_values, global_ids=ids, id_marks=custom_pids)
-
-    return p_ids, p_marks, p_values
+# def analyze_parameter_set(pmark=None, argnames=None, argvalues=None, ids=None, check_nb=True):
+#     """
+#     analyzes a parameter set passed either as a pmark or as distinct
+#     (argnames, argvalues, ids) to extract/construct the various ids, marks, and
+#     values
+#
+#     See also pytest.Metafunc.parametrize method, that calls in particular
+#     pytest.ParameterSet._for_parametrize and _pytest.python._idvalset
+#
+#     :param pmark:
+#     :param argnames:
+#     :param argvalues:
+#     :param ids:
+#     :param check_nb: a bool indicating if we should raise an error if len(argnames) > 1 and any argvalue has
+#          a different length than len(argnames)
+#     :return: ids, marks, values
+#     """
+#     if pmark is not None:
+#         if any(a is not None for a in (argnames, argvalues, ids)):
+#             raise ValueError("Either provide a pmark OR the details")
+#         argnames = pmark.param_names
+#         argvalues = pmark.param_values
+#         ids = pmark.param_ids
+#
+#     # extract all parameters that have a specific configuration (pytest.param())
+#     custom_pids, p_marks, p_values = extract_parameterset_info(argnames, argvalues, check_nb=check_nb)
+#
+#     # get the ids by merging/creating the various possibilities
+#     p_ids = make_test_ids(argnames=argnames, argvalues=p_values, global_ids=ids, id_marks=custom_pids)
+#
+#     return p_ids, p_marks, p_values
 
 
 def extract_parameterset_info(argnames, argvalues, check_nb=True):
@@ -366,7 +389,7 @@ def extract_pset_info_single(nbnames, argvalue):
         # --marks
         marks = get_marked_parameter_marks(argvalue)
         # --value(a tuple if this is a tuple parameter)
-        argvalue = get_marked_parameter_values(argvalue)
+        argvalue = get_marked_parameter_values(argvalue, nbargs=nbnames)
         return _id, marks, argvalue[0] if nbnames == 1 else argvalue
     else:
         # normal argvalue
@@ -382,7 +405,8 @@ try:  # pytest 3.x+
     def get_marked_parameter_marks(v):
         return v.marks
 
-    def get_marked_parameter_values(v):
+    def get_marked_parameter_values(v, nbargs):
+        """This always returns a tuple. nbargs is useful for pytest2 compatibility """
         return v.values
 
     def get_marked_parameter_id(v):
@@ -417,11 +441,20 @@ except ImportError:  # pytest 2.x
     def get_marked_parameter_marks(v):
         return [v]
 
-    def get_marked_parameter_values(v):
-        if v.name in ('skip', 'skipif'):
-            return v.args[-1]  # see MetaFunc.parametrize in pytest 2 to be convinced :)
+    def get_marked_parameter_values(v, nbargs):
+        """Returns a tuple containing the values"""
+
+        # v.args[-1] contains the values.
+        # see MetaFunc.parametrize in pytest 2 to be convinced :)
+
+        # if v.name in ('skip', 'skipif'):
+        if nbargs == 1:
+            # the last element of args is not a tuple when there is a single arg.
+            return (v.args[-1],)
         else:
-            raise ValueError("Unsupported mark")
+            return v.args[-1]
+        # else:
+        #     raise ValueError("Unsupported mark")
 
     def get_marked_parameter_id(v):
         return v.kwargs.get('id', None)
@@ -484,7 +517,15 @@ def mini_idval(
 
 
 def mini_idvalset(argnames, argvalues, idx):
-    """ mimic _pytest.python._idvalset """
+    """ mimic _pytest.python._idvalset but can handle lazyvalues used for tuples or args
+
+    argvalues should not be a pytest.param (ParameterSet)
+    This function returns a SINGLE id for a single test node
+    """
+    if len(argnames) > 1 and is_lazy(argvalues):
+        # handle the case of LazyTuple used for several args
+        return argvalues.get_id()
+
     this_id = [
         _idval(val, argname, idx=idx, **_idval_kwargs)
         for val, argname in zip(argvalues, argnames)
@@ -580,7 +621,17 @@ class MiniMetafunc(Metafunc):
         """
         for pmark in self.pmarks:
             if len(pmark.param_names) == 1:
-                argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
+                if PYTEST3_OR_GREATER:
+                    argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
+                else:
+                    argvals = []
+                    for v in pmark.param_values:
+                        if is_marked_parameter_value(v):
+                            newmark = MarkDecorator(v.markname, v.args[:-1] + ((v.args[-1],),), v.kwargs)
+                            argvals.append(newmark)
+                        else:
+                            argvals.append((v,))
+                    argvals = tuple(argvals)
             else:
                 argvals = pmark.param_values
             self.parametrize(argnames=pmark.param_names, argvalues=argvals, ids=pmark.param_ids,
@@ -588,7 +639,7 @@ class MiniMetafunc(Metafunc):
                              indirect=False, scope='function')
 
         if not has_pytest_param:
-            # fix the CallSpec2 instances so that the marks appear
+            # fix the CallSpec2 instances so that the marks appear in an attribute "mark"
             # noinspection PyProtectedMember
             for c in self._calls:
                 c.marks = list(c.keywords.values())
