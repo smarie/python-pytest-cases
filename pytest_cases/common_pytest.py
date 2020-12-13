@@ -4,6 +4,8 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from __future__ import division
 
+import sys
+
 from makefun import add_signature_parameters, wraps
 
 try:  # python 3.3+
@@ -537,8 +539,6 @@ def mini_idvalset(argnames, argvalues, idx):
 try:
     from _pytest.compat import getfuncargnames  # noqa
 except ImportError:
-    import sys
-
     def num_mock_patch_args(function):
         """ return number of arguments used up by mock arguments (if any) """
         patchings = getattr(function, "patchings", None)
@@ -588,7 +588,9 @@ class MiniFuncDef(object):
 class MiniMetafunc(Metafunc):
     # noinspection PyMissingConstructor
     def __init__(self, func):
-        self.config = None
+        from .plugin import PYTEST_CONFIG  # late import to ensure config has been loaded by now
+
+        self.config = PYTEST_CONFIG
         self.function = func
         self.definition = MiniFuncDef(func.__name__)
         self._calls = []
