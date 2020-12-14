@@ -280,6 +280,62 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#copy_case_info" class="md-nav__link">
+    copy_case_info
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_case_id" class="md-nav__link">
+    set_case_id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_case_id" class="md-nav__link">
+    get_case_id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_case_marks" class="md-nav__link">
+    get_case_marks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_case_tags" class="md-nav__link">
+    get_case_tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matches_tag_query" class="md-nav__link">
+    matches_tag_query
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_case_class" class="md-nav__link">
+    is_case_class
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_case_function" class="md-nav__link">
+    is_case_function
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -452,6 +508,62 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#copy_case_info" class="md-nav__link">
+    copy_case_info
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_case_id" class="md-nav__link">
+    set_case_id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_case_id" class="md-nav__link">
+    get_case_id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_case_marks" class="md-nav__link">
+    get_case_marks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_case_tags" class="md-nav__link">
+    get_case_tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matches_tag_query" class="md-nav__link">
+    matches_tag_query
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_case_class" class="md-nav__link">
+    is_case_class
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_case_function" class="md-nav__link">
+    is_case_function
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -615,18 +727,158 @@
 <p><code>marks</code>: optional pytest marks to add on the case. Note that decorating the function directly with the mark also works, and if marks are provided in both places they are merged.</p>
 </li>
 </ul>
+<h3 id="copy_case_info"><code>copy_case_info</code><a class="headerlink" href="#copy_case_info" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">copy_case_info</span><span class="p">(</span><span class="n">from_fun</span><span class="p">,</span>  <span class="c1"># type: Callable</span>
+                   <span class="n">to_fun</span>     <span class="c1"># type: Callable</span>
+                   <span class="p">):</span>
+</code></pre></div>
+
+
+<p>Copies all information from case function <code>from_fun</code> to <code>to_fun</code>.</p>
+<h3 id="set_case_id"><code>set_case_id</code><a class="headerlink" href="#set_case_id" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">set_case_id</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span>        <span class="c1"># type: str</span>
+                <span class="n">case_func</span>  <span class="c1"># type: Callable</span>
+                <span class="p">):</span>
+</code></pre></div>
+
+
+<p>Sets an explicit id on case function <code>case_func</code>.</p>
+<h3 id="get_case_id"><code>get_case_id</code><a class="headerlink" href="#get_case_id" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_id</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                      <span class="c1"># type: Callable</span>
+                <span class="n">prefix_for_default_ids</span><span class="o">=</span><span class="s1">&#39;case_&#39;</span>  <span class="c1"># type: str</span>
+                <span class="p">):</span>
+</code></pre></div>
+
+
+<p>Return the case id associated with this case function.</p>
+<p>If a custom id is not present, a case id is automatically created from the function name based on removing the provided prefix if present at the beginning of the function name. If the resulting case id is empty, "<empty_case_id>" will be returned.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li>
+<p><code>case_func</code>: the case function to get a case id for.</p>
+</li>
+<li>
+<p><code>prefix_for_default_ids</code>: this prefix that will be removed if present on the function name to form the default case id.</p>
+</li>
+</ul>
+<h3 id="get_case_marks"><code>get_case_marks</code><a class="headerlink" href="#get_case_marks" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_marks</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                         <span class="c1"># type: Callable</span>
+                   <span class="n">concatenate_with_fun_marks</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># type: bool</span>
+                   <span class="n">as_decorators</span><span class="o">=</span><span class="kc">False</span>                <span class="c1"># type: bool</span>
+                   <span class="p">):</span>
+</code></pre></div>
+
+
+<p>Return the marks that are on the case function.</p>
+<p>There are currently two ways to place a mark on a case function: either with <code>@pytest.mark.&lt;name&gt;</code> or in <code>@case(marks=...)</code>. This function returns a list of marks containing either both (if <code>concatenate_with_fun_marks</code> is <code>True</code>) or only the ones set with <code>@case</code> (<code>concatenate_with_fun_marks</code> is <code>False</code>, default).</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li>
+<p><code>case_func</code>: the case function</p>
+</li>
+<li>
+<p><code>concatenate_with_fun_marks</code>: if <code>False</code> (default) only the marks declared in <code>@case</code> will be returned. Otherwise a concatenation of marks in <code>@case</code> and on the function (for example directly with <code>@pytest.mark.&lt;mk&gt;</code>) will be returned.</p>
+</li>
+<li>
+<p><code>as_decorators</code>: when <code>True</code>, the marks (<code>MarkInfo</code>) will be transformed into <code>MarkDecorators</code> before being returned. Otherwise (default) the marks are returned as is.</p>
+</li>
+</ul>
+<h3 id="get_case_tags"><code>get_case_tags</code><a class="headerlink" href="#get_case_tags" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_tags</span><span class="p">(</span><span class="n">case_func</span>  <span class="c1"># type: Callable</span>
+                  <span class="p">):</span>
+</code></pre></div>
+
+
+<p>Return the tags on this case function or an empty tuple.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>case_func</code>: the case function</li>
+</ul>
+<h3 id="matches_tag_query"><code>matches_tag_query</code><a class="headerlink" href="#matches_tag_query" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">matches_tag_query</span><span class="p">(</span><span class="n">case_fun</span><span class="p">,</span>      <span class="c1"># type: Callable</span>
+                      <span class="n">has_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Union[str, Iterable[str]]</span>
+                      <span class="nb">filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>   <span class="c1"># type: Union[Callable[[Callable], bool], Iterable[Callable[[Callable], bool]]]  # noqa</span>
+                      <span class="p">):</span>
+</code></pre></div>
+
+
+<p>This function is the one used by <code>@parametrize_with_cases</code> to filter the case functions collected. It can be used manually for tests/debug.</p>
+<p>Returns True if the case function is selected by the query:</p>
+<ul>
+<li>
+<p>if <code>has_tag</code> contains one or several tags, they should ALL be present in the tags set on <code>case_fun</code> (<code>get_case_tags</code>)</p>
+</li>
+<li>
+<p>if <code>filter</code> contains one or several filter callables, they are all called in sequence and the <code>case_fun</code> is only selected if ALL of them return a <code>True</code> truth value</p>
+</li>
+</ul>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li>
+<p><code>case_fun</code>: the case function</p>
+</li>
+<li>
+<p><code>has_tag</code>: one or several tags that should ALL be present in the tags set on <code>case_fun</code> for it to be selected.</p>
+</li>
+<li>
+<p><code>filter</code>: one or several filter callables that will be called in sequence. If all of them return a <code>True</code> truth value, <code>case_fun</code> is selected.</p>
+</li>
+</ul>
+<h3 id="is_case_class"><code>is_case_class</code><a class="headerlink" href="#is_case_class" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_case_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>                         <span class="c1"># type: Any</span>
+                  <span class="n">case_marker_in_name</span><span class="o">=</span><span class="s1">&#39;Case&#39;</span><span class="p">,</span>  <span class="c1"># type: str</span>
+                  <span class="n">check_name</span><span class="o">=</span><span class="kc">True</span>              <span class="c1"># type: bool</span>
+                  <span class="p">):</span>
+</code></pre></div>
+
+
+<p>This function is the one used by <code>@parametrize_with_cases</code> to collect cases within classes. It can be used manually for tests/debug.</p>
+<p>Returns True if the given object is a class and, if <code>check_name=True</code> (default), if its name contains <code>case_marker_in_name</code>.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li>
+<p><code>cls</code>: the object to check</p>
+</li>
+<li>
+<p><code>case_marker_in_name</code>: the string that should be present in a class name so that it is selected. Default is 'Case'.</p>
+</li>
+<li>
+<p><code>check_name</code>: a boolean (default True) to enforce that the name contains the word <code>case_marker_in_name</code>. If False, any class will lead to a <code>True</code> result whatever its name.</p>
+</li>
+</ul>
+<h3 id="is_case_function"><code>is_case_function</code><a class="headerlink" href="#is_case_function" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_case_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>                 <span class="c1"># type: Any</span>
+                     <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;case_&#39;</span><span class="p">,</span>    <span class="c1"># type: str</span>
+                     <span class="n">check_prefix</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># type: bool</span>
+                     <span class="p">):</span>
+</code></pre></div>
+
+
+<p>This function is the one used by <code>@parametrize_with_cases</code> to collect cases. It can be used manually for tests/debug.</p>
+<p>Returns True if the provided object is a function or callable and, if <code>check_prefix=True</code> (default), if it starts with <code>prefix</code>.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li>
+<p><code>f</code>: the object to check</p>
+</li>
+<li>
+<p><code>prefix</code>: the string that should be present at the beginning of a function name so that it is selected. Default is 'case_'.</p>
+</li>
+<li>
+<p><code>check_prefix</code>: if this boolean is True (default), the prefix will be checked. If False, any function will lead to a <code>True</code> result whatever its name.</p>
+</li>
+</ul>
 <h2 id="2-cases-collection">2 - Cases collection<a class="headerlink" href="#2-cases-collection" title="Permanent link">&para;</a></h2>
 <h3 id="parametrize_with_cases"><code>@parametrize_with_cases</code><a class="headerlink" href="#parametrize_with_cases" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                         <span class="n">cases</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">ModuleRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">AUTO</span><span class="p">,</span>
                         <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;case_&#39;</span><span class="p">,</span>
-                        <span class="n">glob</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="n">has_tag</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">glob</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">has_tag</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="nb">filter</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">idstyle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;explicit&#39;</span><span class="p">,</span>
-                        <span class="n">idgen</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span><span class="o">=</span><span class="n">_IDGEN</span><span class="p">,</span>
-                        <span class="o">**</span><span class="n">kwargs</span>
+                        <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">idstyle</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span>
                         <span class="p">)</span>
 </code></pre></div>
 
@@ -662,16 +914,16 @@
 <p><code>has_tag</code>: a single tag or a tuple, set, list of tags that should be matched by the ones set with the <a href="#case"><code>@case</code></a> decorator on the case function(s) to be selected.</p>
 </li>
 <li>
-<p><code>filter</code>: a callable receiving the case function and returning True or a truth value in case the function needs to be selected.</p>
+<p><code>filter</code>: a callable receiving the case function and returning <code>True</code> or a truth value in case the function needs to be selected.</p>
 </li>
 <li>
-<p><code>ids</code>: same as in pytest.mark.parametrize. Note that an alternative way to create ids exists with <code>idgen</code>. Only one non-None <code>ids</code> or <code>idgen</code> should be provided. See <a href="#parametrize"><code>@parametrize</code></a> for details.</p>
+<p><code>ids</code>: optional custom ids, similar to the one in <code>pytest.mark.parametrize</code>. Users may either provide an iterable of string ids, or a callable. If a callable is provided it will receive the case functions. Users may wish to use <a href="#get_case_id"><code>get_case_id</code></a> or other helpers in the <a href="#1---case-functions">API</a> to inspect the case functions.</p>
 </li>
 <li>
-<p><code>idgen</code>: an id formatter. Either a string representing a template, or a callable receiving all argvalues at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when <code>ids</code> is not provided (None). You can use the special <code>pytest_cases.AUTO</code> formatter to generate an automatic id with template <code>&lt;name&gt;=&lt;value&gt;-&lt;name2&gt;=&lt;value2&gt;-...</code>. See <a href="#parametrize"><code>@parametrize</code></a> for details.</p>
+<p><code>idstyle</code>: This is mostly for debug. Style of ids to be used in the "union" fixtures generated by <a href="#parametrize"><code>@parametrize</code></a> if some cases are transformed into fixtures behind the scenes. <code>idstyle</code> possible values are <code>'compact'</code>, <code>'explicit'</code> or <code>None</code>/<code>'nostyle'</code> (default), or a callable. <code>idstyle</code> has no effect if no cases are transformed into fixtures. As opposed to <code>ids</code>, a callable provided here will receive a <code>ParamAlternative</code> object indicating which generated fixture should be used. See <a href="#parametrize"><code>@parametrize</code></a> for details.</p>
 </li>
 <li>
-<p><code>idstyle</code>: style of ids to be used in the "union" fixtures generated by <a href="#parametrize"><code>@parametrize</code></a> when some cases require fixtures. One of 'compact', 'explicit' or None/'nostyle'. See <a href="#parametrize"><code>@parametrize</code></a> for details.</p>
+<p><code>scope</code>: The scope of the union fixture to create if <code>fixture_ref</code>s are found in the argvalues</p>
 </li>
 </ul>
 <h3 id="get_all_cases"><code>get_all_cases</code><a class="headerlink" href="#get_all_cases" title="Permanent link">&para;</a></h3>
@@ -856,10 +1108,11 @@
              <span class="n">argvalues</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">indirect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
              <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">idstyle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;explicit&#39;</span><span class="p">,</span>
+             <span class="n">idstyle</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
              <span class="n">idgen</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="n">_IDGEN</span><span class="p">,</span>
              <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
              <span class="n">hook</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
              <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
              <span class="o">**</span><span class="n">args</span><span class="p">)</span>
 </code></pre></div>
@@ -898,19 +1151,16 @@
 <p><code>idgen</code>: an id formatter. Either a string representing a template, or a callable receiving all argvalues at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when <code>ids</code> is not provided (None). You can use the special <code>pytest_cases.AUTO</code> formatter to generate an automatic id with template <code>&lt;name&gt;=&lt;value&gt;-&lt;name2&gt;=&lt;value2&gt;-...</code>.</p>
 </li>
 <li>
-<p><code>idstyle</code>: style of ids to be used in the "union" fixtures generated by <code>@parametrize</code> when some cases require fixtures. One of 'compact', 'explicit' or None/'nostyle'.</p>
+<p><code>idstyle</code>: This is mostly for debug. Style of ids to be used in the "union" fixtures generated by <code>@parametrize</code> if at least one <code>fixture_ref</code> is found in the argvalues. <code>idstyle</code> possible values are 'compact', 'explicit' or None/'nostyle' (default), or a callable. <code>idstyle</code> has no effect if no <code>fixture_ref</code> are present in the argvalues. As opposed to <code>ids</code>, a callable provided here will receive a <code>ParamAlternative</code> object indicating which generated fixture should be used.</p>
 </li>
 <li>
-<p><code>scope</code>: same as in pytest.mark.parametrize</p>
+<p><code>scope</code>: The scope of the union fixture to create if <code>fixture_ref</code>s are found in the argvalues. Otherwise same as in <code>pytest.mark.parametrize</code>.</p>
 </li>
 <li>
 <p><code>hook</code>: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use <code>saved_fixture</code> from <code>pytest-harvest</code> as a hook in order to save all such created fixtures in the fixture store.</p>
 </li>
 <li>
 <p><code>debug</code>: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)</p>
-</li>
-<li>
-<p><code>args</code>: additional {argnames: argvalues} definition</p>
 </li>
 </ul>
 <h3 id="lazy_value"><code>lazy_value</code><a class="headerlink" href="#lazy_value" title="Permanent link">&para;</a></h3>
@@ -1011,7 +1261,7 @@
     </div>
     
       <script src="../assets/javascripts/vendor.0ac82a11.min.js"></script>
-      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"search.result.none": "No matching documents", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.placeholder": "Type to start searching", "search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.config.lang": "en", "search.result.more.other": "# more on this page", "clipboard.copied": "Copied to clipboard", "search.config.pipeline": "trimmer, stopWordFilter", "search.placeholder": "Search", "search.result.term.missing": "Missing", "search.result.other": "# matching documents"}</script>
+      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"search.result.more.other": "# more on this page", "search.result.more.one": "1 more on this page", "search.config.separator": "[\\s\\-]+", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.one": "1 matching document", "search.result.none": "No matching documents", "search.config.lang": "en", "search.placeholder": "Search", "clipboard.copied": "Copied to clipboard", "search.result.other": "# matching documents", "search.result.term.missing": "Missing", "search.result.placeholder": "Type to start searching", "clipboard.copy": "Copy to clipboard"}</script>
       
       <script>
         app = initialize({
