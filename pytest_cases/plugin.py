@@ -647,7 +647,7 @@ def create_super_closure(fm,
         print("Creating closure for %s:" % parentid)
 
     # -- auto-use fixtures
-    _init_fixnames = fm._getautousenames(parentid)  # noqa
+    _init_fixnames = list(fm._getautousenames(parentid))  # noqa
 
     def _merge(new_items, into_list):
         """ Appends items from `new_items` into `into_list`, only if they are not already there. """
