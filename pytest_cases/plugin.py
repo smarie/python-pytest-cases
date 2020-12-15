@@ -28,6 +28,7 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
+from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
     get_param_argnames_as_list
 
@@ -178,7 +179,7 @@ class FixtureClosureNode(object):
         items = self.gen_all_fixture_defs(drop_fake_fixtures=drop_fake_fixtures)
 
         # sort by scope as in pytest fixture closure creator (pytest did not do it in early versions, align with this)
-        if try_to_sort and LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
+        if try_to_sort and PYTEST35_OR_GREATER:
             f_scope = get_pytest_function_scopenum()
             def sort_by_scope(kv_pair):  # noqa
                 fixture_name, fixture_defs = kv_pair
@@ -599,11 +600,11 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
 
     # (1) first retrieve the normal pytest output for comparison
     kwargs = dict()
-    if LooseVersion(pytest.__version__) >= LooseVersion('4.6.0'):
+    if PYTEST46_OR_GREATER:
         # new argument "ignore_args" in 4.6+
         kwargs['ignore_args'] = ignore_args
 
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.7.0'):
+    if PYTEST37_OR_GREATER:
         # three outputs
         initial_names, ref_fixturenames, ref_arg2fixturedefs = \
             fm.__class__.getfixtureclosure(fm, fixturenames, parentnode, **kwargs)
@@ -620,7 +621,7 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     assert set(super_closure) == set(ref_fixturenames)
     assert dict(arg2fixturedefs) == ref_arg2fixturedefs
 
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.7.0'):
+    if PYTEST37_OR_GREATER:
         return _init_fixnames, super_closure, arg2fixturedefs
     else:
         return super_closure, arg2fixturedefs

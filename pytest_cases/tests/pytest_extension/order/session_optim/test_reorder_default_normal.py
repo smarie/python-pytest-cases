@@ -2,9 +2,9 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from distutils.version import LooseVersion
-
 import pytest
+
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, PYTEST361_36X
 
 
 def test_config(request):
@@ -30,8 +30,7 @@ def test2(reprovision):
     pass
 
 
-@pytest.mark.skipif(LooseVersion(pytest.__version__) < LooseVersion('3.0.0') or
-                    LooseVersion('3.6.0') < LooseVersion(pytest.__version__) < LooseVersion('3.7.0'),
+@pytest.mark.skipif((not PYTEST3_OR_GREATER) or PYTEST361_36X,
                     reason="This 'optimal order' was changed in some versions of pytest")
 def test_synthesis(module_results_dct):
     assert list(module_results_dct) == ['test_config',

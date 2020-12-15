@@ -2,7 +2,6 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from distutils.version import LooseVersion
 from functools import partial
 import weakref
 
@@ -21,9 +20,8 @@ try:
 except ImportError:
     pass
 
-import pytest
-
-from .common_pytest_marks import get_pytest_marks_on_function, markinfos_to_markdecorators, markdecorators_as_tuple
+from .common_pytest_marks import get_pytest_marks_on_function, markinfos_to_markdecorators, markdecorators_as_tuple, \
+    PYTEST53_OR_GREATER
 
 
 class Lazy(object):
@@ -119,9 +117,6 @@ def partial_to_str(partialfun):
     return "%s(%s)" % (partialfun.func.__name__, strargs)
 
 
-pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
-
-
 # noinspection PyPep8Naming
 class _LazyValue(Lazy):
     """
@@ -137,7 +132,7 @@ class _LazyValue(Lazy):
     See https://github.com/smarie/python-pytest-cases/issues/149
     and https://github.com/smarie/python-pytest-cases/issues/143
     """
-    if pytest53:
+    if PYTEST53_OR_GREATER:
         __slots__ = 'valuegetter', '_id', '_marks', 'cached_value_context', 'cached_value'
         _field_names = __slots__
     else:
@@ -242,7 +237,7 @@ class _LazyTupleItem(Lazy):
     """
     An item in a Lazy Tuple
     """
-    if pytest53:
+    if PYTEST53_OR_GREATER:
         __slots__ = 'host', 'item'
         _field_names = __slots__
     else:
@@ -368,7 +363,7 @@ class LazyTuple(Lazy):
                                 argvalue, item, e.__class__, e))
 
 
-if pytest53:
+if PYTEST53_OR_GREATER:
     # in the latest versions of pytest, the default _idmaker returns the value of __name__ if it is available,
     # even if an object is not a class nor a function. So we do not need to use any special trick with our
     # lazy objects

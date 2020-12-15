@@ -27,7 +27,17 @@ except ImportError:
 from .common_mini_six import string_types
 
 
-PYTEST3_OR_GREATER = LooseVersion(pytest.__version__) >= LooseVersion('3.0.0')
+PYTEST_VERSION = LooseVersion(pytest.__version__)
+PYTEST3_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.0.0')
+PYTEST34_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.4.0')
+PYTEST35_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.5.0')
+PYTEST361_36X = LooseVersion('3.6.0') < PYTEST_VERSION < LooseVersion('3.7.0')
+PYTEST37_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.7.0')
+PYTEST38_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.8.0')
+PYTEST46_OR_GREATER = PYTEST_VERSION >= LooseVersion('4.6.0')
+PYTEST53_OR_GREATER = PYTEST_VERSION >= LooseVersion('5.3.0')
+PYTEST421_OR_GREATER = PYTEST_VERSION >= LooseVersion('4.2.1')
+PYTEST6_OR_GREATER = PYTEST_VERSION >= LooseVersion('6.0.0')
 
 
 def get_param_argnames_as_list(argnames):

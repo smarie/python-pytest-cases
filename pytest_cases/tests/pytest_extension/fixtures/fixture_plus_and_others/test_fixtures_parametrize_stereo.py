@@ -2,15 +2,13 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from distutils.version import LooseVersion
 from itertools import product
 
 from six import string_types
 import pytest
 
 from pytest_cases import fixture
-from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
-
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, PYTEST34_OR_GREATER
 
 STEREO_PATHS = ['stereo 1.wav', 'stereo 2.wav']
 CFG_TYPES = [list, dict]
@@ -72,7 +70,7 @@ def test_stereo_two_parametrizers(stereo_cfg):
 b = StateAsserter()
 
 
-@pytest.mark.skipif(LooseVersion(pytest.__version__) < LooseVersion('3.4.0'),
+@pytest.mark.skipif(not PYTEST34_OR_GREATER,
                     reason="with old versions of pytest pytest-cases cannot fix the parametrization order.")
 @pytest.mark.parametrize("path", STEREO_PATHS)
 @pytest.mark.parametrize("cfg_factory", CFG_TYPES)   # not actual params

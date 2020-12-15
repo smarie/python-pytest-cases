@@ -5,9 +5,9 @@
 """
 This is a copy of test at https://github.com/pytest-dev/pytest/blob/master/testing/acceptance_test.py
 """
-from distutils.version import LooseVersion
-
 import pytest
+
+from pytest_cases.common_pytest_marks import PYTEST34_OR_GREATER
 
 data = {}
 
@@ -22,7 +22,7 @@ def add_data():
     data.update(value=True)
 
 
-@pytest.mark.skipif(LooseVersion(pytest.__version__) < LooseVersion('3.4.0'),
+@pytest.mark.skipif(not PYTEST34_OR_GREATER,
                     reason="This bug was not fixed in old pytest.")
 @pytest.mark.usefixtures('clean_data')
 def test_value():

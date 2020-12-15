@@ -25,7 +25,8 @@ from _pytest.python import Metafunc
 from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, has_pytest_param, \
-    get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER
+    get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER, PYTEST6_OR_GREATER, \
+    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
@@ -172,7 +173,7 @@ def get_parametrization_markers(fnode):
     :param fnode:
     :return:
     """
-    if LooseVersion(pytest.__version__) >= LooseVersion('3.4.0'):
+    if PYTEST34_OR_GREATER:
         return list(fnode.iter_markers(name="parametrize"))
     else:
         return list(fnode.parametrize)
@@ -484,12 +485,12 @@ def get_pytest_function_scopenum():
 
 from _pytest.python import _idval  # noqa
 
-if LooseVersion(pytest.__version__) >= LooseVersion('6.0.0'):
+if PYTEST6_OR_GREATER:
     _idval_kwargs = dict(idfn=None,
                          nodeid=None,  # item is not used in pytest(>=6.0.0) nodeid is only used by idfn
                          config=None  # if a config hook was available it would be used before this is called)
                          )
-elif LooseVersion(pytest.__version__) >= LooseVersion('3.8.0'):
+elif PYTEST38_OR_GREATER:
     _idval_kwargs = dict(idfn=None,
                          item=None,  # item is only used by idfn
                          config=None  # if a config hook was available it would be used before this is called)
