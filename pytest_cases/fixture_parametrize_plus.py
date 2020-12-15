@@ -523,8 +523,14 @@ else:
         def __new__(cls):
             return str.__new__(cls, "")
 
-        def __bool__(self):
+        def __nonzero__(self):
+            # python 2
             return True
+
+        def __bool__(self):
+            # python 3
+            return True
+
     EMPTY_ID = EmptyId()
 
 
