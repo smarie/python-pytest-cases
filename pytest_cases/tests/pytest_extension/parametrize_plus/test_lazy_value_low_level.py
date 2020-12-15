@@ -135,7 +135,7 @@ def test_lv_tuple_clone():
         assert str(lv) == "hi[%s]" % i
         assert repr(lv).startswith("LazyTupleItem(item=%s, tuple=LazyValue(valuegetter=<function" % i)
 
-        if pytest53:
+        if PYTEST53_OR_GREATER:
             assert not isinstance(lv, int)
             lv2 = lv.clone()
             assert lv == lv2
