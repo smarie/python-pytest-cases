@@ -667,15 +667,16 @@ def _extract_cases_from_module_or_class(module=None,                      # type
             # Note: we used code.co_filename == module.__file__ in the past
             # but on some targets the file changes to a cached one so this does not work reliably,
             # see https://github.com/smarie/python-pytest-cases/issues/72
-            try:
-                return f.__module__ == module.__name__
-            except:  # noqa
-                return False
+            return getattr(f, "__module__", module.__name__) == module.__name__
     else:
         def _of_interest(x):  # noqa
             return True
 
     for m_name, m in getmembers(container, _of_interest):
+        # skip dunder names (e.g. __class__, __metaclass__, etc.) and "private" members:
+        if m_name.startswith("_"):
+            continue
+
         if is_case_class(m):
             co_firstlineno = get_code_first_line(m)
             cls_cases = extract_cases_from_class(m, case_fun_prefix=case_fun_prefix, _case_param_factory=_case_param_factory)

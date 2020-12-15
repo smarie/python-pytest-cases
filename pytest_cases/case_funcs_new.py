@@ -349,7 +349,11 @@ def is_case_class(cls,                                  # type: Any
     """
     return (
         isinstance(cls, CaseGroupMeta)
-        or safe_isclass(cls) and (not check_name or case_marker_in_name in cls.__name__)
+        or (
+            safe_isclass(cls)
+            and not issubclass(cls, type)  # exclude metaclasses
+            and (not check_name or case_marker_in_name in cls.__name__)
+        )
     )
 
 
