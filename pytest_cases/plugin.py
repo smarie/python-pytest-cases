@@ -28,7 +28,7 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER
+from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST54_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
     get_param_argnames_as_list
 
@@ -1079,6 +1079,13 @@ def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
 #     return calls
 
 
+@property
+def id(self):
+    # legacy _CallSpec2 id was filtering empty strings, we'll put it back on the class below
+    # https://github.com/pytest-dev/pytest/blob/5.3.4/src/_pytest/python.py#L861
+    return "-".join(map(str, filter(None, self._idlist)))
+
+
 def _parametrize_calls(metafunc, init_calls, argnames, argvalues, discard_id=False, indirect=False, ids=None,
                        scope=None, **kwargs):
     """Parametrizes the initial `calls` with the provided information and returns the resulting new calls"""
@@ -1099,6 +1106,12 @@ def _parametrize_calls(metafunc, init_calls, argnames, argvalues, discard_id=Fal
     if discard_id:
         for callspec in new_calls:
             callspec._idlist.pop(-1)  # noqa
+
+    # Fix in pytest 5.4.0 or greater, empty ids are not filtered out correctly anymore
+    if PYTEST54_OR_GREATER and len(new_calls) > 0:
+        # old_id = type(new_calls[0]).id  # https://github.com/pytest-dev/pytest/blob/5.4.0/src/_pytest/python.py#L798
+        if type(new_calls[0]).id is not id:
+            type(new_calls[0]).id = id
 
     # restore the metafunc and return the new calls
     metafunc._calls = bak
