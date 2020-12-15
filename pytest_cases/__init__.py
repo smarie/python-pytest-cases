@@ -20,8 +20,19 @@ from .case_funcs_legacy import case_name, test_target, case_tags, cases_generato
 from .case_parametrizer_legacy import cases_data, CaseDataGetter, get_all_cases_legacy, \
     get_pytest_parametrize_args_legacy, cases_fixture
 
-from .case_funcs_new import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
-    get_case_tags, matches_tag_query, is_case_class, is_case_function
+from .case_funcs_new import (
+    case,
+    copy_case_info,
+    get_case_id,
+    set_case_id,
+    get_case_marks,
+    get_case_tags,
+    matches_tag_query,
+    is_case_class,
+    is_case_function,
+    is_case_class_unbound_method,
+    CaseGroupMeta,
+)
 from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_parametrize_args
 
 try:
@@ -64,6 +75,7 @@ __all__ = [
     # case functions
     'case', 'copy_case_info', 'set_case_id', 'get_case_id', 'get_case_marks',
     'get_case_tags', 'matches_tag_query', 'is_case_class', 'is_case_function',
+    'is_case_class_unbound_method', 'CaseGroupMeta',
     # test functions
     'get_all_cases', 'parametrize_with_cases', 'THIS_MODULE', 'get_parametrize_args'
 ]
