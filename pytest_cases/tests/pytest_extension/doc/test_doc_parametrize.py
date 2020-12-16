@@ -40,7 +40,7 @@ def test_synthesis(module_results_dct):
         'test_prints[world_str-!]',
         'test_prints[whatfun-?]',
         'test_prints[whatfun-!]',
-        'test_prints[1-!]',
+        'test_prints[1-?]',
         'test_prints[1-!]',
         'test_prints[greetings-world_str-?]',
         'test_prints[greetings-world_str-!]',
