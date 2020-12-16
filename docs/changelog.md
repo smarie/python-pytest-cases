@@ -2,10 +2,11 @@
 
 ### 2.8.0 - harmonization of ids and public API for cases info
 
- - Major refactoring of the way ids and marks are handled in `fixture_union`, `@parametrize` and `@parametrize_with_cases`. See [documentation](./index.md) for details. Fixed [#154](https://github.com/smarie/python-pytest-cases/issues/154)
+ - Major refactoring of the way ids and marks are generated and customized in `fixture_union`, `@parametrize` and `@parametrize_with_cases`. Now `idstyle` has a consistent behaviour across the board, `ids` and `idstyle` can work together correctly, `@parametrize_with_cases` and `@parametrize` have much better default values for ids, and many others. See [documentation](./index.md) for details. Fixed [#154](https://github.com/smarie/python-pytest-cases/issues/154)
 
- - New public API to manipulate information about a case function: `copy_case_info`, `set_case_id`, `get_case_id`, `get_case_marks`,
-    `get_case_tags`, `matches_tag_query`, `is_case_class`, `is_case_function`. See [API reference](./api_reference.md).
+ - New public API to manipulate information about a case function: `copy_case_info`, `set_case_id`, `get_case_id`, `get_case_marks`, `get_case_tags`, `matches_tag_query`, `is_case_class`, `is_case_function`. See [API reference](./api_reference.md).
+
+ - Fixed default behaviour of `idgen` in `@parametrize`: it only defaults to `AUTO` when no `fixture_ref` are used in the argvalues.
 
 ### 2.7.2 - Bugfix with doctest
 
