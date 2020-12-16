@@ -143,7 +143,7 @@ class fixture_ref(object):  # noqa
 
     def get_name_for_id(self):
         """return the name to use in ids."""
-        return self._id or self.fixture
+        return self._id if self._id is not None else self.fixture
 
     def __repr__(self):
         if self._id is not None:

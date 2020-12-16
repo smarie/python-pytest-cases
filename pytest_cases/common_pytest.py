@@ -24,9 +24,9 @@ from _pytest.python import Metafunc
 
 from .common_mini_six import string_types
 from .common_others import get_function_host
-from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, has_pytest_param, \
+from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER, PYTEST6_OR_GREATER, \
-    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER
+    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
@@ -639,7 +639,7 @@ class MiniMetafunc(Metafunc):
                              # use indirect = False and scope = 'function' to avoid having to implement complex patches
                              indirect=False, scope='function')
 
-        if not has_pytest_param:
+        if not PYTEST33_OR_GREATER:
             # fix the CallSpec2 instances so that the marks appear in an attribute "mark"
             # noinspection PyProtectedMember
             for c in self._calls:
