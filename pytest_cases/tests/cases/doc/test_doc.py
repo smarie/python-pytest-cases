@@ -5,10 +5,10 @@
 import pytest
 
 from pytest_harvest import get_session_synthesis_dct
-from pytest_cases import parametrize_with_cases, AUTO2, fixture, case
+from pytest_cases import parametrize_with_cases, fixture, case, AUTO
 from pytest_cases.common_pytest_marks import has_pytest_param
 
-from . import cases_doc
+from . import cases_doc_alternate
 from .example import foo
 
 
@@ -33,28 +33,6 @@ def test_foo_default_cases_file_synthesis(request):
         'test_foo_default_cases_file[%s]' % ('two_positive_ints' if has_pytest_param else 'two_positive_ints[0]-two_positive_ints[1]'),
         'test_foo_default_cases_file[%s]' % ('two_negative_ints' if has_pytest_param else 'two_negative_ints[0]-two_negative_ints[1]')
     ]
-
-
-@parametrize_with_cases("a,b", cases=AUTO2)
-def test_foo_alternate_cases_file_and_two_marked_skip(a, b):
-    assert isinstance(foo(a, b), tuple)
-
-
-def test_foo_alternate_cases_file_and_two_marked_skip_synthesis(request):
-    results_dct = get_session_synthesis_dct(request, filter=test_foo_alternate_cases_file_and_two_marked_skip,
-                                            test_id_format='function')
-    if has_pytest_param:
-        assert list(results_dct) == [
-            'test_foo_alternate_cases_file_and_two_marked_skip[hello]',
-            'test_foo_alternate_cases_file_and_two_marked_skip[two_negative_ints0]',
-            'test_foo_alternate_cases_file_and_two_marked_skip[two_negative_ints1]'
-        ]
-    else:
-        assert list(results_dct) == [
-            'test_foo_alternate_cases_file_and_two_marked_skip[0hello[0]-hello[1]]',
-            'test_foo_alternate_cases_file_and_two_marked_skip[2two_negative_ints[0]-two_negative_ints[1]]',
-            'test_foo_alternate_cases_file_and_two_marked_skip[4two_negative_ints[0]-two_negative_ints[1]]'
-        ]
 
 
 def strange_ints():
@@ -138,7 +116,7 @@ def test_foo_cls_synthesis(request):
         ]
 
 
-@parametrize_with_cases("a,b", cases=(CasesFoo, strange_ints, cases_doc, CasesFoo, '.test_doc_cases'))
+@parametrize_with_cases("a,b", cases=(CasesFoo, strange_ints, cases_doc_alternate, CasesFoo, '.test_doc_cases'))
 def test_foo_cls_list(a, b):
     assert isinstance(foo(a, b), tuple)
 
@@ -151,7 +129,7 @@ def test_foo_cls_list_synthesis(request):
         'test_foo_cls_list[two_negative_ints0]',
         # strange_ints
         'test_foo_cls_list[strange_ints]',
-        # cases_doc.py
+        # cases_doc_alternate.py
         'test_foo_cls_list[hello]',
         'test_foo_cls_list[two_negative_ints1]',
         'test_foo_cls_list[two_negative_ints2]',
@@ -169,7 +147,7 @@ def test_foo_cls_list_synthesis(request):
 
 
 @fixture
-@parametrize_with_cases("a,b")
+@parametrize_with_cases("a,b", cases=AUTO)  # just checking that explicit AUTO is same as implicit
 def c(a, b):
     return a + b
 

@@ -17,7 +17,7 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
-from .common_others import get_code_first_line, AUTO, AUTO2, qname, funcopy
+from .common_others import get_code_first_line, AUTO, qname, funcopy
 from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks
 from .common_pytest_lazy_values import lazy_value
 from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params
@@ -26,7 +26,13 @@ from . import fixture
 from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CASE_PREFIX_FUN, copy_case_info, \
     get_case_id, get_case_marks, GEN_BY_US
 from .fixture__creation import check_name_available, CHANGE
-from .fixture_parametrize_plus import fixture_ref, _parametrize_plus, _IDGEN
+from .fixture_parametrize_plus import fixture_ref, _parametrize_plus
+
+try:
+    ModuleNotFoundError
+except NameError:
+    # python < 3.6
+    ModuleNotFoundError = ImportError
 
 
 THIS_MODULE = object()
@@ -36,7 +42,7 @@ try:
     from typing import Literal, Optional  # noqa
     from types import ModuleType  # noqa
 
-    ModuleRef = Union[str, ModuleType, Literal[AUTO], Literal[AUTO2], Literal[THIS_MODULE]]  # noqa
+    ModuleRef = Union[str, ModuleType, Literal[AUTO], Literal[THIS_MODULE]]  # noqa
 
 except:  # noqa
     pass
@@ -66,8 +72,7 @@ def parametrize_with_cases(argnames,                # type: Union[str, List[str]
     just before the test or fixture is executed.
 
     By default (`cases=AUTO`) the list of test cases is automatically drawn from the python module file named
-    `test_<name>_cases.py` where `test_<name>` is the current module name. An alternate naming convention
-    `cases_<name>.py` can be used by setting `cases=AUTO2`.
+    `test_<name>_cases.py` or if not found, `cases_<name>.py`, where `test_<name>` is the current module name.
 
     Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name;
     or a list of such elements. Note that both absolute and relative module names are suported.
@@ -86,11 +91,12 @@ def parametrize_with_cases(argnames,                # type: Union[str, List[str]
     :param argnames: same than in @pytest.mark.parametrize
     :param cases: a case function, a class containing cases, a module object or a module name string (relative module
         names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module.
-        `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
-        the module file of the decorated function. `AUTO2` allows you to use the alternative naming scheme
-        `case_<name>.py`. When a module is listed, all of its functions matching the `prefix`, `filter` and `has_tag`
-        are selected, including those functions nested in classes following naming pattern `*Case*`. When classes are
-        explicitly provided in the list, they can have any name and do not need to follow this `*Case*` pattern.
+        `AUTO` (default) means that the module named `test_<name>_cases.py` or if not found, `case_<name>.py`, will be
+        loaded, where `test_<name>.py` is the module file of the decorated function. When a module is listed, all of
+        its functions matching the `prefix`, `filter` and `has_tag` are selected, including those functions nested in
+        classes following naming pattern `*Case*`. Nested subclasses are taken into account, as long as they follow the
+        `*Case*` naming pattern. When classes are explicitly provided in the list, they can have any name and do not
+        need to follow this `*Case*` pattern.
     :param prefix: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to
         denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
     :param glob: an optional glob-like pattern for case ids, for example "*_success" or "*_failure". Note that this
@@ -263,9 +269,9 @@ def get_all_cases(parametrization_target,  # type: Callable
         else:
             # module
             if c is AUTO:
+                # First try `test_<name>_cases.py` Then `case_<name>.py`
                 c = import_default_cases_module(parametrization_target)
-            elif c is AUTO2:
-                c = import_default_cases_module(parametrization_target, alt_name=True)
+
             elif c is THIS_MODULE or c == '.':
                 c = caller_module_name
             new_cases = extract_cases_from_module(c, package_name=parent_pkg_name, case_fun_prefix=prefix)
@@ -504,33 +510,35 @@ def _get_fixture_cases(module  # type: ModuleType
     return cache
 
 
-def import_default_cases_module(f, alt_name=False):
+def import_default_cases_module(f):
     """
     Implements the `module=AUTO` behaviour of `@parameterize_cases`: based on the decorated test function `f`,
-    it finds its containing module name "<test_module>.py" and then tries to import the python module
-    "<test_module>_cases.py".
+    it finds its containing module name "test_<module>.py" and then tries to import the python module
+    "test_<module>_cases.py".
 
-    Alternately if `alt_name=True` the name pattern to use will be `cases_<module>.py` when the test module is named
-    `test_<module>.py`.
+    If the module is not found it looks for the alternate file `cases_<module>.py`.
 
     :param f: the decorated test function
-    :param alt_name: a boolean (default False) to use the alternate naming scheme.
     :return:
     """
-    if alt_name:
+    # First try `test_<name>_cases.py`
+    cases_module_name1 = "%s_cases" % f.__module__
+    try:
+        cases_module = import_module(cases_module_name1)
+    except ModuleNotFoundError:
+        # Then try `case_<name>.py`
         parts = f.__module__.split('.')
         assert parts[-1][0:5] == 'test_'
-        cases_module_name = "%s.cases_%s" % ('.'.join(parts[:-1]), parts[-1][5:])
-    else:
-        cases_module_name = "%s_cases" % f.__module__
+        cases_module_name2 = "%s.cases_%s" % ('.'.join(parts[:-1]), parts[-1][5:])
+        try:
+            cases_module = import_module(cases_module_name2)
+        except ModuleNotFoundError:
+            # Nothing worked
+            raise ValueError("Error importing test cases module to parametrize function %r: unable to import AUTO "
+                             "cases module %r nor %r. Maybe you wish to import cases from somewhere else ? In that case"
+                             "please specify `cases=...`."
+                             % (f, cases_module_name1, cases_module_name2))
 
-    try:
-        cases_module = import_module(cases_module_name)
-    except ImportError:
-        raise ValueError("Error importing test cases module to parametrize function %r: unable to import AUTO%s "
-                         "cases module %r. Maybe you wish to import cases from somewhere else ? In that case please "
-                         "specify `cases=...`."
-                         % (f, '2' if alt_name else '', cases_module_name))
     return cases_module
 
 

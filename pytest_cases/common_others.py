@@ -210,9 +210,6 @@ class AssertException(object):
 AUTO = object()
 """Marker for automatic defaults"""
 
-AUTO2 = object()
-"""Marker that alternate automatic defaults"""
-
 
 def get_function_host(func):
     """

@@ -3,7 +3,10 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from .common_pytest_lazy_values import lazy_value, is_lazy
-from .common_others import unfold_expected_err, assert_exception, AUTO, AUTO2
+from .common_others import unfold_expected_err, assert_exception, AUTO
+
+AUTO2 = AUTO
+"""Deprecated symbol, for retrocompatibility. Will be dropped soon."""
 
 from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
 from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture
