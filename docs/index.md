@@ -7,7 +7,7 @@
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937830.svg)](https://doi.org/10.5281/zenodo.3937830)
 
-!!! success "Major refactoring of test ids in v2.8 ! See [below](#c-test-ids) for details."
+!!! success "Major refactoring of test ids in v3.0.0 ! See [below](#c-test-ids) for details."
 
 !!! warning "Installing pytest-cases has effects on the order of `pytest` tests execution. Details [here](#installing)"
 
@@ -455,7 +455,7 @@ def test_caching(cached_a, d):
 
 ### c- Test ids
 
-Starting from version 2.8, test ids induced by `@parametrize_with_cases` are similar to the ids induced by `@pytest.mark.parametrize`, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.
+Starting from version 3.0.0, test ids induced by `@parametrize_with_cases` are similar to the ids induced by `@pytest.mark.parametrize`, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.
 
 For this you can pass a callable to `@parametrize_with_cases(ids=<callable>)`. In this callable, you may wish to use `get_case_id`, `get_case_marks`, `get_case_tags`, or `matches_tag_query` to return a custom id.
 
