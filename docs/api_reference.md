@@ -351,16 +351,23 @@ Creates a fixture that will take all values of the provided fixtures in order. T
 
 The style of test ids corresponding to the union alternatives can be changed with `idstyle`. Three values are allowed:
 
- - `'explicit'` (default) favors readability,
- - `'compact'` adds a small mark so that at least one sees which parameters are union parameters and which others are normal parameters,
- - `None` does not change the ids.    
+ - `'explicit'` favors readability with names as `<union>/<alternative>`,
+ - `'compact'` (default) adds a small mark so that at least one sees which parameters are union alternatives and 
+    which others are normal parameters: `/<alternative>`
+ - `None` or `'nostyle'` provides minimalistic ids : `<alternative>`   
+
+See `UnionIdMakers` class for details.
+
+You can also pass a callable `idstyle` that will receive instances of `UnionFixtureAlternative`. For example `str` 
+leads to very explicit ids: `<union>/<idx>/<alternative>`. See `UnionFixtureAlternative` class for details.
+
 
 **Parameters:**
 
  - `name`: the name of the fixture to create
  - `fixtures`: an array-like containing fixture names and/or fixture symbols
  - `scope`: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the smallest scope of fixtures referenced.
- - `idstyle`: The style of test ids corresponding to the union alternatives. One of `'explicit'` (default), `'compact'`, or `None`.
+ - `idstyle`: The style of test ids corresponding to the union alternatives. One of `'explicit'`, `'compact'`,`'nostyle'`/`None`, or a callable (e.g. `str`) that will receive instances of `UnionFixtureAlternative`.
  - `unpack_into`: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
  - `ids`: as in pytest. The default value returns the correct fixture
  - `autouse`: as in pytest

@@ -107,17 +107,20 @@ from pytest_cases import fixture, parametrize, fixture_ref, fixture_union
 (... same as above ...)
 
 @fixture
-@parametrize(ub=(fixture_ref(a), fixture_ref(c)), ib=['x', 'z'])
+@parametrize(ib=['x', 'z'])
+@parametrize(ub=(fixture_ref(a), fixture_ref(c)), idstyle="explicit")
 def b(ub, ib):
     return "b%s" % ib + ub
 
-u = fixture_union("u", (a, b))
+u = fixture_union("u", (a, b), idstyle="explicit")
 
 def test_1(u):
     pass
 ```
 
-calling `pytest` yields:
+Note the `idstyle="explicit"` keyword arguments, that will help us get more details in the test ids.
+
+Calling `pytest` yields:
 
 ```
 ============================= test session starts =============================
@@ -131,22 +134,22 @@ test_doc_fixture_graph_union.py::test_2[ie=1-ia=0-i2=x] PASSED           [ 20%]
 test_doc_fixture_graph_union.py::test_2[ie=1-ia=0-i2=z] PASSED           [ 25%]
 test_doc_fixture_graph_union.py::test_2[ie=1-ia=1-i2=x] PASSED           [ 29%]
 test_doc_fixture_graph_union.py::test_2[ie=1-ia=1-i2=z] PASSED           [ 33%]
-test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_a-ia=0] PASSED        [ 37%]
-test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_a-ia=1] PASSED        [ 41%]
-test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_a-ib=x-ia=0] PASSED [ 45%]
-test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_a-ib=x-ia=1] PASSED [ 50%]
-test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_a-ib=z-ia=0] PASSED [ 54%]
-test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_a-ib=z-ia=1] PASSED [ 58%]
-test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_c-ib=x] PASSED [ 62%]
-test_doc_fixture_graph_union.py::test_1[ie=-1-u_is_b-ub_is_c-ib=z] PASSED [ 66%]
-test_doc_fixture_graph_union.py::test_1[ie=1-u_is_a-ia=0] PASSED         [ 70%]
-test_doc_fixture_graph_union.py::test_1[ie=1-u_is_a-ia=1] PASSED         [ 75%]
-test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_a-ib=x-ia=0] PASSED [ 79%]
-test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_a-ib=x-ia=1] PASSED [ 83%]
-test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_a-ib=z-ia=0] PASSED [ 87%]
-test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_a-ib=z-ia=1] PASSED [ 91%]
-test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_c-ib=x] PASSED [ 95%]
-test_doc_fixture_graph_union.py::test_1[ie=1-u_is_b-ub_is_c-ib=z] PASSED [100%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u\a-ia=0] PASSED           [ 37%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u\a-ia=1] PASSED           [ 41%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u\b-ib=x-ub\a-ia=0] PASSED [ 45%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u\b-ib=x-ub\a-ia=1] PASSED [ 50%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u\b-ib=x-ub\c]  PASSED     [ 54%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u\b-ib=z-ub\a-ia=0] PASSED [ 58%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u\b-ib=z-ub\a-ia=1] PASSED [ 62%]
+test_doc_fixture_graph_union.py::test_1[ie=-1-u\b-ib=z-ub\c] PASSED      [ 66%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u\a-ia=0] PASSED            [ 70%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u\a-ia=1] PASSED            [ 75%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u\b-ib=x-ub\a-ia=0] PASSED  [ 79%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u\b-ib=x-ub\a-ia=1] PASSED  [ 83%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u\b-ib=x-ub\c] PASSED       [ 87%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u\b-ib=z-ub\a-ia=0] PASSED  [ 91%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u\b-ib=z-ub\a-ia=1] PASSED  [ 95%]
+test_doc_fixture_graph_union.py::test_1[ie=1-u\b-ib=z-ub\c] PASSED       [100%]
 
 ======================== 24 passed, 1 warning in 0.30s ========================
 ```
@@ -157,12 +160,12 @@ Now 24 tests were created ! `test_2` still has 8 runs, which is normal as it doe
  
  - then for each union fixture in `test_1`'s closure, starting from the bottom of the graph, we generate several closures by activating each of the arrows in turn. We progress upwards through the graph of remaining dependencies for each alternative:
 
-    - first `u` is used to split between subgraphs `u_is_a` and `u_is_b`
-    - subgraph `u_is_a` does not contain any union. Its final closure is `{u, a, c, d, e}`
-    - for subgraph `u_is_b` there is another union. So a new split is generated:
+    - first `u` is used to split between subgraphs `u\a` and `u\b`
+    - subgraph `u\a` does not contain any union. Its final closure is `{u, a, c, d, e}`
+    - for subgraph `u\b` there is another union. So a new split is generated:
     
-        - subgraph `u_is_b-ub_is_a` does not contain any union. Its final closure is `{u, b, a, c, d, e}`
-        - subgraph `u_is_b-ub_is_c` does not contain any union. Its final closure is `{u, b, c, e}`
+        - subgraph `u\b-ub\a` does not contain any union. Its final closure is `{u, b, a, c, d, e}`
+        - subgraph `u\b-ub\c` does not contain any union. Its final closure is `{u, b, c, e}`
 
 
 So the result consists in **3 alternate fixture closures** for `test_1`:
@@ -171,9 +174,9 @@ So the result consists in **3 alternate fixture closures** for `test_1`:
 
  - finally, as usual, for each closure a cartesian product is made across the parameters of all parametrization marks found on any item in the closure (including parameters of the test itself), So 
  
-    - for `test_1` alternative `u_is_a`, the cartesian product is `<ie> x <ia>`  (4 tests) 
-    - for `test_1` alternative `u_is_b-ub_is_a`, the cartesian product is `<ie> x <ia> x <ib>`  (8 tests) 
-    - for `test_1` alternative `u_is_b-ub_is_c`, the cartesian product is `<ie> x <ib>`  (4 tests) 
+    - for `test_1` alternative `u\a`, the cartesian product is `<ie> x <ia>`  (4 tests) 
+    - for `test_1` alternative `u\b-ub\a`, the cartesian product is `<ie> x <ia> x <ib>`  (8 tests) 
+    - for `test_1` alternative `u\b-ub\c`, the cartesian product is `<ie> x <ib>`  (4 tests) 
     - for `test_2` it is `<ie> x <ia> x <i2>`. (8 tests).
 
 The total is indeed 4 + 8 + 4 + 8 = 24 tests. Once again the test ids may be used to check that everything is correct, see above.

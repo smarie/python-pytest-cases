@@ -7,7 +7,7 @@
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937830.svg)](https://doi.org/10.5281/zenodo.3937830)
 
-!!! success "Brand new v2, [check the changes](./changelog.md#200---less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features) !"
+!!! success "Major refactoring of test ids in v2.8 ! See [below](#c-test-ids) for details."
 
 !!! warning "Installing pytest-cases has effects on the order of `pytest` tests execution. Details [here](#installing)"
 
@@ -389,7 +389,7 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 
 ## Advanced topics
 
-### a- Test fixtures
+### a- Parametrizing fixtures
 
 In some scenarii you might wish to parametrize a fixture with the cases, rather than the test function. For example 
 
@@ -424,7 +424,7 @@ After starting to reuse cases in several test functions, you might end-up thinki
 
 That being said, **if you are certain that your tests do not modify your cases data**, there are several ways to solve this issue:
 
- - the easiest way is to **use fixtures with a broad scope**, as explained [above](#a-test-fixtures). However in some parametrization scenarii, `pytest` does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome
+ - the easiest way is to **use fixtures with a broad scope**, as explained [above](#a-parametrizing-fixtures). However in some parametrization scenarii, `pytest` does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome
  
 ```python
 from pytest_cases import parametrize, parametrize_with_cases, fixture
@@ -452,6 +452,103 @@ def test_caching(cached_a, d):
  - finally, you might wish to persist some cases on disk in order for example to avoid downloading them again from their original source, and/or to avoid costly processing on every pytest session. For this, the perfect match for you is to use [`joblib`'s excellent `Memory` cache](https://joblib.readthedocs.io/en/latest/memory.html). 
 
 !!! warning "If you add a cache mechanism, make sure that your test functions do not modify the returned objects !"
+
+### c- Test ids
+
+Starting from version 2.8, test ids induced by `@parametrize_with_cases` are similar to the ids induced by `@pytest.mark.parametrize`, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.
+
+For this you can pass a callable to `@parametrize_with_cases(ids=<callable>)`. In this callable, you may wish to use `get_case_id`, `get_case_marks`, `get_case_tags`, or `matches_tag_query` to return a custom id.
+
+```python
+from pytest_cases import parametrize, parametrize_with_cases, case, get_case_id
+
+def case_hello():
+    return "hello !"
+
+@case(id="hello_world")
+def case_basic2():
+    return "hello, world !"
+
+@case(id="hello_name")
+@parametrize("name", ["you", "earthling"])
+def case_basic3(name):
+    return "hello, %s !" % name
+
+def myidgen(case_fun):
+    """Custom test case id"""
+    return "#%s#" % get_case_id(case_fun)
+
+@parametrize_with_cases("msg", cases=".", ids=myidgen)
+def test_foo(msg):
+    print(msg)
+```
+
+`pytest -s -v` yields:
+
+```
+============================= test session starts =============================
+platform win32 -- Python 3.7.3, pytest-5.3.5, py-1.9.0, pluggy-0.13.1
+cachedir: .pytest_cache
+(...)
+
+test_doc_ids_debug.py::test_foo[#hello#] 
+test_doc_ids_debug.py::test_foo[#hello_world#] 
+test_doc_ids_debug.py::test_foo[#hello_name#-you] 
+test_doc_ids_debug.py::test_foo[#hello_name#-earthling] 
+
+============================== 4 passed in 0.07s ==============================
+```
+
+### d- Debugging
+
+When all of your case functions are simple, `@parametrize_with_cases` generates a `@parametrize` decorator with argvalues being a list of `lazy_value(<case_func>)` for all of them. This in turn falls back to a good old `@pytest.mark.parametrize`, so the behaviour is close to what you are used to see when using `pytest`.
+
+However when at least one case function is complex, typically when it requires a fixture, then `@parametrize_with_cases` wraps it into a fixture and passes a `fixture_ref(<fixture_wrapping_case>)` to `@parametrize`. This creates a so-called "fixture union": tests are not any more a cross-product of parameters, but a tree. This new feature brought by pytest-cases is not present in `pytest` by default, and adds a layer of complexity. But good news: starting in pytest-cases 2.8.0, this complexity is entirely hidden. In other words, generated test ids do not differ between this mode, and the simple mode. For debugging purposes however, you might wish to make this visible by setting `idstyle`:
+
+```python
+from pytest_cases import parametrize, parametrize_with_cases, case, fixture
+
+def case_hello():
+    return "hello !"
+
+@fixture
+@parametrize("_name", ["you", "earthling"])
+def name(_name):
+    return _name
+
+@case(id="hello_fixture")
+def case_basic3(name):
+    return "hello, %s !" % name
+
+@parametrize_with_cases("msg", cases=".", idstyle="nostyle")
+def test_default_idstyle(msg):
+    print(msg)
+
+@parametrize_with_cases("msg", cases=".", idstyle="compact")
+def test_compact_idstyle(msg):
+    print(msg)
+
+@parametrize_with_cases("msg", cases=".", idstyle="explicit")
+def test_explicit_idstyle(msg):
+    print(msg)
+```
+
+`pytest -s -v` yields
+
+```
+test_doc_debug.py::test_default_idstyle[hello] 
+test_doc_debug.py::test_default_idstyle[hello_fixture-you] 
+test_doc_debug.py::test_default_idstyle[hello_fixture-earthling] 
+test_doc_debug.py::test_compact_idstyle[\hello] 
+test_doc_debug.py::test_compact_idstyle[\hello_fixture-you] 
+test_doc_debug.py::test_compact_idstyle[\hello_fixture-earthling] 
+test_doc_debug.py::test_explicit_idstyle[msg\hello] 
+test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-you] 
+test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-earthling] 
+```
+
+See also [`@parametrize` documentation](./pytest_goodies.md#parametrize) for details.
+
 
 ## Main features / benefits
 
