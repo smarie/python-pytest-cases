@@ -675,20 +675,21 @@ def _extract_cases_from_module_or_class(module=None,                      # type
             co_firstlineno = get_code_first_line(m)
             if cls is not None:
                 if isinstance(cls.__dict__[m_name], (staticmethod, classmethod)):
-                    # skip it
-                    continue
-                # partialize the function to get one without the 'self' argument
-                new_m = functools.partial(m, cls())
-                # remember the class
-                setattr(new_m, _HOST_CLS_ATTR, cls)
-                # we have to recopy all metadata concerning the case function
-                new_m.__name__ = m.__name__
-                copy_case_info(m, new_m)
-                copy_pytest_marks(m, new_m, override=True)
-                # also recopy all marks from the holding class to the function
-                copy_pytest_marks(cls, new_m, override=False)
-                m = new_m
-                del new_m
+                    # nothing to do: no need to partialize a 'self' argument
+                    pass
+                else:
+                    # partialize the function to get one without the 'self' argument
+                    new_m = functools.partial(m, cls())
+                    # remember the class
+                    setattr(new_m, _HOST_CLS_ATTR, cls)
+                    # we have to recopy all metadata concerning the case function
+                    new_m.__name__ = m.__name__
+                    copy_case_info(m, new_m)
+                    copy_pytest_marks(m, new_m, override=True)
+                    # also recopy all marks from the holding class to the function
+                    copy_pytest_marks(cls, new_m, override=False)
+                    m = new_m
+                    del new_m
 
             if _case_param_factory is None:
                 # Nominal usage: put the case in the dictionary
