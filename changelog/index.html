@@ -278,6 +278,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#310-improved-cases-collection" class="md-nav__link">
+    3.1.0 - Improved cases collection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#300-harmonization-of-ids-and-public-api-for-cases-info" class="md-nav__link">
     3.0.0 - harmonization of ids and public API for cases info
   </a>
@@ -896,6 +903,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#310-improved-cases-collection" class="md-nav__link">
+    3.1.0 - Improved cases collection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#300-harmonization-of-ids-and-public-api-for-cases-info" class="md-nav__link">
     3.0.0 - harmonization of ids and public API for cases info
   </a>
@@ -1501,6 +1515,18 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="310-improved-cases-collection">3.1.0 - Improved cases collection<a class="headerlink" href="#310-improved-cases-collection" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><code>@parametrize_with_cases</code> now by default (<code>cases=AUTO</code>) looks for both file naming patterns <code>test_&lt;name&gt;_cases.py</code> and <code>cases_&lt;name&gt;.py</code>. Removed the <code>AUTO2</code> constant. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/140">#140</a></p>
+</li>
+<li>
+<p>Nested classes containing case functions are now officially supported (they were, but undocumented). Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/160">#160</a></p>
+</li>
+<li>
+<p>Case functions that are <code>staticmethod</code> and <code>classmethod</code> are now supported as well. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/168">#168</a></p>
+</li>
+</ul>
 <h3 id="300-harmonization-of-ids-and-public-api-for-cases-info">3.0.0 - harmonization of ids and public API for cases info<a class="headerlink" href="#300-harmonization-of-ids-and-public-api-for-cases-info" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -2064,7 +2090,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.0ac82a11.min.js"></script>
-      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.term.missing": "Missing", "search.result.more.one": "1 more on this page", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "clipboard.copy": "Copy to clipboard", "search.result.more.other": "# more on this page", "search.config.lang": "en"}</script>
+      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copied": "Copied to clipboard", "search.result.other": "# matching documents", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.config.separator": "[\\s\\-]+", "search.result.more.other": "# more on this page", "search.config.lang": "en", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.config.pipeline": "trimmer, stopWordFilter"}</script>
       
       <script>
         app = initialize({
