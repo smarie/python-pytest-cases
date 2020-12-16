@@ -1,5 +1,13 @@
 # Changelog
 
+### 3.1.0 - Improved cases collection
+
+ - `@parametrize_with_cases` now by default (`cases=AUTO`) looks for both file naming patterns `test_<name>_cases.py` and `cases_<name>.py`. Removed the `AUTO2` constant. Fixed [#140](https://github.com/smarie/python-pytest-cases/issues/140)
+
+ - Nested classes containing case functions are now officially supported (they were, but undocumented). Fixed [#160](https://github.com/smarie/python-pytest-cases/issues/160)
+
+ - Case functions that are `staticmethod` and `classmethod` are now supported as well. Fixes [#168](https://github.com/smarie/python-pytest-cases/issues/168)
+
 ### 3.0.0 - harmonization of ids and public API for cases info
 
  - Major refactoring of the way ids and marks are generated and customized in `fixture_union`, `@parametrize` and `@parametrize_with_cases`. Now `idstyle` has a consistent behaviour across the board, `ids` and `idstyle` can work together correctly, `@parametrize_with_cases` and `@parametrize` have much better default values for ids, and many others. See [documentation](./index.md) for details. Fixed [#154](https://github.com/smarie/python-pytest-cases/issues/154)
