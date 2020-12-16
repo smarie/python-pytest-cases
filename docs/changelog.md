@@ -1,6 +1,6 @@
 # Changelog
 
-### 2.8.0 - harmonization of ids and public API for cases info
+### 3.0.0 - harmonization of ids and public API for cases info
 
  - Major refactoring of the way ids and marks are generated and customized in `fixture_union`, `@parametrize` and `@parametrize_with_cases`. Now `idstyle` has a consistent behaviour across the board, `ids` and `idstyle` can work together correctly, `@parametrize_with_cases` and `@parametrize` have much better default values for ids, and many others. See [documentation](./index.md) for details. Fixed [#154](https://github.com/smarie/python-pytest-cases/issues/154)
 
