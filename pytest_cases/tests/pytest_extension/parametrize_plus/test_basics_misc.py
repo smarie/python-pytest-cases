@@ -9,9 +9,9 @@ import pytest
 from pytest_cases import parametrize, lazy_value
 from pytest_harvest import get_session_synthesis_dct
 
-from pytest_cases.common_pytest import has_pytest_param, cart_product_pytest, get_marked_parameter_values, \
+from pytest_cases.common_pytest import cart_product_pytest, get_marked_parameter_values, \
     extract_parameterset_info, extract_pset_info_single
-from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, has_pytest_param
 from pytest_cases.common_pytest_lazy_values import is_lazy
 from pytest_cases.fixture_parametrize_plus import _get_argnames_argvalues
 from ...utils import skip

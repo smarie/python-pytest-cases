@@ -5,7 +5,9 @@
 import pytest
 
 from pytest_cases import parametrize
-from pytest_cases.common_pytest import get_callspecs, has_pytest_param
+from pytest_cases.common_pytest import get_callspecs
+from pytest_cases.common_pytest_marks import has_pytest_param
+
 
 if not has_pytest_param:
     @pytest.mark.parametrize('new_style', [False, True])

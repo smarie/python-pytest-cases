@@ -4,7 +4,8 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
 
-from pytest_cases.common_pytest import has_pytest_param
+from pytest_cases.common_pytest_marks import has_pytest_param
+
 
 if has_pytest_param:
     def skip(*argvals):

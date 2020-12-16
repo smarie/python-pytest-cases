@@ -4,7 +4,6 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from collections import OrderedDict, namedtuple
 from copy import copy
-from distutils.version import LooseVersion
 from functools import partial
 from warnings import warn
 
@@ -34,6 +33,9 @@ from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_f
 
 from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
 
+if PYTEST54_OR_GREATER:
+    # we will need to clean the empty ids explicitly in the plugin :'(
+    from .fixture_parametrize_plus import remove_empty_ids
 
 _DEBUG = False
 
@@ -729,19 +731,22 @@ class NormalParamz(namedtuple('NormalParamz', ['argnames', 'argvalues', 'indirec
 def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
     """
     This alternate implementation of metafunc.parametrize creates a list of calls that is not just the cartesian
-    product of all parameters (like the pytest behaviour).
-
-    Instead, it offers an alternate list of calls takinginto account all union fixtures.
+    product of all parameters (like the pytest behaviour). Instead, it offers an alternate list of calls taking into
+    account all "union" fixtures.
 
     For this, it replaces the `metafunc._calls` attribute with a `CallsReactor` instance, and feeds it with all
-    parameters and parametrized fixtures independently (not doing any cross-product).
-
-    The resulting `CallsReactor` instance is then able to dynamically behave like the correct list of calls,
-    lazy-creating that list when it is used.
+    parameters and parametrized fixtures independently (not doing any cross-product during this call). The resulting
+    `CallsReactor` instance is then able to dynamically behave like the correct list of calls, lazy-creating that list
+    when it is used.
     """
     if not isinstance(metafunc.fixturenames, SuperClosure):
         # legacy method
         metafunc.__class__.parametrize(metafunc, argnames, argvalues, indirect=indirect, ids=ids, scope=scope, **kwargs)
+
+        # clean EMPTY_ID : since they are never set by us in a normal parametrize, no need to do this here.
+        # if PYTEST54_OR_GREATER:
+        #     for callspec in metafunc._calls:
+        #         remove_empty_ids(callspec)
     else:
         # get or create our special container object
         if not isinstance(metafunc._calls, CallsReactor):  # noqa
@@ -863,6 +868,11 @@ class CallsReactor(object):
             print("\n".join(["%s[%s]: funcargs=%s, params=%s" % (get_pytest_nodeid(self.metafunc),
                                                                  c.id, c.funcargs, c.params)
                              for c in calls]) + "\n")
+
+        # clean EMPTY_ID set by @parametrize when there is at least a MultiParamsAlternative
+        if PYTEST54_OR_GREATER:
+            for callspec in calls:
+                remove_empty_ids(callspec)
 
         # save the list and put back self as the _calls facade
         self._call_list = calls
@@ -1106,12 +1116,6 @@ def _parametrize_calls(metafunc, init_calls, argnames, argvalues, discard_id=Fal
     if discard_id:
         for callspec in new_calls:
             callspec._idlist.pop(-1)  # noqa
-
-    # Fix in pytest 5.4.0 or greater, empty ids are not filtered out correctly anymore
-    if PYTEST54_OR_GREATER and len(new_calls) > 0:
-        # old_id = type(new_calls[0]).id  # https://github.com/pytest-dev/pytest/blob/5.4.0/src/_pytest/python.py#L798
-        if type(new_calls[0]).id is not id:
-            type(new_calls[0]).id = id
 
     # restore the metafunc and return the new calls
     metafunc._calls = bak

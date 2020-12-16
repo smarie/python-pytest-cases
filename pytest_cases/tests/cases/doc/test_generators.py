@@ -7,7 +7,7 @@ import sys
 from pytest_harvest import get_session_synthesis_dct
 
 from pytest_cases import parametrize_with_cases, parametrize
-from pytest_cases.common_pytest import has_pytest_param
+from pytest_cases.common_pytest_marks import has_pytest_param
 
 from ...utils import skip
 

@@ -31,22 +31,10 @@ def test_empty_caseid_both(dummy_amount):
 
 
 def test_synthesis(module_results_dct):
-    if PYTEST421_OR_GREATER:
-        # an empty string id will be considered
-        if PYTEST54_OR_GREATER:
-            # it will even be kept in CallSpec2.id
-            last_id_prefix = "-"
-        else:
-            # it will be filtered out in CallSpec2.id
-            last_id_prefix = ""
-    else:
-        # an empty string will not be considered
-        last_id_prefix = "test_empty_caseid_both_dummy_amount1-"
-
     assert list(module_results_dct) == [
         'test_empty_prefix[<empty_case_id>-1]',
         'test_empty_prefix[<empty_case_id>-0]',
         'test_empty_prefix[<empty_case_id>--1]',
-        'test_empty_caseid_both[%s]' % ("" if PYTEST421_OR_GREATER else "test_empty_caseid_both_dummy_amount0"),
-        'test_empty_caseid_both[%s1]' % last_id_prefix,
+        'test_empty_caseid_both[%s]' % ("0" if PYTEST421_OR_GREATER else "test_empty_caseid_both_dummy_amount0"),
+        'test_empty_caseid_both[%s-1]' % ("1" if PYTEST421_OR_GREATER else "test_empty_caseid_both_dummy_amount1"),
     ]

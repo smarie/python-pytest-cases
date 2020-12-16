@@ -23,7 +23,7 @@ from makefun import with_signature, remove_signature_parameters, add_signature_p
 
 from .common_mini_six import string_types
 from .common_others import AUTO, robust_isinstance
-from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list, PYTEST421_OR_GREATER
+from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list, PYTEST421_OR_GREATER, PYTEST54_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
     extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, \
@@ -516,9 +516,26 @@ class ProductParamAlternative(SingleParamAlternative):
             return mini_idvalset(self.argnames, argval, idx=self.alternative_index)
 
 
-if PYTEST421_OR_GREATER:
+if PYTEST54_OR_GREATER:
+    # an empty string will be taken into account but NOT filtered out in CallSpec2.id.
+    # so instead we create a dedicated unique string and return it.
+    # Ugly but the only viable alternative seems worse: it would be to return an empty string
+    # and in `remove_empty_ids` to always remove all empty strings (not necessary the ones set by us).
+    # That is too much of a change.
+
+    EMPTY_ID = "13h#987__36a721f8Z44526!8*72"
+
+    def remove_empty_ids(callspec):
+        # used by plugin.py to remove the EMPTY_ID from the callspecs
+        callspec._idlist = [c for c in callspec._idlist if c != EMPTY_ID]
+
+elif PYTEST421_OR_GREATER:
+    # an empty string will be taken into account and filtered out in CallSpec2.id.
     EMPTY_ID = ""
+
 else:
+    # an empty string will only be taken into account if its truth value is True
+    # it will be filtered out in CallSpec2.id
     class EmptyId(str):
         def __new__(cls):
             return str.__new__(cls, "")
