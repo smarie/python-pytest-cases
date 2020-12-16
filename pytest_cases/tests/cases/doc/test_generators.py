@@ -54,21 +54,21 @@ def test_foo_multi(msg, score):
 def test_foo_multi_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_multi, test_id_format='function')
     if sys.version_info >= (3, 6):
-        if has_pytest_param:
-            assert list(results_dct) == [
-                'test_foo_multi[hello]',
-                # 'test_foo_multi[simple_generator-who=you]',  skipped
-                # 'test_foo_multi[simple_generator-who=you]',  skipped
-                'test_foo_multi[simple_generator-who=there-a=5-b=5]',
-                'test_foo_multi[simple_generator-who=there-a=10-b=10]'
-            ]
-        else:
-            assert list(results_dct) == [
-                'test_foo_multi[hello[0]-hello[1]]',
-                # 'test_foo_multi[simple_generator-who=you]',  skipped
-                # 'test_foo_multi[simple_generator-who=you]',  skipped
-                'test_foo_multi[simple_generator-who=there-a=5-b=5[0]-simple_generator-who=there-a=5-b=5[1]]',
-                'test_foo_multi[simple_generator-who=there-a=10-b=10[0]-simple_generator-who=there-a=10-b=10[1]]'
-            ]
+        # if has_pytest_param:
+        assert list(results_dct) == [
+            'test_foo_multi[hello]',
+            # 'test_foo_multi[simple_generator-who=you]',  skipped
+            # 'test_foo_multi[simple_generator-who=you]',  skipped
+            'test_foo_multi[simple_generator-who=there-a=5-b=5]',
+            'test_foo_multi[simple_generator-who=there-a=10-b=10]'
+        ]
+        # else:
+        #     assert list(results_dct) == [
+        #         'test_foo_multi[hello[0]-hello[1]]',
+        #         # 'test_foo_multi[simple_generator-who=you]',  skipped
+        #         # 'test_foo_multi[simple_generator-who=you]',  skipped
+        #         'test_foo_multi[simple_generator-who=there-a=5-b=5[0]-simple_generator-who=there-a=5-b=5[1]]',
+        #         'test_foo_multi[simple_generator-who=there-a=10-b=10[0]-simple_generator-who=there-a=10-b=10[1]]'
+        #     ]
     else:
         assert len(results_dct) == 3
