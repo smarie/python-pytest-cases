@@ -16,11 +16,11 @@ def two_positive_ints():
 class CasesFoo:
     @classmethod
     def case_toto(cls):
-        return
+        return 0, 0
 
     @staticmethod
     def case_foo():
-        return
+        return 0, 0
 
     @case(id="hello")
     def case_blah(self):

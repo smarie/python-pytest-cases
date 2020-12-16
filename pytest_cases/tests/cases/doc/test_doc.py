@@ -75,11 +75,11 @@ def test_foo_fun_list_synthesis(request):
 class CasesFoo:
     @classmethod
     def case_toto(cls):
-        return
+        return 0, 0
 
     @staticmethod
     def case_foo():
-        return
+        return 0, 0
 
     @pytest.mark.skipif(False, reason="no")
     @case(id="hello world")
@@ -106,11 +106,15 @@ def test_foo_cls_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_cls, test_id_format='function')
     if has_pytest_param:
         assert list(results_dct) == [
+            'test_foo_cls[toto]',
+            'test_foo_cls[foo]',
             'test_foo_cls[hello world]',
             'test_foo_cls[two_negative_ints]'
         ]
     else:
         assert list(results_dct) == [
+            'test_foo_cls[toto[0]-toto[1]]',
+            'test_foo_cls[foo[0]-foo[1]]',
             'test_foo_cls[hello world[0]-hello world[1]]',
             'test_foo_cls[two_negative_ints[0]-two_negative_ints[1]]'
         ]
@@ -125,15 +129,21 @@ def test_foo_cls_list_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_cls_list, test_id_format='function')
     ref_list = [
         # CasesFoo
+        'test_foo_cls_list[toto0]',
+        'test_foo_cls_list[foo0]',
         'test_foo_cls_list[hello world0]',
         'test_foo_cls_list[two_negative_ints0]',
         # strange_ints
         'test_foo_cls_list[strange_ints]',
         # cases_doc_alternate.py
+        'test_foo_cls_list[toto1]',
+        'test_foo_cls_list[foo1]',
         'test_foo_cls_list[hello]',
         'test_foo_cls_list[two_negative_ints1]',
         'test_foo_cls_list[two_negative_ints2]',
         # CasesFoo
+        'test_foo_cls_list[toto2]',
+        'test_foo_cls_list[foo2]',
         'test_foo_cls_list[hello world1]',
         'test_foo_cls_list[two_negative_ints3]',
         # test_doc_cases.py
