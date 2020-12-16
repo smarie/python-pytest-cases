@@ -1504,11 +1504,13 @@
 <h3 id="280-harmonization-of-ids-and-public-api-for-cases-info">2.8.0 - harmonization of ids and public API for cases info<a class="headerlink" href="#280-harmonization-of-ids-and-public-api-for-cases-info" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>Major refactoring of the way ids and marks are handled in <code>fixture_union</code>, <code>@parametrize</code> and <code>@parametrize_with_cases</code>. See <a href="..">documentation</a> for details. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/154">#154</a></p>
+<p>Major refactoring of the way ids and marks are generated and customized in <code>fixture_union</code>, <code>@parametrize</code> and <code>@parametrize_with_cases</code>. Now <code>idstyle</code> has a consistent behaviour across the board, <code>ids</code> and <code>idstyle</code> can work together correctly, <code>@parametrize_with_cases</code> and <code>@parametrize</code> have much better default values for ids, and many others. See <a href="..">documentation</a> for details. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/154">#154</a></p>
 </li>
 <li>
-<p>New public API to manipulate information about a case function: <code>copy_case_info</code>, <code>set_case_id</code>, <code>get_case_id</code>, <code>get_case_marks</code>,
-    <code>get_case_tags</code>, <code>matches_tag_query</code>, <code>is_case_class</code>, <code>is_case_function</code>. See <a href="../api_reference/">API reference</a>.</p>
+<p>New public API to manipulate information about a case function: <code>copy_case_info</code>, <code>set_case_id</code>, <code>get_case_id</code>, <code>get_case_marks</code>, <code>get_case_tags</code>, <code>matches_tag_query</code>, <code>is_case_class</code>, <code>is_case_function</code>. See <a href="../api_reference/">API reference</a>.</p>
+</li>
+<li>
+<p>Fixed default behaviour of <code>idgen</code> in <code>@parametrize</code>: it only defaults to <code>AUTO</code> when no <code>fixture_ref</code> are used in the argvalues.</p>
 </li>
 </ul>
 <h3 id="272-bugfix-with-doctest">2.7.2 - Bugfix with doctest<a class="headerlink" href="#272-bugfix-with-doctest" title="Permanent link">&para;</a></h3>
@@ -2062,7 +2064,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     </div>
     
       <script src="../assets/javascripts/vendor.0ac82a11.min.js"></script>
-      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.more.one": "1 more on this page", "search.placeholder": "Search", "search.result.none": "No matching documents", "search.result.term.missing": "Missing", "search.result.more.other": "# more on this page", "search.config.lang": "en", "clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.result.other": "# matching documents"}</script>
+      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "search.result.more.other": "# more on this page", "search.config.pipeline": "trimmer, stopWordFilter", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.one": "1 matching document", "search.result.term.missing": "Missing", "search.config.lang": "en", "search.config.separator": "[\\s\\-]+", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "clipboard.copied": "Copied to clipboard", "search.result.placeholder": "Type to start searching"}</script>
       
       <script>
         app = initialize({

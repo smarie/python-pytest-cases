@@ -1039,16 +1039,20 @@
 <p>Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically registered into the callers' module, but you may wish to assign it to a variable for convenience. In that case make sure that you use the same name, e.g. <code>a = fixture_union('a', ['b', 'c'])</code></p>
 <p>The style of test ids corresponding to the union alternatives can be changed with <code>idstyle</code>. Three values are allowed:</p>
 <ul>
-<li><code>'explicit'</code> (default) favors readability,</li>
-<li><code>'compact'</code> adds a small mark so that at least one sees which parameters are union parameters and which others are normal parameters,</li>
-<li><code>None</code> does not change the ids.    </li>
+<li><code>'explicit'</code> favors readability with names as <code>&lt;union&gt;/&lt;alternative&gt;</code>,</li>
+<li><code>'compact'</code> (default) adds a small mark so that at least one sees which parameters are union alternatives and 
+    which others are normal parameters: <code>/&lt;alternative&gt;</code></li>
+<li><code>None</code> or <code>'nostyle'</code> provides minimalistic ids : <code>&lt;alternative&gt;</code>   </li>
 </ul>
+<p>See <code>UnionIdMakers</code> class for details.</p>
+<p>You can also pass a callable <code>idstyle</code> that will receive instances of <code>UnionFixtureAlternative</code>. For example <code>str</code> 
+leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;</code>. See <code>UnionFixtureAlternative</code> class for details.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>name</code>: the name of the fixture to create</li>
 <li><code>fixtures</code>: an array-like containing fixture names and/or fixture symbols</li>
 <li><code>scope</code>: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the smallest scope of fixtures referenced.</li>
-<li><code>idstyle</code>: The style of test ids corresponding to the union alternatives. One of <code>'explicit'</code> (default), <code>'compact'</code>, or <code>None</code>.</li>
+<li><code>idstyle</code>: The style of test ids corresponding to the union alternatives. One of <code>'explicit'</code>, <code>'compact'</code>,<code>'nostyle'</code>/<code>None</code>, or a callable (e.g. <code>str</code>) that will receive instances of <code>UnionFixtureAlternative</code>.</li>
 <li><code>unpack_into</code>: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See <code>unpack_fixture</code> for details.</li>
 <li><code>ids</code>: as in pytest. The default value returns the correct fixture</li>
 <li><code>autouse</code>: as in pytest</li>
@@ -1104,23 +1108,23 @@
 
 <p>Identical to <code>param_fixtures</code> but for a single parameter name, so that you can assign its output to a single variable.</p>
 <h3 id="parametrize"><code>@parametrize</code><a class="headerlink" href="#parametrize" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nd">@parametrize</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">argvalues</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">indirect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-             <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">idstyle</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">idgen</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="n">_IDGEN</span><span class="p">,</span>
-             <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">hook</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
-             <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-             <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">parametrize</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">argvalues</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">indirect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">idstyle</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">idgen</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="n">_IDGEN</span><span class="p">,</span>
+                <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">hook</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+                <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">args</span><span class="p">)</span>
 </code></pre></div>
 
 
 <p>Equivalent to <code>@pytest.mark.parametrize</code> but also supports </p>
 <p><strong>New alternate style for argnames/argvalues</strong>. One can also use <code>**args</code> to pass additional <code>{argnames: argvalues}</code> in the same parametrization call. This can be handy in combination with <code>idgen</code> to master the whole id template associated with several parameters. Note that you can pass coma-separated argnames too, by de-referencing a dict: e.g. <code>**{'a,b': [(0, True), (1, False)], 'c': [-1, 2]}</code>.</p>
-<p><strong>New alternate style for ids</strong>. One can use <code>idgen</code> instead of <code>ids</code>. <code>idgen</code> can be a callable receiving all parameters at once (<code>**args</code>) and returning an id ; or it can be a string template using the new-style string formatting where the argnames can be used as variables (e.g. <code>idgen=lambda **args: "a={a}".format(**args)</code> or <code>idgen="my_id where a={a}"</code>). The special <code>idgen=AUTO</code> symbol can be used to generate a default string template equivalent to <code>lambda **args: "-".join("%s=%s" % (n, v) for n, v in args.items())</code>. This is enabled by default if you use the alternate style for argnames/argvalues (e.g. if <code>len(args) &gt; 0</code>).</p>
+<p><strong>New alternate style for ids</strong>. One can use <code>idgen</code> instead of <code>ids</code>. <code>idgen</code> can be a callable receiving all parameters at once (<code>**args</code>) and returning an id ; or it can be a string template using the new-style string formatting where the argnames can be used as variables (e.g. <code>idgen=lambda **args: "a={a}".format(**args)</code> or <code>idgen="my_id where a={a}"</code>). The special <code>idgen=AUTO</code> symbol can be used to generate a default string template equivalent to <code>lambda **args: "-".join("%s=%s" % (n, v) for n, v in args.items())</code>. This is enabled by default if you use the alternate style for argnames/argvalues (e.g. if <code>len(args) &gt; 0</code>), and if there are no <code>fixture_ref</code>s in your argvalues.</p>
 <p><strong>New possibilities in argvalues</strong>:</p>
 <ul>
 <li>
@@ -1148,7 +1152,7 @@
 <p><code>ids</code>: same as in pytest.mark.parametrize. Note that an alternative way to create ids exists with <code>idgen</code>. Only one non-None <code>ids</code> or <code>idgen</code> should be provided.</p>
 </li>
 <li>
-<p><code>idgen</code>: an id formatter. Either a string representing a template, or a callable receiving all argvalues at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when <code>ids</code> is not provided (None). You can use the special <code>pytest_cases.AUTO</code> formatter to generate an automatic id with template <code>&lt;name&gt;=&lt;value&gt;-&lt;name2&gt;=&lt;value2&gt;-...</code>.</p>
+<p><code>idgen</code>: an id formatter. Either a string representing a template, or a callable receiving all argvalues at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when <code>ids</code> is not provided (None). You can use the special <code>pytest_cases.AUTO</code> formatter to generate an automatic id with template <code>&lt;name&gt;=&lt;value&gt;-&lt;name2&gt;=&lt;value2&gt;-...</code>. <code>AUTO</code> is enabled by default if you use the alternate style for argnames/argvalues (e.g. if <code>len(args) &gt; 0</code>), and if there are no <code>fixture_ref</code>s in your argvalues.</p>
 </li>
 <li>
 <p><code>idstyle</code>: This is mostly for debug. Style of ids to be used in the "union" fixtures generated by <code>@parametrize</code> if at least one <code>fixture_ref</code> is found in the argvalues. <code>idstyle</code> possible values are 'compact', 'explicit' or None/'nostyle' (default), or a callable. <code>idstyle</code> has no effect if no <code>fixture_ref</code> are present in the argvalues. As opposed to <code>ids</code>, a callable provided here will receive a <code>ParamAlternative</code> object indicating which generated fixture should be used.</p>
@@ -1261,7 +1265,7 @@
     </div>
     
       <script src="../assets/javascripts/vendor.0ac82a11.min.js"></script>
-      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.more.one": "1 more on this page", "search.placeholder": "Search", "search.result.none": "No matching documents", "search.result.term.missing": "Missing", "search.result.more.other": "# more on this page", "search.config.lang": "en", "clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.result.other": "# matching documents"}</script>
+      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "search.result.more.other": "# more on this page", "search.config.pipeline": "trimmer, stopWordFilter", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.one": "1 matching document", "search.result.term.missing": "Missing", "search.config.lang": "en", "search.config.separator": "[\\s\\-]+", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "clipboard.copied": "Copied to clipboard", "search.result.placeholder": "Type to start searching"}</script>
       
       <script>
         app = initialize({

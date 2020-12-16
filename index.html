@@ -355,8 +355,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#a-test-fixtures" class="md-nav__link">
-    a- Test fixtures
+  <a href="#a-parametrizing-fixtures" class="md-nav__link">
+    a- Parametrizing fixtures
   </a>
   
 </li>
@@ -364,6 +364,20 @@
           <li class="md-nav__item">
   <a href="#b-caching-cases" class="md-nav__link">
     b- Caching cases
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-test-ids" class="md-nav__link">
+    c- Test ids
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-debugging" class="md-nav__link">
+    d- Debugging
   </a>
   
 </li>
@@ -635,8 +649,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#a-test-fixtures" class="md-nav__link">
-    a- Test fixtures
+  <a href="#a-parametrizing-fixtures" class="md-nav__link">
+    a- Parametrizing fixtures
   </a>
   
 </li>
@@ -644,6 +658,20 @@
           <li class="md-nav__item">
   <a href="#b-caching-cases" class="md-nav__link">
     b- Caching cases
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-test-ids" class="md-nav__link">
+    c- Test ids
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-debugging" class="md-nav__link">
+    d- Debugging
   </a>
   
 </li>
@@ -710,7 +738,7 @@
 <p><a href="https://smarie.github.io/python-pytest-cases/"><img alt="Documentation" src="https://img.shields.io/badge/doc-latest-blue.svg" /></a> <a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pytest-cases.svg" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads" src="https://pepy.tech/badge/pytest-cases" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads per week" src="https://pepy.tech/badge/pytest-cases/week" /></a> <a href="https://github.com/smarie/python-pytest-cases/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/smarie/python-pytest-cases.svg" /></a>
 <a href="https://doi.org/10.5281/zenodo.3937830"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3937830.svg" /></a></p>
 <div class="admonition success">
-<p class="admonition-title">Brand new v2, <a href="changelog/#200---less-boilerplate-and-full-pytest-alignment-unlocking-advanced-features">check the changes</a> !</p>
+<p class="admonition-title">Major refactoring of test ids in v2.8 ! See <a href="#c-test-ids">below</a> for details.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Installing pytest-cases has effects on the order of <code>pytest</code> tests execution. Details <a href="#installing">here</a></p>
@@ -1049,7 +1077,7 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 
 
 <h2 id="advanced-topics">Advanced topics<a class="headerlink" href="#advanced-topics" title="Permanent link">&para;</a></h2>
-<h3 id="a-test-fixtures">a- Test fixtures<a class="headerlink" href="#a-test-fixtures" title="Permanent link">&para;</a></h3>
+<h3 id="a-parametrizing-fixtures">a- Parametrizing fixtures<a class="headerlink" href="#a-parametrizing-fixtures" title="Permanent link">&para;</a></h3>
 <p>In some scenarii you might wish to parametrize a fixture with the cases, rather than the test function. For example </p>
 <ul>
 <li>
@@ -1083,7 +1111,7 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 <p><code>pytest-cases</code> follows the same philosophy than <code>pytest</code>: each test node should be independent. Therefore case functions are called for each test case. This ensures that mutable objects can not leak across tests, for example.</p>
 <p>That being said, <strong>if you are certain that your tests do not modify your cases data</strong>, there are several ways to solve this issue:</p>
 <ul>
-<li>the easiest way is to <strong>use fixtures with a broad scope</strong>, as explained <a href="#a-test-fixtures">above</a>. However in some parametrization scenarii, <code>pytest</code> does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome</li>
+<li>the easiest way is to <strong>use fixtures with a broad scope</strong>, as explained <a href="#a-parametrizing-fixtures">above</a>. However in some parametrization scenarii, <code>pytest</code> does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome</li>
 </ul>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">fixture</span>
 
@@ -1117,6 +1145,93 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 <div class="admonition warning">
 <p class="admonition-title">If you add a cache mechanism, make sure that your test functions do not modify the returned objects !</p>
 </div>
+<h3 id="c-test-ids">c- Test ids<a class="headerlink" href="#c-test-ids" title="Permanent link">&para;</a></h3>
+<p>Starting from version 2.8, test ids induced by <code>@parametrize_with_cases</code> are similar to the ids induced by <code>@pytest.mark.parametrize</code>, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.</p>
+<p>For this you can pass a callable to <code>@parametrize_with_cases(ids=&lt;callable&gt;)</code>. In this callable, you may wish to use <code>get_case_id</code>, <code>get_case_marks</code>, <code>get_case_tags</code>, or <code>matches_tag_query</code> to return a custom id.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">get_case_id</span>
+
+<span class="k">def</span> <span class="nf">case_hello</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;hello !&quot;</span>
+
+<span class="nd">@case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;hello_world&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">case_basic2</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;hello, world !&quot;</span>
+
+<span class="nd">@case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;hello_name&quot;</span><span class="p">)</span>
+<span class="nd">@parametrize</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;you&quot;</span><span class="p">,</span> <span class="s2">&quot;earthling&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">case_basic3</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;hello, </span><span class="si">%s</span><span class="s2"> !&quot;</span> <span class="o">%</span> <span class="n">name</span>
+
+<span class="k">def</span> <span class="nf">myidgen</span><span class="p">(</span><span class="n">case_fun</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Custom test case id&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;#</span><span class="si">%s</span><span class="s2">#&quot;</span> <span class="o">%</span> <span class="n">get_case_id</span><span class="p">(</span><span class="n">case_fun</span><span class="p">)</span>
+
+<span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="s2">&quot;msg&quot;</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">myidgen</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><code>pytest -s -v</code> yields:</p>
+<div class="codehilite"><pre><span></span><code>============================= test session starts =============================
+platform win32 -- Python 3.7.3, pytest-5.3.5, py-1.9.0, pluggy-0.13.1
+cachedir: .pytest_cache
+(...)
+
+test_doc_ids_debug.py::test_foo[#hello#] 
+test_doc_ids_debug.py::test_foo[#hello_world#] 
+test_doc_ids_debug.py::test_foo[#hello_name#-you] 
+test_doc_ids_debug.py::test_foo[#hello_name#-earthling] 
+
+============================== 4 passed in 0.07s ==============================
+</code></pre></div>
+
+
+<h3 id="d-debugging">d- Debugging<a class="headerlink" href="#d-debugging" title="Permanent link">&para;</a></h3>
+<p>When all of your case functions are simple, <code>@parametrize_with_cases</code> generates a <code>@parametrize</code> decorator with argvalues being a list of <code>lazy_value(&lt;case_func&gt;)</code> for all of them. This in turn falls back to a good old <code>@pytest.mark.parametrize</code>, so the behaviour is close to what you are used to see when using <code>pytest</code>.</p>
+<p>However when at least one case function is complex, typically when it requires a fixture, then <code>@parametrize_with_cases</code> wraps it into a fixture and passes a <code>fixture_ref(&lt;fixture_wrapping_case&gt;)</code> to <code>@parametrize</code>. This creates a so-called "fixture union": tests are not any more a cross-product of parameters, but a tree. This new feature brought by pytest-cases is not present in <code>pytest</code> by default, and adds a layer of complexity. But good news: starting in pytest-cases 2.8.0, this complexity is entirely hidden. In other words, generated test ids do not differ between this mode, and the simple mode. For debugging purposes however, you might wish to make this visible by setting <code>idstyle</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">fixture</span>
+
+<span class="k">def</span> <span class="nf">case_hello</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;hello !&quot;</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@parametrize</span><span class="p">(</span><span class="s2">&quot;_name&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;you&quot;</span><span class="p">,</span> <span class="s2">&quot;earthling&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="n">_name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_name</span>
+
+<span class="nd">@case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;hello_fixture&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">case_basic3</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;hello, </span><span class="si">%s</span><span class="s2"> !&quot;</span> <span class="o">%</span> <span class="n">name</span>
+
+<span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="s2">&quot;msg&quot;</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">idstyle</span><span class="o">=</span><span class="s2">&quot;nostyle&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_default_idstyle</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="s2">&quot;msg&quot;</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">idstyle</span><span class="o">=</span><span class="s2">&quot;compact&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_compact_idstyle</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="s2">&quot;msg&quot;</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">idstyle</span><span class="o">=</span><span class="s2">&quot;explicit&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_explicit_idstyle</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><code>pytest -s -v</code> yields</p>
+<div class="codehilite"><pre><span></span><code>test_doc_debug.py::test_default_idstyle[hello] 
+test_doc_debug.py::test_default_idstyle[hello_fixture-you] 
+test_doc_debug.py::test_default_idstyle[hello_fixture-earthling] 
+test_doc_debug.py::test_compact_idstyle[\hello] 
+test_doc_debug.py::test_compact_idstyle[\hello_fixture-you] 
+test_doc_debug.py::test_compact_idstyle[\hello_fixture-earthling] 
+test_doc_debug.py::test_explicit_idstyle[msg\hello] 
+test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-you] 
+test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-earthling] 
+</code></pre></div>
+
+
+<p>See also <a href="pytest_goodies/#parametrize"><code>@parametrize</code> documentation</a> for details.</p>
 <h2 id="main-features-benefits">Main features / benefits<a class="headerlink" href="#main-features-benefits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -1194,7 +1309,7 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
     </div>
     
       <script src="assets/javascripts/vendor.0ac82a11.min.js"></script>
-      <script src="assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.more.one": "1 more on this page", "search.placeholder": "Search", "search.result.none": "No matching documents", "search.result.term.missing": "Missing", "search.result.more.other": "# more on this page", "search.config.lang": "en", "clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.result.other": "# matching documents"}</script>
+      <script src="assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "search.result.more.other": "# more on this page", "search.config.pipeline": "trimmer, stopWordFilter", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.one": "1 matching document", "search.result.term.missing": "Missing", "search.config.lang": "en", "search.config.separator": "[\\s\\-]+", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "clipboard.copied": "Copied to clipboard", "search.result.placeholder": "Type to start searching"}</script>
       
       <script>
         app = initialize({
