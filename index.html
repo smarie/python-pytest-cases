@@ -738,7 +738,7 @@
 <p><a href="https://smarie.github.io/python-pytest-cases/"><img alt="Documentation" src="https://img.shields.io/badge/doc-latest-blue.svg" /></a> <a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pytest-cases.svg" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads" src="https://pepy.tech/badge/pytest-cases" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads per week" src="https://pepy.tech/badge/pytest-cases/week" /></a> <a href="https://github.com/smarie/python-pytest-cases/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/smarie/python-pytest-cases.svg" /></a>
 <a href="https://doi.org/10.5281/zenodo.3937830"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3937830.svg" /></a></p>
 <div class="admonition success">
-<p class="admonition-title">Major refactoring of test ids in v2.8 ! See <a href="#c-test-ids">below</a> for details.</p>
+<p class="admonition-title">Major refactoring of test ids in v3.0.0 ! See <a href="#c-test-ids">below</a> for details.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Installing pytest-cases has effects on the order of <code>pytest</code> tests execution. Details <a href="#installing">here</a></p>
@@ -1146,7 +1146,7 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 <p class="admonition-title">If you add a cache mechanism, make sure that your test functions do not modify the returned objects !</p>
 </div>
 <h3 id="c-test-ids">c- Test ids<a class="headerlink" href="#c-test-ids" title="Permanent link">&para;</a></h3>
-<p>Starting from version 2.8, test ids induced by <code>@parametrize_with_cases</code> are similar to the ids induced by <code>@pytest.mark.parametrize</code>, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.</p>
+<p>Starting from version 3.0.0, test ids induced by <code>@parametrize_with_cases</code> are similar to the ids induced by <code>@pytest.mark.parametrize</code>, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.</p>
 <p>For this you can pass a callable to <code>@parametrize_with_cases(ids=&lt;callable&gt;)</code>. In this callable, you may wish to use <code>get_case_id</code>, <code>get_case_marks</code>, <code>get_case_tags</code>, or <code>matches_tag_query</code> to return a custom id.</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">get_case_id</span>
 
@@ -1309,7 +1309,7 @@ test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-earthling]
     </div>
     
       <script src="assets/javascripts/vendor.0ac82a11.min.js"></script>
-      <script src="assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"search.result.more.other": "# more on this page", "clipboard.copied": "Copied to clipboard", "search.result.term.missing": "Missing", "search.result.placeholder": "Type to start searching", "search.config.separator": "[\\s\\-]+", "search.config.lang": "en", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.none": "No matching documents", "search.result.other": "# matching documents", "search.result.one": "1 matching document", "clipboard.copy": "Copy to clipboard", "search.config.pipeline": "trimmer, stopWordFilter"}</script>
+      <script src="assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "clipboard.copied": "Copied to clipboard", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.config.pipeline": "trimmer, stopWordFilter", "search.result.term.missing": "Missing", "search.result.more.one": "1 more on this page", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "clipboard.copy": "Copy to clipboard", "search.result.more.other": "# more on this page", "search.config.lang": "en"}</script>
       
       <script>
         app = initialize({
