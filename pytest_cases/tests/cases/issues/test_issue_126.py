@@ -3,6 +3,8 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
+
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 from pytest_cases import parametrize_with_cases
 
 
@@ -64,17 +66,34 @@ def test_synthesis(module_results_dct):
     for host in (test_functionality, test_functionality_again, TestNested.test_functionality_again2):
         assert markers_dict[host] == (set(), set())
 
-    assert list(module_results_dct) == [
-        'test_functionality[a_b_is__requirement_1]',
-        'test_functionality[a_b_is__requirement_2]',
-        'test_functionality[a_b_is__requirement_1_]',
-        'test_functionality[a_b_is__requirement_2_]',
-        'test_functionality_again[a_b_is__requirement_1_]',  # <- note: same fixtures than previously
-        'test_functionality_again[a_b_is__requirement_2_]',  # idem
-        'test_functionality_again[a_b_is__requirement_1]',   # idem
-        'test_functionality_again[a_b_is__requirement_2]',   # idem
-        'test_functionality_again2[a_b_is__requirement_1]',  # idem
-        'test_functionality_again2[a_b_is__requirement_2]',  # idem
-        'test_functionality_again2[a_b_is__requirement_1_]',  # idem
-        'test_functionality_again2[a_b_is__requirement_2_]'  # idem
-    ]
+    if PYTEST3_OR_GREATER:
+        assert list(module_results_dct) == [
+            'test_functionality[_requirement_10]',
+            'test_functionality[_requirement_20]',
+            'test_functionality[_requirement_11]',
+            'test_functionality[_requirement_21]',
+            'test_functionality_again[_requirement_10]',  # <- note: same fixtures than previously
+            'test_functionality_again[_requirement_20]',  # idem
+            'test_functionality_again[_requirement_11]',   # idem
+            'test_functionality_again[_requirement_21]',   # idem
+            'test_functionality_again2[_requirement_10]',  # idem
+            'test_functionality_again2[_requirement_20]',  # idem
+            'test_functionality_again2[_requirement_11]',  # idem
+            'test_functionality_again2[_requirement_21]'  # idem
+        ]
+    else:
+        # In old pytest the numbering seem a little more rough/simple
+        assert list(module_results_dct) == [
+            'test_functionality[0_requirement_1]',
+            'test_functionality[1_requirement_2]',
+            'test_functionality[2_requirement_1]',
+            'test_functionality[3_requirement_2]',
+            'test_functionality_again[0_requirement_1]',
+            'test_functionality_again[1_requirement_2]',
+            'test_functionality_again[2_requirement_1]',
+            'test_functionality_again[3_requirement_2]',
+            'test_functionality_again2[0_requirement_1]',
+            'test_functionality_again2[1_requirement_2]',
+            'test_functionality_again2[2_requirement_1]',
+            'test_functionality_again2[3_requirement_2]'
+        ]

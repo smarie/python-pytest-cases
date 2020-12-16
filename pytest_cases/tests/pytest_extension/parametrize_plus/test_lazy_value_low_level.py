@@ -2,9 +2,9 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from distutils.version import LooseVersion
-
 import pytest
+
+from pytest_cases.common_pytest_marks import PYTEST53_OR_GREATER
 from pytest_cases.common_pytest_lazy_values import LazyValue, LazyTuple
 
 from pytest_cases import lazy_value
@@ -98,9 +98,6 @@ def test_value_ref():
         assert at.has_cached_value()
 
 
-pytest53 = LooseVersion(pytest.__version__) >= LooseVersion("5.3.0")
-
-
 def test_lv_clone():
     """ Test that the internal API allows other plugins such as pytest-harvest to easily clone a lazy value without
     inheriting from the hack int base"""
@@ -114,7 +111,7 @@ def test_lv_clone():
     assert ">, _id='hi'," in repr(lv)
     assert "'skip'" in repr(lv)
 
-    if pytest53:
+    if PYTEST53_OR_GREATER:
         assert not isinstance(lv, int)
         lv2 = lv.clone()
         assert lv == lv2
@@ -138,7 +135,7 @@ def test_lv_tuple_clone():
         assert str(lv) == "hi[%s]" % i
         assert repr(lv).startswith("LazyTupleItem(item=%s, tuple=LazyValue(valuegetter=<function" % i)
 
-        if pytest53:
+        if PYTEST53_OR_GREATER:
             assert not isinstance(lv, int)
             lv2 = lv.clone()
             assert lv == lv2

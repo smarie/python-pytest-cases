@@ -5,7 +5,7 @@
 import pytest
 from makefun import with_signature
 
-from pytest_cases import pytest_parametrize_plus, pytest_fixture_plus, fixture_ref
+from pytest_cases import parametrize, fixture, fixture_ref
 
 # ------ Datasets
 datasets = {
@@ -17,7 +17,7 @@ datasets_indices = {dn: range(len(dc)) for dn, dc in datasets.items()}
 
 # ------ Datasets fixture generation
 def create_dataset_fixture(dataset_name):
-    @pytest_fixture_plus(scope="module", name=dataset_name)
+    @fixture(scope="module", name=dataset_name)
     def dataset():
         print("setting up dataset %s" % dataset_name)
         yield datasets[dataset_name]
@@ -26,7 +26,7 @@ def create_dataset_fixture(dataset_name):
     return dataset
 
 def create_data_from_dataset_fixture(dataset_name):
-    @pytest_fixture_plus(name="data_from_%s" % dataset_name, scope="module")
+    @fixture(name="data_from_%s" % dataset_name, scope="module")
     @pytest.mark.parametrize('data_index', dataset_indices, ids="idx={}".format)
     @with_signature("(%s, data_index)" % dataset_name)
     def data_from_dataset(data_index, **kwargs):
@@ -40,7 +40,7 @@ for dataset_name, dataset_indices in datasets_indices.items():
     globals()["data_from_%s" % dataset_name] = create_data_from_dataset_fixture(dataset_name)
 
 # ------ Test
-@pytest_parametrize_plus('data', [fixture_ref('data_from_%s' % n)
+@parametrize('data', [fixture_ref('data_from_%s' % n)
                                   for n in datasets_indices.keys()])
 def test_databases(data):
     # do test

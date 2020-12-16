@@ -32,6 +32,152 @@ def case_hi():
  - `marks`: optional pytest marks to add on the case. Note that decorating the function directly with the mark also works, and if marks are provided in both places they are merged.
 
 
+### `copy_case_info`
+
+```python
+def copy_case_info(from_fun,  # type: Callable
+                   to_fun     # type: Callable
+                   ):
+```
+
+Copies all information from case function `from_fun` to `to_fun`.
+
+
+### `set_case_id`
+
+```python
+def set_case_id(id,        # type: str
+                case_func  # type: Callable
+                ):
+```
+
+Sets an explicit id on case function `case_func`.
+
+
+### `get_case_id`
+
+```python
+def get_case_id(case_func,                      # type: Callable
+                prefix_for_default_ids='case_'  # type: str
+                ):
+```
+
+Return the case id associated with this case function.
+
+If a custom id is not present, a case id is automatically created from the function name based on removing the provided prefix if present at the beginning of the function name. If the resulting case id is empty, "<empty_case_id>" will be returned.
+
+
+**Parameters:**
+
+ - `case_func`: the case function to get a case id for.
+ 
+ - `prefix_for_default_ids`: this prefix that will be removed if present on the function name to form the default case id.
+
+
+### `get_case_marks`
+
+```python
+def get_case_marks(case_func,                         # type: Callable
+                   concatenate_with_fun_marks=False,  # type: bool
+                   as_decorators=False                # type: bool
+                   ):
+```
+
+Return the marks that are on the case function.
+
+There are currently two ways to place a mark on a case function: either with `@pytest.mark.<name>` or in `@case(marks=...)`. This function returns a list of marks containing either both (if `concatenate_with_fun_marks` is `True`) or only the ones set with `@case` (`concatenate_with_fun_marks` is `False`, default).
+
+**Parameters:**
+
+ - `case_func`: the case function
+
+ - `concatenate_with_fun_marks`: if `False` (default) only the marks declared in `@case` will be returned. Otherwise a concatenation of marks in `@case` and on the function (for example directly with `@pytest.mark.<mk>`) will be returned.
+
+ - `as_decorators`: when `True`, the marks (`MarkInfo`) will be transformed into `MarkDecorators` before being returned. Otherwise (default) the marks are returned as is.
+
+
+### `get_case_tags`
+
+```python
+def get_case_tags(case_func  # type: Callable
+                  ):
+```
+
+Return the tags on this case function or an empty tuple.
+
+**Parameters:**
+
+ - `case_func`: the case function
+
+
+### `matches_tag_query`
+
+```python
+def matches_tag_query(case_fun,      # type: Callable
+                      has_tag=None,  # type: Union[str, Iterable[str]]
+                      filter=None,   # type: Union[Callable[[Callable], bool], Iterable[Callable[[Callable], bool]]]  # noqa
+                      ):
+```
+
+This function is the one used by `@parametrize_with_cases` to filter the case functions collected. It can be used manually for tests/debug.
+
+Returns True if the case function is selected by the query:
+
+ - if `has_tag` contains one or several tags, they should ALL be present in the tags set on `case_fun` (`get_case_tags`)
+
+ - if `filter` contains one or several filter callables, they are all called in sequence and the `case_fun` is only selected if ALL of them return a `True` truth value
+
+**Parameters:**
+
+ - `case_fun`: the case function
+
+ - `has_tag`: one or several tags that should ALL be present in the tags set on `case_fun` for it to be selected.
+
+ - `filter`: one or several filter callables that will be called in sequence. If all of them return a `True` truth value, `case_fun` is selected.
+
+
+### `is_case_class`
+
+```python
+def is_case_class(cls,                         # type: Any
+                  case_marker_in_name='Case',  # type: str
+                  check_name=True              # type: bool
+                  ):
+```
+
+This function is the one used by `@parametrize_with_cases` to collect cases within classes. It can be used manually for tests/debug.
+
+Returns True if the given object is a class and, if `check_name=True` (default), if its name contains `case_marker_in_name`.
+
+**Parameters:**
+
+ - `cls`: the object to check
+    
+ - `case_marker_in_name`: the string that should be present in a class name so that it is selected. Default is 'Case'.
+
+ - `check_name`: a boolean (default True) to enforce that the name contains the word `case_marker_in_name`. If False, any class will lead to a `True` result whatever its name.
+
+### `is_case_function`
+
+```python
+def is_case_function(f,                 # type: Any
+                     prefix='case_',    # type: str
+                     check_prefix=True  # type: bool
+                     ):
+```
+
+This function is the one used by `@parametrize_with_cases` to collect cases. It can be used manually for tests/debug.
+    
+Returns True if the provided object is a function or callable and, if `check_prefix=True` (default), if it starts with `prefix`.
+
+**Parameters:**
+
+ - `f`: the object to check
+    
+ - `prefix`: the string that should be present at the beginning of a function name so that it is selected. Default is 'case_'.
+
+ - `check_prefix`: if this boolean is True (default), the prefix will be checked. If False, any function will lead to a `True` result whatever its name.
+
 ## 2 - Cases collection
 
 ### `@parametrize_with_cases`
@@ -40,13 +186,12 @@ def case_hi():
 @parametrize_with_cases(argnames: str,
                         cases: Union[Callable, Type, ModuleRef] = AUTO,
                         prefix: str = 'case_',
-                        glob:str = None,
-                        has_tag: Union[str, Iterable[str]]=None,
+                        glob: str = None,
+                        has_tag: Union[str, Iterable[str]] = None,
                         filter: Callable = None,
-                        ids: Union[Callable, Iterable[str]]=None,
-                        idstyle: Optional[str]='explicit',
-                        idgen: Union[str, Callable]=_IDGEN,
-                        **kwargs
+                        ids: Union[Callable, Iterable[str]] = None,
+                        idstyle: Union[str, Callable] = None,
+                        scope: str = "function"
                         )
 ```
 
@@ -79,13 +224,14 @@ argvalues = get_parametrize_args(host_class_or_module_of_f, cases_funs)
 
  - `has_tag`: a single tag or a tuple, set, list of tags that should be matched by the ones set with the [`@case`](#case) decorator on the case function(s) to be selected.
 
- - `filter`: a callable receiving the case function and returning True or a truth value in case the function needs to be selected.
+ - `filter`: a callable receiving the case function and returning `True` or a truth value in case the function needs to be selected.
  
- - `ids`: same as in pytest.mark.parametrize. Note that an alternative way to create ids exists with `idgen`. Only one non-None `ids` or `idgen` should be provided. See [`@parametrize`](#parametrize) for details.
- 
- - `idgen`: an id formatter. Either a string representing a template, or a callable receiving all argvalues at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when `ids` is not provided (None). You can use the special `pytest_cases.AUTO` formatter to generate an automatic id with template `<name>=<value>-<name2>=<value2>-...`. See [`@parametrize`](#parametrize) for details.
- 
- - `idstyle`: style of ids to be used in the "union" fixtures generated by [`@parametrize`](#parametrize) when some cases require fixtures. One of 'compact', 'explicit' or None/'nostyle'. See [`@parametrize`](#parametrize) for details.
+ - `ids`: optional custom ids, similar to the one in `pytest.mark.parametrize`. Users may either provide an iterable of string ids, or a callable. If a callable is provided it will receive the case functions. Users may wish to use [`get_case_id`](#get_case_id) or other helpers in the [API](#1---case-functions) to inspect the case functions.
+
+ - `idstyle`: This is mostly for debug. Style of ids to be used in the "union" fixtures generated by [`@parametrize`](#parametrize) if some cases are transformed into fixtures behind the scenes. `idstyle` possible values are `'compact'`, `'explicit'` or `None`/`'nostyle'` (default), or a callable. `idstyle` has no effect if no cases are transformed into fixtures. As opposed to `ids`, a callable provided here will receive a `ParamAlternative` object indicating which generated fixture should be used. See [`@parametrize`](#parametrize) for details.
+
+ - `scope`: The scope of the union fixture to create if `fixture_ref`s are found in the argvalues
+
 
 ### `get_all_cases`
 
@@ -284,10 +430,11 @@ Identical to `param_fixtures` but for a single parameter name, so that you can a
              argvalues: Iterable[Any]=None,
              indirect: bool = False,
              ids: Union[Callable, Iterable[str]] = None,
-             idstyle: Optional[str] = 'explicit',
+             idstyle: Union[str, Callable] = None,
              idgen: Union[str, Callable] = _IDGEN,
              scope: str = None,
              hook: Callable = None,
+             scope: str = "function",
              debug: bool = False,
              **args)
 ```
@@ -322,15 +469,13 @@ Here as for all functions above, an optional `hook` can be passed, to apply on e
  
  - `idgen`: an id formatter. Either a string representing a template, or a callable receiving all argvalues at once (as opposed to the behaviour in pytest ids). This alternative way to generate ids can only be used when `ids` is not provided (None). You can use the special `pytest_cases.AUTO` formatter to generate an automatic id with template `<name>=<value>-<name2>=<value2>-...`.
  
- - `idstyle`: style of ids to be used in the "union" fixtures generated by `@parametrize` when some cases require fixtures. One of 'compact', 'explicit' or None/'nostyle'.
+ - `idstyle`: This is mostly for debug. Style of ids to be used in the "union" fixtures generated by `@parametrize` if at least one `fixture_ref` is found in the argvalues. `idstyle` possible values are 'compact', 'explicit' or None/'nostyle' (default), or a callable. `idstyle` has no effect if no `fixture_ref` are present in the argvalues. As opposed to `ids`, a callable provided here will receive a `ParamAlternative` object indicating which generated fixture should be used.
         
- - `scope`: same as in pytest.mark.parametrize
-     
+ - `scope`: The scope of the union fixture to create if `fixture_ref`s are found in the argvalues. Otherwise same as in `pytest.mark.parametrize`.
+   
  - `hook`: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
         
  - `debug`: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
- 
- - `args`: additional {argnames: argvalues} definition
 
 
 ### `lazy_value`

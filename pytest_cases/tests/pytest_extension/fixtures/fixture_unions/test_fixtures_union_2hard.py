@@ -11,7 +11,7 @@ b = param_fixture('b', [1, 2])
 
 # union fixtures
 c = fixture_union('c', [a, b])
-d = fixture_union('d', [b, a])
+d = fixture_union('d', [b, a], idstyle="explicit")
 
 
 super_closure = None
@@ -25,20 +25,22 @@ def test_fixture_union_harder(c, a, d, request):
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == ["test_fixture_union_harder[c_is_a-x-d_is_b-1]",
-                                        "test_fixture_union_harder[c_is_a-x-d_is_b-2]",
-                                        "test_fixture_union_harder[c_is_a-x-d_is_a]",
-                                        "test_fixture_union_harder[c_is_a-y-d_is_b-1]",
-                                        "test_fixture_union_harder[c_is_a-y-d_is_b-2]",
-                                        "test_fixture_union_harder[c_is_a-y-d_is_a]",
-                                        "test_fixture_union_harder[c_is_b-1-x-d_is_b]",
-                                        "test_fixture_union_harder[c_is_b-1-x-d_is_a]",
-                                        "test_fixture_union_harder[c_is_b-1-y-d_is_b]",
-                                        "test_fixture_union_harder[c_is_b-1-y-d_is_a]",
-                                        "test_fixture_union_harder[c_is_b-2-x-d_is_b]",
-                                        "test_fixture_union_harder[c_is_b-2-x-d_is_a]",
-                                        "test_fixture_union_harder[c_is_b-2-y-d_is_b]",
-                                        "test_fixture_union_harder[c_is_b-2-y-d_is_a]"]
+    assert list(module_results_dct) == [
+        "test_fixture_union_harder[/a-x-d/b-1]",
+        "test_fixture_union_harder[/a-x-d/b-2]",
+        "test_fixture_union_harder[/a-x-d/a]",
+        "test_fixture_union_harder[/a-y-d/b-1]",
+        "test_fixture_union_harder[/a-y-d/b-2]",
+        "test_fixture_union_harder[/a-y-d/a]",
+        "test_fixture_union_harder[/b-1-x-d/b]",
+        "test_fixture_union_harder[/b-1-x-d/a]",
+        "test_fixture_union_harder[/b-1-y-d/b]",
+        "test_fixture_union_harder[/b-1-y-d/a]",
+        "test_fixture_union_harder[/b-2-x-d/b]",
+        "test_fixture_union_harder[/b-2-x-d/a]",
+        "test_fixture_union_harder[/b-2-y-d/b]",
+        "test_fixture_union_harder[/b-2-y-d/a]"
+    ]
 
 
 def test_super_closure():

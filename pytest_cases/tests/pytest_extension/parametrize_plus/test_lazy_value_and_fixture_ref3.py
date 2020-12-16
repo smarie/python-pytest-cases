@@ -4,7 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
 
-from pytest_cases import parametrize_plus, lazy_value, fixture_plus, fixture_ref
+from pytest_cases import parametrize, lazy_value, fixture, fixture_ref
 
 
 def valtuple():
@@ -15,14 +15,14 @@ def val():
     return 1
 
 
-@fixture_plus
-@parametrize_plus("i", [lazy_value(val), 11])
+@fixture
+@parametrize("i", [lazy_value(val), 11])
 def tfix(i):
     return i, i+2
 
 
-@fixture_plus
-@parametrize_plus("i", [5, lazy_value(val)])
+@fixture
+@parametrize("i", [5, lazy_value(val)])
 def vfix(i):
     return -i
 
@@ -44,13 +44,13 @@ def valtuple_only_right_when_lazy():
 
 has_pytest_param = hasattr(pytest, 'param')
 if not has_pytest_param:
-    @parametrize_plus("a,b", [lazy_value(valtuple),
-                              lazy_value(valtuple, id='A'),
-                              fixture_ref(tfix),
-                              (fixture_ref(vfix), lazy_value(val)),
-                              (lazy_value(val, id='B'), fixture_ref(vfix)),
-                              (fixture_ref(vfix), fixture_ref(vfix)),
-                              ], debug=True)
+    @parametrize("a,b", [lazy_value(valtuple),
+                         lazy_value(valtuple, id='A'),
+                         fixture_ref(tfix),
+                         (fixture_ref(vfix), lazy_value(val)),
+                         (lazy_value(val, id='B'), fixture_ref(vfix)),
+                         (fixture_ref(vfix), fixture_ref(vfix)),
+                         ], debug=True)
     def test_foo_multi(a, b):
         """here the fixture is used for both parameters at the same time"""
         global flag
@@ -59,20 +59,20 @@ if not has_pytest_param:
 
 
     def test_synthesis2(module_results_dct):
-        assert list(module_results_dct) == ['test_foo_multi[a_b_is_P0toP1-valtuple]',
-                                            'test_foo_multi[a_b_is_P0toP1-A]',
-                                            'test_foo_multi[a_b_is_tfix-val]',
-                                            'test_foo_multi[a_b_is_tfix-11]',
-                                            'test_foo_multi[a_b_is_P3-5]',
-                                            'test_foo_multi[a_b_is_P3-val]',
-                                            'test_foo_multi[a_b_is_P4-5]',
-                                            'test_foo_multi[a_b_is_P4-val]',
-                                            'test_foo_multi[a_b_is_P5-5]',
-                                            'test_foo_multi[a_b_is_P5-val]'
+        assert list(module_results_dct) == ['test_foo_multi[valtuple]',
+                                            'test_foo_multi[A]',
+                                            'test_foo_multi[tfix-val]',
+                                            'test_foo_multi[tfix-11]',
+                                            'test_foo_multi[vfix-val-5]',
+                                            'test_foo_multi[vfix-val-val]',
+                                            'test_foo_multi[B-vfix-5]',
+                                            'test_foo_multi[B-vfix-val]',
+                                            'test_foo_multi[vfix-vfix-5]',
+                                            'test_foo_multi[vfix-vfix-val]'
                                             ]
 
 else:
-    @parametrize_plus("a,b", [lazy_value(valtuple),
+    @parametrize("a,b", [lazy_value(valtuple),
                               pytest.param(lazy_value(valtuple, id='A')),
                               pytest.param(lazy_value(valtuple_toskip), id='Wrong', marks=pytest.mark.skip),
                               fixture_ref(tfix),
@@ -88,14 +88,15 @@ else:
 
 
     def test_synthesis2(module_results_dct):
-        assert list(module_results_dct) == ['test_foo_multi[a_b_is_P0toP2-valtuple]',
-                                            'test_foo_multi[a_b_is_P0toP2-A]',
-                                            'test_foo_multi[a_b_is_tfix-val]',
-                                            'test_foo_multi[a_b_is_tfix-11]',
-                                            'test_foo_multi[a_b_is_P4-5]',
-                                            'test_foo_multi[a_b_is_P4-val]',
-                                            'test_foo_multi[B-5]',
-                                            'test_foo_multi[B-val]',
-                                            'test_foo_multi[a_b_is_P6-5]',
-                                            'test_foo_multi[a_b_is_P6-val]'
-                                            ]
+        assert list(module_results_dct) == [
+            'test_foo_multi[valtuple]',
+            'test_foo_multi[A]',
+            'test_foo_multi[tfix-val]',
+            'test_foo_multi[tfix-11]',
+            'test_foo_multi[vfix-val-5]',
+            'test_foo_multi[vfix-val-val]',
+            'test_foo_multi[B-5]',
+            'test_foo_multi[B-val]',
+            'test_foo_multi[vfix-vfix-5]',
+            'test_foo_multi[vfix-vfix-val]'
+        ]

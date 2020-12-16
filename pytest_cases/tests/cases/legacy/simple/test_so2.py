@@ -8,7 +8,7 @@ try:
 except ImportError:
     from functools32 import lru_cache
 
-from pytest_cases import cases_data, pytest_fixture_plus, cases_generator, THIS_MODULE
+from pytest_cases import cases_data, fixture, cases_generator, THIS_MODULE
 
 
 # ----- "case functions" : they could be in other modules
@@ -35,7 +35,7 @@ def finalize_dataset(db):
     # this is run once per db thanks to the lru_cache decorator
     print("teardown for %s" % db)
 
-@pytest_fixture_plus(scope="module")
+@fixture(scope="module")
 @cases_data(module=THIS_MODULE)
 def data(case_data):
     setup_dataset(case_data.f)

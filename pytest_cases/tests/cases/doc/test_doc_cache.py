@@ -19,7 +19,7 @@ def case_dummy(a):
 
 
 @fixture(scope='session')
-@parametrize_with_cases("a", cases='.')
+@parametrize_with_cases("a", cases='.', scope='session')
 def cached_a(a):
     return a
 

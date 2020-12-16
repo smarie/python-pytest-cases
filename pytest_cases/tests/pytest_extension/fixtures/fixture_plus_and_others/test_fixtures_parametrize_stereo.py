@@ -2,14 +2,13 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from distutils.version import LooseVersion
 from itertools import product
 
 from six import string_types
 import pytest
 
-from pytest_cases import pytest_fixture_plus
-
+from pytest_cases import fixture
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, PYTEST34_OR_GREATER
 
 STEREO_PATHS = ['stereo 1.wav', 'stereo 2.wav']
 CFG_TYPES = [list, dict]
@@ -27,7 +26,7 @@ class StateAsserter:
         self.current_state += 1
 
 
-if LooseVersion(pytest.__version__) >= LooseVersion('3.0.0'):
+if PYTEST3_OR_GREATER:
     a = StateAsserter()
 else:
     # for old versions of pytest, the execution order seems harder to get strictly
@@ -42,7 +41,7 @@ else:
     a = UnOrderedStateAsserter()
 
 
-@pytest_fixture_plus
+@fixture
 @pytest.mark.parametrize("path", STEREO_PATHS)
 @pytest.mark.parametrize("cfg_factory", CFG_TYPES)   # not actual params
 def stereo_cfg(path, cfg_factory, request):
@@ -71,7 +70,7 @@ def test_stereo_two_parametrizers(stereo_cfg):
 b = StateAsserter()
 
 
-@pytest.mark.skipif(LooseVersion(pytest.__version__) < LooseVersion('3.4.0'),
+@pytest.mark.skipif(not PYTEST34_OR_GREATER,
                     reason="with old versions of pytest pytest-cases cannot fix the parametrization order.")
 @pytest.mark.parametrize("path", STEREO_PATHS)
 @pytest.mark.parametrize("cfg_factory", CFG_TYPES)   # not actual params
@@ -90,7 +89,7 @@ def _id(x):
     return "{cfg_factory}-{path}".format(path=path, cfg_factory=cfg_factory.__name__)
 
 
-@pytest_fixture_plus(scope='module')
+@fixture(scope='module')
 @pytest.mark.parametrize("cfg_factory,path", product(CFG_TYPES, STEREO_PATHS), ids=_id)
 def stereo_cfg_2(path, request, cfg_factory):
     """

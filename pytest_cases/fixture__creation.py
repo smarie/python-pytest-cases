@@ -14,6 +14,8 @@ try:
 except ImportError:
     pass
 
+from .common_others import make_identifier
+
 
 class ExistingFixtureNameError(ValueError):
     """
@@ -56,6 +58,14 @@ def check_name_available(module,
         dir(module)
     :return: a name that might be different if policy was CHANGE
     """
+    new_name = make_identifier(name)
+    if new_name != name:
+        if if_name_exists is RAISE:
+            raise ValueError("Proposed name is an invalid identifier: %s" % name)
+        elif if_name_exists is WARN:
+            warn("%s name was not a valid identifier, changed it to %s" % (name, new_name))
+        name = new_name
+
     if name_changer is None:
         # default style for name changing. i starts with 1
         def name_changer(name, i):

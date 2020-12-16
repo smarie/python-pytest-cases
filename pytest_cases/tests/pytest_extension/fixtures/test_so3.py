@@ -2,10 +2,10 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from pytest_cases import pytest_fixture_plus
+from pytest_cases import fixture
 
 
-@pytest_fixture_plus(unpack_into="foo,bar")
+@fixture(unpack_into="foo,bar")
 def foobar():
     return "blah", "whatever"
 

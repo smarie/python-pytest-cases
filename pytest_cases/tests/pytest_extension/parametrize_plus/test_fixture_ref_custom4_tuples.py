@@ -3,7 +3,7 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
-from pytest_cases import parametrize_plus, fixture_ref
+from pytest_cases import parametrize, fixture_ref
 
 
 has_pytest_param = hasattr(pytest, 'param')
@@ -21,7 +21,7 @@ if has_pytest_param:
         return 'b'
 
 
-    @parametrize_plus('arg1,arg2', [pytest.param("a", 1, id="testID"),
+    @parametrize('arg1,arg2', [pytest.param("a", 1, id="testID"),
                                     ("b", 1),
                                     (fixture_ref(b), 1),
                                     pytest.param("c", 1, id="testID3"),
@@ -35,10 +35,9 @@ if has_pytest_param:
     def test_synthesis(module_results_dct):
         # make sure the id and skip mark were taken into account
         assert list(module_results_dct) == [
-            'test_id_tuple[arg1_arg2_is_P0toP1-testID]',
-            'test_id_tuple[arg1_arg2_is_P0toP1-b-1]',
-            'test_id_tuple[arg1_arg2_is_P2]',
+            'test_id_tuple[testID]',
+            'test_id_tuple[b-1]',
             'test_id_tuple[testID3]',
             'test_id_tuple[testID4]',
-            'test_id_tuple[arg1_arg2_is_c-1]',
+            'test_id_tuple[c-1]',
         ]

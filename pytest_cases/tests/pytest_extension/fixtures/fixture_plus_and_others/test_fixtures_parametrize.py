@@ -3,13 +3,13 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
-from pytest_cases import pytest_fixture_plus
+from pytest_cases import fixture
 
 
 has_pytest_param = hasattr(pytest, 'param')
 
 
-@pytest_fixture_plus(scope="module")
+@fixture(scope="module")
 @pytest.mark.parametrize("arg1", ["one", "two"])
 @pytest.mark.parametrize("arg2", ["one", "two"])
 def myfix(arg1, arg2):
@@ -40,7 +40,7 @@ if not has_pytest_param:
 
     def test_warning_pytest2():
         with pytest.raises(ValueError) as exc_info:
-            @pytest_fixture_plus
+            @fixture
             @pytest.mark.parametrize("arg2", [0], ids=str)
             @pytest.mark.parametrize("arg1", [1])
             def a(arg1, arg2):
@@ -48,7 +48,7 @@ if not has_pytest_param:
         assert "Unfortunately with this old pytest version it" in str(exc_info.value)
 
 else:
-    @pytest_fixture_plus
+    @fixture
     @pytest.mark.parametrize("arg3", [pytest.param(0, id='!0!')], ids=str)
     @pytest.mark.parametrize("arg1, arg2", [
         (1, 2),
@@ -64,7 +64,7 @@ else:
         print(myfix2)
 
 
-    @pytest_fixture_plus
+    @fixture
     @pytest.mark.parametrize("arg1, arg2", [
         pytest.param(5, 6, id="a")
     ], ids=['ignored_id'])

@@ -4,21 +4,21 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
 
-from pytest_cases import fixture_union, pytest_fixture_plus, NOT_USED
+from pytest_cases import fixture_union, fixture, NOT_USED
 
 
-@pytest_fixture_plus(params=[1, 2, 3])
+@fixture(params=[1, 2, 3])
 def lower(request):
     return "i" * request.param
 
 
-# @pytest_fixture_plus(params=[1, 2])
+# @fixture(params=[1, 2])
 # def upper(request):
 #     return "I" * request.param
 
 @pytest.fixture(params=[1, 2])
 def upper(request):
-    # Just for the remark: this fixture does not use pytest_fixture_plus
+    # Just for the remark: this fixture does not use fixture
     # so we have to explicitly discard the 'NOT_USED' cases
     if request.param is not NOT_USED:
         return "I" * request.param
@@ -34,8 +34,10 @@ def test_all(all):
 def test_synthesis(module_results_dct):
     """Use pytest-harvest to check that the list of executed tests is correct """
 
-    assert list(module_results_dct) == ['test_all[all_is_lower-1]',
-                                        'test_all[all_is_lower-2]',
-                                        'test_all[all_is_lower-3]',
-                                        'test_all[all_is_upper-1]',
-                                        'test_all[all_is_upper-2]']
+    assert list(module_results_dct) == [
+        'test_all[/lower-1]',
+        'test_all[/lower-2]',
+        'test_all[/lower-3]',
+        'test_all[/upper-1]',
+        'test_all[/upper-2]'
+    ]

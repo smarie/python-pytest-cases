@@ -1,7 +1,6 @@
-from distutils.version import LooseVersion
-
 import pytest
 
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 from pytest_cases import parametrize, lazy_value, fixture, is_lazy
 
 
@@ -11,7 +10,7 @@ def x():
 
 @parametrize("y", [0, 1])
 @parametrize("x", [lazy_value(x)])
-@pytest.mark.skipif(LooseVersion(pytest.__version__) < LooseVersion('3.0.0'),
+@pytest.mark.skipif(not PYTEST3_OR_GREATER,
                     reason="request.getfixturevalue is not available in pytest 2")
 def test_foo(x, y, my_cache_verifier):
     print(x, y)

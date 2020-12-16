@@ -299,3 +299,40 @@ def funcopy(f):
 #         fun = functools.update_wrapper(fun, f)
 #         fun.__kwdefaults__ = f.__kwdefaults__
 #         return fun
+
+
+def robust_isinstance(o, cls):
+    try:
+        return isinstance(o, cls)
+    except:  # noqa
+        return False
+
+
+def isidentifier(s  # type: str
+                 ):
+    """python 2+3 compliant <str>.isidentifier()"""
+    try:
+        return s.isidentifier()
+    except AttributeError:
+        return re.match("[a-zA-Z_]\\w*\\Z", s)
+
+
+def make_identifier(name  # type: str
+                    ):
+    """Transform the given name into a valid python identifier"""
+    if not isinstance(name, string_types):
+        raise TypeError("name should be a string, found : %r" % name)
+    elif isidentifier(name):
+        return name
+    elif len(name) == 0:
+        # empty string
+        return "_"
+    else:
+        # first remove any forbidden character (https://stackoverflow.com/a/3305731/7262247)
+        # \W : matches any character that is not a word character
+        new_name = re.sub("\\W+", '_', name)
+        # then add a leading underscore if needed
+        # ^(?=\\d) : matches any digit that would be at the beginning of the string
+        if re.match("^(?=\\d)", new_name):
+            new_name = "_" + new_name
+        return new_name

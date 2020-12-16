@@ -1,8 +1,6 @@
-from distutils.version import LooseVersion
-
 import itertools as itt
-import pytest
 
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 from pytest_cases import parametrize, fixture, param_fixtures, fixture_union
 
 
@@ -12,7 +10,7 @@ def mygen(name):
         yield "%s{%i}" % (name, i)
 
 
-if LooseVersion(pytest.__version__) < LooseVersion('3.0.0'):
+if not PYTEST3_OR_GREATER:
     @fixture
     @parametrize("x", [1, 2], ids=mygen("x"))
     def my_fixture(x):

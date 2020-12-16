@@ -5,7 +5,7 @@
 import pytest
 
 from pytest_cases.fixture_core1_unions import InvalidParamsList
-from pytest_cases import parametrize_plus, fixture_ref
+from pytest_cases import parametrize, fixture_ref
 
 
 @pytest.fixture
@@ -15,6 +15,6 @@ def test():
 
 def test_invalid_argvalues():
     with pytest.raises(InvalidParamsList):
-        @parametrize_plus('main_msg', fixture_ref(test))
+        @parametrize('main_msg', fixture_ref(test))
         def test_prints(main_msg):
             print(main_msg)

@@ -24,11 +24,11 @@ def test_foo2(a, b):
     pass
 
 
-def generate_id(**args):
+def generate_id(o):
     return "hello"
 
 
-@parametrize_with_cases('a,b', cases='.', idgen=generate_id)
+@parametrize_with_cases('a,b', cases='.', ids=generate_id)
 def test_tuples(a, b):
     assert True
 
