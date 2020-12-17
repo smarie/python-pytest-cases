@@ -33,9 +33,10 @@ from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_f
 
 from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
 
-if PYTEST54_OR_GREATER:
-    # we will need to clean the empty ids explicitly in the plugin :'(
-    from .fixture_parametrize_plus import remove_empty_ids
+# if PYTEST54_OR_GREATER:
+#     # we will need to clean the empty ids explicitly in the plugin :'(
+from .fixture_parametrize_plus import remove_empty_ids
+
 
 _DEBUG = False
 
@@ -870,9 +871,9 @@ class CallsReactor(object):
                              for c in calls]) + "\n")
 
         # clean EMPTY_ID set by @parametrize when there is at least a MultiParamsAlternative
-        if PYTEST54_OR_GREATER:
-            for callspec in calls:
-                remove_empty_ids(callspec)
+        # if PYTEST54_OR_GREATER:
+        for callspec in calls:
+            remove_empty_ids(callspec)
 
         # save the list and put back self as the _calls facade
         self._call_list = calls

@@ -520,39 +520,48 @@ class ProductParamAlternative(SingleParamAlternative):
             return mini_idvalset(self.argnames, argval, idx=self.alternative_index)
 
 
-if PYTEST54_OR_GREATER:
-    # an empty string will be taken into account but NOT filtered out in CallSpec2.id.
-    # so instead we create a dedicated unique string and return it.
-    # Ugly but the only viable alternative seems worse: it would be to return an empty string
-    # and in `remove_empty_ids` to always remove all empty strings (not necessary the ones set by us).
-    # That is too much of a change.
+# if PYTEST54_OR_GREATER:
+#     # an empty string will be taken into account but NOT filtered out in CallSpec2.id.
+#     # so instead we create a dedicated unique string and return it.
+#     # Ugly but the only viable alternative seems worse: it would be to return an empty string
+#     # and in `remove_empty_ids` to always remove all empty strings (not necessary the ones set by us).
+#     # That is too much of a change.
 
-    EMPTY_ID = "13h#987__36a721f8Z44526!8*72"
+EMPTY_ID = "<pytest_cases_empty_id>"
 
+
+if has_pytest_param:
     def remove_empty_ids(callspec):
         # used by plugin.py to remove the EMPTY_ID from the callspecs
         callspec._idlist = [c for c in callspec._idlist if not c.startswith(EMPTY_ID)]
-
-elif PYTEST421_OR_GREATER:
-    # an empty string will be taken into account and filtered out in CallSpec2.id.
-    EMPTY_ID = ""
-
 else:
-    # an empty string will only be taken into account if its truth value is True
-    # it will be filtered out in CallSpec2.id
-    class EmptyId(str):
-        def __new__(cls):
-            return str.__new__(cls, "")
+    def remove_empty_ids(callspec):
+        # used by plugin.py to remove the EMPTY_ID from the callspecs
+        callspec._idlist = [c for c in callspec._idlist if not c.endswith(EMPTY_ID)]
 
-        def __nonzero__(self):
-            # python 2
-            return True
 
-        def __bool__(self):
-            # python 3
-            return True
-
-    EMPTY_ID = EmptyId()
+# elif PYTEST421_OR_GREATER:
+#     # an empty string will be taken into account and filtered out in CallSpec2.id.
+#     # but.... if this empty string appears several times in the tests it is appended with a number to become unique :(
+#     EMPTY_ID = ""
+#
+# else:
+#     # an empty string will only be taken into account if its truth value is True
+#     # but.... if this empty string appears several times in the tests it is appended with a number to become unique :(
+#     # it will be filtered out in CallSpec2.id
+#     class EmptyId(str):
+#         def __new__(cls):
+#             return str.__new__(cls, "")
+#
+#         def __nonzero__(self):
+#             # python 2
+#             return True
+#
+#         def __bool__(self):
+#             # python 3
+#             return True
+#
+#     EMPTY_ID = EmptyId()
 
 
 class ParamIdMakers(UnionIdMakers):
