@@ -531,7 +531,7 @@ if PYTEST54_OR_GREATER:
 
     def remove_empty_ids(callspec):
         # used by plugin.py to remove the EMPTY_ID from the callspecs
-        callspec._idlist = [c for c in callspec._idlist if c != EMPTY_ID]
+        callspec._idlist = [c for c in callspec._idlist if not c.startswith(EMPTY_ID)]
 
 elif PYTEST421_OR_GREATER:
     # an empty string will be taken into account and filtered out in CallSpec2.id.
