@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.1.1 - Bugfix with ids
+
+ - Fixed issue with Empty id marker leaking to test ids. Fixed [#171](https://github.com/smarie/python-pytest-cases/issues/171)
+
 ### 3.1.0 - Improved cases collection
 
  - `@parametrize_with_cases` now by default (`cases=AUTO`) looks for both file naming patterns `test_<name>_cases.py` and `cases_<name>.py`. Removed the `AUTO2` constant. Fixed [#140](https://github.com/smarie/python-pytest-cases/issues/140)
