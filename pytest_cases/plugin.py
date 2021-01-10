@@ -325,7 +325,7 @@ class FixtureClosureNode(object):
     # ------ tools to add new fixture names during closure construction
 
     def add_required_fixture(self, new_fixture_name, new_fixture_defs):
-        """Add some required fixture names to this node. Returns True if new fixtures were added here (not in child)"""
+        """Add some required fixture names to all leaves under this node"""
         if self.already_knows_fixture(new_fixture_name):
             return
         elif not self.has_split():
@@ -574,15 +574,17 @@ class SuperClosure(MutableSequence):
     def __delitem__(self, i):
         self.remove(self[i])
 
-    def insert(self, index, object):
+    def insert(self, index, fixture_name):
         # if index == 0:
-        #     print()
-        # elif index == len(self):
-        #     print()
-        # else:
-        #     raise ValueError("It is not possible to insert a fixture name in this closure")
-        raise NotImplementedError("When fixture unions are present, inserting a fixture in the closure is non-trivial."
-                                  " Please report this so that we can find a suitable solution for your need.")
+        #     # prepend
+        #     self.tree.fixture_defs
+        if index == len(self):
+            # append: supported
+            self.tree.build_closure((fixture_name,))
+        else:
+            raise NotImplementedError("When fixture unions are present, inserting a fixture in the closure is "
+                                      "non-trivial. Please report this so that we can find a suitable solution for "
+                                      "your need.")
 
     def remove(self, value):
         # try:
