@@ -720,7 +720,7 @@
 <h2 id="parametrize"><code>@parametrize</code><a class="headerlink" href="#parametrize" title="Permanent link">&para;</a></h2>
 <p><a href="../api_reference/#parametrize"><code>@parametrize</code></a> is a replacement for <code>@pytest.mark.parametrize</code> with many additional features to make the most of parametrization. See <a href="../api_reference/#parametrize">API reference</a> for details about all the new features. In particular it allows you to include references to fixtures and to value-generating functions in the parameter values. </p>
 <ul>
-<li>Simply use <a href="../api_reference/#fixture_ref"><code>fixture_ref(&lt;fixture&gt;)</code></a> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function.</li>
+<li>Simply use <a href="../api_reference/#fixture_ref"><code>fixture_ref(&lt;fixture&gt;)</code></a> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function. New: from version <code>3.2</code> on, if <code>auto_refs=True</code> (default), <code>@parametrize</code> will automatically detect fixture symbols in the list of argvalues, and will create <code>fixture_ref</code>s automatically around them so that you don't need to.</li>
 <li>if you do not wish to create a fixture, you can also use <a href="../api_reference/#lazy_value"><code>lazy_value(&lt;function&gt;)</code></a></li>
 <li>Note that when parametrizing several argnames, both <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a> and <a href="../api_reference/#lazy_value"><code>lazy_value</code></a> can be used <em>as</em> the tuple, or <em>in</em> the tuple. Several <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a> and/or <a href="../api_reference/#lazy_value"><code>lazy_value</code></a> can be used in the same tuple, too.</li>
 <li>By default the id associated with a <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a> or a <a href="../api_reference/#lazy_value"><code>lazy_value</code></a> is the name of the fixture or function. Custom ids can be passed with the <code>id=&lt;id&gt;</code> parameter. </li>
@@ -737,8 +737,7 @@
     <span class="k">return</span> <span class="s1">&#39;what&#39;</span>
 
 <span class="nd">@fixture</span>
-<span class="nd">@parametrize</span><span class="p">(</span><span class="s1">&#39;who&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">fixture_ref</span><span class="p">(</span><span class="n">world_str</span><span class="p">),</span> 
-                     <span class="s1">&#39;you&#39;</span><span class="p">])</span>
+<span class="nd">@parametrize</span><span class="p">(</span><span class="s1">&#39;who&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">world_str</span><span class="p">,</span> <span class="s1">&#39;you&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">greetings</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
     <span class="k">return</span> <span class="s1">&#39;hello &#39;</span> <span class="o">+</span> <span class="n">who</span>
 
@@ -746,7 +745,8 @@
                           <span class="n">fixture_ref</span><span class="p">(</span><span class="n">world_str</span><span class="p">),</span>
                           <span class="n">lazy_value</span><span class="p">(</span><span class="n">whatfun</span><span class="p">),</span>
                           <span class="s2">&quot;1&quot;</span><span class="p">,</span>
-                          <span class="n">fixture_ref</span><span class="p">(</span><span class="n">greetings</span><span class="p">)])</span>
+                          <span class="n">fixture_ref</span><span class="p">(</span><span class="n">greetings</span><span class="p">)],</span> 
+             <span class="n">auto_refs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s1">&#39;ending&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">test_prints</span><span class="p">(</span><span class="n">main_msg</span><span class="p">,</span> <span class="n">ending</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">main_msg</span> <span class="o">+</span> <span class="n">ending</span><span class="p">)</span>

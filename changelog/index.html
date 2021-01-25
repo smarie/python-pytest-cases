@@ -308,6 +308,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#320-automatic-fixture_ref-test-ordering-bugfix" class="md-nav__link">
+    3.2.0 - Automatic fixture_ref + test ordering bugfix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#312-bugfixes-with-nesting-and-pytest-asyncio" class="md-nav__link">
     3.1.2 - Bugfixes with nesting and pytest-asyncio
   </a>
@@ -949,6 +956,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#320-automatic-fixture_ref-test-ordering-bugfix" class="md-nav__link">
+    3.2.0 - Automatic fixture_ref + test ordering bugfix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#312-bugfixes-with-nesting-and-pytest-asyncio" class="md-nav__link">
     3.1.2 - Bugfixes with nesting and pytest-asyncio
   </a>
@@ -1575,6 +1589,15 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="320-automatic-fixture_ref-test-ordering-bugfix">3.2.0 - Automatic <code>fixture_ref</code> + test ordering bugfix<a class="headerlink" href="#320-automatic-fixture_ref-test-ordering-bugfix" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>New: from version <code>3.2</code> on, if <code>auto_refs=True</code> (default), <code>@parametrize</code> will automatically detect fixture symbols in the list of argvalues, and will create <code>fixture_ref</code>s automatically around them so that you don't need to. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/177">#177</a></p>
+</li>
+<li>
+<p>Fixed ordering issue happening on linux targets when several <code>@parametrize</code> are used to decorate the same function. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/180">#180</a></p>
+</li>
+</ul>
 <h3 id="312-bugfixes-with-nesting-and-pytest-asyncio">3.1.2 - Bugfixes with nesting and pytest-asyncio<a class="headerlink" href="#312-bugfixes-with-nesting-and-pytest-asyncio" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
