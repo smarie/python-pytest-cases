@@ -65,7 +65,7 @@ matrix:
       env: PYTEST_VERSION="<6" PYTEST_HTML_VERSION="==1.9.0"
       dist: xenial
       sudo: true
-    - name: "Python 3.7 Pytest latest"
+    - name: "Python 3.7 Pytest latest - DEPLOY WebSite+Coverage+PyPi"
       python: 3.7
       env: PYTEST_VERSION="" PYTEST_HTML_VERSION="==1.9.0" SHOULD_DEPLOY="true"
       dist: xenial
