@@ -16,8 +16,7 @@ def whatfun():
 
 
 @fixture
-@parametrize('who', [fixture_ref(world_str),
-                     'you'])
+@parametrize('who', [world_str, 'you'])
 def greetings(who):
     return 'hello ' + who
 
@@ -26,7 +25,8 @@ def greetings(who):
                           fixture_ref(world_str),
                           lazy_value(whatfun),
                           "1",
-                          fixture_ref(greetings)])
+                          fixture_ref(greetings)],
+             auto_refs=False)
 @pytest.mark.parametrize('ending', ['?', '!'])
 def test_prints(main_msg, ending):
     print(main_msg + ending)

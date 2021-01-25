@@ -162,7 +162,7 @@ Fixture unions are a **major change** in the internal pytest engine, as fixture 
 
 [`@parametrize`](./api_reference.md#parametrize) is a replacement for `@pytest.mark.parametrize` with many additional features to make the most of parametrization. See [API reference](./api_reference.md#parametrize) for details about all the new features. In particular it allows you to include references to fixtures and to value-generating functions in the parameter values. 
 
- - Simply use [`fixture_ref(<fixture>)`](./api_reference.md#fixture_ref) in the parameter values, where `<fixture>` can be the fixture name or fixture function.
+ - Simply use [`fixture_ref(<fixture>)`](./api_reference.md#fixture_ref) in the parameter values, where `<fixture>` can be the fixture name or fixture function. New: from version `3.2` on, if `auto_refs=True` (default), `@parametrize` will automatically detect fixture symbols in the list of argvalues, and will create `fixture_ref`s automatically around them so that you don't need to.
  - if you do not wish to create a fixture, you can also use [`lazy_value(<function>)`](./api_reference.md#lazy_value)
  - Note that when parametrizing several argnames, both [`fixture_ref`](./api_reference.md#fixture_ref) and [`lazy_value`](./api_reference.md#lazy_value) can be used *as* the tuple, or *in* the tuple. Several [`fixture_ref`](./api_reference.md#fixture_ref) and/or [`lazy_value`](./api_reference.md#lazy_value) can be used in the same tuple, too.
  - By default the id associated with a [`fixture_ref`](./api_reference.md#fixture_ref) or a [`lazy_value`](./api_reference.md#lazy_value) is the name of the fixture or function. Custom ids can be passed with the `id=<id>` parameter. 
@@ -181,8 +181,7 @@ def whatfun():
     return 'what'
 
 @fixture
-@parametrize('who', [fixture_ref(world_str), 
-                     'you'])
+@parametrize('who', [world_str, 'you'])
 def greetings(who):
     return 'hello ' + who
 
@@ -190,7 +189,8 @@ def greetings(who):
                           fixture_ref(world_str),
                           lazy_value(whatfun),
                           "1",
-                          fixture_ref(greetings)])
+                          fixture_ref(greetings)], 
+             auto_refs=False)
 @pytest.mark.parametrize('ending', ['?', '!'])
 def test_prints(main_msg, ending):
     print(main_msg + ending)
