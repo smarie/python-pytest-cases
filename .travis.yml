@@ -67,7 +67,7 @@ matrix:
       sudo: true
     - name: "Python 3.7 Pytest latest"
       python: 3.7
-      env: PYTEST_VERSION="" PYTEST_HTML_VERSION="==1.9.0"
+      env: PYTEST_VERSION="" PYTEST_HTML_VERSION="==1.9.0" SHOULD_DEPLOY="true"
       dist: xenial
       sudo: true
 
@@ -101,7 +101,7 @@ install:
   - python ci_tools/py_install.py conda ci_tools/requirements-conda.txt
   - python ci_tools/py_install.py pip ci_tools/requirements-pip.txt
   # mkdocs does not work anymore on python 2 so lets only do it when needed
-  - if [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then pip install mkdocs-material mkdocs; fi;
+  - if [ "${SHOULD_DEPLOY}" = "true" ]; then pip install mkdocs-material mkdocs; fi;
   # travis-specific installs
   - pip install PyGithub  # for ci_tools/github_release.py
   - pip install codecov  # See https://github.com/codecov/example-python.
@@ -110,7 +110,7 @@ install:
   - python -m pytest --version  #  - pytest --version
 
 script:
-  #- if [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then python ci_tools/headers_check.py; fi;
+  #- if [ "${SHOULD_DEPLOY}" = "true" ]; then python ci_tools/headers_check.py; fi;
 #  - coverage run tests.py
   - pip install .
   - python -c "import os; os.chdir('..'); import pytest_cases"
@@ -147,7 +147,7 @@ after_success:
       # push but only if this is not a build triggered by a pull request
       # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
       # note: do not use the --dirty flag as it breaks client-side search
-      if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ] && [ "${PYTEST_VERSION}" = "<3" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
+      if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${SHOULD_DEPLOY}" = "true" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
     else
       echo "File 'ci_tools/github_travis_rsa' has not been created, please check your encrypted repo token in .travis.yml, on the line starting with 'openssl aes-256-cbc...'"
     fi
@@ -160,8 +160,8 @@ deploy:
       secure: "iWtaX7rsW1e1dQGMEo4nAa6O9cv27rT7pZMrHe2sN/oODf1CErBLD5MarReA1XLXEcqdO/Qvsx6+djl0Z3daVa6Pk7FMt+5lKBuw1QPUNuU56/MAty36nnH06H4627GZK5gEFbV107BNqnt+1eR7QIlndFVtImdA1m61JyW/5ydCgCy4ppCTNGxwxpkPWimxXMVVwS/vMT/TNzTIUIJfAXObDoBra2bVvyymjPAIJoJWghE/FG1mbsLIhMUq/HWE5k22LwcFWNHRzVddfSCzh6Qw2NyFJaV4QjCLxK3Ia6AmrF7gjpC8GqTSnoClgiW1N9Cl6+h8099BLq46FSAw4eJjkD5BrWzKxtdHg1TBWhoqEPmP4gxTbk/3lT5nYl0Vo0xdXsvjIuiHmy3RGQVNutTUT7ms1w7It0ioX2wPLaTseafOWzf4y1CQceB6AKEXCAFKA0zsj5oxDXokVTSgLpvgFaKHFfy1zz60Ga8TqJY2GD70oxA31NgmGRO+Quamas8iIsFwTmKEjLRtRt/ShTG96wYvZNlOMU4DQ4X5h0BHc5HbZLl8CVWY3NNXISbtH48E+mdvVvw5fJMnan6aK3AGLmn3i+pPX9dfn25avQ2+ulPJbvrxK/x8Ys/ZD2zDlZUdZRS8ffqfeyYFVbMwlt60DkP98zZYibdkGYPcwno="
     on:
       tags: true
-      python: 3.5  #only one of the builds have to be deployed
-      condition: $PYTEST_VERSION = "<3"
+      # python: 3.5  #only one of the builds have to be deployed
+      condition: $SHOULD_DEPLOY = "true"
     # server: https://test.pypi.org/legacy/
     distributions: "sdist bdist_wheel"
 
@@ -171,8 +171,8 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      python: 3.5  #only one of the builds have to be deployed
-      condition: $PYTEST_VERSION = "<3"
+      # only one of the builds have to be deployed
+      condition: $SHOULD_DEPLOY = "true"
 
   # TODO update zenodo record
 
