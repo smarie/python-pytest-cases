@@ -672,7 +672,20 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                 cases_dct[gen_line_nb] = _m_item
 
         elif is_case_function(m, prefix=case_fun_prefix):
-            co_firstlineno = get_code_first_line(m)
+            try:
+                # read pytest magic attribute "place_as" to make sure this is placed correctly
+                m_for_placing = m.place_as
+            except AttributeError:
+                # nominal: get the first line of code
+                co_firstlineno = get_code_first_line(m)
+            else:
+                # currently we only support replacing inside the same module
+                if m_for_placing.__module__ != m.__module__:
+                    raise ValueError("Unsupported value for 'place_as' special pytest attribute on case function %s: %s"
+                                     ". Virtual placing in another module is not supported yet by pytest-cases."
+                                     % (m, m_for_placing))
+                co_firstlineno = get_code_first_line(m_for_placing)
+
             if cls is not None:
                 if isinstance(cls.__dict__[m_name], (staticmethod, classmethod)):
                     # nothing to do: no need to partialize a 'self' argument
@@ -693,6 +706,9 @@ def _extract_cases_from_module_or_class(module=None,                      # type
 
             if _case_param_factory is None:
                 # Nominal usage: put the case in the dictionary
+                if co_firstlineno in cases_dct:
+                    raise ValueError("Error collecting case functions, line number used by %r is already used by %r !"
+                                     % (m, cases_dct[co_firstlineno]))
                 cases_dct[co_firstlineno] = m
             else:
                 # Legacy usage where the cases generators were expanded here and inserted with a virtual line no
