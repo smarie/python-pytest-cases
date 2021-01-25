@@ -9,6 +9,8 @@
 
 !!! success "Major refactoring of test ids in v3.0.0 ! See [below](#c-test-ids) for details."
 
+!!! success "`@parametrize` now automatically detects fixture symbols ! See [documentation](./pytest_goodies.md#parametrize) for details."
+
 !!! warning "Installing pytest-cases has effects on the order of `pytest` tests execution. Details [here](#installing)"
 
 Did you ever think that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
