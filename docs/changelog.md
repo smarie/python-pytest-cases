@@ -1,5 +1,13 @@
 # Changelog
 
+### 3.1.2 - Bugfixes with nesting and pytest-asyncio
+
+ - Now appending fixtures to the closure once it has been built is supported. This fixes an issue with `pytest-asyncio`. Fixes [#176](https://github.com/smarie/python-pytest-cases/issues/176)
+
+ - Fixed issue when `parametrize_with_cases` was used on case functions themselves (nesting/recursion). This was due to a lack of support of the `place_as` magic pytest attribute. Fixes [#179](https://github.com/smarie/python-pytest-cases/issues/179)
+
+ - Added a warning concerning usage of indirect in parametrize when fixture references are present. See [#150](https://github.com/smarie/python-pytest-cases/issues/150)
+
 ### 3.1.1 - Bugfix with ids
 
  - Fixed issue with Empty id marker leaking to test ids. Fixed [#171](https://github.com/smarie/python-pytest-cases/issues/171)
