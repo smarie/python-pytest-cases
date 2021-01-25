@@ -59,8 +59,9 @@ def test_super_closure_edits2():
     with pytest.raises(NotImplementedError):
         del super_closure[-1]
 
-    with pytest.raises(NotImplementedError):
-        super_closure.append('toto')
+    # now supported
+    super_closure.append('toto')
+    assert list(super_closure) == ['environment', 'a', 'request', 'b', 'toto']
 
     with pytest.raises(NotImplementedError):
         super_closure.insert(0, 'toto')

@@ -487,10 +487,13 @@ class SuperClosure(MutableSequence):
 
         # save the fixture closure tree root
         self.tree = root_node
+        # retrieve/sort fixture defs for quicker access
+        self._update_fixture_defs()
 
+    def _update_fixture_defs(self):
         # get a list of all fixture defs, for quicker access (and sorted)
         # sort by scope as in pytest fixture closure creator, if scope information is available
-        all_fixture_defs = root_node.get_all_fixture_defs(drop_fake_fixtures=False, try_to_sort=True)
+        all_fixture_defs = self.tree.get_all_fixture_defs(drop_fake_fixtures=False, try_to_sort=True)
 
         # # also sort all partitions (note that we cannot rely on the order in all_fixture_defs when scopes are same!)
         # if LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
@@ -581,6 +584,8 @@ class SuperClosure(MutableSequence):
         if index == len(self):
             # append: supported
             self.tree.build_closure((fixture_name,))
+            # update fixture defs
+            self._update_fixture_defs()
         else:
             raise NotImplementedError("When fixture unions are present, inserting a fixture in the closure is "
                                       "non-trivial. Please report this so that we can find a suitable solution for "
