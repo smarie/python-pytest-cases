@@ -72,6 +72,8 @@ def pytest_runtest_setup(item):
 # @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_collection(session):
     """ HACK: override the fixture manager's `getfixtureclosure` method to replace it with ours """
+
+    # Note for reference: another way to access the fm is `metafunc.config.pluginmanager.get_plugin('funcmanage')`
     session._fixturemanager.getfixtureclosure = partial(getfixtureclosure, session._fixturemanager)  # noqa
 
 
@@ -323,6 +325,45 @@ class FixtureClosureNode(object):
                     continue
 
     # ------ tools to add new fixture names during closure construction
+
+    # def prepend_fixture_without_dependencies(self, fixname):
+    #     """"""
+    #     fixturedefs = self.fixture_defs_mgr.get_fixture_defs(fixname)
+    #     if not fixturedefs:
+    #         # fixture without definition: add it. This can happen with e.g. "requests", etc.
+    #         self.fixture_defs.insert((fixname, None))
+    #     else:
+    #         # the actual definition is the last one
+    #         _fixdef = fixturedefs[-1]
+    #         _params = _fixdef.params
+    #
+    #         if _params is not None and is_fixture_union_params(_params):
+    #             # union fixture
+    #             raise ValueError("It is not possible to add a union fixture after the initial closure has been built")
+    #         else:
+    #             # normal fixture
+    #             self.add_required_fixture(fixname, fixturedefs)
+    #
+    #             # add all dependencies in the to do list
+    #             dependencies = _fixdef.argnames
+
+    # def add_fixture_without_dependencies(self, fixname):
+    #     """Used for later addition, once the closure has been built"""
+    #     fixturedefs = self.fixture_defs_mgr.get_fixture_defs(fixname)
+    #     if not fixturedefs:
+    #         # fixture without definition: add it. This can happen with e.g. "requests", etc.
+    #         self.add_required_fixture(fixname, None)
+    #     else:
+    #         # the actual definition is the last one
+    #         _fixdef = fixturedefs[-1]
+    #         _params = _fixdef.params
+    #
+    #         if _params is not None and is_fixture_union_params(_params):
+    #             # union fixture
+    #             raise ValueError("It is not possible to add a union fixture after the initial closure has been built")
+    #         else:
+    #             # normal fixture
+    #             self.add_required_fixture(fixname, fixturedefs)
 
     def add_required_fixture(self, new_fixture_name, new_fixture_defs):
         """Add some required fixture names to all leaves under this node"""
