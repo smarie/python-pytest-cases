@@ -325,9 +325,9 @@ function filter_table(elem) {
     not_found_message.hidden = !all_rows_hidden;
 }
 </script>
-    <p>Report generated on 25-Jan-2021 at 16:46:08</p>
+    <p>Report generated on 25-Jan-2021 at 16:49:12</p>
     <h2>Summary</h2>
-    <p>957 tests ran in 6.88 seconds. </p>
+    <p>957 tests ran in 6.68 seconds. </p>
     <p>(Un)check the boxes to filter the results.</p><input checked="true" data-test-result="passed" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">957 passed</span> <input checked="true" data-test-result="skipped" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">120 skipped</span> <input checked="true" data-test-result="failed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span> <input checked="true" data-test-result="error" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span> <input checked="true" data-test-result="xfailed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span> <input checked="true" data-test-result="xpassed" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span> <input checked="true" data-test-result="rerun" disabled="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="rerun">0 rerun</span> 
     <h2>Results</h2>
     <table id="results-table">
@@ -685,7 +685,7 @@ function filter_table(elem) {
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/cases/doc/test_doc.py::test_foo_cls_list_synthesis</td>
-          <td class="col-duration">0.02</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
@@ -1196,7 +1196,7 @@ function filter_table(elem) {
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_synthesis</td>
-          <td class="col-duration">0.01</td>
+          <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
@@ -1250,7 +1250,7 @@ function filter_table(elem) {
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/cases/doc/test_generators.py::test_foo_multi_synthesis</td>
-          <td class="col-duration">0.01</td>
+          <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
@@ -4729,7 +4729,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setup for &lt;function case_datasetA at 0x7f9de46e4320&gt;
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setup for &lt;function case_datasetA at 0x7fa535e4f440&gt;
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -4739,7 +4739,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>teardown for &lt;function case_datasetA at 0x7f9de46e4320&gt;
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>teardown for &lt;function case_datasetA at 0x7fa535e4f440&gt;
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -4758,7 +4758,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setup for &lt;function case_datasetB at 0x7f9de46da320&gt;
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>setup for &lt;function case_datasetB at 0x7fa535e4f950&gt;
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -4768,7 +4768,7 @@ function filter_table(elem) {
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>teardown for &lt;function case_datasetB at 0x7f9de46da320&gt;
+            <div class="log">---------------------------- Captured stdout setup -----------------------------<br/>teardown for &lt;function case_datasetB at 0x7fa535e4f950&gt;
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -8280,7 +8280,7 @@ For debug, temp dir is: /tmp/pytest-of-travis/pytest-0/test_run_all_tests0
 ============================= test session starts ==============================
 platform linux -- Python 3.7.9, pytest-6.2.2, py-1.10.0, pluggy-0.13.1
 rootdir: /tmp/pytest-of-travis/pytest-0/test_run_all_tests0
-plugins: cases-3.1.2.dev11+gfab8e75, harvest-1.10.1, html-1.9.0, steps-1.7.3
+plugins: harvest-1.10.1, cases-3.1.2, html-1.9.0, steps-1.7.3
 collected 10 items
 
 test_run_all_tests.py ..........                                         [100%]
@@ -8291,7 +8291,7 @@ test_run_all_tests.py ..........                                         [100%]
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/pytest_extension/meta/test_all.py::test_run_all_tests[reorder_skip]</td>
-          <td class="col-duration">0.07</td>
+          <td class="col-duration">0.08</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
@@ -8301,7 +8301,7 @@ For debug, temp dir is: /tmp/pytest-of-travis/pytest-0/test_run_all_tests1
 ============================= test session starts ==============================
 platform linux -- Python 3.7.9, pytest-6.2.2, py-1.10.0, pluggy-0.13.1
 rootdir: /tmp/pytest-of-travis/pytest-0/test_run_all_tests1
-plugins: cases-3.1.2.dev11+gfab8e75, harvest-1.10.1, html-1.9.0, steps-1.7.3
+plugins: harvest-1.10.1, cases-3.1.2, html-1.9.0, steps-1.7.3
 collected 4 items / 1 deselected / 3 selected
 
 test_run_all_tests.py ...                                                [100%]
@@ -8516,7 +8516,7 @@ reprovision created: flavor1 vlan
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">pytest_cases/tests/pytest_extension/parametrize_plus/test_basics_misc.py::test_idgen1_synthesis</td>
-          <td class="col-duration">0.01</td>
+          <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
@@ -10005,7 +10005,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.3698483809940619
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.7641588904753851
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10015,7 +10015,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.7854767061653019
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.03677242989440632
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10025,7 +10025,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.7506267452900764
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.6581116491506431
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10035,7 +10035,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.29479684228271474
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.7215033621687039
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10045,7 +10045,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.37756002956460466
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.5198234954363619
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10055,7 +10055,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.5993077109994855
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.696730148582133
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10065,7 +10065,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.2806380094638219
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.7149010379766167
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10075,7 +10075,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.6520610454432813
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.5315159906957445
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10085,7 +10085,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.19923711991636983
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.6340267545161361
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -10095,7 +10095,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="5">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.5935000319411259
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>0.9358023871410243
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
