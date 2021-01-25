@@ -790,7 +790,6 @@
 <div class="codehilite"><pre><span></span><code>&gt; pip install pytest_cases
 </code></pre></div>
 
-
 <p>Note: Installing pytest-cases has effects on the order of <code>pytest</code> tests execution, even if you do not use its features. One positive side effect is that it fixed <a href="https://github.com/pytest-dev/pytest/issues/5054">pytest#5054</a>. But if you see less desirable ordering please <a href="https://github.com/smarie/python-pytest-cases/issues">report it</a>.</p>
 <h2 id="why-pytest-cases">Why <code>pytest-cases</code> ?<a class="headerlink" href="#why-pytest-cases" title="Permanent link">&para;</a></h2>
 <p><strong><code>pytest</code> philosophy</strong></p>
@@ -798,7 +797,6 @@
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">+</span> <span class="mi">1</span>
 </code></pre></div>
-
 
 <p>If we were using plain <code>pytest</code> to test it with various inputs, we would create a <code>test_foo.py</code> file and use <code>@pytest.mark.parametrize</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
@@ -809,7 +807,6 @@
     <span class="c1"># check that foo runs correctly and that the result is a tuple. </span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">)</span>
 </code></pre></div>
-
 
 <p>This is the fastest and most compact thing to do when you have a few number of test cases, that do not require code to generate each test case. </p>
 <p><strong><code>pytest</code> current limitations</strong></p>
@@ -829,7 +826,6 @@
 <span class="n">case1</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
-
 <ul>
 <li>
 <p>requires <strong>documentation</strong> to explain the other developers the intent of that precise test case</p>
@@ -847,7 +843,6 @@
 <span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="o">...</span>
 </code></pre></div>
-
 
 <p>There is also an example in <code>pytest</code> doc <a href="https://docs.pytest.org/en/stable/example/parametrize.html#a-quick-port-of-testscenarios">with a <code>metafunc</code> hook</a>. </p>
 <p>The issue with such workarounds is that you can do <em>anything</em>. And <em>anything</em> is a bit too much: this does not provide any convention / "good practice" on how to organize test cases, which is an open door to developing ad-hoc unreadable or unmaintainable solutions.</p>
@@ -872,7 +867,6 @@
     <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span>
 </code></pre></div>
 
-
 <p>Case functions <strong>do not have any particular requirement</strong>, apart from the default name convention <code>case_&lt;id&gt;</code> - but even that can be customized: <strong>you can use distinct prefixes</strong> to denote distinct kind of parameters, such as <code>data_&lt;id&gt;</code>, <code>user_&lt;id&gt;</code>, <code>model_&lt;id&gt;</code>... </p>
 <p>Case functions can return anything that is considered useful to run the associated test. We will see <a href="#b-case-functions">below</a> that you can use all classic pytest mechanism on case functions (id customization, skip/fail marks, parametrization, fixtures injection).</p>
 <h3 id="b-test-functions">b- Test functions<a class="headerlink" href="#b-test-functions" title="Permanent link">&para;</a></h3>
@@ -886,7 +880,6 @@
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">)</span>
 </code></pre></div>
 
-
 <p>As simple as that ! The syntax is basically the same than in <a href="https://docs.pytest.org/en/stable/example/parametrize.html"><code>pytest.mark.parametrize</code></a>.</p>
 <p>Executing <code>pytest</code> will now run our test function <strong>once for every case function</strong>:</p>
 <div class="codehilite"><pre><span></span><code>&gt;&gt;&gt; pytest -s -v
@@ -897,7 +890,6 @@
 
 <span class="o">==========================</span> <span class="m">2</span> passed <span class="k">in</span> <span class="m">0</span>.24 <span class="nv">seconds</span> <span class="o">==========================</span>
 </code></pre></div>
-
 
 <h2 id="tools-for-daily-use">Tools for daily use<a class="headerlink" href="#tools-for-daily-use" title="Permanent link">&para;</a></h2>
 <h3 id="a-cases-collection">a- Cases collection<a class="headerlink" href="#a-cases-collection" title="Permanent link">&para;</a></h3>
@@ -916,7 +908,6 @@
     <span class="k">assert</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 </code></pre></div>
 
-
 <p>However <strong>WARNING</strong>: only the case functions defined BEFORE the test function in the module file will be taken into account!</p>
 <p><code>@parametrize_with_cases(cases=...)</code> also accepts explicit list of case functions, classes containing case functions, and modules. See <a href="api_reference/#parametrize_with_cases">API Reference</a> for details. A typical way to organize cases is to use classes for example:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize_with_cases</span>
@@ -932,7 +923,6 @@
 <span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="mi">0</span>
 </code></pre></div>
-
 
 <p>Note that as for <code>pytest</code>, <code>self</code> is recreated for every test and therefore should not be used to store any useful information. </p>
 <h4 id="alternate-prefix">Alternate prefix<a class="headerlink" href="#alternate-prefix" title="Permanent link">&para;</a></h4>
@@ -959,13 +949,11 @@
     <span class="k">assert</span> <span class="n">user</span> <span class="o">==</span> <span class="s1">&#39;bob&#39;</span>
 </code></pre></div>
 
-
 <p>yields</p>
 <div class="codehilite"><pre><span></span><code>test_doc_filters_n_tags.py::test_with_data[bob-a]       PASSED [ 33%]
 test_doc_filters_n_tags.py::test_with_data[bob-b-True]   PASSED [ 66%]
 test_doc_filters_n_tags.py::test_with_data[bob-b-False]   PASSED [ 100%]
 </code></pre></div>
-
 
 <h4 id="filters-and-tags">Filters and tags<a class="headerlink" href="#filters-and-tags" title="Permanent link">&para;</a></h4>
 <p>The easiest way to select only a subset of case functions in a module or a class, is to specify a custom <code>prefix</code> instead of the default one (<code>'case_'</code>), as shown <a href="#alternate-prefix">above</a>.</p>
@@ -996,7 +984,6 @@ test_doc_filters_n_tags.py::test_with_data[bob-b-False]   PASSED [ 100%]
         <span class="n">sqrt</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </code></pre></div>
 
-
 <ul>
 <li>the <code>has_tag</code> argument allows you to filter cases based on tags set on case functions using the <code>@case</code> decorator. See API reference of <a href="api_reference/#case"><code>@case</code></a> and <a href="api_reference/#parametrize_with_cases"><code>@parametrize_with_cases</code></a>.</li>
 </ul>
@@ -1015,7 +1002,6 @@ test_doc_filters_n_tags.py::test_with_data[bob-b-False]   PASSED [ 100%]
     <span class="k">assert</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="mi">0</span>
 </code></pre></div>
 
-
 <ul>
 <li>Finally if none of the above matches your expectations, you can provide a callable to <code>filter</code>. This callable will receive each collected case function and should return <code>True</code> (or a truth-value convertible object) in case of success. Note that your function can leverage the <code>_pytestcase</code> attribute available on the case function to read the tags, marks and id found on it.</li>
 </ul>
@@ -1024,7 +1010,6 @@ test_doc_filters_n_tags.py::test_with_data[bob-b-False]   PASSED [ 100%]
 <span class="k">def</span> <span class="nf">test_good_datasets2</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
 </code></pre></div>
-
 
 <h3 id="b-case-functions">b- Case functions<a class="headerlink" href="#b-case-functions" title="Permanent link">&para;</a></h3>
 <h4 id="custom-case-name">Custom case name<a class="headerlink" href="#custom-case-name" title="Permanent link">&para;</a></h4>
@@ -1036,7 +1021,6 @@ test_doc_filters_n_tags.py::test_with_data[bob-b-False]   PASSED [ 100%]
     <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
 </code></pre></div>
 
-
 <h4 id="pytest-marks-skip-xfail">Pytest marks (<code>skip</code>, <code>xfail</code>...)<a class="headerlink" href="#pytest-marks-skip-xfail" title="Permanent link">&para;</a></h4>
 <p>pytest marks such as <code>@pytest.mark.skipif</code> can be applied on case functions the same way <a href="https://docs.pytest.org/en/stable/skipping.html">as with test functions</a>.</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
@@ -1046,7 +1030,6 @@ test_doc_filters_n_tags.py::test_with_data[bob-b-False]   PASSED [ 100%]
 <span class="k">def</span> <span class="nf">case_two_positive_ints</span><span class="p">():</span>
     <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
 </code></pre></div>
-
 
 <h4 id="case-generators">Case generators<a class="headerlink" href="#case-generators" title="Permanent link">&para;</a></h4>
 <p>In many real-world usage we want to generate one test case <em>per</em> <code>&lt;something&gt;</code>. The most intuitive way would be to use a <code>for</code> loop to create the case functions, and to use the <code>@case</code> decorator to set their names ; however this would not be very readable.</p>
@@ -1067,13 +1050,11 @@ test_doc_filters_n_tags.py::test_with_data[bob-b-False]   PASSED [ 100%]
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-
 <p>Yields</p>
 <div class="codehilite"><pre><span></span><code>test_generators.py::test_foo[hello] PASSED               [ 33%]
 test_generators.py::test_foo[simple_generator-who=you] PASSED [ 66%]
 test_generators.py::test_foo[simple_generator-who=there] PASSED [100%]
 </code></pre></div>
-
 
 <h4 id="cases-requiring-fixtures">Cases requiring fixtures<a class="headerlink" href="#cases-requiring-fixtures" title="Permanent link">&para;</a></h4>
 <p>Cases can use fixtures the same way as <a href="https://docs.pytest.org/en/stable/fixture.html#fixtures-as-function-arguments">test functions do</a>: simply add the fixture names as arguments in their signature and make sure the fixture exists either in the same module, or in a <a href="https://docs.pytest.org/en/stable/fixture.html?highlight=conftest.py#conftest-py-sharing-fixture-functions"><code>conftest.py</code></a> file in one of the parent packages. See <a href="https://docs.pytest.org/en/stable/fixture.html?highlight=conftest.py#conftest-py-sharing-fixture-functions"><code>pytest</code> documentation on sharing fixtures</a>.</p>
@@ -1100,13 +1081,11 @@ test_generators.py::test_foo[simple_generator-who=there] PASSED [100%]
     <span class="k">assert</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 </code></pre></div>
 
-
 <p>yields</p>
 <div class="codehilite"><pre><span></span><code>test_fixtures.py::test_users[a_is_bob] 
 test_fixtures.py::test_users[a_is_from_db-id=0] 
 test_fixtures.py::test_users[a_is_from_db-id=1] 
 </code></pre></div>
-
 
 <h2 id="advanced-topics">Advanced topics<a class="headerlink" href="#advanced-topics" title="Permanent link">&para;</a></h2>
 <h3 id="a-parametrizing-fixtures">a- Parametrizing fixtures<a class="headerlink" href="#a-parametrizing-fixtures" title="Permanent link">&para;</a></h3>
@@ -1137,7 +1116,6 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 </code></pre></div>
 
-
 <h3 id="b-caching-cases">b- Caching cases<a class="headerlink" href="#b-caching-cases" title="Permanent link">&para;</a></h3>
 <p>After starting to reuse cases in several test functions, you might end-up thinking <em>"why do I have to spend the data parsing/generation time several times ? It is the same case."</em>. </p>
 <p><code>pytest-cases</code> follows the same philosophy than <code>pytest</code>: each test node should be independent. Therefore case functions are called for each test case. This ensures that mutable objects can not leak across tests, for example.</p>
@@ -1164,7 +1142,6 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
     <span class="k">assert</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="mi">2</span>
     <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">cached_a</span> <span class="o">&lt;=</span> <span class="mi">1</span>
 </code></pre></div>
-
 
 <ul>
 <li>
@@ -1203,7 +1180,6 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
     <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </code></pre></div>
 
-
 <p><code>pytest -s -v</code> yields:</p>
 <div class="codehilite"><pre><span></span><code>============================= test session starts =============================
 platform win32 -- Python 3.7.3, pytest-5.3.5, py-1.9.0, pluggy-0.13.1
@@ -1217,7 +1193,6 @@ test_doc_ids_debug.py::test_foo[#hello_name#-earthling]
 
 ============================== 4 passed in 0.07s ==============================
 </code></pre></div>
-
 
 <h3 id="d-debugging">d- Debugging<a class="headerlink" href="#d-debugging" title="Permanent link">&para;</a></h3>
 <p>When all of your case functions are simple, <code>@parametrize_with_cases</code> generates a <code>@parametrize</code> decorator with argvalues being a list of <code>lazy_value(&lt;case_func&gt;)</code> for all of them. This in turn falls back to a good old <code>@pytest.mark.parametrize</code>, so the behaviour is close to what you are used to see when using <code>pytest</code>.</p>
@@ -1249,7 +1224,6 @@ test_doc_ids_debug.py::test_foo[#hello_name#-earthling]
     <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </code></pre></div>
 
-
 <p><code>pytest -s -v</code> yields</p>
 <div class="codehilite"><pre><span></span><code>test_doc_debug.py::test_default_idstyle[hello] 
 test_doc_debug.py::test_default_idstyle[hello_fixture-you] 
@@ -1261,7 +1235,6 @@ test_doc_debug.py::test_explicit_idstyle[msg\hello]
 test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-you] 
 test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-earthling] 
 </code></pre></div>
-
 
 <p>See also <a href="pytest_goodies/#parametrize"><code>@parametrize</code> documentation</a> for details.</p>
 <h2 id="main-features-benefits">Main features / benefits<a class="headerlink" href="#main-features-benefits" title="Permanent link">&para;</a></h2>
@@ -1341,7 +1314,7 @@ test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-earthling]
     </div>
     
       <script src="assets/javascripts/vendor.93c04032.min.js"></script>
-      <script src="assets/javascripts/bundle.83e5331e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "search.result.placeholder": "Type to start searching", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.config.pipeline": "trimmer, stopWordFilter", "clipboard.copied": "Copied to clipboard", "search.placeholder": "Search", "search.config.separator": "[\\s\\-]+", "search.result.one": "1 matching document", "search.result.term.missing": "Missing", "search.config.lang": "en", "search.result.other": "# matching documents", "search.result.none": "No matching documents"}</script>
+      <script src="assets/javascripts/bundle.83e5331e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
