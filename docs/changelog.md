@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.2.0 - Automatic `fixture_ref`
+
+ - New: from version `3.2` on, if `auto_refs=True` (default), `@parametrize` will automatically detect fixture symbols in the list of argvalues, and will create `fixture_ref`s automatically around them so that you don't need to. Fixes [#177](https://github.com/smarie/python-pytest-cases/issues/177)
+
 ### 3.1.2 - Bugfixes with nesting and pytest-asyncio
 
  - Now appending fixtures to the closure once it has been built is supported. This fixes an issue with `pytest-asyncio`. Fixes [#176](https://github.com/smarie/python-pytest-cases/issues/176)
