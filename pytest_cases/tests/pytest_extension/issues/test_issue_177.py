@@ -51,8 +51,7 @@ if has_pytest_param:
         assert letters.upper() == letters.lower().upper()
 
 
-def test_synthesis(module_results_dct):
-    if has_pytest_param:
+    def test_synthesis(module_results_dct):
         assert list(module_results_dct) == [
             'test_stuff[a-b-True-a]',
             'test_stuff[a-b-False-a]',
@@ -63,5 +62,3 @@ def test_synthesis(module_results_dct):
             'test_stuff_multi[c-b-no-a-yes]',
             'test_stuff_multi[ho-b-no-a-yes]'
         ]
-    else:
-        assert list(module_results_dct) == []

@@ -1049,7 +1049,12 @@ def _parametrize_plus(argnames=None,
             #   move_all_pytest_marks(test_func, wrapped_test_func)
 
             # With this hack we will be ordered correctly by pytest https://github.com/pytest-dev/pytest/issues/4429
-            wrapped_test_func.place_as = test_func
+            try:
+                # propagate existing attribute if any
+                wrapped_test_func.place_as = test_func.place_as
+            except:  # noqa
+                # position the test at the original function's position
+                wrapped_test_func.place_as = test_func
 
             # return the new test function
             return wrapped_test_func
