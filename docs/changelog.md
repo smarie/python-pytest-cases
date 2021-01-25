@@ -1,8 +1,10 @@
 # Changelog
 
-### 3.2.0 - Automatic `fixture_ref`
+### 3.2.0 - Automatic `fixture_ref` + test ordering bugfix
 
  - New: from version `3.2` on, if `auto_refs=True` (default), `@parametrize` will automatically detect fixture symbols in the list of argvalues, and will create `fixture_ref`s automatically around them so that you don't need to. Fixes [#177](https://github.com/smarie/python-pytest-cases/issues/177)
+
+ - Fixed ordering issue happening on linux targets when several `@parametrize` are used to decorate the same function. Fixes [#180](https://github.com/smarie/python-pytest-cases/issues/180)
 
 ### 3.1.2 - Bugfixes with nesting and pytest-asyncio
 
