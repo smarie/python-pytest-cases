@@ -802,7 +802,7 @@ class CallsReactor(object):
 
     def __init__(self, metafunc):
         self.metafunc = metafunc
-        self._pending = []
+        self._pending = []        # type: List[Union[UnionParamz, NormalParamz]]
         self._call_list = None
 
     # -- methods to provising parametrization orders without executing them --
@@ -851,9 +851,14 @@ class CallsReactor(object):
         assert self.metafunc._calls is self
 
         # ------ parametrize the calls --------
-        # create a dictionary of pending things to parametrize, and only keep the first parameter in case of several
-        pending_items = [(get_param_argnames_as_list(p[0])[0], p) for p in self._pending]
-        pending = OrderedDict(pending_items)
+        # create a dictionary of pending fixturenames/argnames to parametrize.
+        pending_dct = OrderedDict()
+        for p in self._pending:
+            k = get_param_argnames_as_list(p[0])
+            # remember one of the argnames only so that we are able to detect where in the fixture tree the
+            # parametrization applies (it will still be applied for all of its argnames, no worries: see _process_node)
+            k = k[0]
+            pending_dct[k] = p
 
         if _DEBUG:
             print("\n---- pending parametrization ----")
@@ -866,7 +871,7 @@ class CallsReactor(object):
         assert isinstance(super_closure, SuperClosure)
 
         # Apply parametrization for calls
-        calls = get_calls_for_tree(self.metafunc, super_closure.tree, pending.copy())
+        calls = get_calls_for_tree(self.metafunc, super_closure.tree, pending_dct)
         # Alternative: use the partitions for parametrization. The issue is that this leads to a less intuitive order
         # calls = []
         # for i in range(super_closure.nb_alternative_closures):
@@ -889,13 +894,30 @@ class CallsReactor(object):
         self._pending = None
 
 
-def get_calls_for_tree(metafunc, fix_closure_tree, pending):
-    calls, nodes = _process_node(metafunc, fix_closure_tree, pending.copy(), [])
-    _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending)
+def get_calls_for_tree(metafunc,
+                       fix_closure_tree,  # type: FixtureClosureNode
+                       pending_dct        # type: MutableMapping[str, Union[UnionParamz, NormalParamz]]
+                       ):
+    """
+    Creates the list of calls for `metafunc` based on
+    :param metafunc:
+    :param fix_closure_tree:
+    :param pending:
+    :return:
+    """
+    pending_dct = pending_dct.copy()
+    calls, nodes_used_by_calls = _process_node(metafunc, fix_closure_tree, pending_dct, [])
+    # for each call in calls, the node in nodes_used_by_calls is the coresponding tree leaf.
+    _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes_used_by_calls, pending_dct)
     return calls
 
 
-def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
+def _cleanup_calls_list(metafunc,
+                        fix_closure_tree,   # type: FixtureClosureNode
+                        calls,              # type: List[CallSpec2]
+                        nodes,              # type: List[FixtureClosureNode]
+                        pending_dct         # type: MutableMapping[str, Union[UnionParamz, NormalParamz]]
+                        ):
     """
     Cleans the calls list so that all calls contain a value for all parameters. This is basically
     about adding "NOT_USED" parametrization everywhere relevant.
@@ -929,7 +951,7 @@ def _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes, pending):
         c, n = calls[i], nodes[i]
 
         # A/ set to "not used" all parametrized fixtures that were not used in some branches
-        for fixture, p_to_apply in pending.items():
+        for fixture, p_to_apply in pending_dct.items():
             if fixture not in c.params and fixture not in c.funcargs:
                 # parametrize with a single "not used" value and discard the id
                 if isinstance(p_to_apply, UnionParamz):
@@ -1130,10 +1152,17 @@ def _parametrize_calls(metafunc, init_calls, argnames, argvalues, discard_id=Fal
     return new_calls
 
 
-def _process_node(metafunc, current_node, pending, calls):
+def _process_node(metafunc,
+                  current_node,  # type: FixtureClosureNode
+                  pending,       # type: MutableMapping[str, Union[UnionParamz, NormalParamz]]
+                  calls          # type: List[CallSpec2]
+                  ):
     """
-    Routine to apply all the parametrization orders in `pending` that are relevant to `current_node`,
-    to the `calls` (a list of pytest CallSpec2).
+    Routine to apply all the parametrization tasks in `pending` that are relevant to `current_node`,
+    to `calls` (a list of pytest CallSpec2).
+
+    It first applies all parametrization that correspond to current node (normal parameters),
+    then applies the "split" parametrization if needed and recurses into each tree branch.
 
     It returns a tuple containing a list of calls and a list of same length containing which leaf node each one
     corresponds to.
@@ -1146,35 +1175,25 @@ def _process_node(metafunc, current_node, pending, calls):
         the corresponding leaf node in nodes[i]
     """
 
-    # (1) first apply all non-split fixtures at this node
+    # (1) first apply all **non-split** fixtures at this node = NORMAL PARAMETERS
+    # in the order defined in the closure tree, do not trust the order of the received parametrize (`pending`)
     fixtures_at_this_node = [f for f in current_node.fixture_defs.keys()
                              if f is not current_node.split_fixture_name]
-
-    # dirty hack if we want to preserve pytest legacy order when there are no children
-    # if current_node.parent is None and not current_node.has_split():
-    #     # legacy compatibility: use pytest parametrization order even if it is wrong
-    #     # see https://github.com/pytest-dev/pytest/issues/5054
-    #
-    # else:
-    #     # rather trust the order we computed from the closure
-    #     fixtures_to_process = fixtures_at_this_node
-
     for fixturename in fixtures_at_this_node:
         try:
-            # pop it from pending - do not rely the order in pending but rather the order in the closure node
+            # pop the corresponding parametrization from pending - do not trust the order
             p_to_apply = pending.pop(fixturename)
         except KeyError:
-            # not a parametrized fixture
+            # fixturename is not a parametrized fixture, nothing to do
             continue
         else:
             if isinstance(p_to_apply, UnionParamz):
-                raise ValueError("This should not happen !")
+                raise ValueError("This should not happen! Only Normal parameters should be in fixtures_at_this_node")
             elif isinstance(p_to_apply, NormalParamz):
                 # ******** Normal parametrization **********
                 if _DEBUG:
                     print("[Node %s] Applying parametrization for NORMAL %s"
-                          "" % (current_node.to_str(with_children=False, with_discarded=False),
-                                p_to_apply.argnames))
+                          "" % (current_node.to_str(with_children=False), p_to_apply.argnames))
 
                 calls = _parametrize_calls(metafunc, calls, p_to_apply.argnames, p_to_apply.argvalues,
                                            indirect=p_to_apply.indirect, ids=p_to_apply.ids,
@@ -1182,26 +1201,26 @@ def _process_node(metafunc, current_node, pending, calls):
             else:
                 raise TypeError("Invalid parametrization type: %s" % p_to_apply.__class__)
 
-    # (2) then if there is a split apply it, otherwise return
+    # (2) then is there a "union" = a split between two sub-branches in the tree ?
     if not current_node.has_split():
+        # No split = tree leaf: return
         nodes = [current_node] * len(calls)
         return calls, nodes
     else:
+        # There is a **split** : apply its parametrization (a UNION parameter)
         try:
-            # pop it from pending - do not trust the order in pending.
+            # pop the corresponding parametrization from pending - do not trust the order
             p_to_apply = pending.pop(current_node.split_fixture_name)
         except KeyError:
-            # not a parametrized fixture
-            raise ValueError("Error: fixture union parametrization not present")
+            raise ValueError("This should not happen! fixture union parametrization missing, but this is a split node")
         else:
             if isinstance(p_to_apply, NormalParamz):
-                raise ValueError("This should not happen !")
+                raise ValueError("This should not happen! Split nodes correspond to Union parameters, not Normal ones.")
             elif isinstance(p_to_apply, UnionParamz):
                 # ******** Union parametrization **********
                 if _DEBUG:
                     print("[Node %s] Applying parametrization for UNION %s"
-                          "" % (current_node.to_str(with_children=False, with_discarded=False),
-                                p_to_apply.union_fixture_name))
+                          "" % (current_node.to_str(with_children=False), p_to_apply.union_fixture_name))
 
                 # always use 'indirect' since that's a fixture.
                 calls = _parametrize_calls(metafunc, calls, p_to_apply.union_fixture_name,

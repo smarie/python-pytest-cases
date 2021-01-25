@@ -23,7 +23,7 @@ from makefun import with_signature, remove_signature_parameters, add_signature_p
 
 from .common_mini_six import string_types
 from .common_others import AUTO, robust_isinstance
-from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list, PYTEST421_OR_GREATER, PYTEST54_OR_GREATER
+from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
     extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, \
