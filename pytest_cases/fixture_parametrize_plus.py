@@ -775,6 +775,10 @@ def _parametrize_plus(argnames=None,
 
     else:
         # there are fixture references: we will create a specific decorator replacing the params with a "union" fixture
+        if indirect:
+            warn("Using `indirect=True` at the same time as fixture references in `@parametrize` is not guaranteed to "
+                 "work and is strongly discouraged for readability reasons. See "
+                 "https://github.com/smarie/python-pytest-cases/issues/150")
 
         # First unset the pytest.param id we have set earlier in _process_argvalues: indeed it is only needed in
         # the case above where we were defaulting to legacy @pytest.mark.parametrize .
