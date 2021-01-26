@@ -10,7 +10,7 @@
       
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.5">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.6">
     
     
       
@@ -18,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.15aa0b43.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.cb6bc1d0.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.75751829.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.39b8e14a.min.css">
         
       
     
@@ -192,7 +192,6 @@
       
       
 
-
   
   
   
@@ -207,7 +206,6 @@
       
       
       
-
 
   
   
@@ -224,7 +222,6 @@
       
       
 
-
   
   
   
@@ -240,7 +237,6 @@
       
       
 
-
   
   
   
@@ -255,7 +251,6 @@
       
       
       
-
 
   
   
@@ -488,7 +483,6 @@
       
       
       
-
 
   
   
@@ -733,18 +727,16 @@
 <h2 id="1-case-functions">1 - Case functions<a class="headerlink" href="#1-case-functions" title="Permanent link">&para;</a></h2>
 <p>As explained in the <a href="..">documentation</a>, case functions have no requirement anymore, and starting from version 2.0.0 of <code>pytest_cases</code> they can be parametrized with the usual <code>@pytest.mark.parametrize</code> or its improvement <a href="#parametrize"><code>@parametrize</code></a>. Therefore the only remaining decorator is the optional <code>@case</code> decorator:</p>
 <h3 id="case"><code>@case</code><a class="headerlink" href="#case" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nd">@case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>    <span class="c1"># type: str  # noqa</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>    <span class="c1"># type: str  # noqa</span>
       <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Union[Any, Iterable[Any]]</span>
       <span class="n">marks</span><span class="o">=</span><span class="p">(),</span>   <span class="c1"># type: Union[MarkDecorator, Iterable[MarkDecorator]]</span>
       <span class="p">)</span>
 </code></pre></div>
-
 <p>Optional decorator for case functions so as to customize some information.</p>
-<div class="codehilite"><pre><span></span><code><span class="nd">@case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;hey&#39;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;hey&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">case_hi</span><span class="p">():</span>
     <span class="k">return</span> <span class="mi">1</span>
 </code></pre></div>
-
 <p><strong>Parameters:</strong></p>
 <ul>
 <li>
@@ -758,25 +750,22 @@
 </li>
 </ul>
 <h3 id="copy_case_info"><code>copy_case_info</code><a class="headerlink" href="#copy_case_info" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">copy_case_info</span><span class="p">(</span><span class="n">from_fun</span><span class="p">,</span>  <span class="c1"># type: Callable</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">copy_case_info</span><span class="p">(</span><span class="n">from_fun</span><span class="p">,</span>  <span class="c1"># type: Callable</span>
                    <span class="n">to_fun</span>     <span class="c1"># type: Callable</span>
                    <span class="p">):</span>
 </code></pre></div>
-
 <p>Copies all information from case function <code>from_fun</code> to <code>to_fun</code>.</p>
 <h3 id="set_case_id"><code>set_case_id</code><a class="headerlink" href="#set_case_id" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">set_case_id</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span>        <span class="c1"># type: str</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_case_id</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span>        <span class="c1"># type: str</span>
                 <span class="n">case_func</span>  <span class="c1"># type: Callable</span>
                 <span class="p">):</span>
 </code></pre></div>
-
 <p>Sets an explicit id on case function <code>case_func</code>.</p>
 <h3 id="get_case_id"><code>get_case_id</code><a class="headerlink" href="#get_case_id" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_id</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                      <span class="c1"># type: Callable</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_id</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                      <span class="c1"># type: Callable</span>
                 <span class="n">prefix_for_default_ids</span><span class="o">=</span><span class="s1">&#39;case_&#39;</span>  <span class="c1"># type: str</span>
                 <span class="p">):</span>
 </code></pre></div>
-
 <p>Return the case id associated with this case function.</p>
 <p>If a custom id is not present, a case id is automatically created from the function name based on removing the provided prefix if present at the beginning of the function name. If the resulting case id is empty, "<empty_case_id>" will be returned.</p>
 <p><strong>Parameters:</strong></p>
@@ -789,12 +778,11 @@
 </li>
 </ul>
 <h3 id="get_case_marks"><code>get_case_marks</code><a class="headerlink" href="#get_case_marks" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_marks</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                         <span class="c1"># type: Callable</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_marks</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                         <span class="c1"># type: Callable</span>
                    <span class="n">concatenate_with_fun_marks</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># type: bool</span>
                    <span class="n">as_decorators</span><span class="o">=</span><span class="kc">False</span>                <span class="c1"># type: bool</span>
                    <span class="p">):</span>
 </code></pre></div>
-
 <p>Return the marks that are on the case function.</p>
 <p>There are currently two ways to place a mark on a case function: either with <code>@pytest.mark.&lt;name&gt;</code> or in <code>@case(marks=...)</code>. This function returns a list of marks containing either both (if <code>concatenate_with_fun_marks</code> is <code>True</code>) or only the ones set with <code>@case</code> (<code>concatenate_with_fun_marks</code> is <code>False</code>, default).</p>
 <p><strong>Parameters:</strong></p>
@@ -810,22 +798,20 @@
 </li>
 </ul>
 <h3 id="get_case_tags"><code>get_case_tags</code><a class="headerlink" href="#get_case_tags" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_tags</span><span class="p">(</span><span class="n">case_func</span>  <span class="c1"># type: Callable</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_case_tags</span><span class="p">(</span><span class="n">case_func</span>  <span class="c1"># type: Callable</span>
                   <span class="p">):</span>
 </code></pre></div>
-
 <p>Return the tags on this case function or an empty tuple.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>case_func</code>: the case function</li>
 </ul>
 <h3 id="matches_tag_query"><code>matches_tag_query</code><a class="headerlink" href="#matches_tag_query" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">matches_tag_query</span><span class="p">(</span><span class="n">case_fun</span><span class="p">,</span>      <span class="c1"># type: Callable</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">matches_tag_query</span><span class="p">(</span><span class="n">case_fun</span><span class="p">,</span>      <span class="c1"># type: Callable</span>
                       <span class="n">has_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Union[str, Iterable[str]]</span>
                       <span class="nb">filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>   <span class="c1"># type: Union[Callable[[Callable], bool], Iterable[Callable[[Callable], bool]]]  # noqa</span>
                       <span class="p">):</span>
 </code></pre></div>
-
 <p>This function is the one used by <code>@parametrize_with_cases</code> to filter the case functions collected. It can be used manually for tests/debug.</p>
 <p>Returns True if the case function is selected by the query:</p>
 <ul>
@@ -849,12 +835,11 @@
 </li>
 </ul>
 <h3 id="is_case_class"><code>is_case_class</code><a class="headerlink" href="#is_case_class" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_case_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>                         <span class="c1"># type: Any</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_case_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>                         <span class="c1"># type: Any</span>
                   <span class="n">case_marker_in_name</span><span class="o">=</span><span class="s1">&#39;Case&#39;</span><span class="p">,</span>  <span class="c1"># type: str</span>
                   <span class="n">check_name</span><span class="o">=</span><span class="kc">True</span>              <span class="c1"># type: bool</span>
                   <span class="p">):</span>
 </code></pre></div>
-
 <p>This function is the one used by <code>@parametrize_with_cases</code> to collect cases within classes. It can be used manually for tests/debug.</p>
 <p>Returns True if the given object is a class and, if <code>check_name=True</code> (default), if its name contains <code>case_marker_in_name</code>.</p>
 <p><strong>Parameters:</strong></p>
@@ -870,12 +855,11 @@
 </li>
 </ul>
 <h3 id="is_case_function"><code>is_case_function</code><a class="headerlink" href="#is_case_function" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_case_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>                 <span class="c1"># type: Any</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_case_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>                 <span class="c1"># type: Any</span>
                      <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;case_&#39;</span><span class="p">,</span>    <span class="c1"># type: str</span>
                      <span class="n">check_prefix</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># type: bool</span>
                      <span class="p">):</span>
 </code></pre></div>
-
 <p>This function is the one used by <code>@parametrize_with_cases</code> to collect cases. It can be used manually for tests/debug.</p>
 <p>Returns True if the provided object is a function or callable and, if <code>check_prefix=True</code> (default), if it starts with <code>prefix</code>.</p>
 <p><strong>Parameters:</strong></p>
@@ -892,7 +876,7 @@
 </ul>
 <h2 id="2-cases-collection">2 - Cases collection<a class="headerlink" href="#2-cases-collection" title="Permanent link">&para;</a></h2>
 <h3 id="parametrize_with_cases"><code>@parametrize_with_cases</code><a class="headerlink" href="#parametrize_with_cases" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                         <span class="n">cases</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">ModuleRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">AUTO</span><span class="p">,</span>
                         <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;case_&#39;</span><span class="p">,</span>
                         <span class="n">glob</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -903,19 +887,17 @@
                         <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span>
                         <span class="p">)</span>
 </code></pre></div>
-
 <p>A decorator for test functions or fixtures, to parametrize them based on test cases. It works similarly to <a href="https://docs.pytest.org/en/stable/parametrize.html"><code>@pytest.mark.parametrize</code></a>: argnames represent a coma-separated string of arguments to inject in the decorated test function or fixture. The argument values (<code>argvalues</code> in <a href="https://docs.pytest.org/en/stable/parametrize.html"><code>@pytest.mark.parametrize</code></a>) are collected from the various case functions found according to <code>cases</code>, and injected as lazy values so that the case functions are called just before the test or fixture is executed.</p>
 <p>By default (<code>cases=AUTO</code>) the list of test cases is automatically drawn from the python module file named <code>test_&lt;name&gt;_cases.py</code> or if not found, <code>case_&lt;name&gt;.py</code>,  where <code>test_&lt;name&gt;</code> is the current module name.</p>
 <p>Finally, the <code>cases</code> argument also accepts an explicit case function, cases-containing class, module or module name; or a list of such elements. Note that both absolute and relative module names are suported.</p>
 <p>Note that <code>@parametrize_with_cases</code> collection and parameter creation steps are strictly equivalent to <a href="#get_all_cases"><code>get_all_cases</code></a> + <a href="#get_parametrize_args"><code>get_parametrize_args</code></a>. This can be handy for debugging purposes.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Collect all cases</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Collect all cases</span>
 <span class="n">cases_funs</span> <span class="o">=</span> <span class="n">get_all_cases</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="n">cases</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> 
                            <span class="n">glob</span><span class="o">=</span><span class="n">glob</span><span class="p">,</span> <span class="n">has_tag</span><span class="o">=</span><span class="n">has_tag</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span>
 
 <span class="c1"># Transform the various functions found</span>
 <span class="n">argvalues</span> <span class="o">=</span> <span class="n">get_parametrize_args</span><span class="p">(</span><span class="n">host_class_or_module_of_f</span><span class="p">,</span> <span class="n">cases_funs</span><span class="p">)</span>
 </code></pre></div>
-
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
@@ -947,7 +929,7 @@
 </li>
 </ul>
 <h3 id="get_all_cases"><code>get_all_cases</code><a class="headerlink" href="#get_all_cases" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_all_cases</span><span class="p">(</span><span class="n">parametrization_target</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_all_cases</span><span class="p">(</span><span class="n">parametrization_target</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
                   <span class="n">cases</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">ModuleRef</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                   <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;case_&#39;</span><span class="p">,</span>
                   <span class="n">glob</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -955,15 +937,13 @@
                   <span class="nb">filter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
                   <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Callable</span><span class="p">]:</span>
 </code></pre></div>
-
 <p>Lists all desired cases for a given <code>parametrization_target</code> (a test function or a fixture). This function may be convenient for debugging purposes. See <a href="#parametrize_with_cases"><code>@parametrize_with_cases</code></a> for details on the parameters.</p>
 <h3 id="get_parametrize_args"><code>get_parametrize_args</code><a class="headerlink" href="#get_parametrize_args" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_parametrize_args</span><span class="p">(</span><span class="n">host_class_or_module</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">ModuleType</span><span class="p">],</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_parametrize_args</span><span class="p">(</span><span class="n">host_class_or_module</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">ModuleType</span><span class="p">],</span>
                          <span class="n">cases_funs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Callable</span><span class="p">],</span>
                          <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
                          <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">lazy_value</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">]]:</span>
 </code></pre></div>
-
 <p>Transforms a list of cases (obtained from <a href="#get_all_cases"><code>get_all_cases</code></a>) into a list of argvalues for <a href="#parametrize"><code>@parametrize</code></a>. Each case function <code>case_fun</code> is transformed into one or several <a href="#lazy_value"><code>lazy_value</code></a>(s) or a <a href="#fixture_ref"><code>fixture_ref</code></a>:</p>
 <ul>
 <li>
@@ -978,14 +958,13 @@
 </ul>
 <h2 id="3-pytest-goodies">3 - Pytest goodies<a class="headerlink" href="#3-pytest-goodies" title="Permanent link">&para;</a></h2>
 <h3 id="fixture"><code>@fixture</code><a class="headerlink" href="#fixture" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nd">@fixture</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> 
+<div class="highlight"><pre><span></span><code><span class="nd">@fixture</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> 
          <span class="n">autouse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
          <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
          <span class="n">unpack_into</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
          <span class="n">hook</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
          <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
-
 <p>Identical to <code>@pytest.fixture</code> decorator, except that </p>
 <ul>
 <li>
@@ -1009,15 +988,14 @@
 <li><strong>kwargs</strong>: other keyword arguments for <code>@pytest.fixture</code></li>
 </ul>
 <h3 id="unpack_fixture"><code>unpack_fixture</code><a class="headerlink" href="#unpack_fixture" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">unpack_fixture</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">unpack_fixture</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                    <span class="n">fixture</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span>
                    <span class="n">hook</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span>
                    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="o">&lt;</span><span class="n">Fixture</span><span class="o">&gt;</span><span class="p">]</span>
 </code></pre></div>
-
 <p>Creates several fixtures with names <code>argnames</code> from the source <code>fixture</code>. Created fixtures will correspond to elements unpacked from <code>fixture</code> in order. For example if <code>fixture</code> is a tuple of length 2, <code>argnames="a,b"</code> will create two fixtures containing the first and second element respectively.</p>
 <p>The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. <code>a, b = unpack_fixture('a,b', 'c')</code>.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">unpack_fixture</span><span class="p">,</span> <span class="n">fixture_plus</span>
 
 <span class="nd">@fixture_plus</span>
@@ -1030,7 +1008,6 @@
 <span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
 </code></pre></div>
-
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>argnames</strong>: same as <code>@pytest.mark.parametrize</code> <code>argnames</code>.</li>
@@ -1039,7 +1016,7 @@
 </ul>
 <p><strong>Outputs:</strong> the created fixtures.</p>
 <h3 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">fixture_union</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">fixture_union</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                   <span class="n">fixtures</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]],</span>
                   <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
                   <span class="n">idstyle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;explicit&#39;</span><span class="p">,</span>
@@ -1049,7 +1026,6 @@
                   <span class="n">hook</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&lt;</span><span class="n">Fixture</span><span class="o">&gt;</span>
 </code></pre></div>
-
 <p>Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically registered into the callers' module, but you may wish to assign it to a variable for convenience. In that case make sure that you use the same name, e.g. <code>a = fixture_union('a', ['b', 'c'])</code></p>
 <p>The style of test ids corresponding to the union alternatives can be changed with <code>idstyle</code>. Three values are allowed:</p>
 <ul>
@@ -1075,7 +1051,7 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
 </ul>
 <p><strong>Outputs:</strong> the new fixture. Note: you do not need to capture that output in a symbol, since the fixture is automatically registered in your module. However if you decide to do so make sure that you use the same name.</p>
 <h3 id="param_fixtures"><code>param_fixtures</code><a class="headerlink" href="#param_fixtures" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">param_fixtures</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">param_fixtures</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                    <span class="n">argvalues</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
                    <span class="n">autouse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                    <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
@@ -1084,10 +1060,9 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
                    <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="o">&lt;</span><span class="n">Fixture</span><span class="o">&gt;</span><span class="p">]</span>
 </code></pre></div>
-
 <p>Creates one or several "parameters" fixtures - depending on the number or coma-separated names in <code>argnames</code>. The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. <code>p, q = param_fixtures('p,q', [(0, 1), (2, 3)])</code>.</p>
 <p>Note that the <code>(argnames, argvalues, ids)</code> signature is similar to <code>@pytest.mark.parametrize</code> for consistency, see <a href="https://docs.pytest.org/en/latest/reference.html?highlight=pytest.param#pytest-mark-parametrize">pytest doc on parametrize</a>.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">param_fixtures</span><span class="p">,</span> <span class="n">param_fixture</span>
 
 <span class="c1"># create a 2-tuple parameter fixture</span>
@@ -1100,7 +1075,6 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
 <span class="k">def</span> <span class="nf">test_uses_param2</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="n">fixture_uses_param2</span><span class="p">):</span>
     <span class="o">...</span>
 </code></pre></div>
-
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>argnames</code>: same as <code>@pytest.mark.parametrize</code> <code>argnames</code>.</li>
@@ -1112,14 +1086,13 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
 <li><code>kwargs</code>: any other argument for the created 'fixtures'</li>
 </ul>
 <h3 id="param_fixture"><code>param_fixture</code><a class="headerlink" href="#param_fixture" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="n">param_fixture</span><span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> 
+<div class="highlight"><pre><span></span><code><span class="n">param_fixture</span><span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> 
               <span class="n">autouse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
               <span class="o">-&gt;</span> <span class="o">&lt;</span><span class="n">Fixture</span><span class="o">&gt;</span>
 </code></pre></div>
-
 <p>Identical to <code>param_fixtures</code> but for a single parameter name, so that you can assign its output to a single variable.</p>
 <h3 id="parametrize"><code>@parametrize</code><a class="headerlink" href="#parametrize" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">parametrize</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parametrize</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">argvalues</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">indirect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1132,7 +1105,6 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
                 <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">args</span><span class="p">)</span>
 </code></pre></div>
-
 <p>Equivalent to <code>@pytest.mark.parametrize</code> but also supports </p>
 <p><strong>New alternate style for argnames/argvalues</strong>. One can also use <code>**args</code> to pass additional <code>{argnames: argvalues}</code> in the same parametrization call. This can be handy in combination with <code>idgen</code> to master the whole id template associated with several parameters. Note that you can pass coma-separated argnames too, by de-referencing a dict: e.g. <code>**{'a,b': [(0, True), (1, False)], 'c': [-1, 2]}</code>.</p>
 <p><strong>New alternate style for ids</strong>. One can use <code>idgen</code> instead of <code>ids</code>. <code>idgen</code> can be a callable receiving all parameters at once (<code>**args</code>) and returning an id ; or it can be a string template using the new-style string formatting where the argnames can be used as variables (e.g. <code>idgen=lambda **args: "a={a}".format(**args)</code> or <code>idgen="my_id where a={a}"</code>). The special <code>idgen=AUTO</code> symbol can be used to generate a default string template equivalent to <code>lambda **args: "-".join("%s=%s" % (n, v) for n, v in args.items())</code>. This is enabled by default if you use the alternate style for argnames/argvalues (e.g. if <code>len(args) &gt; 0</code>), and if there are no <code>fixture_ref</code>s in your argvalues.</p>
@@ -1182,12 +1154,11 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
 </li>
 </ul>
 <h3 id="lazy_value"><code>lazy_value</code><a class="headerlink" href="#lazy_value" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">lazy_value</span><span class="p">(</span><span class="n">valuegetter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">],</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">lazy_value</span><span class="p">(</span><span class="n">valuegetter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">],</span>
                <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">marks</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">()</span>
                <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LazyValue</span>
 </code></pre></div>
-
 <p>A reference to a value getter (an argvalue-providing callable), to be used in <a href="#parametrize"><code>@parametrize</code></a>.</p>
 <p>A <code>lazy_value</code> is the same thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument. The underlying function will be called exactly once per test node.</p>
 <p>By default the associated id is the name of the <code>valuegetter</code> callable, but a specific <code>id</code> can be provided otherwise. Note that this <code>id</code> does not take precedence over custom <code>ids</code> or <code>idgen</code> passed to <code>@parametrize</code>.</p>
@@ -1199,15 +1170,13 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
 <li><code>marks</code>: optional marks. <code>valuegetter</code> marks will also be preserved.</li>
 </ul>
 <h3 id="is_lazy"><code>is_lazy</code><a class="headerlink" href="#is_lazy" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">is_lazy</span><span class="p">(</span><span class="n">argval</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">is_lazy</span><span class="p">(</span><span class="n">argval</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
 </code></pre></div>
-
 <p>Return <code>True</code> if <code>argval</code> is the outcome of processing a <code>lazy_value</code> through <code>@parametrize</code>. This encompasses parameters that are items of lazy tuples that are created when parametrizing several argnames with the same <code>lazy_value()</code>.</p>
 <h3 id="fixture_ref"><code>fixture_ref</code><a class="headerlink" href="#fixture_ref" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">fixture_ref</span><span class="p">(</span><span class="n">fixture</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Fixture</span><span class="p">]</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">fixture_ref</span><span class="p">(</span><span class="n">fixture</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Fixture</span><span class="p">]</span>
                 <span class="p">)</span>
 </code></pre></div>
-
 <p>A reference to a fixture to be used with <a href="#parametrize"><code>@parametrize</code></a>. Create it with <code>fixture_ref(&lt;fixture&gt;)</code> where <fixture> can be the fixture name or actual fixture function.</p>
                 
               
@@ -1275,15 +1244,15 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
       
     </div>
     
-      <script src="../assets/javascripts/vendor.93c04032.min.js"></script>
-      <script src="../assets/javascripts/bundle.83e5331e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../assets/javascripts/vendor.53cc9318.min.js"></script>
+      <script src="../assets/javascripts/bundle.e9c9f54f.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
           base: "..",
           features: [],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.8c7e0a7e.min.js"
+            worker: "../assets/javascripts/worker/search.9c0e82ba.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

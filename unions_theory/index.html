@@ -10,7 +10,7 @@
       
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.5">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.6">
     
     
       
@@ -18,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.15aa0b43.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.cb6bc1d0.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.75751829.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.39b8e14a.min.css">
         
       
     
@@ -192,7 +192,6 @@
       
       
 
-
   
   
   
@@ -207,7 +206,6 @@
       
       
       
-
 
   
   
@@ -224,7 +222,6 @@
       
       
 
-
   
   
   
@@ -239,7 +236,6 @@
       
       
       
-
 
   
   
@@ -301,7 +297,6 @@
       
       
 
-
   
   
   
@@ -316,7 +311,6 @@
       
       
       
-
 
   
   
@@ -407,7 +401,7 @@
 <p>Therefore, a test plan can be represented as an acyclic directed graph of fixtures, where nodes are fixtures and edges represent dependencies. On top of this layout, we can overlay the information of which fixture nodes are parametrized, which ones are required by which test function, and which test function is parametrized. The resulting figure is presented below:</p>
 <p><img alt="fixture graph pytest" src="../imgs/3_fixture_graph_pytest.png" /></p>
 <p>The following code can be used to easily check the number of tests run. Note that we use <code>@fixture</code> and <code>@parametrize</code> from <code>pytest-cases</code> to ease code readability here but you would get a similar behaviour with <code>@pytest.fixture</code> and <code>@pytest.mark.parametrize</code> (the test ids would not show the parameter names by default though, which is helpful for our demonstration here).</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">parametrize</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">parametrize</span>
 
 <span class="nd">@fixture</span><span class="p">(</span><span class="n">autouse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nd">@parametrize</span><span class="p">(</span><span class="n">ie</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
@@ -441,9 +435,8 @@
     <span class="k">assert</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span>
     <span class="k">assert</span> <span class="n">b</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;bxc&quot;</span><span class="p">,</span> <span class="s2">&quot;bzc&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 <p>calling <code>pytest</code> yields:</p>
-<div class="codehilite"><pre><span></span><code>============================= test session starts =============================
+<div class="highlight"><pre><span></span><code>============================= test session starts =============================
 collecting ... collected 16 items
 
 test_doc_fixture_graph.py::test_2[ie=-1-ia=0-i2=x] 
@@ -465,7 +458,6 @@ test_doc_fixture_graph.py::test_1[ie=1-ia=1-ib=z]
 
 ============================= 16 passed in 0.14s ==============================
 </code></pre></div>
-
 <p>So each test is called 8 times. How are these calls computed ?</p>
 <ul>
 <li>first for each test, <code>pytest</code> computes the set of all fixtures that are directly or indirectly required to run it. This is known as the "fixture closure". So for <code>test_1</code> this closure is <code>{a, b, c, d, e}</code> while for test 2 it is <code>{a, c, d, e}</code>. We can show this on the following picture:</li>
@@ -479,7 +471,7 @@ test_doc_fixture_graph.py::test_1[ie=1-ia=1-ib=z]
 <p>Let's consider the following modification of the above example, where we introduce two "unions": one as an explicit fixture <code>u</code>, and the other implicitly created by using <code>fixture_ref</code>s in the parametrization of <code>b</code>.</p>
 <p><img alt="fixture graph union" src="../imgs/5_fixture_graph_union.png" /></p>
 <p>We can create such a configuration with a slight modification to the above example:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">,</span> <span class="n">fixture_union</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">,</span> <span class="n">fixture_union</span>
 
 <span class="p">(</span><span class="o">...</span> <span class="n">same</span> <span class="k">as</span> <span class="n">above</span> <span class="o">...</span><span class="p">)</span>
 
@@ -494,10 +486,9 @@ test_doc_fixture_graph.py::test_1[ie=1-ia=1-ib=z]
 <span class="k">def</span> <span class="nf">test_1</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
     <span class="k">pass</span>
 </code></pre></div>
-
 <p>Note the <code>idstyle="explicit"</code> keyword arguments, that will help us get more details in the test ids.</p>
 <p>Calling <code>pytest</code> yields:</p>
-<div class="codehilite"><pre><span></span><code>============================= test session starts =============================
+<div class="highlight"><pre><span></span><code>============================= test session starts =============================
 collecting ... collected 24 items
 
 test_doc_fixture_graph_union.py::test_2[ie=-1-ia=0-i2=x] PASSED          [  4%]
@@ -527,7 +518,6 @@ test_doc_fixture_graph_union.py::test_1[ie=1-u\b-ib=z-ub\c] PASSED       [100%]
 
 ======================== 24 passed, 1 warning in 0.30s ========================
 </code></pre></div>
-
 <p>Now 24 tests were created ! <code>test_2</code> still has 8 runs, which is normal as it does not depend on any union fixture. Let's try to understand what happened to parametrization of <code>test_1</code>. It is actually fairly simple: </p>
 <ul>
 <li>
@@ -628,15 +618,15 @@ test_doc_fixture_graph_union.py::test_1[ie=1-u\b-ib=z-ub\c] PASSED       [100%]
       
     </div>
     
-      <script src="../assets/javascripts/vendor.93c04032.min.js"></script>
-      <script src="../assets/javascripts/bundle.83e5331e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../assets/javascripts/vendor.53cc9318.min.js"></script>
+      <script src="../assets/javascripts/bundle.e9c9f54f.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
           base: "..",
           features: [],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.8c7e0a7e.min.js"
+            worker: "../assets/javascripts/worker/search.9c0e82ba.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
