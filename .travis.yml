@@ -67,7 +67,7 @@ matrix:
       sudo: true
     - name: "Python 3.7 Pytest latest - DEPLOY WebSite+Coverage+PyPi"
       python: 3.7
-      env: PYTEST_VERSION="" PYTEST_HTML_VERSION="==1.9.0" SHOULD_DEPLOY="true"
+      env: PYTEST_VERSION="" PYTEST_HTML_VERSION="==1.9.0" DEPLOY_ENV="true"
       dist: xenial
       sudo: true
 
@@ -101,7 +101,7 @@ install:
   - python ci_tools/py_install.py conda ci_tools/requirements-conda.txt
   - python ci_tools/py_install.py pip ci_tools/requirements-pip.txt
   # mkdocs does not work anymore on python 2 so lets only do it when needed
-  - if [ "${SHOULD_DEPLOY}" = "true" ]; then pip install mkdocs-material mkdocs; fi;
+  - if [ "${DEPLOY_ENV}" = "true" ]; then pip install mkdocs-material mkdocs pymdown-extensions pygments; fi;
   # travis-specific installs
   - pip install PyGithub  # for ci_tools/github_release.py
   - pip install codecov  # See https://github.com/codecov/example-python.
@@ -110,7 +110,7 @@ install:
   - python -m pytest --version  #  - pytest --version
 
 script:
-  #- if [ "${SHOULD_DEPLOY}" = "true" ]; then python ci_tools/headers_check.py; fi;
+  #- if [ "${DEPLOY_ENV}" = "true" ]; then python ci_tools/headers_check.py; fi;
 #  - coverage run tests.py
   - pip install .
   - python -c "import os; os.chdir('..'); import pytest_cases"
@@ -147,7 +147,7 @@ after_success:
       # push but only if this is not a build triggered by a pull request
       # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
       # note: do not use the --dirty flag as it breaks client-side search
-      if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${SHOULD_DEPLOY}" = "true" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
+      if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${DEPLOY_ENV}" = "true" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
     else
       echo "File 'ci_tools/github_travis_rsa' has not been created, please check your encrypted repo token in .travis.yml, on the line starting with 'openssl aes-256-cbc...'"
     fi
@@ -161,7 +161,7 @@ deploy:
     on:
       tags: true
       # python: 3.5  #only one of the builds have to be deployed
-      condition: $SHOULD_DEPLOY = "true"
+      condition: $DEPLOY_ENV = "true"
     # server: https://test.pypi.org/legacy/
     distributions: "sdist bdist_wheel"
 
@@ -172,7 +172,7 @@ deploy:
     on:
       tags: true
       # only one of the builds have to be deployed
-      condition: $SHOULD_DEPLOY = "true"
+      condition: $DEPLOY_ENV = "true"
 
   # TODO update zenodo record
 
