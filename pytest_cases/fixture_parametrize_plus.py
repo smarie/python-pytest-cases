@@ -2,6 +2,7 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+import random
 from collections import Iterable
 from inspect import isgeneratorfunction
 from warnings import warn
@@ -680,6 +681,43 @@ def parametrize_plus(argnames=None,       # type: str
         return _apply_parametrize_plus
     else:
         return _decorate
+
+
+def parametrize_random(argnames=None,
+                       argvalues=None,
+                       indirect=False,      # type: bool
+                       ids=None,            # type: Union[Callable, Iterable[str]]
+                       idstyle=None,        # type: Optional[Union[str, Callable]]
+                       idgen=_IDGEN,        # type: Union[str, Callable]
+                       auto_refs=True,      # type: bool
+                       scope=None,          # type: str
+                       hook=None,           # type: Callable[[Callable], Callable]
+                       debug=False,         # type: bool
+                       size=1,              # type: int
+                       **args):
+    """
+
+    :return: a tuple (decorator, needs_inject) where needs_inject is True if decorator has signature (f, host)
+        and False if decorator has signature (f)
+    """
+    argnames, argvalues = _get_argnames_argvalues(argnames, argvalues, **args)
+    if size < 1 or size > len(argvalues):
+        raise ValueError(
+            "Size should be between 1 and {}. Got {}".format(len(argvalues), size)
+        )
+    argvalues = random.sample(argvalues, size)
+    return parametrize_plus(
+        argnames=argnames,
+        argvalues=argvalues,
+        indirect=indirect,
+        ids=ids,
+        idstyle=idstyle,
+        idgen=idgen,
+        auto_refs=auto_refs,
+        scope=scope,
+        hook=hook,
+        debug=debug,
+    )
 
 
 class InvalidIdTemplateException(Exception):

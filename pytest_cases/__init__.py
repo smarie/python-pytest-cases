@@ -10,7 +10,8 @@ AUTO2 = AUTO
 
 from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
 from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture
-from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref
+from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, \
+    parametrize_random, fixture_ref
 
 # additional symbols without the 'plus' suffix
 parametrize = parametrize_plus
@@ -50,7 +51,8 @@ __all__ = [
     # -- fixture core2
     'pytest_fixture_plus', 'fixture_plus', 'fixture', 'param_fixtures', 'param_fixture',
     # -- fixture parametrize plus
-    'pytest_parametrize_plus', 'parametrize_plus', 'parametrize', 'fixture_ref', 'lazy_value', 'is_lazy',
+    'pytest_parametrize_plus', 'parametrize_plus', 'parametrize', 'parametrize_random',
+    'fixture_ref', 'lazy_value', 'is_lazy',
 
     # V1 - DEPRECATED symbols
     # --cases_funcs
