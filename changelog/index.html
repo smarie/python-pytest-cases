@@ -10,7 +10,7 @@
       
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.6">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.8">
     
     
       
@@ -300,6 +300,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#321-fixture-bugfix" class="md-nav__link">
+    3.2.1 - @fixture Bugfix
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#320-automatic-fixture_ref-test-ordering-bugfix" class="md-nav__link">
@@ -950,6 +957,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#321-fixture-bugfix" class="md-nav__link">
+    3.2.1 - @fixture Bugfix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#320-automatic-fixture_ref-test-ordering-bugfix" class="md-nav__link">
     3.2.0 - Automatic fixture_ref + test ordering bugfix
   </a>
@@ -1583,6 +1597,10 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="321-fixture-bugfix">3.2.1 - <code>@fixture</code> Bugfix<a class="headerlink" href="#321-fixture-bugfix" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed <code>fixture 'self' not found</code> issue when <code>@fixture</code> was used to decorate a class method not explicitly depending on <code>request</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/182">#182</a></li>
+</ul>
 <h3 id="320-automatic-fixture_ref-test-ordering-bugfix">3.2.0 - Automatic <code>fixture_ref</code> + test ordering bugfix<a class="headerlink" href="#320-automatic-fixture_ref-test-ordering-bugfix" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -2178,8 +2196,8 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
       
     </div>
     
-      <script src="../assets/javascripts/vendor.53cc9318.min.js"></script>
-      <script src="../assets/javascripts/bundle.e9c9f54f.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../assets/javascripts/vendor.18f0862e.min.js"></script>
+      <script src="../assets/javascripts/bundle.994580cf.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
