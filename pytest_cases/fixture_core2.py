@@ -459,7 +459,8 @@ def _decorate_fixture_plus(fixture_func,
     # add request if needed
     func_needs_request = 'request' in old_sig.parameters
     if not func_needs_request:
-        new_sig = add_signature_parameters(new_sig, first=Parameter('request', kind=Parameter.POSITIONAL_OR_KEYWORD))
+        # Add it last so that `self` argument in class functions remains the first
+        new_sig = add_signature_parameters(new_sig, last=Parameter('request', kind=Parameter.POSITIONAL_OR_KEYWORD))
 
     # --common routine used below. Fills kwargs with the appropriate names and values from fixture_params
     def _map_arguments(*_args, **_kwargs):

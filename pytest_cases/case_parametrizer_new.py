@@ -467,7 +467,7 @@ def get_or_create_case_fixture(case_id,                # type: str
 
     # handle @pytest.mark.usefixtures by creating a wrapper where the fixture is added to the signature
     if add_required_fixtures:
-        # create a wrapper with an explicit requirement for the fixtures
+        # create a wrapper with an explicit requirement for the fixtures. TODO: maybe we should append and not prepend?
         case_fun = add_fixture_params(case_fun, add_required_fixtures)
         # remove the `usefixtures` mark: maybe we should leave it as it does no harm ?
         remove_pytest_mark(case_fun, "usefixtures")
