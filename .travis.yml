@@ -145,7 +145,6 @@ after_success:
       git remote add gh-remote "${GH_REF}";
       git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;  # make sure we have the latest gh-remote
       # push but only if this is not a build triggered by a pull request
-      # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
       # note: do not use the --dirty flag as it breaks client-side search
       if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${DEPLOY_ENV}" = "true" ]; then echo "Pushing to github"; PYTHONPATH=pytest_cases/ mkdocs gh-deploy -v -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
     else
