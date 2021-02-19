@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.2.1 - `@fixture` Bugfix
+
+ - Fixed `fixture 'self' not found` issue when `@fixture` was used to decorate a class method not explicitly depending on `request`. Fixed [#182](https://github.com/smarie/python-pytest-cases/issues/182)
+
 ### 3.2.0 - Automatic `fixture_ref` + test ordering bugfix
 
  - New: from version `3.2` on, if `auto_refs=True` (default), `@parametrize` will automatically detect fixture symbols in the list of argvalues, and will create `fixture_ref`s automatically around them so that you don't need to. Fixes [#177](https://github.com/smarie/python-pytest-cases/issues/177)
