@@ -10,7 +10,7 @@ from .common_mini_six import string_types
 CASE_FIELD = '_pytestcase'
 
 
-class _CaseInfo(object):
+class CaseInfo(object):
     """
     Contains all information available about a case.
     It is attached to a case function as an attribute

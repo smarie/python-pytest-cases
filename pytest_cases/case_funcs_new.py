@@ -4,7 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from decopatch import function_decorator, DECORATED
 
-from .case_info import _CaseInfo, _tags_match_query
+from .case_info import CaseInfo, _tags_match_query
 
 try:  # python 3.5+
     from typing import Type, Callable, Union, Optional, Any, Tuple, Dict, Iterable, List, Set
@@ -32,14 +32,14 @@ def copy_case_info(from_fun,  # type: Callable
                    to_fun     # type: Callable
                    ):
     """Copy all information from case function `from_fun` to `to_fun`."""
-    _CaseInfo.copy_info(from_fun, to_fun)
+    CaseInfo.copy_info(from_fun, to_fun)
 
 
 def set_case_id(id,        # type: str
                 case_func  # type: Callable
                 ):
     """Set an explicit id on case function `case_func`."""
-    ci = _CaseInfo.get_from(case_func, create_if_missing=True)
+    ci = CaseInfo.get_from(case_func, create_if_missing=True)
     ci.id = id
 
 
@@ -57,7 +57,7 @@ def get_case_id(case_func,                              # type: Callable
         case id.
     :return:
     """
-    _ci = _CaseInfo.get_from(case_func)
+    _ci = CaseInfo.get_from(case_func)
     _id = _ci.id if _ci is not None else None
 
     if _id is None:
@@ -95,7 +95,7 @@ def get_case_marks(case_func,                         # type: Callable
         returned. Otherwise (default) the marks are returned as is.
     :return:
     """
-    _ci = _CaseInfo.get_from(case_func)
+    _ci = CaseInfo.get_from(case_func)
     if _ci is None:
         _ci_marks = None
     else:
@@ -119,7 +119,7 @@ def get_case_marks(case_func,                         # type: Callable
 def get_case_tags(case_func  # type: Callable
                   ):
     """Return the tags on this case function or an empty tuple"""
-    ci = _CaseInfo.get_from(case_func)
+    ci = CaseInfo.get_from(case_func)
     return ci.tags if ci is not None else ()
 
 
@@ -198,7 +198,7 @@ def case(id=None,             # type: str  # noqa
     :return:
     """
     marks = markdecorators_as_tuple(marks)
-    case_info = _CaseInfo(id, marks, tags)
+    case_info = CaseInfo(id, marks, tags)
     case_info.attach_to(case_func)
     return case_func
 
