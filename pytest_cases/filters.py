@@ -42,6 +42,7 @@ class CaseFilter(object):
 
 
 def has_tag(tag_name):
+    """Select cases that have the tag `tag_name`. See `@case(tags=...)` to add tags to a case."""
     return CaseFilter(lambda case: tag_name in CaseInfo.get_from(case).tags)
 
 
