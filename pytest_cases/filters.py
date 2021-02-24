@@ -3,7 +3,7 @@ import re
 from .case_info import CaseInfo
 
 
-class CaseFilter:
+class CaseFilter(object):
     """
     This class represents a case filter. You can use it in order to filter cases
     to be used by `parametrize_by_cases`.
