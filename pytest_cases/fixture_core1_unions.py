@@ -209,8 +209,8 @@ def ignore_unused(fixture_func):
     # add request if needed
     func_needs_request = 'request' in old_sig.parameters
     if not func_needs_request:
-        new_sig = add_signature_parameters(old_sig,
-                                           first=Parameter('request', kind=Parameter.POSITIONAL_OR_KEYWORD))
+        # Add it last so that `self` argument in class functions remains the first
+        new_sig = add_signature_parameters(old_sig, last=Parameter('request', kind=Parameter.POSITIONAL_OR_KEYWORD))
     else:
         new_sig = old_sig
 
