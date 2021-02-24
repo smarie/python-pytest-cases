@@ -1,6 +1,6 @@
 import re
 
-from .case_info import _CaseInfo
+from .case_info import CaseInfo
 
 
 class CaseFilter:
@@ -42,7 +42,7 @@ class CaseFilter:
 
 
 def has_tag(tag_name):
-    return CaseFilter(lambda case: tag_name in _CaseInfo.get_from(case).tags)
+    return CaseFilter(lambda case: tag_name in CaseInfo.get_from(case).tags)
 
 
 def has_prefix(prefix):
