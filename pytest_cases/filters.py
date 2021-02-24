@@ -46,13 +46,31 @@ def has_tag(tag_name):
     return CaseFilter(lambda case: tag_name in CaseInfo.get_from(case).tags)
 
 
-def has_prefix(prefix):
-    return CaseFilter(lambda case: case.__name__.startswith(prefix))
+def id_has_prefix(prefix):
+    """
+    Select cases that have a case id prefix `prefix`.
+
+    Note that this is not the prefix of the whole case function name, but the case id,
+    possibly overridden with `@case(id=)`
+    """
+    return CaseFilter(lambda case: CaseInfo.get_from(case).id.startswith(prefix))
 
 
-def has_suffix(suffix):
-    return CaseFilter(lambda case: case.__name__.endswith(suffix))
+def id_has_suffix(suffix):
+    """
+    Select cases that have a case id suffix `suffix`.
+
+    Note that this is not the suffix of the whole case function name, but the case id,
+    possibly overridden with `@case(id=)`
+    """
+    return CaseFilter(lambda case: CaseInfo.get_from(case).id.endswith(suffix))
 
 
-def match_regex(regex):
-    return CaseFilter(lambda case: re.match(regex, case.__name__))
+def id_match_regex(regex):
+    """
+    Select cases that have a case id matching `regex`.
+
+    Note that this is not a match of the whole case function name, but the case id,
+    possibly overridden with `@case(id=)`
+    """
+    return CaseFilter(lambda case: re.match(regex, CaseInfo.get_from(case).id))

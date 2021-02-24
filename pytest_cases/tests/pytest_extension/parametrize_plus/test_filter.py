@@ -5,22 +5,22 @@ B = "b"
 C = "c"
 
 
-@case(tags=[A])
+@case(tags=[A], id="tom")
 def case_one():
     return 1
 
 
-@case(tags=[A, B])
+@case(tags=[A, B], id="tim")
 def case_two():
     return 2
 
 
-@case(tags=[B, C])
+@case(tags=[B, C], id="toni")
 def case_three():
     return 3
 
 
-@case(tags=[A, C])
+@case(tags=[A, C], id="dom")
 def case_four():
     return 4
 
@@ -54,14 +54,14 @@ def test_filter_with_or_relation(value):
 
 
 @parametrize_with_cases(
-    argnames="value", cases=".", filter=filters.has_prefix("case_t")
+    argnames="value", cases=".", filter=filters.id_has_prefix("t")
 )
 def test_filter_with_prefix(value):
     print(value)
 
 
 @parametrize_with_cases(
-    argnames="value", cases=".", filter=filters.has_suffix("e")
+    argnames="value", cases=".", filter=filters.id_has_suffix("m")
 )
 def test_filter_with_suffix(value):
     print(value)

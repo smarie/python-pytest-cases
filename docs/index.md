@@ -300,8 +300,10 @@ def test_good_datasets2(data):
 ```python
 from pytest_cases import filters
 
-@parametrize_with_cases("data", cases='.', 
-                        filter=filters.has_tag("success") & filters.has_prefix("case_b")
+
+@parametrize_with_cases("data", cases='.',
+                        filter=filters.has_tag("success") & filters.id_has_prefix(
+                            "case_b")
 def test_good_datasets3(data):
     assert sqrt(data) > 0
 ```
