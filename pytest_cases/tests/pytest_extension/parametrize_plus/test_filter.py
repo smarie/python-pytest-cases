@@ -29,39 +29,58 @@ def case_four():
     argnames="value", cases=".", filter=filters.has_tag(B)
 )
 def test_filter_with_tag(value):
-    print(value)
+    pass
 
 
 @parametrize_with_cases(
     argnames="value", cases=".", filter=~filters.has_tag(B)
 )
 def test_filter_without_tag(value):
-    print(value)
+    pass
 
 
 @parametrize_with_cases(
     argnames="value", cases=".", filter=filters.has_tag(B) & filters.has_tag(C)
 )
 def test_filter_with_and_relation(value):
-    print(value)
+    pass
 
 
 @parametrize_with_cases(
     argnames="value", cases=".", filter=filters.has_tag(B) | filters.has_tag(C)
 )
 def test_filter_with_or_relation(value):
-    print(value)
+    pass
 
 
 @parametrize_with_cases(
     argnames="value", cases=".", filter=filters.id_has_prefix("t")
 )
 def test_filter_with_prefix(value):
-    print(value)
+    pass
 
 
 @parametrize_with_cases(
     argnames="value", cases=".", filter=filters.id_has_suffix("m")
 )
 def test_filter_with_suffix(value):
-    print(value)
+    pass
+
+
+def test_filter(module_results_dct):
+    assert list(module_results_dct) == [
+        'test_filter_with_tag[tim]',
+        'test_filter_with_tag[toni]',
+        'test_filter_without_tag[tom]',
+        'test_filter_without_tag[dom]',
+        'test_filter_with_and_relation[toni]',
+        'test_filter_with_or_relation[tim]',
+        'test_filter_with_or_relation[toni]',
+        'test_filter_with_or_relation[dom]',
+        'test_filter_with_prefix[tom]',
+        'test_filter_with_prefix[tim]',
+        'test_filter_with_prefix[toni]',
+        'test_filter_with_suffix[tom]',
+        'test_filter_with_suffix[tim]',
+        'test_filter_with_suffix[dom]'
+    ]
