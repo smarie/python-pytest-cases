@@ -178,6 +178,61 @@ Returns True if the provided object is a function or callable and, if `check_pre
 
  - `check_prefix`: if this boolean is True (default), the prefix will be checked. If False, any function will lead to a `True` result whatever its name.
 
+### The `filters` submodule
+
+This submodule contains symbols to help you create filters for `@parametrize_with_cases(filter=...)`.
+
+All helper filters in this submodule return an instance of `CaseFilter`, so that you can combine them easily with "and" (`&`) "or" (`|`) and "invert" (`~`) in order to create new custom filters.
+
+#### `has_tag`
+
+```python
+def has_tag(tag_name: str)
+```
+
+Selects cases that have the tag `tag_name`. See `@case(tags=...)` to add tags to a case.
+
+#### `has_tags`
+
+```python
+def has_tags(*tag_names: str)
+```
+
+Selects cases that have all tags `tag_names`. See `@case(tags=...)` to add tags to a case.
+
+#### `id_has_prefix`
+
+```python
+def id_has_prefix(prefix: str)
+```
+
+Selects cases that have a case id prefix `prefix`. Note that this is not the prefix of the whole case function name, but the case id, possibly overridden with `@case(id=)`
+
+#### `id_has_suffix`
+
+```python
+def id_has_suffix(suffix: str)
+```
+
+Selects cases that have a case id suffix `suffix`. Note that this is not the suffix of the whole case function name, but the case id, possibly overridden with `@case(id=)`
+
+
+#### `id_match_regex`
+
+```python
+def id_match_regex(regex: str)
+```
+
+Selects cases that have a case id matching regex pattern `regex`. Note that this is not a match of the whole case function name, but the case id, possibly overridden with `@case(id=)`
+
+#### `CaseFilter`
+
+```python
+CaseFilter(filter_function: Callable)
+```
+
+`CaseFilter` is the class used by all filters above, and implementing logical operations "and" (`&`) "or" (`|`) and "not" (`~`). You can use it to define a composable filter from any callable receiving a single `case` argument and returning a boolean indicating if the `case` is selected.
+
 ## 2 - Cases collection
 
 ### `@parametrize_with_cases`

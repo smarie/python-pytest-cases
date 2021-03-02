@@ -292,20 +292,19 @@ def test_foo(a):
 @parametrize_with_cases("data", cases='.', 
                         filter=lambda cf: "success" in cf._pytestcase.id)
 def test_good_datasets2(data):
-    assert sqrt(data) > 0
+    ...
 ```
 
- - pytest-cases offers you an array of default filter for you to choose from in the `filters` module such as: `has_tag`, `has_prefix`, and etc. You can use logical operations on them like "and" (&) "or" (|) and "invert" (~) in order to create you own custom filters.
+ - An array of default filters is available in the `filters` module: `has_tag`, `id_has_prefix`, etc. You can use logical operations on them such as "and" (`&`) "or" (`|`) and "not" (`~`) in order to create your own custom filters. See [API reference](./api_reference.md#the-filters-submodule) for details.
 
 ```python
-from pytest_cases import filters
+from pytest_cases import filters as ft
 
 
 @parametrize_with_cases("data", cases='.',
-                        filter=filters.has_tag("success") & filters.id_has_prefix(
-                            "case_b")
+                        filter=ft.has_tag("success") & ft.id_has_prefix("case_b")
 def test_good_datasets3(data):
-    assert sqrt(data) > 0
+    ...
 ```
 
 
