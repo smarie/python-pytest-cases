@@ -720,6 +720,38 @@ def _extract_cases_from_module_or_class(module=None,                      # type
     return cases
 
 
+def get_current_case_id(request_or_item,
+                        argnames  # type: str
+                        ):
+    """
+    A helper function to return the current case id for a given `pytest` item (available in some hooks) or `request`
+    (available in hooks, and also directly as a fixture).
+
+    You need to provide the argname(s) used in the corresponding `@parametrize_with_cases` so that this method finds
+    the right id.
+
+    :param request_or_item:
+    :param argnames:
+    :return:
+    """
+    try:
+        item = request_or_item.node
+    except AttributeError:
+        item = request_or_item
+
+    try:
+        # A LazyValue ?
+        lazy_val = item.callspec.params[argnames]
+    except KeyError:
+        # No: A fixture union created by `parametrize_plus_decorate`
+        main_fixture_style_template = "%s_%s"
+        fixture_union_name = main_fixture_style_template % (item.function.__name__, argnames)
+        return item.callspec.params[fixture_union_name].get_alternative_id()
+    else:
+        # A lazyvalue - confirmed
+        return lazy_val.get_id()
+
+
 # Below is the beginning of a switch from our code scanning tool above to the same one than pytest.
 # from .common_pytest import is_fixture, safe_isclass, compat_get_real_func, compat_getfslineno
 #

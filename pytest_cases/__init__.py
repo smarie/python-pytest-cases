@@ -22,7 +22,8 @@ from .case_parametrizer_legacy import cases_data, CaseDataGetter, get_all_cases_
 
 from .case_funcs import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
     get_case_tags, matches_tag_query, is_case_class, is_case_function
-from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_parametrize_args
+from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_parametrize_args, \
+    get_current_case_id
 
 try:
     # -- Distribution mode --
@@ -67,7 +68,7 @@ __all__ = [
     'case', 'copy_case_info', 'set_case_id', 'get_case_id', 'get_case_marks',
     'get_case_tags', 'matches_tag_query', 'is_case_class', 'is_case_function',
     # test functions
-    'get_all_cases', 'parametrize_with_cases', 'THIS_MODULE', 'get_parametrize_args'
+    'get_all_cases', 'parametrize_with_cases', 'THIS_MODULE', 'get_parametrize_args', 'get_current_case_id'
 ]
 
 try:  # python 3.5+ type hints
