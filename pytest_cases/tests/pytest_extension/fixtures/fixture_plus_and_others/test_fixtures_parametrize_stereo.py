@@ -4,7 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from itertools import product
 
-from six import string_types
+from pytest_cases.common_mini_six import string_types
 import pytest
 
 from pytest_cases import fixture

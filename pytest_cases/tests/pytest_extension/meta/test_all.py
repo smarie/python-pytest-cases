@@ -1,14 +1,12 @@
 import ast
 import os
 import shlex
-import sys
-from importlib import import_module
 
 import re
-from os.path import join, dirname, pardir, isdir, exists
+from os.path import join, dirname, isdir, exists
 
 import pytest
-from six import string_types
+from pytest_cases.common_mini_six import string_types
 
 # Make the list of all tests that we will have to execute (each in an independent pytest runner)
 THIS_DIR = dirname(__file__)
