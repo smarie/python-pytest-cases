@@ -20,8 +20,8 @@ def case_three():
     return 3
 
 
-@case(tags=[A, C], id="dom")
-def case_four():
+@case(tags=[A, C])
+def case_dom():
     return 4
 
 
@@ -43,6 +43,13 @@ def test_filter_without_tag(value):
     argnames="value", cases=".", filter=filters.has_tag(B) & filters.has_tag(C)
 )
 def test_filter_with_and_relation(value):
+    pass
+
+
+@parametrize_with_cases(
+    argnames="value", cases=".", filter=filters.has_tags(B, C)
+)
+def test_filter_with_two_tags(value):
     pass
 
 
@@ -74,6 +81,7 @@ def test_filter(module_results_dct):
         'test_filter_without_tag[tom]',
         'test_filter_without_tag[dom]',
         'test_filter_with_and_relation[toni]',
+        'test_filter_with_two_tags[toni]',
         'test_filter_with_or_relation[tim]',
         'test_filter_with_or_relation[toni]',
         'test_filter_with_or_relation[dom]',

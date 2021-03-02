@@ -1,6 +1,6 @@
 import re
 
-from .case_info import CaseInfo
+from .case_funcs import get_case_id, get_case_tags
 
 
 class CaseFilter(object):
@@ -41,36 +41,78 @@ class CaseFilter(object):
         )
 
 
-def has_tag(tag_name):
-    """Select cases that have the tag `tag_name`. See `@case(tags=...)` to add tags to a case."""
-    return CaseFilter(lambda case: tag_name in CaseInfo.get_from(case).tags)
-
-
-def id_has_prefix(prefix):
+def has_tags(*tag_names  # type: str
+             ):
     """
-    Select cases that have a case id prefix `prefix`.
+    Selects cases that have all tags in `tag_names`. See `@case(tags=...)` to add tags to a case.
+
+    :param tag_names:
+    :return:
+    """
+
+    def _filter(case):
+        return len(
+            set(tag_names) - set(get_case_tags(case))
+        ) == 0
+
+    return CaseFilter(_filter)
+
+
+def has_tag(tag_name  # type: str
+            ):
+    """
+    Selects cases that have the tag `tag_name`. See `@case(tags=...)` to add tags to a case.
+
+    :param tag_name:
+    :return:
+    """
+
+    def _filter(case):
+        return tag_name in get_case_tags(case)
+
+    return CaseFilter(_filter)
+
+
+def id_has_prefix(prefix  # type: str
+                  ):
+    """
+    Selects cases that have a case id prefix `prefix`.
 
     Note that this is not the prefix of the whole case function name, but the case id,
     possibly overridden with `@case(id=)`
     """
-    return CaseFilter(lambda case: CaseInfo.get_from(case).id.startswith(prefix))
+
+    def _filter(case):
+        return get_case_id(case).startswith(prefix)
+
+    return CaseFilter(_filter)
 
 
-def id_has_suffix(suffix):
+def id_has_suffix(suffix  # type: str
+                  ):
     """
-    Select cases that have a case id suffix `suffix`.
+    Selects cases that have a case id suffix `suffix`.
 
     Note that this is not the suffix of the whole case function name, but the case id,
     possibly overridden with `@case(id=)`
     """
-    return CaseFilter(lambda case: CaseInfo.get_from(case).id.endswith(suffix))
+
+    def _filter(case):
+        return get_case_id(case).endswith(suffix)
+
+    return CaseFilter(_filter)
 
 
-def id_match_regex(regex):
+def id_match_regex(regex  # type: str
+                   ):
     """
     Select cases that have a case id matching `regex`.
 
     Note that this is not a match of the whole case function name, but the case id,
     possibly overridden with `@case(id=)`
     """
-    return CaseFilter(lambda case: re.match(regex, CaseInfo.get_from(case).id))
+
+    def _filter(case):
+        return re.match(regex, get_case_id(case))
+
+    return CaseFilter(_filter)
