@@ -23,7 +23,7 @@ from .common_pytest_lazy_values import lazy_value
 from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params
 
 from . import fixture
-from .case_funcs_new import matches_tag_query, is_case_function, is_case_class, CASE_PREFIX_FUN, copy_case_info, \
+from .case_funcs import matches_tag_query, is_case_function, is_case_class, CASE_PREFIX_FUN, copy_case_info, \
     get_case_id, get_case_marks, GEN_BY_US
 from .fixture__creation import check_name_available, CHANGE
 from .fixture_parametrize_plus import fixture_ref, _parametrize_plus

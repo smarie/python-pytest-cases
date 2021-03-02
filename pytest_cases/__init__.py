@@ -20,7 +20,7 @@ from .case_funcs_legacy import case_name, test_target, case_tags, cases_generato
 from .case_parametrizer_legacy import cases_data, CaseDataGetter, get_all_cases_legacy, \
     get_pytest_parametrize_args_legacy, cases_fixture
 
-from .case_funcs_new import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
+from .case_funcs import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
     get_case_tags, matches_tag_query, is_case_class, is_case_function
 from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_parametrize_args
 
@@ -38,7 +38,7 @@ except ImportError:
 __all__ = [
     '__version__',
     # the submodules
-    'case_funcs_legacy', 'case_funcs_new', 'case_info',
+    'case_funcs_legacy', 'case_funcs',
     'case_parametrizer_legacy', 'case_parametrizer_new',
     'common_mini_six', 'common_others', 'common_pytest', 'common_pytest_lazy_values', 'common_pytest_marks',
     'filters',

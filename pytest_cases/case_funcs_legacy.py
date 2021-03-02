@@ -19,7 +19,7 @@ try:  # python 3.5+
 except ImportError:
     pass
 
-from .case_funcs_new import case
+from .case_funcs import case
 
 
 @function_decorator

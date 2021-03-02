@@ -34,7 +34,7 @@ from .common_mini_six import with_metaclass, string_types
 from .common_pytest_marks import get_pytest_marks_on_function, make_marked_parameter_value
 
 from .case_funcs_legacy import is_case_generator, get_case_generator_details
-from .case_funcs_new import matches_tag_query
+from .case_funcs import matches_tag_query
 from .case_parametrizer_new import THIS_MODULE, extract_cases_from_module
 
 from .fixture_core2 import fixture_plus
