@@ -132,11 +132,11 @@ class FixtureClosureNode(object):
         self.parent = parent_node
 
         # these will be set after closure has been built
-        self.fixture_defs = None
-        self.split_fixture_name = None
+        self.fixture_defs = None  # type: OrderedDict
+        self.split_fixture_name = None  # type: str
         self.split_fixture_alternatives = []
         # we do not use a dict any more as several children can use the same union value (doubled unions)
-        self.children = []
+        self.children = []  # type: List[FixtureClosureNode]
 
     # ------ tree ------------------
 
@@ -364,6 +364,23 @@ class FixtureClosureNode(object):
     #         else:
     #             # normal fixture
     #             self.add_required_fixture(fixname, fixturedefs)
+
+    def remove_fixtures(self, fixture_names_to_remove):
+        """Remove some fixture names from all nodes in this subtree. These fixtures should not be split fixtures"""
+        _to_remove_in_children = []
+        for f in fixture_names_to_remove:
+            if self.split_fixture_name == f:
+                raise NotImplementedError("It is not currently possible to remove a split fixture name from a closure "
+                                          "with splits")
+            try:
+                del self.fixture_defs[f]
+            except KeyError:
+                _to_remove_in_children.append(f)
+
+        # propagate to children if any
+        if len(_to_remove_in_children) > 0:
+            for c in self.children:
+                c.remove_fixtures(_to_remove_in_children)
 
     def add_required_fixture(self, new_fixture_name, new_fixture_defs):
         """Add some required fixture names to all leaves under this node"""
@@ -619,29 +636,59 @@ class SuperClosure(MutableSequence):
         self.remove(self[i])
 
     def insert(self, index, fixture_name):
-        # if index == 0:
-        #     # prepend
-        #     self.tree.fixture_defs
-        if index == len(self):
-            # append: supported
+        """
+        Try to transparently support inserts. Since the underlying structure is a tree, only two cases
+        are supported: inserting at position 0 and appending at position len(self).
+
+        Note that while appending has no restrictions, inserting at position 0 is only allowed for now if the
+        fixture to insert does not have a union in its associated closure.
+
+        :param index:
+        :param fixture_name:
+        :return:
+        """
+        if index == 0:
+            # build the closure associated with this new fixture name
+            fixture_defs_mgr = FixtureDefsCache(self.tree.fixture_defs_mgr.fm, self.tree.fixture_defs_mgr.nodeid)
+            closure_tree = FixtureClosureNode(fixture_defs_mgr=fixture_defs_mgr)
+            closure_tree.build_closure((fixture_name,))
+            if closure_tree.has_split():
+                raise NotImplementedError("When fixture unions are present, inserting a fixture in the closure at "
+                                          "position 0 is currently only supported if that fixture's closure does not"
+                                          "contain a union. Please report this so that we can find a suitable solution"
+                                          " for your need.")
+            else:
+                # remove those fixture definitions from all nodes in the tree
+                self.tree.remove_fixtures(closure_tree.fixture_defs.keys())
+
+                # finally prepend the defs at the beginning of the dictionnary in the first node
+                self.tree.fixture_defs = OrderedDict(list(closure_tree.fixture_defs.items())
+                                                     + list(self.tree.fixture_defs.items()))
+
+        elif index == len(self):
+            # appending is natively supported in our tree growing method
             self.tree.build_closure((fixture_name,))
-            # update fixture defs
-            self._update_fixture_defs()
         else:
-            raise NotImplementedError("When fixture unions are present, inserting a fixture in the closure is "
-                                      "non-trivial. Please report this so that we can find a suitable solution for "
-                                      "your need.")
+            raise NotImplementedError("When fixture unions are present, inserting a fixture in the closure at a "
+                                      "position different from 0 (prepend) or <end> (append) is non-trivial. Please"
+                                      "report this so that we can find a suitable solution for your need.")
+
+        # Finally update self.fixture_defs so that the "list" view reflects the changes in self.tree
+        self._update_fixture_defs()
 
     def remove(self, value):
-        # try:
-        #     del self.all_fixture_defs[value]
-        # except KeyError:
-        #     raise ValueError(value)
-        # else:
-        #     propagate the change to the tree... non-trivial
+        """
+        Try to transparently support removal. Note: since the underlying structure is a tree,
+        removing "union" fixtures is non-trivial so for now it is not supported.
 
-        raise NotImplementedError("When fixture unions are present, removing a fixture from the closure is non-trivial."
-                                  " Please report this so that we can find a suitable solution for your need.")
+        :param value:
+        :return:
+        """
+        # remove in the tree
+        self.tree.remove_fixtures((value,))
+
+        # update fixture defs
+        self._update_fixture_defs()
 
 
 def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):

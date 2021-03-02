@@ -38,8 +38,8 @@ def test_super_closure_edits2():
     assert isinstance(super_closure, SuperClosure)
     super_closure = copy(super_closure)
     assert len(super_closure) == 4
-    assert list(super_closure) == ['environment', 'a', 'request', 'b']
-    reflist = list(super_closure)
+    reflist = ['environment', 'a', 'request', 'b']
+    assert list(super_closure) == reflist
     assert super_closure[:] == reflist[:]
     assert super_closure[1] == reflist[1]
     assert super_closure[-1] == reflist[-1]
@@ -53,15 +53,29 @@ def test_super_closure_edits2():
         # the above operation is allowed but does nothing and a warning is issued.
         assert super_closure[2:] == ['request', 'b']
 
-    with pytest.raises(NotImplementedError):
-        super_closure.remove('request')
+    # removing now works
+    super_closure.remove('request')
+    reflist.remove('request')
+    assert list(super_closure) == reflist
 
     with pytest.raises(NotImplementedError):
+        # 'b' is a split fixture so we cannot remove it
         del super_closure[-1]
+    # we can remove the 'environment' one
+    del super_closure[0]
+    del reflist[0]
+    assert list(super_closure) == reflist
 
     # now supported
     super_closure.append('toto')
-    assert list(super_closure) == ['environment', 'a', 'request', 'b', 'toto']
+    reflist.append('toto')
+    assert list(super_closure) == reflist
 
+    # inserting at a random position does not work
     with pytest.raises(NotImplementedError):
-        super_closure.insert(0, 'toto')
+        super_closure.insert(1, 'titi')
+
+    # but inserting at the beginning works
+    super_closure.insert(0, 'titi')
+    reflist.insert(0, 'titi')
+    assert list(super_closure) == reflist
