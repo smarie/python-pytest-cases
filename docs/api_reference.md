@@ -288,6 +288,20 @@ argvalues = get_parametrize_args(host_class_or_module_of_f, cases_funs)
  - `scope`: The scope of the union fixture to create if `fixture_ref`s are found in the argvalues
 
 
+### `get_current_case_id`
+
+```python
+def get_current_case_id(request_or_item, 
+                        argnames: str
+                        ):
+```
+
+A helper function to return the current case id for a given `pytest` item (available in some hooks) or `request` 
+(available in hooks, and also directly as a fixture).
+
+You need to provide the argname(s) used in the corresponding `@parametrize_with_cases` so that this method finds
+the right id.
+
 ### `get_all_cases`
 
 ```python

@@ -7,7 +7,7 @@
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937830.svg)](https://doi.org/10.5281/zenodo.3937830)
 
-!!! success "Major refactoring of test ids in v3.0.0 ! See [below](#c-test-ids) for details."
+!!! success "Major refactoring of test ids in v3.0.0 ! See [below](#d-test-ids) for details."
 
 !!! success "`@parametrize` now automatically detects fixture symbols ! See [documentation](./pytest_goodies.md#parametrize) for details."
 
@@ -286,11 +286,13 @@ def test_foo(a):
     assert a > 0
 ```
 
- - Finally if none of the above matches your expectations, you can provide a callable to `filter`. This callable will receive each collected case function and should return `True` (or a truth-value convertible object) in case of success. Note that your function can leverage the `_pytestcase` attribute available on the case function to read the tags, marks and id found on it.
+ - Finally if none of the above matches your expectations, you can provide a callable to `filter`. This callable will receive each collected case function and should return `True` (or a truth-value convertible object) in case of success. Note that your function can leverage the `get_case_id`, `get_case_marks`, `get_case_tags` etc. helper functions to read the tags, marks and id found on it. See [API doc](./api_reference.md#get_case_id).
 
 ```python
+from pytest_cases import get_case_id
+
 @parametrize_with_cases("data", cases='.', 
-                        filter=lambda cf: "success" in cf._pytestcase.id)
+                        filter=lambda cf: "success" in get_case_id(cf))
 def test_good_datasets2(data):
     ...
 ```
@@ -467,7 +469,24 @@ def test_caching(cached_a, d):
 
 !!! warning "If you add a cache mechanism, make sure that your test functions do not modify the returned objects !"
 
-### c- Test ids
+### c- Accessing the current case id
+
+You may need to access the current case id from within a `pytest` hook or the test itself. For this the `get_current_case_id` helper function is provided:
+
+```python
+from pytest_cases import parametrize_with_cases, get_current_case_id
+
+def case_a():
+    return 1
+
+@parametrize_with_cases("data", cases=case_a)
+def test_lazy_val_case(data, request):
+    assert get_current_case_id(request, "data") == "a"
+```
+
+See [API reference](./api_reference.md#get_current_case_id) for details.
+
+### d- Test ids
 
 Starting from version 3.0.0, test ids induced by `@parametrize_with_cases` are similar to the ids induced by `@pytest.mark.parametrize`, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.
 
@@ -513,7 +532,7 @@ test_doc_ids_debug.py::test_foo[#hello_name#-earthling]
 ============================== 4 passed in 0.07s ==============================
 ```
 
-### d- Debugging
+### e- Debugging
 
 When all of your case functions are simple, `@parametrize_with_cases` generates a `@parametrize` decorator with argvalues being a list of `lazy_value(<case_func>)` for all of them. This in turn falls back to a good old `@pytest.mark.parametrize`, so the behaviour is close to what you are used to see when using `pytest`.
 
