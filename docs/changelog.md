@@ -1,5 +1,11 @@
 # Changelog
 
+### 3.3.0 - Filter helpers and support for `pytest-asyncio` and other plugins
+
+ - Extended the support of fixture closure modifications to `remove` and `insert(0, f)`. This in particular solves an issue with `pytest-asyncio`. Fixes [#176](https://github.com/smarie/python-pytest-cases/issues/176)
+
+ - New `filters` module providing helper functions `has_tag`, `id_has_prefix`, `id_has_suffix`, `id_match_regex` to easily create custom filters for use in `@parametrize_with_cases(filter=...)`. PR [#184](https://github.com/smarie/python-pytest-cases/pull/184) by [@saroad2](https://github.com/saroad2), (thanks !).
+
 ### 3.2.1 - `@fixture` Bugfix
 
  - Fixed `fixture 'self' not found` issue when `@fixture` was used to decorate a class method not explicitly depending on `request`. Fixed [#182](https://github.com/smarie/python-pytest-cases/issues/182)

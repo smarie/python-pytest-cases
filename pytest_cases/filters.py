@@ -5,12 +5,11 @@ from .case_funcs import get_case_id, get_case_tags
 
 class CaseFilter(object):
     """
-    This class represents a case filter. You can use it in order to filter cases
-    to be used by `parametrize_by_cases`.
+    This class represents a case filter. You can use it in order to filter cases to be used by `parametrize_by_cases`.
 
-    You can join filters with the "and" relation by using & operator and join them
-    by "or" relation using | operator.
-    Moreover, you can negate a filter by using ~.
+    `CaseFilter` implements logical operations "and" (`&`) "or" (`|`) and "not" (`~`). You can use it to define a
+    composable filter from any callable receiving a single `case` argument and returning a boolean indicating if the
+    `case` is selected.
     """
 
     def __init__(self, filter_function):
