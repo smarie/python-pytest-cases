@@ -38,9 +38,11 @@ except ImportError:
 __all__ = [
     '__version__',
     # the submodules
-    'common_pytest_lazy_values', 'common_pytest', 'common_others', 'common_mini_six',
-    'case_funcs_legacy', 'case_funcs_new',  'case_parametrizer_legacy', 'case_parametrizer_new',
-    'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
+    'case_funcs_legacy', 'case_funcs_new', 'case_info',
+    'case_parametrizer_legacy', 'case_parametrizer_new',
+    'common_mini_six', 'common_others', 'common_pytest', 'common_pytest_lazy_values', 'common_pytest_marks',
+    'filters',
+    'fixture__creation', 'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
 
     # all symbols imported above
     'unfold_expected_err', 'assert_exception',
