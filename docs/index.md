@@ -295,6 +295,19 @@ def test_good_datasets2(data):
     assert sqrt(data) > 0
 ```
 
+ - pytest-cases offers you an array of default filter for you to choose from in the `filters` module such as: `has_tag`, `has_prefix`, and etc. You can use logical operations on them like "and" (&) "or" (|) and "invert" (~) in order to create you own custom filters.
+
+```python
+from pytest_cases import filters
+
+
+@parametrize_with_cases("data", cases='.',
+                        filter=filters.has_tag("success") & filters.id_has_prefix(
+                            "case_b")
+def test_good_datasets3(data):
+    assert sqrt(data) > 0
+```
+
 
 ### b- Case functions
 
