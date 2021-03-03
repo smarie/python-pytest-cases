@@ -18,8 +18,9 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_others import get_code_first_line, AUTO, qname, funcopy
-from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks
-from .common_pytest_lazy_values import lazy_value
+from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks, \
+    get_param_argnames_as_list
+from .common_pytest_lazy_values import lazy_value, LazyTupleItem
 from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params
 
 from . import fixture
@@ -721,7 +722,7 @@ def _extract_cases_from_module_or_class(module=None,                      # type
 
 
 def get_current_case_id(request_or_item,
-                        argnames  # type: str
+                        argnames  # type: Union[Iterable[str], str]
                         ):
     """
     A helper function to return the current case id for a given `pytest` item (available in some hooks) or `request`
@@ -739,16 +740,23 @@ def get_current_case_id(request_or_item,
     except AttributeError:
         item = request_or_item
 
+    # process argnames
+    if isinstance(argnames, string_types):
+        argnames = get_param_argnames_as_list(argnames)
+    argnames_str = '_'.join(argnames).replace(' ', '')
+
     try:
-        # A LazyValue ?
-        lazy_val = item.callspec.params[argnames]
+        # A LazyValue or LazyTupleItem ?
+        lazy_val = item.callspec.params[argnames[0]]
     except KeyError:
         # No: A fixture union created by `parametrize_plus_decorate`
         main_fixture_style_template = "%s_%s"
-        fixture_union_name = main_fixture_style_template % (item.function.__name__, argnames)
+        fixture_union_name = main_fixture_style_template % (item.function.__name__, argnames_str)
         return item.callspec.params[fixture_union_name].get_alternative_id()
     else:
-        # A lazyvalue - confirmed
+        # A LazyValue or LazyTupleItem - confirmed.
+        if isinstance(lazy_val, LazyTupleItem):
+            lazy_val = lazy_val.host
         return lazy_val.get_id()
 
 

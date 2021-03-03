@@ -292,7 +292,7 @@ argvalues = get_parametrize_args(host_class_or_module_of_f, cases_funs)
 
 ```python
 def get_current_case_id(request_or_item, 
-                        argnames: str
+                        argnames: Union[Iterable[str], str]
                         ):
 ```
 
