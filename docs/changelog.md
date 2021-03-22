@@ -1,6 +1,10 @@
 # Changelog
 
-### 3.3.0 - Filter helpers and support for `pytest-asyncio` and other plugins
+### 3.3.0 - Filter helpers, Current id getter, Support for `pytest-asyncio` and other plugins
+
+ - Migrated to Github Actions + `nox` for CI/CD.
+
+ - New helper function `get_current_case_id` to get the current case id for a given `pytest` request or item. Fixes [#189](https://github.com/smarie/python-pytest-cases/issues/189)
 
  - Extended the support of fixture closure modifications to `remove` and `insert(0, f)`. This in particular solves an issue with `pytest-asyncio`. Fixes [#176](https://github.com/smarie/python-pytest-cases/issues/176)
 
