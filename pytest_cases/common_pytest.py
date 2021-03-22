@@ -591,6 +591,9 @@ class MiniMetafunc(Metafunc):
         from .plugin import PYTEST_CONFIG  # late import to ensure config has been loaded by now
 
         self.config = PYTEST_CONFIG
+        if self.config is None:
+            raise ValueError("Internal error - config has not been correctly loaded. Please report")
+
         self.function = func
         self.definition = MiniFuncDef(func.__name__)
         self._calls = []
