@@ -301,8 +301,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#330-filter-helpers-and-support-for-pytest-asyncio-and-other-plugins" class="md-nav__link">
-    3.3.0 - Filter helpers and support for pytest-asyncio and other plugins
+  <a href="#330-filter-helpers-current-id-getter-support-for-pytest-asyncio-and-other-plugins" class="md-nav__link">
+    3.3.0 - Filter helpers, Current id getter, Support for pytest-asyncio and other plugins
   </a>
   
 </li>
@@ -963,8 +963,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#330-filter-helpers-and-support-for-pytest-asyncio-and-other-plugins" class="md-nav__link">
-    3.3.0 - Filter helpers and support for pytest-asyncio and other plugins
+  <a href="#330-filter-helpers-current-id-getter-support-for-pytest-asyncio-and-other-plugins" class="md-nav__link">
+    3.3.0 - Filter helpers, Current id getter, Support for pytest-asyncio and other plugins
   </a>
   
 </li>
@@ -1610,8 +1610,14 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="330-filter-helpers-and-support-for-pytest-asyncio-and-other-plugins">3.3.0 - Filter helpers and support for <code>pytest-asyncio</code> and other plugins<a class="headerlink" href="#330-filter-helpers-and-support-for-pytest-asyncio-and-other-plugins" title="Permanent link">&para;</a></h3>
+<h3 id="330-filter-helpers-current-id-getter-support-for-pytest-asyncio-and-other-plugins">3.3.0 - Filter helpers, Current id getter, Support for <code>pytest-asyncio</code> and other plugins<a class="headerlink" href="#330-filter-helpers-current-id-getter-support-for-pytest-asyncio-and-other-plugins" title="Permanent link">&para;</a></h3>
 <ul>
+<li>
+<p>Migrated to Github Actions + <code>nox</code> for CI/CD.</p>
+</li>
+<li>
+<p>New helper function <code>get_current_case_id</code> to get the current case id for a given <code>pytest</code> request or item. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/189">#189</a></p>
+</li>
 <li>
 <p>Extended the support of fixture closure modifications to <code>remove</code> and <code>insert(0, f)</code>. This in particular solves an issue with <code>pytest-asyncio</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/176">#176</a></p>
 </li>
