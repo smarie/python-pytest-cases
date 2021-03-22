@@ -1410,15 +1410,16 @@ PYTEST_CONFIG = None  # type: _pytest.config.Config
 
 # @hookspec(historic=True)
 def pytest_configure(config):
+    # store the received config object for future use; see #165 & #166
     global PYTEST_CONFIG
+    PYTEST_CONFIG = config
+
     # validate the config
     allowed_values = ('normal', 'skip')
     reordering_choice = config.getoption(_OPTION_NAME)
     if reordering_choice not in allowed_values:
         raise ValueError("[pytest-cases] Wrong --%s option: %s. Allowed values: %s"
                          "" % (_OPTION_NAME, reordering_choice, allowed_values))
-    # store the received config object for future use; see #165 & #166
-    PYTEST_CONFIG = config
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
