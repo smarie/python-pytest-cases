@@ -1,0 +1,5 @@
+nox
+toml
+makefun
+setuptools_scm  # used in 'release'
+keyring         # used in 'release'
