@@ -337,7 +337,7 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
     if not meta.requires_fixtures and not meta.is_parametrized:
         # only retrieve the extra marks added with @case, since the others will be automatically retrieved by the
         # lazy_value.
-        case_marks = get_case_marks(case_fun)
+        case_marks = get_case_marks(case_fun, as_decorators=True)
 
         # if not meta.is_parametrized:
         # single unparametrized case function

@@ -11,7 +11,7 @@ except ImportError:
     from funcsigs import signature  # noqa
 
 try:
-    from typing import Union, Callable, List, Set, Tuple, Any, Sequence, Optional  # noqa
+    from typing import Union, Callable, List, Set, Tuple, Any, Sequence, Optional, Iterable  # noqa
 except ImportError:
     pass
 
@@ -20,8 +20,8 @@ try:
 except ImportError:
     pass
 
-from .common_pytest_marks import get_pytest_marks_on_function, markinfos_to_markdecorators, markdecorators_as_tuple, \
-    PYTEST53_OR_GREATER
+from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, PYTEST53_OR_GREATER, \
+    markdecorators_to_markinfos
 
 
 class Lazy(object):
@@ -156,7 +156,7 @@ class _LazyValue(Lazy):
     def __init__(self,
                  valuegetter,  # type: Callable[[], Any]
                  id=None,      # type: str  # noqa
-                 marks=None,   # type: Union[MarkDecorator, Tuple[MarkDecorator, ...], List[MarkDecorator], Set[MarkDecorator]]
+                 marks=None,   # type: Union[MarkDecorator, Iterable[MarkDecorator]]
                  ):
         self.valuegetter = valuegetter
         self._id = id
@@ -164,7 +164,10 @@ class _LazyValue(Lazy):
         self.cached_value_context = None
         self.cached_value = None
 
-    def get_marks(self, as_decorators=False):
+    def get_marks(self,
+                  as_decorators=False  # type: bool
+                  ):
+        # type: (...) -> Union[Tuple[Mark, ...], Tuple[MarkDecorator, ...]]
         """
         Overrides default implementation to return the marks that are on the case function
 
@@ -172,10 +175,15 @@ class _LazyValue(Lazy):
             returned
         :return:
         """
-        valuegetter_marks = get_pytest_marks_on_function(self.valuegetter, as_decorators=as_decorators)
+        valuegetter_marks = tuple(get_pytest_marks_on_function(self.valuegetter, as_decorators=as_decorators))
 
         if self._marks:
-            self_marks = markinfos_to_markdecorators(self._marks, function_marks=True) if as_decorators else self._marks
+            if as_decorators:
+                # self_marks = markinfos_to_markdecorators(self._marks, function_marks=True)
+                self_marks = self._marks
+            else:
+                self_marks = markdecorators_to_markinfos(self._marks)
+
             return self_marks + valuegetter_marks
         else:
             return valuegetter_marks
@@ -423,7 +431,7 @@ else:
 
 def lazy_value(valuegetter,  # type: Callable[[], Any]
                id=None,      # type: str  # noqa
-               marks=()      # type: Union[Any, Sequence[Any]]
+               marks=()      # type: Union[MarkDecorator, Iterable[MarkDecorator]]
                ):
     """
     Creates a reference to a value getter, to be used in `parametrize_plus`.

@@ -49,7 +49,7 @@ class _CaseInfo(object):
                  tags=()    # type: Tuple[Any]
                  ):
         self.id = id
-        self.marks = marks
+        self.marks = marks  # type: Tuple[MarkDecorator, ...]
         self.tags = ()
         self.add_tags(tags)
 
@@ -180,6 +180,7 @@ def get_case_marks(case_func,                         # type: Callable
                    concatenate_with_fun_marks=False,  # type: bool
                    as_decorators=False                # type: bool
                    ):
+    # type: (...) -> Union[Tuple[Mark, ...], Tuple[MarkDecorator, ...]]
     """Return the marks that are on the case function.
 
     There are currently two ways to place a mark on a case function: either with `@pytest.mark.<name>` or in
@@ -198,12 +199,14 @@ def get_case_marks(case_func,                         # type: Callable
     if _ci is None:
         _ci_marks = None
     else:
+        # convert the MarkDecorators to Marks if needed
         _ci_marks = _ci.marks if as_decorators else markdecorators_to_markinfos(_ci.marks)
 
     if not concatenate_with_fun_marks:
         return _ci_marks
     else:
-        fun_marks = get_pytest_marks_on_function(case_func, as_decorators=as_decorators)
+        # concatenate the marks on the `_CaseInfo` with the ones on `case_func`
+        fun_marks = tuple(get_pytest_marks_on_function(case_func, as_decorators=as_decorators))
         return (_ci_marks + fun_marks) if _ci_marks else fun_marks
 
 

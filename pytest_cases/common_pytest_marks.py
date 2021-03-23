@@ -22,7 +22,7 @@ import pytest
 try:
     from _pytest.mark.structures import MarkDecorator, Mark  # noqa
 except ImportError:
-    pass
+    from _pytest.mark import MarkDecorator, MarkInfo as Mark  # noqa
 
 from .common_mini_six import string_types
 
@@ -114,15 +114,26 @@ def copy_pytest_marks(from_f, to_f, override=False):
     to_f.pytestmark = to_marks + from_marks
 
 
-def filter_marks(marks,
+def filter_marks(marks,  # type: Iterable[Mark]
                  remove  # type: str
                  ):
-    return [m for m in marks if m.name != remove]
-
-
-def get_pytest_marks_on_function(f, as_decorators=False):
+    # type: (...) -> Tuple[Mark]
     """
-    Utility to return *ALL* pytest marks (not only parametrization) applied on a function
+    Returns a tuple of all marks in `marks` that do not have a 'parametrize' name.
+
+    :param marks:
+    :param remove:
+    :return:
+    """
+    return tuple(m for m in marks if m.name != remove)
+
+
+def get_pytest_marks_on_function(f,
+                                 as_decorators=False  # type: bool
+                                 ):
+    # type: (...) -> Union[List[Mark], List[MarkDecorator]]
+    """
+    Utility to return a list of *ALL* pytest marks (not only parametrization) applied on a function
     Note that this also works on classes
 
     :param f:
@@ -144,6 +155,14 @@ def get_pytest_marks_on_function(f, as_decorators=False):
         return markinfos_to_markdecorators(mks, function_marks=True)
     else:
         return mks
+
+
+def get_pytest_marks_on_item(item):
+    """lists all marks on an item such as `request._pyfuncitem`"""
+    if PYTEST3_OR_GREATER:
+        return item.callspec.marks
+    else:
+        return [val for val in item.keywords.values() if isinstance(val, (MarkDecorator, Mark))]
 
 
 def get_pytest_usefixture_marks(f):
@@ -253,9 +272,12 @@ else:
 def markinfos_to_markdecorators(marks,                # type: Iterable[Mark]
                                 function_marks=False  # type: bool
                                 ):
+    # type: (...) -> List[MarkDecorator]
     """
     Transforms the provided marks (MarkInfo or Mark in recent pytest) obtained from marked cases, into MarkDecorator so
     that they can be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.
+
+    Returns a list.
 
     :param marks:
     :param function_marks:
@@ -297,7 +319,7 @@ def markinfos_to_markdecorators(marks,                # type: Iterable[Mark]
     return marks_mod
 
 
-def markdecorators_as_tuple(marks  # type: Optional[Union[MarkDecorator, Tuple[MarkDecorator, ...], List[MarkDecorator], Set[MarkDecorator]]]
+def markdecorators_as_tuple(marks  # type: Optional[Union[MarkDecorator, Iterable[MarkDecorator]]]
                             ):
     # type: (...) -> Tuple[MarkDecorator, ...]
     """
@@ -306,18 +328,23 @@ def markdecorators_as_tuple(marks  # type: Optional[Union[MarkDecorator, Tuple[M
     :param marks:
     :return:
     """
-    if isinstance(marks, (tuple, list, set)):
+    if marks is None:
+        return ()
+
+    try:
+        # iterable ?
         return tuple(marks)
-    elif marks is not None:
+    except TypeError:
+        # single
         return (marks,)
 
 
 def markdecorators_to_markinfos(marks  # type: Sequence[MarkDecorator]
                                 ):
+    # type: (...) -> Tuple[Mark, ...]
     if PYTEST3_OR_GREATER:
         return tuple(m.mark for m in marks)
+    elif len(marks) == 0:
+        return ()
     else:
-        if len(marks) == 0:
-            return ()
-        else:
-            raise NotImplementedError("TODO")
+        return tuple(Mark(m.name, m.args, m.kwargs) for m in marks)

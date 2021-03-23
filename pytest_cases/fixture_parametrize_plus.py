@@ -1185,7 +1185,7 @@ def _process_argvalues(argnames, marked_argvalues, nb_params, has_custom_ids, au
                 _mks = v.get_marks(as_decorators=True)
                 if len(_mks) > 0:
                     # update/create the pytest.param marks on this value
-                    p_marks[i] = (list(p_marks[i]) + _mks) if p_marks[i] is not None else list(_mks)
+                    p_marks[i] = (p_marks[i] + _mks) if p_marks[i] is not None else _mks
 
                     # update the original marked_argvalues. Note that argvalues[i] = v
                     marked_argvalues[i] = ParameterSet(values=(argvalues[i],), id=p_ids[i], marks=p_marks[i])
@@ -1282,7 +1282,7 @@ def _process_argvalues(argnames, marked_argvalues, nb_params, has_custom_ids, au
                 _mks = v.get_marks(as_decorators=True)
                 if len(_mks) > 0:
                     # update/create the pytest.param marks on this value
-                    p_marks[i] = (list(p_marks[i]) + _mks) if p_marks[i] is not None else list(_mks)
+                    p_marks[i] = (p_marks[i] + _mks) if p_marks[i] is not None else _mks
 
                 # update the marked_argvalues
                 # - at least with the unpacked lazytuple if no pytest.param is there or needs to be created
