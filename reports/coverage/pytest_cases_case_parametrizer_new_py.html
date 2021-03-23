@@ -392,7 +392,7 @@
     <p id="t337" class="run"><span class="n"><a href="#t337">337</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">meta</span><span class="op">.</span><span class="nam">requires_fixtures</span> <span class="key">and</span> <span class="key">not</span> <span class="nam">meta</span><span class="op">.</span><span class="nam">is_parametrized</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t338" class="pln"><span class="n"><a href="#t338">338</a></span><span class="t">        <span class="com"># only retrieve the extra marks added with @case, since the others will be automatically retrieved by the</span>&nbsp;</span><span class="r"></span></p>
     <p id="t339" class="pln"><span class="n"><a href="#t339">339</a></span><span class="t">        <span class="com"># lazy_value.</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t340" class="run"><span class="n"><a href="#t340">340</a></span><span class="t">        <span class="nam">case_marks</span> <span class="op">=</span> <span class="nam">get_case_marks</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t340" class="run"><span class="n"><a href="#t340">340</a></span><span class="t">        <span class="nam">case_marks</span> <span class="op">=</span> <span class="nam">get_case_marks</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">,</span> <span class="nam">as_decorators</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t341" class="pln"><span class="n"><a href="#t341">341</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t342" class="pln"><span class="n"><a href="#t342">342</a></span><span class="t">        <span class="com"># if not meta.is_parametrized:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t343" class="pln"><span class="n"><a href="#t343">343</a></span><span class="t">        <span class="com"># single unparametrized case function</span>&nbsp;</span><span class="r"></span></p>
@@ -949,7 +949,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.5</a>,
-            created at 2021-03-22 22:49 +0000
+            created at 2021-03-23 17:19 +0000
         </p>
     </div>
 </div>
