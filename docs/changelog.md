@@ -1,5 +1,17 @@
 # Changelog
 
+### 3.4.0 - Goodbye v1 API + Support for unbound cases + Bugfix with marks + Fixtures in case files
+
+ - Legacy v1 API was dropped. Fixes [#192](https://github.com/smarie/python-pytest-cases/issues/192)
+
+ - Unbound case functions in a class (e.g. `Foo.bar`) can now be directly passed to `parametrize_with_cases` without instantiating the class, e.g. `parametrize_with_cases(cases=Foo.bar)`. Fixes [#159](https://github.com/smarie/python-pytest-cases/issues/159)
+
+ - Fixed bug with concatenation of marks on cases. Fixes [#191](https://github.com/smarie/python-pytest-cases/issues/191)
+
+ - Fixed an issue where a case transformed into a fixture, with the same name as the fixture it requires, would lead to a `pytest` fixture recursion. 
+
+ - Fixtures in case files can now be automatically imported using the **experimental** `@parametrize_with_cases(import_fixtures=True)`. Fixes [#193](https://github.com/smarie/python-pytest-cases/issues/193)
+
 ### 3.3.0 - Filter helpers, Current id getter, Support for `pytest-asyncio` and other plugins
 
  - Migrated to Github Actions + `nox` for CI/CD.
