@@ -211,14 +211,22 @@ AUTO = object()
 """Marker for automatic defaults"""
 
 
-def get_function_host(func):
+def get_function_host(func, fallback_to_module=True):
     """
     Returns the module or class where func is defined. Approximate method based on qname but "good enough"
 
     :param func:
+    :param fallback_to_module: if True and an HostNotConstructedYet error is caught, the host module is returned
     :return:
     """
-    host = get_class_that_defined_method(func)
+    host = None
+    try:
+        host = get_class_that_defined_method(func)
+    except HostNotConstructedYet:
+        # ignore if `fallback_to_module=True`
+        if not fallback_to_module:
+            raise
+
     if host is None:
         host = import_module(func.__module__)
         # assert func in host
@@ -226,26 +234,234 @@ def get_function_host(func):
     return host
 
 
-def get_class_that_defined_method(meth):
-    """ Adapted from https://stackoverflow.com/a/25959545/7262247 , to support python 2 too """
-    if isinstance(meth, functools.partial):
-        return get_class_that_defined_method(meth.func)
+def needs_binding(f, return_bound=False):
+    # type: (...) -> Union[bool, Tuple[bool, Callable]]
+    """Utility to check if a function needs to be bound to be used """
 
-    if inspect.ismethod(meth) or (inspect.isbuiltin(meth) and getattr(meth, '__self__', None) is not None
-                                  and getattr(meth.__self__, '__class__', None)):
-        for cls in inspect.getmro(meth.__self__.__class__):
-            if meth.__name__ in cls.__dict__:
-                return cls
-        meth = getattr(meth, '__func__', meth)  # fallback to __qualname__ parsing
+    # detect non-callables
+    if isinstance(f, staticmethod):
+        # only happens if the method is provided as Foo.__dict__['b'], not as Foo.b
+        # binding is really easy here: pass any class
 
-    if inspect.isfunction(meth):
-        cls = getattr(inspect.getmodule(meth),
-                      qname(meth).split('.<locals>', 1)[0].rsplit('.', 1)[0],
-                      None)
-        if isinstance(cls, type):
-            return cls
+        # no need for the actual class
+        # bound = f.__get__(get_class_that_defined_method(f.__func__))
 
-    return getattr(meth, '__objclass__', None)  # handle special descriptor objects
+        # f.__func__ (python 3) or f.__get__(object) (py2 and py3) work
+        return (True, f.__get__(object)) if return_bound else True
+
+    elif isinstance(f, classmethod):
+        # only happens if the method is provided as Foo.__dict__['b'], not as Foo.b
+        if not return_bound:
+            return True
+        else:
+            host_cls = get_class_that_defined_method(f.__func__)
+            bound = f.__get__(host_cls, host_cls)
+            return True, bound
+
+    else:
+        # note that for the two above cases callable(f) returns False !
+        if not callable(f) and (PY3 or not inspect.ismethoddescriptor(f)):
+            raise TypeError("`f` is not a callable !")
+
+    if isinstance(f, functools.partial) or fixed_ismethod(f) or is_bound_builtin_method(f):
+        # already bound, although TODO the functools.partial one is a shortcut that should be analyzed more deeply
+        return (False, f) if return_bound else False
+
+    else:
+        # can be a static method, a class method, a descriptor...
+        if not PY3:
+            host_cls = getattr(f, "im_class", None)
+            if host_cls is None:
+                # defined outside a class: no need for binding
+                return (False, f) if return_bound else False
+            else:
+                bound_obj = getattr(f, "im_self", None)
+                if bound_obj is None:
+                    # unbound method
+                    if return_bound:
+                        # bind it on an instance
+                        return True, f.__get__(host_cls(), host_cls)  # functools.partial(f, host_cls())
+                    else:
+                        return True
+                else:
+                    # yes: already bound, no binding needed
+                    return (False, f) if return_bound else False
+        else:
+            try:
+                qname = f.__qualname__
+            except AttributeError:
+                return (False, f) if return_bound else False
+            else:
+                if qname == f.__name__:
+                    # not nested - plain old function in a module
+                    return (False, f) if return_bound else False
+                else:
+                    # NESTED in a class or a function or ...
+                    qname_parts = qname.split(".")
+
+                    # normal unbound method (since we already eliminated bound ones above with fixed_ismethod(f))
+                    # or static method accessed on an instance or on a class (!)
+                    # or descriptor-created method
+                    # if "__get__" in qname_parts:
+                    #     # a method generated by a descriptor - should be already bound but...
+                    #     #
+                    #     # see https://docs.python.org/3/reference/datamodel.html#object.__set_name__
+                    #     # The attribute __objclass__ may indicate that an instance of the given type (or a subclass)
+                    #     # is expected or required as the first positional argument
+                    #     cls_needed = getattr(f, '__objclass__', None)
+                    #     if cls_needed is not None:
+                    #         return (True, functools.partial(f, cls_needed())) if return_bound else True
+                    #     else:
+                    #         return (False, f) if return_bound else False
+
+                    if qname_parts[-2] == "<locals>":
+                        # a function generated by another function. most probably does not require binding
+                        # since `get_class_that_defined_method` does not support those (as PEP3155 states)
+                        # we have no choice but to make this assumption.
+                        return (False, f) if return_bound else False
+
+                    else:
+                        # unfortunately in order to detect static methods we have no choice: we need the host class
+                        host_cls = get_class_that_defined_method(f)
+                        if host_cls is None:
+                            get_class_that_defined_method(f)  # for debugging, do it again
+                            raise NotImplementedError("This case does not seem covered, please report")
+
+                        # is it a static method (on instance or class, it is the same),
+                        # an unbound classmethod, or an unbound method ?
+                        # To answer we need to go back to the definition
+                        func_def = inspect.getattr_static(host_cls, f.__name__)
+                        # assert inspect.getattr(host_cls, f.__name__) is f
+                        if isinstance(func_def, staticmethod):
+                            return (False, f) if return_bound else False
+                        elif isinstance(func_def, classmethod):
+                            # unbound class method
+                            if return_bound:
+                                # bind it on the class
+                                return True, f.__get__(host_cls, host_cls)  # functools.partial(f, host_cls)
+                            else:
+                                return True
+                        else:
+                            # unbound method
+                            if return_bound:
+                                # bind it on an instance
+                                return True, f.__get__(host_cls(), host_cls)  # functools.partial(f, host_cls())
+                            else:
+                                return True
+
+
+def is_static_method(cls, func_name, func=None):
+    """ Adapted from https://stackoverflow.com/a/64436801/7262247
+
+    indeed isinstance(staticmethod) does not work if the method is already bound
+
+    :param cls:
+    :param func_name:
+    :param func: optional, if you have it already
+    :return:
+    """
+    if func is not None:
+        assert getattr(cls, func_name) is func
+
+    return isinstance(inspect.getattr_static(cls, func_name), staticmethod)
+
+
+def is_class_method(cls, func_name, func=None):
+    """ Adapted from https://stackoverflow.com/a/64436801/7262247
+
+    indeed isinstance(classmethod) does not work if the method is already bound
+
+    :param cls:
+    :param func_name:
+    :param func: optional, if you have it already
+    :return:
+    """
+    if func is not None:
+        assert getattr(cls, func_name) is func
+
+    return isinstance(inspect.getattr_static(cls, func_name), classmethod)
+
+
+def is_bound_builtin_method(meth):
+    """Helper returning True if meth is a bound built-in method"""
+    return (inspect.isbuiltin(meth)
+            and getattr(meth, '__self__', None) is not None
+            and getattr(meth.__self__, '__class__', None))
+
+
+class HostNotConstructedYet(Exception):
+    """Raised by `get_class_that_defined_method` in the situation where the host class is not in the host module yet."""
+    pass
+
+
+if PY3:
+    # this does not need fixing
+    fixed_ismethod = inspect.ismethod
+
+    def get_class_that_defined_method(meth):
+        """from https://stackoverflow.com/a/25959545/7262247
+
+        Improved to support nesting, and to raise an Exception if __qualname__ does
+        not properly work (instead of returning None which may be misleading)
+
+        And yes PEP3155 states that __qualname__ should be used for such introspection.
+        See https://www.python.org/dev/peps/pep-3155/#rationale
+        """
+        if isinstance(meth, functools.partial):
+            return get_class_that_defined_method(meth.func)
+
+        if inspect.ismethod(meth) or is_bound_builtin_method(meth):
+            for cls in inspect.getmro(meth.__self__.__class__):
+                if meth.__name__ in cls.__dict__:
+                    return cls
+            meth = getattr(meth, '__func__', meth)  # fallback to __qualname__ parsing
+
+        if inspect.isfunction(meth):
+            host = inspect.getmodule(meth)
+            host_part = meth.__qualname__.split('.<locals>', 1)[0]
+            # note: the local part of qname is not walkable see https://www.python.org/dev/peps/pep-3155/#limitations
+            for item in host_part.split('.')[:-1]:
+                try:
+                    host = getattr(host, item)
+                except AttributeError:
+                    # non-resolvable __qualname__
+                    raise HostNotConstructedYet(
+                        "__qualname__ is not resolvable, this can happen if the host class of this method "
+                        "%r has not yet been created. PEP3155 does not seem to tell us what we should do "
+                        "in this case." % meth
+                    )
+                if host is None:
+                    raise ValueError("__qualname__ leads to `None`, this is strange and not PEP3155 compliant, please "
+                                     "report")
+
+            if isinstance(host, type):
+                return host
+
+        return getattr(meth, '__objclass__', None)  # handle special descriptor objects
+
+else:
+    def fixed_ismethod(f):
+        """inspect.ismethod does not have the same contract in python 2: it returns True even for bound methods"""
+        return hasattr(f, '__self__') and f.__self__ is not None
+
+    def get_class_that_defined_method(meth):
+        """from https://stackoverflow.com/a/961057/7262247
+
+        Adapted to support partial
+        """
+        if isinstance(meth, functools.partial):
+            return get_class_that_defined_method(meth.func)
+
+        try:
+            _mro = inspect.getmro(meth.im_class)
+        except AttributeError:
+            # no host class
+            return None
+        else:
+            for cls in _mro:
+                if meth.__name__ in cls.__dict__:
+                    return cls
+        return None
 
 
 if PY3:

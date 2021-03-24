@@ -17,7 +17,7 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
-from .common_others import get_code_first_line, AUTO, qname, funcopy
+from .common_others import get_code_first_line, AUTO, qname, funcopy, needs_binding
 from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks, \
     get_param_argnames_as_list
 from .common_pytest_lazy_values import lazy_value, LazyTupleItem
@@ -264,7 +264,9 @@ def get_all_cases(parametrization_target,  # type: Callable
         elif callable(c):
             # function
             if is_case_function(c, check_prefix=False):  # do not check prefix, it was explicitly passed
-                cases_funs.append(c)
+                # bind it automatically if needed (if unbound class method)
+                shall_bind, bound_c = needs_binding(c, return_bound=True)
+                cases_funs.append(bound_c)
             else:
                 raise ValueError("Unsupported case function: %r" % c)
         else:
@@ -611,7 +613,7 @@ def extract_cases_from_module(module,                           # type: ModuleRe
                               ):
     # type: (...) -> List[Callable]
     """
-    Internal method used to create a list of `CaseDataGetter` for all cases available from the given module.
+    Internal method used to create a list of case functions for all cases available from the given module.
     See `@cases_data`
 
     See also `_pytest.python.PyCollector.collect` and `_pytest.python.PyCollector._makeitem` and
