@@ -1034,7 +1034,8 @@
                         <span class="nb">filter</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">idstyle</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span>
+                        <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+                        <span class="n">import_fixtures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="p">)</span>
 </code></pre></div>
 <p>A decorator for test functions or fixtures, to parametrize them based on test cases. It works similarly to <a href="https://docs.pytest.org/en/stable/parametrize.html"><code>@pytest.mark.parametrize</code></a>: argnames represent a coma-separated string of arguments to inject in the decorated test function or fixture. The argument values (<code>argvalues</code> in <a href="https://docs.pytest.org/en/stable/parametrize.html"><code>@pytest.mark.parametrize</code></a>) are collected from the various case functions found according to <code>cases</code>, and injected as lazy values so that the case functions are called just before the test or fixture is executed.</p>
@@ -1076,6 +1077,9 @@
 </li>
 <li>
 <p><code>scope</code>: The scope of the union fixture to create if <code>fixture_ref</code>s are found in the argvalues</p>
+</li>
+<li>
+<p><code>import_fixtures</code>: experimental feature. Turn this to <code>True</code> in order to automatically import all fixtures defined in the cases module into the current module.</p>
 </li>
 </ul>
 <h3 id="get_current_case_id"><code>get_current_case_id</code><a class="headerlink" href="#get_current_case_id" title="Permanent link">&para;</a></h3>

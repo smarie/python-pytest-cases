@@ -301,6 +301,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#340-goodbye-v1-api-support-for-unbound-cases-bugfix-with-marks-fixtures-in-case-files" class="md-nav__link">
+    3.4.0 - Goodbye v1 API + Support for unbound cases + Bugfix with marks + Fixtures in case files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#330-filter-helpers-current-id-getter-support-for-pytest-asyncio-and-other-plugins" class="md-nav__link">
     3.3.0 - Filter helpers, Current id getter, Support for pytest-asyncio and other plugins
   </a>
@@ -963,6 +970,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#340-goodbye-v1-api-support-for-unbound-cases-bugfix-with-marks-fixtures-in-case-files" class="md-nav__link">
+    3.4.0 - Goodbye v1 API + Support for unbound cases + Bugfix with marks + Fixtures in case files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#330-filter-helpers-current-id-getter-support-for-pytest-asyncio-and-other-plugins" class="md-nav__link">
     3.3.0 - Filter helpers, Current id getter, Support for pytest-asyncio and other plugins
   </a>
@@ -1610,6 +1624,24 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="340-goodbye-v1-api-support-for-unbound-cases-bugfix-with-marks-fixtures-in-case-files">3.4.0 - Goodbye v1 API + Support for unbound cases + Bugfix with marks + Fixtures in case files<a class="headerlink" href="#340-goodbye-v1-api-support-for-unbound-cases-bugfix-with-marks-fixtures-in-case-files" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Legacy v1 API was dropped. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/192">#192</a></p>
+</li>
+<li>
+<p>Unbound case functions in a class (e.g. <code>Foo.bar</code>) can now be directly passed to <code>parametrize_with_cases</code> without instantiating the class, e.g. <code>parametrize_with_cases(cases=Foo.bar)</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/159">#159</a></p>
+</li>
+<li>
+<p>Fixed bug with concatenation of marks on cases. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/191">#191</a></p>
+</li>
+<li>
+<p>Fixed an issue where a case transformed into a fixture, with the same name as the fixture it requires, would lead to a <code>pytest</code> fixture recursion. </p>
+</li>
+<li>
+<p>Fixtures in case files can now be automatically imported using the <strong>experimental</strong> <code>@parametrize_with_cases(import_fixtures=True)</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/193">#193</a></p>
+</li>
+</ul>
 <h3 id="330-filter-helpers-current-id-getter-support-for-pytest-asyncio-and-other-plugins">3.3.0 - Filter helpers, Current id getter, Support for <code>pytest-asyncio</code> and other plugins<a class="headerlink" href="#330-filter-helpers-current-id-getter-support-for-pytest-asyncio-and-other-plugins" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
