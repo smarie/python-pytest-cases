@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for pytest_cases/common_mini_six.py: 87%</title>
+    <title>Coverage for pytest_cases/common_mini_six.py: 47%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="jquery.min.js"></script>
@@ -18,13 +18,13 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>pytest_cases/common_mini_six.py</b> :
-            <span class="pc_cov">87%</span>
+            <span class="pc_cov">47%</span>
         </h1>
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
             13 statements &nbsp;
-            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">12 run</button>
-            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">1 missing</button>
+            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">6 run</button>
+            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">7 missing</button>
             <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">0 excluded</button>
             <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">1 partial</button>
         </h2>
@@ -109,21 +109,21 @@
     <p id="t54" class="pln"><span class="n"><a href="#t54">54</a></span><span class="t">    <span class="com"># This requires a bit of explanation: the basic idea is to make a dummy</span>&nbsp;</span><span class="r"></span></p>
     <p id="t55" class="pln"><span class="n"><a href="#t55">55</a></span><span class="t">    <span class="com"># metaclass for one level of class instantiation that replaces itself with</span>&nbsp;</span><span class="r"></span></p>
     <p id="t56" class="pln"><span class="n"><a href="#t56">56</a></span><span class="t">    <span class="com"># the actual metaclass.</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t57" class="run"><span class="n"><a href="#t57">57</a></span><span class="t">    <span class="key">class</span> <span class="nam">metaclass</span><span class="op">(</span><span class="nam">type</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t57" class="mis show_mis"><span class="n"><a href="#t57">57</a></span><span class="t">    <span class="key">class</span> <span class="nam">metaclass</span><span class="op">(</span><span class="nam">type</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t58" class="pln"><span class="n"><a href="#t58">58</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t59" class="run"><span class="n"><a href="#t59">59</a></span><span class="t">        <span class="key">def</span> <span class="nam">__new__</span><span class="op">(</span><span class="nam">cls</span><span class="op">,</span> <span class="nam">name</span><span class="op">,</span> <span class="nam">this_bases</span><span class="op">,</span> <span class="nam">d</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t60" class="run"><span class="n"><a href="#t60">60</a></span><span class="t">            <span class="key">return</span> <span class="nam">meta</span><span class="op">(</span><span class="nam">name</span><span class="op">,</span> <span class="nam">bases</span><span class="op">,</span> <span class="nam">d</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t59" class="mis show_mis"><span class="n"><a href="#t59">59</a></span><span class="t">        <span class="key">def</span> <span class="nam">__new__</span><span class="op">(</span><span class="nam">cls</span><span class="op">,</span> <span class="nam">name</span><span class="op">,</span> <span class="nam">this_bases</span><span class="op">,</span> <span class="nam">d</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t60" class="mis show_mis"><span class="n"><a href="#t60">60</a></span><span class="t">            <span class="key">return</span> <span class="nam">meta</span><span class="op">(</span><span class="nam">name</span><span class="op">,</span> <span class="nam">bases</span><span class="op">,</span> <span class="nam">d</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t61" class="pln"><span class="n"><a href="#t61">61</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t62" class="run"><span class="n"><a href="#t62">62</a></span><span class="t">        <span class="op">@</span><span class="nam">classmethod</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t62" class="mis show_mis"><span class="n"><a href="#t62">62</a></span><span class="t">        <span class="op">@</span><span class="nam">classmethod</span>&nbsp;</span><span class="r"></span></p>
     <p id="t63" class="pln"><span class="n"><a href="#t63">63</a></span><span class="t">        <span class="key">def</span> <span class="nam">__prepare__</span><span class="op">(</span><span class="nam">cls</span><span class="op">,</span> <span class="nam">name</span><span class="op">,</span> <span class="nam">this_bases</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t64" class="run"><span class="n"><a href="#t64">64</a></span><span class="t">            <span class="key">return</span> <span class="nam">meta</span><span class="op">.</span><span class="nam">__prepare__</span><span class="op">(</span><span class="nam">name</span><span class="op">,</span> <span class="nam">bases</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t65" class="run"><span class="n"><a href="#t65">65</a></span><span class="t">    <span class="key">return</span> <span class="nam">type</span><span class="op">.</span><span class="nam">__new__</span><span class="op">(</span><span class="nam">metaclass</span><span class="op">,</span> <span class="str">'temporary_class'</span><span class="op">,</span> <span class="op">(</span><span class="op">)</span><span class="op">,</span> <span class="op">{</span><span class="op">}</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t64" class="mis show_mis"><span class="n"><a href="#t64">64</a></span><span class="t">            <span class="key">return</span> <span class="nam">meta</span><span class="op">.</span><span class="nam">__prepare__</span><span class="op">(</span><span class="nam">name</span><span class="op">,</span> <span class="nam">bases</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t65" class="mis show_mis"><span class="n"><a href="#t65">65</a></span><span class="t">    <span class="key">return</span> <span class="nam">type</span><span class="op">.</span><span class="nam">__new__</span><span class="op">(</span><span class="nam">metaclass</span><span class="op">,</span> <span class="str">'temporary_class'</span><span class="op">,</span> <span class="op">(</span><span class="op">)</span><span class="op">,</span> <span class="op">{</span><span class="op">}</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </div>
 <div id="footer">
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.5</a>,
-            created at 2021-03-23 17:19 +0000
+            created at 2021-03-24 14:28 +0000
         </p>
     </div>
 </div>
