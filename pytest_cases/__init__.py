@@ -16,9 +16,6 @@ from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus,
 parametrize = parametrize_plus
 fixture = fixture_plus
 
-from .case_funcs_legacy import case_name, test_target, case_tags, cases_generator
-from .case_parametrizer_legacy import cases_data, CaseDataGetter, get_all_cases_legacy, \
-    get_pytest_parametrize_args_legacy, cases_fixture
 
 from .case_funcs import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
     get_case_tags, matches_tag_query, is_case_class, is_case_function
@@ -39,8 +36,7 @@ except ImportError:
 __all__ = [
     '__version__',
     # the submodules
-    'case_funcs_legacy', 'case_funcs',
-    'case_parametrizer_legacy', 'case_parametrizer_new',
+    'case_funcs', 'case_parametrizer_new',
     'common_mini_six', 'common_others', 'common_pytest', 'common_pytest_lazy_values', 'common_pytest_marks',
     'filters',
     'fixture__creation', 'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
@@ -55,13 +51,6 @@ __all__ = [
     # -- fixture parametrize plus
     'pytest_parametrize_plus', 'parametrize_plus', 'parametrize', 'fixture_ref', 'lazy_value', 'is_lazy',
 
-    # V1 - DEPRECATED symbols
-    # --cases_funcs
-    'case_name',  'test_target', 'case_tags', 'cases_generator',
-    # --main params
-    'cases_data', 'CaseDataGetter', 'get_all_cases_legacy',
-    'get_pytest_parametrize_args_legacy', 'cases_fixture',
-
     # V2 symbols
     'AUTO', 'AUTO2',
     # case functions
@@ -70,9 +59,3 @@ __all__ = [
     # test functions
     'get_all_cases', 'parametrize_with_cases', 'THIS_MODULE', 'get_parametrize_args', 'get_current_case_id'
 ]
-
-try:  # python 3.5+ type hints
-    from pytest_cases.case_funcs_legacy import CaseData, Given, ExpectedNormal, ExpectedError, MultipleStepsCaseData
-    __all__ += ['CaseData', 'Given', 'ExpectedNormal', 'ExpectedError', 'MultipleStepsCaseData']
-except ImportError:
-    pass
