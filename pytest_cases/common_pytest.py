@@ -4,7 +4,9 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from __future__ import division
 
+import inspect
 import sys
+from importlib import import_module
 
 from makefun import add_signature_parameters, wraps
 
@@ -84,6 +86,31 @@ def is_fixture(fixture_fun  # type: Any
     except AttributeError:
         # not a fixture ?
         return False
+
+
+def list_all_fixtures_in(cls_or_module, return_names=True, recurse_to_module=False):
+    """
+    Returns a list containing all fixture names (or symbols if `return_names=False`)
+    in the given class or module.
+
+    Note that `recurse_to_module` can be used so that the fixtures in the parent
+    module of a class are listed too.
+
+    :param cls_or_module:
+    :param return_names:
+    :param recurse_to_module:
+    :return:
+    """
+    res = [get_fixture_name(symb) if return_names else symb
+           for n, symb in inspect.getmembers(cls_or_module, lambda f: inspect.isfunction(f) or inspect.ismethod(f))
+           if is_fixture(symb)]
+
+    if recurse_to_module and not inspect.ismodule(cls_or_module):
+        # TODO currently this only works for a single level of nesting, we should use __qualname__ (py3) or .im_class
+        host = import_module(cls_or_module.__module__)
+        res += list_all_fixtures_in(host, recurse_to_module=True, return_names=return_names)
+
+    return res
 
 
 def safe_isclass(obj  # type: object

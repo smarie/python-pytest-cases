@@ -7,7 +7,7 @@ from __future__ import division
 
 import functools
 from importlib import import_module
-from inspect import getmembers, isfunction, ismethod
+from inspect import getmembers, ismodule
 import re
 from warnings import warn
 
@@ -17,11 +17,13 @@ except ImportError:
     pass
 
 from .common_mini_six import string_types
-from .common_others import get_code_first_line, AUTO, qname, funcopy, needs_binding
+from .common_others import get_code_first_line, AUTO, qname, funcopy, needs_binding, get_function_host, \
+    in_same_module, get_host_module
 from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks, \
     get_param_argnames_as_list
 from .common_pytest_lazy_values import lazy_value, LazyTupleItem
-from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params
+from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params, \
+    list_all_fixtures_in
 
 from . import fixture
 from .case_funcs import matches_tag_query, is_case_function, is_case_class, CASE_PREFIX_FUN, copy_case_info, \
@@ -62,7 +64,8 @@ def parametrize_with_cases(argnames,                # type: Union[str, List[str]
                            idstyle=None,            # type: Union[str, Callable]
                            # idgen=_IDGEN,            # type: Union[str, Callable]
                            debug=False,             # type: bool
-                           scope="function"         # type: str
+                           scope="function",        # type: str
+                           import_fixtures=False    # type: bool
                            ):
     # type: (...) -> Callable[[Callable], Callable]
     """
@@ -116,6 +119,8 @@ def parametrize_with_cases(argnames,                # type: Union[str, List[str]
         transformed into fixtures. As opposed to `ids`, a callable provided here will receive a `ParamAlternative`
         object indicating which generated fixture should be used. See `@parametrize` for details.
     :param scope: the scope of the union fixture to create if `fixture_ref`s are found in the argvalues
+    :param import_fixtures: experimental feature. Turn this to True in order to automatically import all fixtures
+        defined in the cases module into the current module.
     :param debug: a boolean flag to debug what happens behind the scenes
     :return:
     """
@@ -139,7 +144,8 @@ def parametrize_with_cases(argnames,                # type: Union[str, List[str]
         # Transform the various case functions found into `lazy_value` (for case functions not requiring fixtures)
         # or `fixture_ref` (for case functions requiring fixtures - for them we create associated case fixtures in
         # `host_class_or_module`)
-        argvalues = get_parametrize_args(host_class_or_module, cases_funs, prefix=prefix, debug=debug, scope=scope)
+        argvalues = get_parametrize_args(host_class_or_module, cases_funs, prefix=prefix,
+                                         import_fixtures=import_fixtures, debug=debug, scope=scope)
 
         # Finally apply parametrization - note that we need to call the private method so that fixture are created in
         # the right module (not here)
@@ -289,6 +295,7 @@ def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType
                          cases_funs,              # type: List[Callable]
                          prefix,                  # type: str
                          scope="function",        # type: str
+                         import_fixtures=False,   # type: bool
                          debug=False              # type: bool
                          ):
     # type: (...) -> List[Union[lazy_value, fixture_ref]]
@@ -304,16 +311,22 @@ def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType
 
     :param host_class_or_module: host of the parametrization target. A class or a module.
     :param cases_funs: a list of case functions, returned typically by `get_all_cases`
+    :param prefix:
+    :param scope:
+    :param import_fixtures: experimental feature. Turn this to True in order to automatically import all fixtures
+        defined in the cases module into the current module.
     :param debug: a boolean flag, turn it to True to print debug messages.
     :return:
     """
-    return [c for _f in cases_funs for c in case_to_argvalues(host_class_or_module, _f, prefix, scope, debug)]
+    return [c for _f in cases_funs for c in case_to_argvalues(host_class_or_module, _f, prefix, scope, import_fixtures,
+                                                              debug)]
 
 
 def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
                       case_fun,                # type: Callable
                       prefix,                  # type: str
                       scope,                   # type: str
+                      import_fixtures=False,   # type: bool
                       debug=False              # type: bool
                       ):
     # type: (...) -> Tuple[lazy_value]
@@ -328,6 +341,8 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
     Otherwise, `case_fun` represents a single case: in that case a single `lazy_value` is returned.
 
     :param case_fun:
+    :param import_fixtures: experimental feature. Turn this to True in order to automatically import all fixtures
+        defined in the cases module into the current module.
     :return:
     """
     # get the id from the case function either added by the @case decorator, or default one.
@@ -371,7 +386,8 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
 
         # create or reuse a fixture in the host (pytest collector: module or class) of the parametrization target
         fix_name, remaining_marks = get_or_create_case_fixture(case_id, case_fun, host_class_or_module,
-                                                               meta.fixturenames_not_in_sig, scope, debug)
+                                                               meta.fixturenames_not_in_sig, scope,
+                                                               import_fixtures=import_fixtures, debug=debug)
 
         # reference that case fixture, and preserve the case id in the associated id whatever the generated fixture name
         argvalues = fixture_ref(fix_name, id=case_id)
@@ -387,6 +403,7 @@ def get_or_create_case_fixture(case_id,                # type: str
                                target_host,            # type: Union[Type, ModuleType]
                                add_required_fixtures,  # type: Iterable[str]
                                scope,                  # type: str
+                               import_fixtures=False,  # type: bool
                                debug=False             # type: bool
                                ):
     # type: (...) -> Tuple[str, Tuple[MarkInfo]]
@@ -407,6 +424,8 @@ def get_or_create_case_fixture(case_id,                # type: str
     :param case_fun:
     :param target_host:
     :param add_required_fixtures:
+    :param import_fixtures: experimental feature. Turn this to True in order to automatically import all fixtures
+        defined in the cases module into the current module.
     :param debug:
     :return: the newly created fixture name, and the remaining marks not applied
     """
@@ -417,7 +436,7 @@ def get_or_create_case_fixture(case_id,                # type: str
 
     # source: detect a functools.partial wrapper created by us because of a host class
     true_case_func, case_in_class = _get_original_case_func(case_fun)
-    # case_host = case_fun.host_class if case_in_class else import_module(case_fun.__module__)
+    true_case_func_host = get_function_host(true_case_func)
 
     # for checks
     orig_name = true_case_func.__name__
@@ -425,7 +444,7 @@ def get_or_create_case_fixture(case_id,                # type: str
 
     # destination
     target_in_class = safe_isclass(target_host)
-    fix_cases_dct = _get_fixture_cases(target_host)  # get our "storage unit" in this module
+    fix_cases_dct, imported_fixtures_list = _get_fixture_cases(target_host)  # get our "storage unit" in this module
 
     # shortcut if the case fixture is already known/registered in target host
     try:
@@ -439,9 +458,29 @@ def get_or_create_case_fixture(case_id,                # type: str
     # not yet known there. Create a new symbol in the target host :
     # we need a "free" fixture name, and a "free" symbol name
     existing_fixture_names = []
-    for n, symb in getmembers(target_host, lambda f: isfunction(f) or ismethod(f)):
-        if is_fixture(symb):
-            existing_fixture_names.append(get_fixture_name(symb))
+    # -- fixtures in target module or class should not be overridden
+    existing_fixture_names += list_all_fixtures_in(target_host, recurse_to_module=False)
+    # -- are there fixtures in source module or class ? should not be overridden too
+    if not in_same_module(target_host, true_case_func_host):
+        fixtures_in_cases_module = list_all_fixtures_in(true_case_func_host, recurse_to_module=False)
+        if len(fixtures_in_cases_module) > 0:
+            # EXPERIMENTAL we can try to import the fixtures into current module
+            if import_fixtures:
+                from_module = get_host_module(true_case_func_host)
+                if from_module not in imported_fixtures_list:
+                    for f in list_all_fixtures_in(true_case_func_host, recurse_to_module=False, return_names=False):
+                        f_name = get_fixture_name(f)
+                        if (f_name in existing_fixture_names) or (f.__name__ in existing_fixture_names):
+                            raise ValueError("Cannot import fixture %r from %r as it would override an existing symbol in "
+                                             "%r. Please set `@parametrize_with_cases(import_fixtures=False)`"
+                                             "" % (f, from_module, target_host))
+                        target_host_module = target_host if not target_in_class else get_host_module(target_host)
+                        setattr(target_host_module, f.__name__, f)
+
+                    imported_fixtures_list.append(from_module)
+
+            # Fix the problem with  "case_foo(foo)" leading to the generated fixture having the same name
+            existing_fixture_names += fixtures_in_cases_module
 
     def name_changer(name, i):
         return name + '_' * i
@@ -499,18 +538,35 @@ def get_or_create_case_fixture(case_id,                # type: str
     return fix_name, case_marks
 
 
-def _get_fixture_cases(module  # type: ModuleType
+def _get_fixture_cases(module_or_class  # type: Union[ModuleType, Type]
                        ):
     """
-    Returns our 'storage unit' in a module, used to remember the fixtures created from case functions.
+    Returns our 'storage unit' in a module or class, used to remember the fixtures created from case functions.
     That way we can reuse fixtures already created for cases, in a given module/class.
+
+    In addition, the host module of the class, or the module itself, is used to store a list of modules
+    from where we imported fixtures already. This relates to the EXPERIMENTAL `import_fixtures=True` param.
     """
-    try:
-        cache = module._fixture_cases
-    except AttributeError:
-        cache = dict()
-        module._fixture_cases = cache
-    return cache
+    if ismodule(module_or_class):
+        # module: everything is stored in the same place
+        try:
+            cache, imported_fixtures_list = module_or_class._fixture_cases
+        except AttributeError:
+            cache = dict()
+            imported_fixtures_list = []
+            module_or_class._fixture_cases = (cache, imported_fixtures_list)
+    else:
+        # class: on class only the fixtures dict is stored
+        try:
+            cache = module_or_class._fixture_cases
+        except AttributeError:
+            cache = dict()
+            module_or_class._fixture_cases = cache
+
+        # grab the imported fixtures list from the module host
+        _, imported_fixtures_list = _get_fixture_cases(get_host_module(module_or_class))
+
+    return cache, imported_fixtures_list
 
 
 def import_default_cases_module(f):

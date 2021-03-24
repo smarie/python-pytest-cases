@@ -211,6 +211,19 @@ AUTO = object()
 """Marker for automatic defaults"""
 
 
+def get_host_module(a):
+    """get the host module of a, or a if it is already a module"""
+    if inspect.ismodule(a):
+        return a
+    else:
+        return import_module(a.__module__)
+
+
+def in_same_module(a, b):
+    """Compare the host modules of a and b"""
+    return get_host_module(a) == get_host_module(b)
+
+
 def get_function_host(func, fallback_to_module=True):
     """
     Returns the module or class where func is defined. Approximate method based on qname but "good enough"
@@ -228,8 +241,7 @@ def get_function_host(func, fallback_to_module=True):
             raise
 
     if host is None:
-        host = import_module(func.__module__)
-        # assert func in host
+        host = get_host_module(func)
 
     return host
 

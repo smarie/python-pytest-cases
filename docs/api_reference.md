@@ -246,7 +246,8 @@ CaseFilter(filter_function: Callable)
                         filter: Callable = None,
                         ids: Union[Callable, Iterable[str]] = None,
                         idstyle: Union[str, Callable] = None,
-                        scope: str = "function"
+                        scope: str = "function",
+                        import_fixtures: bool = False
                         )
 ```
 
@@ -287,6 +288,7 @@ argvalues = get_parametrize_args(host_class_or_module_of_f, cases_funs)
 
  - `scope`: The scope of the union fixture to create if `fixture_ref`s are found in the argvalues
 
+ - `import_fixtures`: experimental feature. Turn this to `True` in order to automatically import all fixtures defined in the cases module into the current module.
 
 ### `get_current_case_id`
 
