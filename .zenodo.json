@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "title": "pytest-cases: a Python package for reproducible research results (among others)",
+    "description": "<p>`pytest-cases` is a Python package leveraging the widely popular `pytest` library (Krekel et al., 2004) to design tests and benchmarks where test data, tested code, and evaluation protocols are separated in a modular fashion. With `pytest-cases` it has never been so easy for researchers to create reproducible results tables, and for software engineers to build powerfull test harnesses !</p>\n\n<p>The API for `pytest-cases` is as minimal as possible, so that each concept (evaluation protocols, test data, algorithms candidates, user profiles... ) is a readable python function ; this is in line with the design philosophy of `pytest` itself.</p>",
+    "language": "eng",
+    "license": {
+      "id": "bsd-license"
+    },
+    "keywords": [
+      "python",
+      "test",
+      "case",
+      "data",
+      "benchmark",
+      "pytest"
+    ],
+    "creators": [
+      {
+        "orcid": "0000-0002-5929-1047",
+        "affiliation": "Schneider Electric",
+        "name": "Sylvain Mari\u00e9"
+      }
+    ]
+  }
+}

@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.4.1 - Technical release - Zenodo
+
+Technical release to check that Zenodo metadata is now preserved.
+
 ### 3.4.0 - Goodbye v1 API + Support for unbound cases + Bugfix with marks + Fixtures in case files
 
  - Legacy v1 API was dropped. Fixes [#192](https://github.com/smarie/python-pytest-cases/issues/192)
