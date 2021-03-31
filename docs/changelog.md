@@ -1,8 +1,9 @@
 # Changelog
 
-### 3.4.1 - Technical release - Zenodo
+### 3.4.2 - Technical release - Zenodo
 
 Technical release to check that Zenodo metadata is now preserved.
+Same as 3.4.1 and 3.4.0.
 
 ### 3.4.0 - Goodbye v1 API + Support for unbound cases + Bugfix with marks + Fixtures in case files
 
