@@ -5,13 +5,11 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) ![Pytest versions](https://img.shields.io/badge/pytest-2%20%7C%203%20%7C%204%20%7C%205%20%7C%206-blue) [![Build Status](https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml/badge.svg)](https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml) [![Tests Status](./reports/junit/junit-badge.svg?dummy=8484744)](./reports/junit/report.html) [![codecov](https://codecov.io/gh/smarie/python-pytest-cases/branch/main/graph/badge.svg)](https://codecov.io/gh/smarie/python-pytest-cases)
 
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937830.svg)](https://doi.org/10.5281/zenodo.3937830)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937829.svg)](https://doi.org/10.5281/zenodo.3937829)
 
 !!! success "Major refactoring of test ids in v3.0.0 ! See [below](#d-test-ids) for details."
 
 !!! success "`@parametrize` now automatically detects fixture symbols ! See [documentation](./pytest_goodies.md#parametrize) for details."
-
-!!! warning "Installing pytest-cases has effects on the order of `pytest` tests execution. Details [here](#installing)"
 
 Did you ever think that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
@@ -22,6 +20,10 @@ Did you ever think that most of your test functions were actually *the same test
 `pytest-cases` is fully compliant with [pytest-harvest](https://smarie.github.io/python-pytest-harvest/) so you can easily monitor the execution times and created artifacts. With it, it becomes very easy to create a complete data science benchmark, for example comparing various models on various datasets as illustrated below (from the [example](examples.md) section):
 
 ![benchmark_plots_example](imgs/0_bench_plots_example4.png)
+
+## Citing
+
+If `pytest-cases` helps you with your research work, don't hesitate to spread the word ! For this simply use this Zenodo link [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937829.svg)](https://doi.org/10.5281/zenodo.3937829) to get the proper citation entry (at the bottom right of the page, many formats available including BibTeX).
 
 ## Installing
 

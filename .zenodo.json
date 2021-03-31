@@ -9,6 +9,8 @@
     "python",
     "test",
     "case",
+    "parameter",
+    "evaluation",
     "data",
     "benchmark",
     "pytest"
@@ -18,6 +20,9 @@
       "orcid": "0000-0002-5929-1047",
       "affiliation": "Schneider Electric",
       "name": "Sylvain Mari\u00e9"
+    },
+    {
+      "name": "Various github contributors"
     }
   ]
 }
