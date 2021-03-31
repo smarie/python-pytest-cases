@@ -226,6 +226,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#citing" class="md-nav__link">
+    Citing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installing" class="md-nav__link">
     Installing
   </a>
@@ -544,6 +551,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#citing" class="md-nav__link">
+    Citing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installing" class="md-nav__link">
     Installing
   </a>
@@ -775,15 +789,12 @@
 <p><em>Separate test code from test cases in <code>pytest</code>.</em></p>
 <p><a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/pytest-cases.svg" /></a> <img alt="Pytest versions" src="https://img.shields.io/badge/pytest-2%20%7C%203%20%7C%204%20%7C%205%20%7C%206-blue" /> <a href="https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml"><img alt="Build Status" src="https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml/badge.svg" /></a> <a href="reports/junit/report.html"><img alt="Tests Status" src="reports/junit/junit-badge.svg?dummy=8484744" /></a> <a href="https://codecov.io/gh/smarie/python-pytest-cases"><img alt="codecov" src="https://codecov.io/gh/smarie/python-pytest-cases/branch/main/graph/badge.svg" /></a></p>
 <p><a href="https://smarie.github.io/python-pytest-cases/"><img alt="Documentation" src="https://img.shields.io/badge/doc-latest-blue.svg" /></a> <a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pytest-cases.svg" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads" src="https://pepy.tech/badge/pytest-cases" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads per week" src="https://pepy.tech/badge/pytest-cases/week" /></a> <a href="https://github.com/smarie/python-pytest-cases/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/smarie/python-pytest-cases.svg" /></a>
-<a href="https://doi.org/10.5281/zenodo.3937830"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3937830.svg" /></a></p>
+<a href="https://doi.org/10.5281/zenodo.3937829"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3937829.svg" /></a></p>
 <div class="admonition success">
 <p class="admonition-title">Major refactoring of test ids in v3.0.0 ! See <a href="#d-test-ids">below</a> for details.</p>
 </div>
 <div class="admonition success">
 <p class="admonition-title"><code>@parametrize</code> now automatically detects fixture symbols ! See <a href="pytest_goodies/#parametrize">documentation</a> for details.</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Installing pytest-cases has effects on the order of <code>pytest</code> tests execution. Details <a href="#installing">here</a></p>
 </div>
 <p>Did you ever think that most of your test functions were actually <em>the same test code</em>, but with <em>different data inputs</em> and expected results/exceptions ?</p>
 <ul>
@@ -796,6 +807,8 @@
 </ul>
 <p><code>pytest-cases</code> is fully compliant with <a href="https://smarie.github.io/python-pytest-harvest/">pytest-harvest</a> so you can easily monitor the execution times and created artifacts. With it, it becomes very easy to create a complete data science benchmark, for example comparing various models on various datasets as illustrated below (from the <a href="examples/">example</a> section):</p>
 <p><img alt="benchmark_plots_example" src="imgs/0_bench_plots_example4.png" /></p>
+<h2 id="citing">Citing<a class="headerlink" href="#citing" title="Permanent link">&para;</a></h2>
+<p>If <code>pytest-cases</code> helps you with your research work, don't hesitate to spread the word ! For this simply use this Zenodo link <a href="https://doi.org/10.5281/zenodo.3937829"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3937829.svg" /></a> to get the proper citation entry (at the bottom right of the page, many formats available including BibTeX).</p>
 <h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>&gt; pip install pytest_cases
 </code></pre></div>
