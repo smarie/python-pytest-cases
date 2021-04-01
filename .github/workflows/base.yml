@@ -157,6 +157,7 @@ jobs:
   delete-artifacts:
     needs: publish_release
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
       - uses: kolpav/purge-artifacts-action@v1
         with:
