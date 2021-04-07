@@ -6,6 +6,7 @@ from __future__ import division
 
 import inspect
 import sys
+import os
 from importlib import import_module
 
 from makefun import add_signature_parameters, wraps
@@ -30,7 +31,7 @@ from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER, PYTEST6_OR_GREATER, \
-    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER
+    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
@@ -63,6 +64,18 @@ else:
             else:
                 return pytest.fixture(**kwargs)(f)
         return _decorate
+
+
+def pytest_is_running():
+    """Return True if the current process is a pytest run
+
+    See https://stackoverflow.com/questions/25188119/test-if-code-is-executed-from-within-a-py-test-session
+    """
+    if PYTEST32_OR_GREATER:
+        return "PYTEST_CURRENT_TEST" in os.environ
+    else:
+        import re
+        return any(re.findall(r'pytest|py.test', sys.argv[0]))
 
 
 def remove_duplicates(lst):
@@ -619,7 +632,9 @@ class MiniMetafunc(Metafunc):
 
         self.config = PYTEST_CONFIG
         if self.config is None:
-            raise ValueError("Internal error - config has not been correctly loaded. Please report")
+            # only raise if we are in pytest, otherwise silently skip
+            if pytest_is_running():
+                raise ValueError("Internal error - config has not been correctly loaded. Please report")
 
         self.function = func
         self.definition = MiniFuncDef(func.__name__)
