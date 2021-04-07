@@ -1408,12 +1408,14 @@ def pytest_addoption(parser):
 PYTEST_CONFIG = None  # type: _pytest.config.Config
 
 
+def pytest_load_initial_conftests(early_config):
+    # store the received config object for future use; see #165 #166 #196
+    global PYTEST_CONFIG
+    PYTEST_CONFIG = early_config
+
+
 # @hookspec(historic=True)
 def pytest_configure(config):
-    # store the received config object for future use; see #165 & #166
-    global PYTEST_CONFIG
-    PYTEST_CONFIG = config
-
     # validate the config
     allowed_values = ('normal', 'skip')
     reordering_choice = config.getoption(_OPTION_NAME)
