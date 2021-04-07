@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.4.5 - Bugfix
+
+ - Fixed bug when a test module containing `@parametrize_with_cases` was executed outside of `pytest`, typically through its `__main__`. Fixes [#198](https://github.com/smarie/python-pytest-cases/issues/198)
+
 ### 3.4.4 - Bugfix
 
  - Fixed issue when `@parametrize_with_cases` was used on a fixture in a `conftest.py`. Fixes [#196](https://github.com/smarie/python-pytest-cases/issues/196)
