@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.4.4 - Bugfix
+
+ - Fixed issue when `@parametrize_with_cases` was used on a fixture in a `conftest.py`. Fixes [#196](https://github.com/smarie/python-pytest-cases/issues/196)
+
 ### 3.4.3 - Technical release - Zenodo
 
 Technical release to check that Zenodo metadata is now preserved.
