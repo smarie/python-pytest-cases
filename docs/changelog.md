@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.4.6 - Increased compatibility with other plugins 
+
+ - `LazyValue`, `LazyTuple` and `LazyTupleItem` are now hashable. This increases compatibility with plugins hashing the parameter values, such as pytest-steps. See [pytest-steps#41](https://github.com/smarie/python-pytest-steps/issues/41) . Fixes [#199](https://github.com/smarie/python-pytest-cases/issues/199)
+
 ### 3.4.5 - Bugfix
 
  - Fixed bug when a test module containing `@parametrize_with_cases` was executed outside of `pytest`, typically through its `__main__`. Fixes [#198](https://github.com/smarie/python-pytest-cases/issues/198)
