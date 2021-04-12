@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.0">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.1">
     
     
       
@@ -18,7 +18,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.33e2939f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.9299cb39.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ef6f36e2.min.css">
@@ -299,6 +299,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#346-increased-compatibility-with-other-plugins" class="md-nav__link">
+    3.4.6 - Increased compatibility with other plugins
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#345-bugfix" class="md-nav__link">
@@ -991,6 +998,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#346-increased-compatibility-with-other-plugins" class="md-nav__link">
+    3.4.6 - Increased compatibility with other plugins
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#345-bugfix" class="md-nav__link">
     3.4.5 - Bugfix
   </a>
@@ -1666,6 +1680,10 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="346-increased-compatibility-with-other-plugins">3.4.6 - Increased compatibility with other plugins<a class="headerlink" href="#346-increased-compatibility-with-other-plugins" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>LazyValue</code>, <code>LazyTuple</code> and <code>LazyTupleItem</code> are now hashable. This increases compatibility with plugins hashing the parameter values, such as pytest-steps. See <a href="https://github.com/smarie/python-pytest-steps/issues/41">pytest-steps#41</a> . Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/199">#199</a></li>
+</ul>
 <h3 id="345-bugfix">3.4.5 - Bugfix<a class="headerlink" href="#345-bugfix" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed bug when a test module containing <code>@parametrize_with_cases</code> was executed outside of <code>pytest</code>, typically through its <code>__main__</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/198">#198</a></li>
@@ -2314,7 +2332,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d892486b.min.js"></script>
+      <script src="../assets/javascripts/bundle.7353b375.min.js"></script>
       
     
   </body>

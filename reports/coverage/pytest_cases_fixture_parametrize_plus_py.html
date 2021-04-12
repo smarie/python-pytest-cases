@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for pytest_cases/fixture_parametrize_plus.py: 87%</title>
+    <title>Coverage for pytest_cases/fixture_parametrize_plus.py: 88%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="jquery.min.js"></script>
@@ -18,15 +18,15 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>pytest_cases/fixture_parametrize_plus.py</b> :
-            <span class="pc_cov">87%</span>
+            <span class="pc_cov">88%</span>
         </h1>
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
             497 statements &nbsp;
-            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">442 run</button>
-            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">55 missing</button>
+            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">447 run</button>
+            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">50 missing</button>
             <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">4 excluded</button>
-            <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">26 partial</button>
+            <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">27 partial</button>
         </h2>
     </div>
 </div>
@@ -1074,7 +1074,7 @@
     <p id="t1019" class="pln"><span class="n"><a href="#t1019">1019</a></span><span class="t">                <span class="com"># return</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1020" class="run"><span class="n"><a href="#t1020">1020</a></span><span class="t">                <span class="key">return</span> <span class="nam">kwargs</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1021" class="pln"><span class="n"><a href="#t1021">1021</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t1022" class="par run show_par"><span class="n"><a href="#t1022">1022</a></span><span class="t">            <span class="key">if</span> <span class="key">not</span> <span class="nam">isgeneratorfunction</span><span class="op">(</span><span class="nam">test_func</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">1022&#x202F;&#x219B;&#x202F;1036</span><span class="annotate long">line 1022 didn't jump to line 1036, because the condition on line 1022 was never false</span></span></p>
+    <p id="t1022" class="run"><span class="n"><a href="#t1022">1022</a></span><span class="t">            <span class="key">if</span> <span class="key">not</span> <span class="nam">isgeneratorfunction</span><span class="op">(</span><span class="nam">test_func</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1023" class="pln"><span class="n"><a href="#t1023">1023</a></span><span class="t">                <span class="com"># normal test function with return statement</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1024" class="run"><span class="n"><a href="#t1024">1024</a></span><span class="t">                <span class="op">@</span><span class="nam">wraps</span><span class="op">(</span><span class="nam">test_func</span><span class="op">,</span> <span class="nam">new_sig</span><span class="op">=</span><span class="nam">new_sig</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1025" class="pln"><span class="n"><a href="#t1025">1025</a></span><span class="t">                <span class="key">def</span> <span class="nam">wrapped_test_func</span><span class="op">(</span><span class="op">*</span><span class="nam">args</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">)</span><span class="op">:</span>  <span class="com"># noqa</span>&nbsp;</span><span class="r"></span></p>
@@ -1088,16 +1088,16 @@
     <p id="t1033" class="pln"><span class="n"><a href="#t1033">1033</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t1034" class="pln"><span class="n"><a href="#t1034">1034</a></span><span class="t">            <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1035" class="pln"><span class="n"><a href="#t1035">1035</a></span><span class="t">                <span class="com"># generator test function (with one or several yield statements)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1036" class="mis show_mis"><span class="n"><a href="#t1036">1036</a></span><span class="t">                <span class="op">@</span><span class="nam">wraps</span><span class="op">(</span><span class="nam">test_func</span><span class="op">,</span> <span class="nam">new_sig</span><span class="op">=</span><span class="nam">new_sig</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1036" class="run"><span class="n"><a href="#t1036">1036</a></span><span class="t">                <span class="op">@</span><span class="nam">wraps</span><span class="op">(</span><span class="nam">test_func</span><span class="op">,</span> <span class="nam">new_sig</span><span class="op">=</span><span class="nam">new_sig</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1037" class="pln"><span class="n"><a href="#t1037">1037</a></span><span class="t">                <span class="key">def</span> <span class="nam">wrapped_test_func</span><span class="op">(</span><span class="op">*</span><span class="nam">args</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">)</span><span class="op">:</span>  <span class="com"># noqa</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1038" class="mis show_mis"><span class="n"><a href="#t1038">1038</a></span><span class="t">                    <span class="key">if</span> <span class="nam">kwargs</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">fixture_union_name</span><span class="op">,</span> <span class="key">None</span><span class="op">)</span> <span class="key">is</span> <span class="nam">NOT_USED</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1038" class="par run show_par"><span class="n"><a href="#t1038">1038</a></span><span class="t">                    <span class="key">if</span> <span class="nam">kwargs</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">fixture_union_name</span><span class="op">,</span> <span class="key">None</span><span class="op">)</span> <span class="key">is</span> <span class="nam">NOT_USED</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">1038&#x202F;&#x219B;&#x202F;1041</span><span class="annotate long">line 1038 didn't jump to line 1041, because the condition on line 1038 was never true</span></span></p>
     <p id="t1039" class="pln"><span class="n"><a href="#t1039">1039</a></span><span class="t">                        <span class="com"># TODO why this ? it is probably useless: this fixture</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1040" class="pln"><span class="n"><a href="#t1040">1040</a></span><span class="t">                        <span class="com">#  is private and will never end up in another union</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1041" class="mis show_mis"><span class="n"><a href="#t1041">1041</a></span><span class="t">                        <span class="key">yield</span> <span class="nam">NOT_USED</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1042" class="pln"><span class="n"><a href="#t1042">1042</a></span><span class="t">                    <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1043" class="mis show_mis"><span class="n"><a href="#t1043">1043</a></span><span class="t">                        <span class="nam">replace_paramfixture_with_values</span><span class="op">(</span><span class="nam">kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1044" class="mis show_mis"><span class="n"><a href="#t1044">1044</a></span><span class="t">                        <span class="key">for</span> <span class="nam">res</span> <span class="key">in</span> <span class="nam">test_func</span><span class="op">(</span><span class="op">*</span><span class="nam">args</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1045" class="mis show_mis"><span class="n"><a href="#t1045">1045</a></span><span class="t">                            <span class="key">yield</span> <span class="nam">res</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1043" class="run"><span class="n"><a href="#t1043">1043</a></span><span class="t">                        <span class="nam">replace_paramfixture_with_values</span><span class="op">(</span><span class="nam">kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1044" class="par run show_par"><span class="n"><a href="#t1044">1044</a></span><span class="t">                        <span class="key">for</span> <span class="nam">res</span> <span class="key">in</span> <span class="nam">test_func</span><span class="op">(</span><span class="op">*</span><span class="nam">args</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">1044&#x202F;&#x219B;&#x202F;exit</span><span class="annotate long">line 1044 didn't return from function 'wrapped_test_func', because the loop on line 1044 didn't complete</span></span></p>
+    <p id="t1045" class="run"><span class="n"><a href="#t1045">1045</a></span><span class="t">                            <span class="key">yield</span> <span class="nam">res</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1046" class="pln"><span class="n"><a href="#t1046">1046</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t1047" class="pln"><span class="n"><a href="#t1047">1047</a></span><span class="t">            <span class="com"># move all pytest marks from the test function to the wrapper</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1048" class="pln"><span class="n"><a href="#t1048">1048</a></span><span class="t">            <span class="com"># not needed because the __dict__ is automatically copied when we use @wraps</span>&nbsp;</span><span class="r"></span></p>
@@ -1399,7 +1399,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.5</a>,
-            created at 2021-04-07 16:12 +0000
+            created at 2021-04-12 10:02 +0000
         </p>
     </div>
 </div>
