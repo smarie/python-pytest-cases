@@ -5,7 +5,7 @@
 import pytest
 
 from pytest_cases.common_pytest_marks import PYTEST53_OR_GREATER
-from pytest_cases.common_pytest_lazy_values import LazyValue, LazyTuple
+from pytest_cases.common_pytest_lazy_values import LazyValue, LazyTuple, LazyTupleItem
 
 from pytest_cases import lazy_value
 from pytest_cases.common_pytest import mini_idval
@@ -29,6 +29,9 @@ def test_value_ref():
         return 1, 2
 
     a = lazy_value(foo)
+
+    # test that it is hashable
+    assert hash(a) == hash((LazyValue, foo, None, ()))
 
     # test that ids will be correctly generated even on old pytest
     assert mini_idval(a, 'a', 1) == 'foo'
@@ -67,9 +70,15 @@ def test_value_ref():
         _called = 0 if not src.has_cached_value() else 1
         at = src.as_lazy_tuple(2)
 
+        # test that it is hashable
+        assert hash(at) == hash((LazyTuple, src, 2))
+
         # test when the tuple is unpacked into several parameters
         if not at.has_cached_value():
             for i, a in enumerate(at):
+                # test that it is hashable
+                assert hash(a) == hash((LazyTupleItem, at, i))
+
                 # test that ids will be correctly generated even on old pytest
                 assert mini_idval(a, 'a', 1) == 'foo[%s]' % i
                 assert ('LazyTupleItem(item=%s' % i) in repr(a)

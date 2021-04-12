@@ -164,6 +164,10 @@ class _LazyValue(Lazy):
         self.cached_value_context = None
         self.cached_value = None
 
+    def __hash__(self):
+        """Provide a minimal hash representing the class, valuegetter, id and marks"""
+        return hash((self.__class__, self.valuegetter, self._id, self._marks))
+
     def get_marks(self,
                   as_decorators=False  # type: bool
                   ):
@@ -268,6 +272,10 @@ class _LazyTupleItem(Lazy):
         self.host = host
         self.item = item
 
+    def __hash__(self):
+        """Provide a minimal hash representing the class, host and item number"""
+        return hash((self.__class__, self.host, self.item))
+
     def __repr__(self):
         """Override the inherited method to avoid infinite recursion"""
         vals_to_display = (
@@ -320,6 +328,10 @@ class LazyTuple(Lazy):
                  ):
         self._lazyvalue = valueref
         self.theoretical_size = theoretical_size
+
+    def __hash__(self):
+        """Provide a minimal hash representing the class, lazy value, and theoretical size"""
+        return hash((self.__class__, self._lazyvalue, self.theoretical_size))
 
     def __len__(self):
         return self.theoretical_size
