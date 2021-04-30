@@ -20,7 +20,7 @@ fixture = fixture_plus
 from .case_funcs import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
     get_case_tags, matches_tag_query, is_case_class, is_case_function
 from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_parametrize_args, \
-    get_current_case_id
+    get_current_case_id, get_current_cases
 
 try:
     # -- Distribution mode --
@@ -57,5 +57,6 @@ __all__ = [
     'case', 'copy_case_info', 'set_case_id', 'get_case_id', 'get_case_marks',
     'get_case_tags', 'matches_tag_query', 'is_case_class', 'is_case_function',
     # test functions
-    'get_all_cases', 'parametrize_with_cases', 'THIS_MODULE', 'get_parametrize_args', 'get_current_case_id'
+    'get_all_cases', 'parametrize_with_cases', 'THIS_MODULE', 'get_parametrize_args', 'get_current_case_id',
+    'get_current_cases'
 ]

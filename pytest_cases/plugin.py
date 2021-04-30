@@ -37,6 +37,8 @@ from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtur
 #     # we will need to clean the empty ids explicitly in the plugin :'(
 from .fixture_parametrize_plus import remove_empty_ids
 
+from .case_parametrizer_new import get_current_cases
+
 
 _DEBUG = False
 
@@ -1459,3 +1461,18 @@ def pytest_collection_modifyitems(session, config, items):  # noqa
     else:
         # do nothing
         yield
+
+
+@pytest.fixture
+def current_cases(request):
+    """
+    A fixture containing `get_current_cases(request)`
+
+    This is a dictionary of {argname: (actual_id, case_function)} for a given `pytest` item. The `actual_id`
+    might differ from the case_id defined on the case, since it might be overridden through pytest cusomtization.
+    To get more information on the case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`.
+
+    You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id
+    or its tags. See https://smarie.github.io/python-pytest-cases/#filters-and-tags
+    """
+    return get_current_cases(request)
