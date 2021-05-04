@@ -1,6 +1,9 @@
 # .github/workflows/base.yml
 name: Build
 on:
+  # this one is to trigger the workflow manually from the interface
+  workflow_dispatch:
+
   push:
     tags:
       - '*'
