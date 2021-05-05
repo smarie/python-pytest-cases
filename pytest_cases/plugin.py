@@ -31,7 +31,7 @@ from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTES
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
     get_param_argnames_as_list
 
-from .fixture_core1_unions import NOT_USED, is_fixture_union_params, UnionFixtureAlternative
+from .fixture_core1_unions import NOT_USED, USED, is_fixture_union_params, UnionFixtureAlternative
 
 # if PYTEST54_OR_GREATER:
 #     # we will need to clean the empty ids explicitly in the plugin :'(
@@ -1075,7 +1075,7 @@ def _cleanup_calls_list(metafunc,
                     c._arg2scopenum[fixture_name] = _function_scope_num  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
                 else:
                     # explicitly add it as active
-                    c.params[fixture_name] = 'used'
+                    c.params[fixture_name] = USED
                     c.indices[fixture_name] = 0
                     c._arg2scopenum[fixture_name] = _function_scope_num  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
 

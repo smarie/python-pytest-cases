@@ -33,8 +33,17 @@ class _NotUsed:
         return "pytest_cases.NOT_USED"
 
 
+class _Used:
+    def __repr__(self):
+        return "pytest_cases.USED"
+
+
 NOT_USED = _NotUsed()
 """Object representing a fixture value when the fixture is not used"""
+
+
+USED = _Used()
+"""Object representing a fixture value when the fixture is used"""
 
 
 class UnionIdMakers(object):
