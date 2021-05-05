@@ -71,9 +71,9 @@ def get_parametrize_signature():
 
 class _ParametrizationMark:
     """
-    Container for the mark information that we grab from the fixtures (`@fixture_plus`)
+    Container for the mark information that we grab from the fixtures (`@fixture`)
 
-    Represents the information required by `@fixture_plus` to work.
+    Represents the information required by `@fixture` to work.
     """
     __slots__ = "param_names", "param_values", "param_ids"
 

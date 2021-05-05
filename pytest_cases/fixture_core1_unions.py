@@ -347,8 +347,8 @@ def _fixture_union(fixtures_dest,
                    **kwargs):
     """
     Internal implementation for fixture_union.
-    The "alternatives" have to be created beforehand, by the caller. This allows `fixture_union` and `parametrize_plus`
-    to use the same implementation while `parametrize_plus` uses customized "alternatives" containing more information.
+    The "alternatives" have to be created beforehand, by the caller. This allows `fixture_union` and `parametrize`
+    to use the same implementation while `parametrize` uses customized "alternatives" containing more information.
 
     :param fixtures_dest:
     :param name:
@@ -423,9 +423,9 @@ def unpack_fixture(argnames,  # type: str
 
     ```python
     import pytest
-    from pytest_cases import unpack_fixture, fixture_plus
+    from pytest_cases import unpack_fixture, fixture
 
-    @fixture_plus
+    @fixture
     @pytest.mark.parametrize("o", ['hello', 'world'])
     def c(o):
         return o, o[0]

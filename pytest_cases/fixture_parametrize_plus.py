@@ -32,7 +32,7 @@ from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, i
 from .fixture__creation import check_name_available, CHANGE, WARN
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
     _make_unpack_fixture, UnionIdMakers
-from .fixture_core2 import _create_param_fixture, fixture_plus
+from .fixture_core2 import _create_param_fixture, fixture
 
 
 def _fixture_product(fixtures_dest,
@@ -102,8 +102,8 @@ def _fixture_product(fixtures_dest,
     _new_fixture.__name__ = name
 
     # finally create the fixture per se.
-    # WARNING we do not use pytest.fixture but fixture_plus so that NOT_USED is discarded
-    f_decorator = fixture_plus(scope=scope, autouse=autouse, hook=hook, **kwargs)
+    # WARNING we do not use pytest.fixture but fixture so that NOT_USED is discarded
+    f_decorator = fixture(scope=scope, autouse=autouse, hook=hook, **kwargs)
     fix = f_decorator(_new_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
@@ -123,7 +123,7 @@ _make_fixture_product = _fixture_product
 
 class fixture_ref(object):  # noqa
     """
-    A reference to a fixture, to be used in `@parametrize_plus`.
+    A reference to a fixture, to be used in `@parametrize`.
     You can create it from a fixture name or a fixture object (function).
     """
     __slots__ = 'fixture', 'theoretical_size', '_id'
@@ -199,13 +199,16 @@ class FixtureRefItem(object):
 @pytest.hookimpl(optionalhook=True)
 def pytest_parametrize_plus(*args,
                             **kwargs):
-    warn("`pytest_parametrize_plus` is deprecated. Please use the new alias `parametrize_plus`. "
+    warn("`pytest_parametrize_plus` and `parametrize_plus` are deprecated. Please use the new alias `parametrize`. "
          "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
-    return parametrize_plus(*args, **kwargs)
+    return parametrize(*args, **kwargs)
+
+
+parametrize_plus = pytest_parametrize_plus
 
 
 class ParamAlternative(UnionFixtureAlternative):
-    """Defines an "alternative", used to parametrize a fixture union in the context of parametrize_plus
+    """Defines an "alternative", used to parametrize a fixture union in the context of parametrize
 
     It is similar to a union fixture alternative, except that it also remembers the parameter argnames.
     They are used to generate the test id corresponding to this alternative. See `_get_minimal_id` implementations.
@@ -593,17 +596,17 @@ class ParamIdMakers(UnionIdMakers):
 _IDGEN = object()
 
 
-def parametrize_plus(argnames=None,       # type: str
-                     argvalues=None,      # type: Iterable[Any]
-                     indirect=False,      # type: bool
-                     ids=None,            # type: Union[Callable, Iterable[str]]
-                     idstyle=None,        # type: Union[str, Callable]
-                     idgen=_IDGEN,        # type: Union[str, Callable]
-                     auto_refs=True,      # type: bool
-                     scope=None,          # type: str
-                     hook=None,           # type: Callable[[Callable], Callable]
-                     debug=False,         # type: bool
-                     **args):
+def parametrize(argnames=None,   # type: str
+                argvalues=None,  # type: Iterable[Any]
+                indirect=False,  # type: bool
+                ids=None,        # type: Union[Callable, Iterable[str]]
+                idstyle=None,    # type: Union[str, Callable]
+                idgen=_IDGEN,    # type: Union[str, Callable]
+                auto_refs=True,  # type: bool
+                scope=None,      # type: str
+                hook=None,       # type: Callable[[Callable], Callable]
+                debug=False,     # type: bool
+                **args):
     """
     Equivalent to `@pytest.mark.parametrize` but also supports
 
@@ -918,7 +921,7 @@ def _parametrize_plus(argnames=None,
             main_fixture_style_template = "%s_%s"
             fixture_union_name = main_fixture_style_template % (test_func_name, param_names_str)
             fixture_union_name = check_name_available(fixtures_dest, fixture_union_name, if_name_exists=CHANGE,
-                                                      caller=parametrize_plus)
+                                                      caller=parametrize)
 
             # Retrieve (if ref) or create (for normal argvalues) the fixtures that we will union
             fixture_alternatives = []
@@ -984,7 +987,7 @@ def _parametrize_plus(argnames=None,
                 _idstyle = idstyle
 
             # note: the function automatically registers it in the module
-            _make_fixture_union(fixtures_dest, name=fixture_union_name, hook=hook, caller=parametrize_plus,
+            _make_fixture_union(fixtures_dest, name=fixture_union_name, hook=hook, caller=parametrize,
                                 fix_alternatives=fixture_alternatives, unique_fix_alt_names=fix_alt_names,
                                 idstyle=_idstyle, scope=scope)
 

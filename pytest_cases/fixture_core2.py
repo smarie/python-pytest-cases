@@ -113,7 +113,7 @@ def _create_param_fixture(fixtures_dest,
         if debug:
             print("Creating unparametrized fixture %r returning %r" % (argname, argvalue_to_return))
 
-        fix = fixture_plus(name=argname, scope=scope, autouse=autouse, ids=ids, hook=hook, **kwargs)(__param_fixture)
+        fix = fixture(name=argname, scope=scope, autouse=autouse, ids=ids, hook=hook, **kwargs)(__param_fixture)
     else:
         # create the fixture - set its name so that the optional hook can read it easily
         @with_signature("%s(request)" % argname)
@@ -123,8 +123,8 @@ def _create_param_fixture(fixtures_dest,
         if debug:
             print("Creating parametrized fixture %r returning %r" % (argname, argvalues))
 
-        fix = fixture_plus(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
-                           hook=hook, **kwargs)(__param_fixture)
+        fix = fixture(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
+                      hook=hook, **kwargs)(__param_fixture)
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
     check_name_available(fixtures_dest, argname, if_name_exists=WARN, caller=param_fixture)
@@ -213,7 +213,7 @@ def _create_params_fixture(fixtures_dest,
     if debug:
         print("Creating parametrized 'root' fixture %r returning %r" % (root_fixture_name, argvalues))
 
-    @fixture_plus(name=root_fixture_name, autouse=autouse, scope=scope, hook=hook, **kwargs)
+    @fixture(name=root_fixture_name, autouse=autouse, scope=scope, hook=hook, **kwargs)
     @pytest.mark.parametrize(argnames, argvalues, ids=ids)
     @with_signature("%s(%s)" % (root_fixture_name, argnames))
     def _root_fixture(**_kwargs):
@@ -232,7 +232,7 @@ def _create_params_fixture(fixtures_dest,
             if debug:
                 print("Creating nonparametrized 'view' fixture %r returning %r[%s]" % (argname, root_fixture_name, _param_idx))
 
-            @fixture_plus(name=argname, scope=scope, autouse=autouse, hook=hook, **kwargs)
+            @fixture(name=argname, scope=scope, autouse=autouse, hook=hook, **kwargs)
             @with_signature("%s(%s)" % (argname, root_fixture_name))
             def _param_fixture(**_kwargs):
                 params = _kwargs.pop(root_fixture_name)
@@ -261,7 +261,7 @@ def _create_params_fixture(fixtures_dest,
 @pytest.hookimpl(optionalhook=True)
 def pytest_fixture_plus(*args,
                         **kwargs):
-    warn("`pytest_fixture_plus` is deprecated. Please use the new alias `fixture_plus`. "
+    warn("`pytest_fixture_plus` and `fixture_plus` are deprecated. Please use the new alias `fixture`. "
          "See https://github.com/pytest-dev/pytest/issues/6475", category=DeprecationWarning, stacklevel=2)
     if len(args) == 1:
         if callable(args[0]):
@@ -272,14 +272,18 @@ def pytest_fixture_plus(*args,
     return _fixture_plus
 
 
+fixture_plus = pytest_fixture_plus
+"""Deprecated too"""
+
+
 @function_decorator
-def fixture_plus(scope="function",  # type: str
-                 autouse=False,     # type: bool
-                 name=None,         # type: str
-                 unpack_into=None,  # type: Iterable[str]
-                 hook=None,         # type: Callable[[Callable], Callable]
-                 fixture_func=DECORATED,  # noqa
-                 **kwargs):
+def fixture(scope="function",        # type: str
+            autouse=False,           # type: bool
+            name=None,               # type: str
+            unpack_into=None,        # type: Iterable[str]
+            hook=None,               # type: Callable[[Callable], Callable]
+            fixture_func=DECORATED,  # noqa
+            **kwargs):
     """ decorator to mark a fixture factory function.
 
     Identical to `@pytest.fixture` decorator, except that
@@ -389,7 +393,7 @@ def _decorate_fixture_plus(fixture_func,
     else:
         if 'params' in kwargs:
             raise ValueError(
-                "With `fixture_plus` you cannot mix usage of the keyword argument `params` and of "
+                "With `fixture` you cannot mix usage of the keyword argument `params` and of "
                 "the pytest.mark.parametrize marks")
 
     # (2) create the huge "param" containing all params combined
@@ -403,7 +407,7 @@ def _decorate_fixture_plus(fixture_func,
 
         # check number of parameter names in this parameterset
         if len(pmark.param_names) < 1:
-            raise ValueError("Fixture function '%s' decorated with '@fixture_plus' has an empty parameter "
+            raise ValueError("Fixture function '%s' decorated with '@fixture' has an empty parameter "
                              "name in a @pytest.mark.parametrize mark")
 
         # remember the argnames

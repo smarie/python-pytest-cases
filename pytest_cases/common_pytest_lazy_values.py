@@ -120,7 +120,7 @@ def partial_to_str(partialfun):
 # noinspection PyPep8Naming
 class _LazyValue(Lazy):
     """
-    A reference to a value getter, to be used in `parametrize_plus`.
+    A reference to a value getter, to be used in `parametrize`.
 
     A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
     fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.
@@ -446,7 +446,7 @@ def lazy_value(valuegetter,  # type: Callable[[], Any]
                marks=()      # type: Union[MarkDecorator, Iterable[MarkDecorator]]
                ):
     """
-    Creates a reference to a value getter, to be used in `parametrize_plus`.
+    Creates a reference to a value getter, to be used in `parametrize`.
 
     A `lazy_value` is the same thing than a function-scoped fixture, except that the value getter function is not a
     fixture and therefore can neither be parametrized nor depend on fixtures. It should have no mandatory argument.

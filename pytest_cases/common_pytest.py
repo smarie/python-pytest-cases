@@ -462,7 +462,7 @@ except ImportError:  # pytest 2.x
     def ParameterSet(values,
                      id,  # noqa
                      marks):
-        """ Dummy function (not a class) used only by parametrize_plus """
+        """ Dummy function (not a class) used only by `parametrize` """
         if id is not None:
             raise ValueError("This should not happen as `pytest.param` does not exist in pytest 2")
 

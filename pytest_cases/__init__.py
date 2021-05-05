@@ -9,12 +9,8 @@ AUTO2 = AUTO
 """Deprecated symbol, for retrocompatibility. Will be dropped soon."""
 
 from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
-from .fixture_core2 import pytest_fixture_plus, fixture_plus, param_fixtures, param_fixture
-from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, fixture_ref
-
-# additional symbols without the 'plus' suffix
-parametrize = parametrize_plus
-fixture = fixture_plus
+from .fixture_core2 import pytest_fixture_plus, fixture_plus, fixture, param_fixtures, param_fixture
+from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, parametrize, fixture_ref
 
 
 from .case_funcs import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
