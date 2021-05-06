@@ -1468,10 +1468,7 @@ def current_cases(request):
     """
     A fixture containing `get_current_cases(request)`
 
-    Returns a dictionary containing all case parameters for the currently active `pytest` item.
-    You can either pass the `pytest` item (available in some hooks) or the `request` (available in hooks, and also
-    directly as a fixture).
-
+    This is a dictionary containing all case parameters for the currently active `pytest` item.
     For each test function argument parametrized using a `@parametrize_with_case(<argname>, ...)` this dictionary
     contains an entry `{<argname>: (actual_id, case_function)}`. If several argnames are parametrized this way,
     a dedicated entry will be present for each argname.

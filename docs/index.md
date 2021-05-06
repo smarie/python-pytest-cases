@@ -7,6 +7,8 @@
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937829.svg)](https://doi.org/10.5281/zenodo.3937829)
 
+!!! success "New `current_cases` fixture to easily know the current case for each parameter ! See [below](#c-accessing-the-current-case) for details."
+
 !!! success "Major refactoring of test ids in v3.0.0 ! See [below](#d-test-ids) for details."
 
 !!! success "`@parametrize` now automatically detects fixture symbols ! See [documentation](./pytest_goodies.md#parametrize) for details."
@@ -475,22 +477,50 @@ def test_caching(cached_a, d):
 
 !!! warning "If you add a cache mechanism, make sure that your test functions do not modify the returned objects !"
 
-### c- Accessing the current case id
+### c- Accessing the current case
 
-You may need to access the current case id from within a `pytest` hook or the test itself. For this the `get_current_case_id` helper function is provided:
+In some scenarii you may wish to access the case functions that are currently used to provide the parameter values. This may be
+
+ - to make your test behave differently depending on the case function, case id or case tags
+ - to `pytest.skip` some combinations of parameters/cases that do not make sense
+ - ...
+
+With `pytest-cases` starting in version `3.5`, this is now possible thanks to the `current_cases` fixture. Simply use this fixture to get a dictionary containing the actual parameter id and case function for all parameters parametrized with cases in the current test node. Parametrized fixtures, if any, will appear in a sub-dictionary indexed by the fixture name.
 
 ```python
-from pytest_cases import parametrize_with_cases, get_current_case_id
+from pytest_cases import parametrize_with_cases, fixture
 
 def case_a():
     return 1
 
+@fixture
+@parametrize_with_cases("foo", cases=case_a)
+def my_fixture(foo):
+    return foo
+
 @parametrize_with_cases("data", cases=case_a)
-def test_lazy_val_case(data, request):
-    assert get_current_case_id(request, "data") == "a"
+def test_get_current_case(data, my_fixture, current_cases):
+    
+    # this is how to access the case function for a test parameter
+    actual_case_id, case_fun = current_cases["data"]
+
+    # this is how to access the case function for a fixture parameter
+    fix_actual_case_id, fix_case_fun = current_cases["my_fixture"]["foo"]
+    
+    # let's print everything
+    print(current_cases)
 ```
 
-See [API reference](./api_reference.md#get_current_case_id) for details.
+yields
+
+```
+{'data': ('a', <function case_a at 0x00000205BED1CF28>),
+ 'my_fixture': {'foo': ('a', <function case_a at 0x00000205BED1CF28>)}}
+```
+
+To get more information on the case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`. You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id or its tags. See [API reference](./api_reference.md#matches_tag_query).
+
+Note: you can get the same information from a pytest hook, using the `get_current_cases` function. See [API reference](./api_reference.md#get_current_cases) for details.
 
 ### d- Test ids
 
