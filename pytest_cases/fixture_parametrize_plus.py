@@ -1023,7 +1023,10 @@ def _parametrize_plus(argnames=None,
                 # and add instead the parameter values
                 if nb_params > 1:
                     for i, p in enumerate(argnames):  # noqa
-                        kwargs[p] = encompassing_fixture[i]
+                        try:
+                            kwargs[p] = encompassing_fixture[i]
+                        except TypeError:
+                            raise Exception("Unable to unpack parameter value to a tuple: %r" % encompassing_fixture)
                 else:
                     kwargs[argnames[0]] = encompassing_fixture
                 # return
