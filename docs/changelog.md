@@ -1,5 +1,15 @@
 # Changelog
 
+### 3.5.0 - New `current_cases` fixture and `get_current_cases` function
+
+ - Improved error message when a fixture parametrized with several argnames as once is not able to unpack the parameter values received (non subscriptable object).
+
+ - `parametrize_plus` and `fixture_plus` are now deprecated in favour of `parametrize` and `fixture`, as most users seem to have adopted these names without issues.
+
+ - Users can now easily access the current cases for each parametrized argument thanks to the new `current_cases` fixture. A new helper function `get_current_cases` is also provided, for direct access from a hook. `get_current_case_id` becomes deprecated in favour of these two. Fixes [#195](https://github.com/smarie/python-pytest-cases/issues/195)
+
+ - (internal) Replaced the `"used"` parameter with a dedicated singleton `USED`
+
 ### 3.4.6 - Increased compatibility with other plugins 
 
  - `LazyValue`, `LazyTuple` and `LazyTupleItem` are now hashable. This increases compatibility with plugins hashing the parameter values, such as pytest-steps. See [pytest-steps#41](https://github.com/smarie/python-pytest-steps/issues/41) . Fixes [#199](https://github.com/smarie/python-pytest-cases/issues/199)
