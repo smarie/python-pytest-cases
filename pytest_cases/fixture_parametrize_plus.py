@@ -215,13 +215,14 @@ class ParamAlternative(UnionFixtureAlternative):
     `ParamIdMakers` overrides some of the idstyles in `UnionIdMakers` so as to adapt them to these `ParamAlternative`
     objects.
     """
-    __slots__ = ('argnames', )
+    __slots__ = ('argnames', 'decorated')
 
     def __init__(self,
                  union_name,        # type: str
                  alternative_name,  # type: str
                  param_index,       # type: int
                  argnames,          # type: Sequence[str]
+                 decorated          # type: Callable
                  ):
         """
 
@@ -229,10 +230,12 @@ class ParamAlternative(UnionFixtureAlternative):
         :param alternative_name: the name of the fixture created by @parametrize to represent this alternative
         :param param_index: the index of this parameter in the list of argvalues passed to @parametrize
         :param argnames: the list of parameter names in @parametrize
+        :param decorated: the test function or fixture that this alternative refers to
         """
         super(ParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
                                                alternative_index=param_index)
         self.argnames = argnames
+        self.decorated = decorated
 
     def get_union_id(self):
         return ("(%s)" % ",".join(self.argnames)) if len(self.argnames) > 1 else self.argnames[0]
@@ -255,7 +258,8 @@ class SingleParamAlternative(ParamAlternative):
                  param_index,       # type: int
                  argnames,          # type: Sequence[str]
                  argval,            # type: Any
-                 id                 # type: Optional[str]
+                 id,                # type: Optional[str]
+                 decorated          # type: Callable
                  ):
         """
         :param union_name: the name of the union fixture created by @parametrize to switch between param alternatives
@@ -265,7 +269,7 @@ class SingleParamAlternative(ParamAlternative):
         :param argval: the value used by this parameter
         """
         super(SingleParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
-                                                     param_index=param_index, argnames=argnames)
+                                                     param_index=param_index, argnames=argnames, decorated=decorated)
         self.argval = argval
         self.id = id
 
@@ -281,7 +285,7 @@ class SingleParamAlternative(ParamAlternative):
     @classmethod
     def create(cls,
                new_fixture_host,   # type: Union[Type, ModuleType]
-               test_func_name,     # type: str
+               test_func,          # type: Callable
                param_union_name,   # type: str
                argnames,           # type: Sequence[str]
                i,                  # type: int
@@ -298,7 +302,7 @@ class SingleParamAlternative(ParamAlternative):
         This alternative will refer to a newly created fixture in `new_fixture_host`, that will return `argvalue`.
 
         :param new_fixture_host: host (class, module) where the new fixture should be created
-        :param test_func_name:
+        :param test_func:
         :param param_union_name:
         :param argnames:
         :param i:
@@ -311,8 +315,8 @@ class SingleParamAlternative(ParamAlternative):
         param_names_str = '_'.join(argnames).replace(' ', '')
 
         # Create a unique fixture name
-        p_fix_name = "%s_%s_P%s" % (test_func_name, param_names_str, i)
-        p_fix_name = check_name_available(new_fixture_host, p_fix_name, if_name_exists=CHANGE, caller=parametrize_plus)
+        p_fix_name = "%s_%s_P%s" % (test_func.__name__, param_names_str, i)
+        p_fix_name = check_name_available(new_fixture_host, p_fix_name, if_name_exists=CHANGE, caller=parametrize)
 
         if debug:
             print(" - Creating new fixture %r to handle parameter %s" % (p_fix_name, i))
@@ -338,7 +342,8 @@ class SingleParamAlternative(ParamAlternative):
         # Create the alternative
         argvals = (argvalue,) if nb_params == 1 else argvalue
         p_fix_alt = SingleParamAlternative(union_name=param_union_name, alternative_name=p_fix_name,
-                                           argnames=argnames, param_index=i, argval=argvals, id=id)
+                                           argnames=argnames, param_index=i, argval=argvals, id=id,
+                                           decorated=test_func)
 
         # Finally copy the custom id/marks on the ParamAlternative if any
         if has_pytestparam_wrapper:
@@ -356,7 +361,8 @@ class MultiParamAlternative(ParamAlternative):
                  alternative_name,  # type: str
                  argnames,          # type: Sequence[str]
                  param_index_from,  # type: int
-                 param_index_to     # type: int
+                 param_index_to,    # type: int
+                 decorated          # type: Callable
                  ):
         """
 
@@ -370,7 +376,7 @@ class MultiParamAlternative(ParamAlternative):
         """
         # set the param_index to be None since here we represent several indices
         super(MultiParamAlternative, self).__init__(union_name=union_name, alternative_name=alternative_name,
-                                                    argnames=argnames, param_index=None  # noqa
+                                                    argnames=argnames, param_index=None, decorated=decorated  # noqa
                                                     )
         self.param_index_from = param_index_from
         self.param_index_to = param_index_to
@@ -388,7 +394,7 @@ class MultiParamAlternative(ParamAlternative):
     @classmethod
     def create(cls,
                new_fixture_host,  # type: Union[Type, ModuleType]
-               test_func_name,    # type: str
+               test_func,         # type: Callable
                param_union_name,  # type: str
                argnames,          # type: Sequence[str]
                from_i,            # type: int
@@ -407,7 +413,7 @@ class MultiParamAlternative(ParamAlternative):
         return each of `argvalues`.
 
         :param new_fixture_host:
-        :param test_func_name:
+        :param test_func:
         :param param_union_name:
         :param argnames:
         :param from_i:
@@ -421,8 +427,8 @@ class MultiParamAlternative(ParamAlternative):
         param_names_str = '_'.join(argnames).replace(' ', '')
 
         # Create a unique fixture name
-        p_fix_name = "%s_%s_is_P%stoP%s" % (test_func_name, param_names_str, from_i, to_i - 1)
-        p_fix_name = check_name_available(new_fixture_host, p_fix_name, if_name_exists=CHANGE, caller=parametrize_plus)
+        p_fix_name = "%s_%s_is_P%stoP%s" % (test_func.__name__, param_names_str, from_i, to_i - 1)
+        p_fix_name = check_name_available(new_fixture_host, p_fix_name, if_name_exists=CHANGE, caller=parametrize)
 
         if debug:
             print(" - Creating new fixture %r to handle parameters %s to %s" % (p_fix_name, from_i, to_i - 1))
@@ -469,7 +475,7 @@ class MultiParamAlternative(ParamAlternative):
         # note: as opposed to SingleParamAlternative, no need to move the custom id/marks to the ParamAlternative
         # since they are set on the created parametrized fixture above
         return MultiParamAlternative(union_name=param_union_name, alternative_name=p_fix_name, argnames=argnames,
-                                     param_index_from=from_i, param_index_to=to_i)
+                                     param_index_from=from_i, param_index_to=to_i, decorated=test_func)
 
 
 class FixtureParamAlternative(SingleParamAlternative):
@@ -480,7 +486,8 @@ class FixtureParamAlternative(SingleParamAlternative):
                  fixture_ref,  # type: fixture_ref
                  argnames,     # type: Sequence[str]
                  param_index,  # type: int
-                 id            # type: Optional[str]
+                 id,           # type: Optional[str]
+                 decorated     # type: Callable
                  ):
         """
         :param union_name: the name of the union fixture created by @parametrize to switch between param alternatives
@@ -492,7 +499,7 @@ class FixtureParamAlternative(SingleParamAlternative):
         super(FixtureParamAlternative, self).__init__(union_name=union_name,
                                                       alternative_name=fixture_ref.fixture,
                                                       argnames=argnames, param_index=param_index,
-                                                      argval=fixture_ref, id=id)
+                                                      argval=fixture_ref, id=id, decorated=decorated)
 
     def get_alternative_idx(self):
         return "P%sF" % self.alternative_index
@@ -816,7 +823,7 @@ def _parametrize_plus(argnames=None,
 
         # First define a few functions that will help us create the various fixtures to use in the final "union"
 
-        def _create_params_alt(fh, test_func_name, union_name, from_i, to_i, hook):  # noqa
+        def _create_params_alt(fh, test_func, union_name, from_i, to_i, hook):  # noqa
             """ Routine that will be used to create a parameter fixture for argvalues between prev_i and i"""
 
             # is this about a single value or several values ?
@@ -830,7 +837,7 @@ def _parametrize_plus(argnames=None,
                 else:
                     _id = None
 
-                return SingleParamAlternative.create(new_fixture_host=fh, test_func_name=test_func_name,
+                return SingleParamAlternative.create(new_fixture_host=fh, test_func=test_func,
                                                      param_union_name=union_name, argnames=argnames, i=i,
                                                      argvalue=marked_argvalues[i], id=_id,
                                                      hook=hook, debug=debug)
@@ -838,13 +845,13 @@ def _parametrize_plus(argnames=None,
                 # If an explicit list of ids was provided, slice it. Otherwise the provided callable will be used later
                 _ids = ids[from_i:to_i] if explicit_ids_to_use else ids
 
-                return MultiParamAlternative.create(new_fixture_host=fh, test_func_name=test_func_name,
+                return MultiParamAlternative.create(new_fixture_host=fh, test_func=test_func,
                                                     param_union_name=union_name, argnames=argnames, from_i=from_i,
                                                     to_i=to_i, argvalues=marked_argvalues[from_i:to_i], ids=_ids,
                                                     hook=hook, debug=debug)
 
 
-        def _create_fixture_ref_alt(union_name, i):  # noqa
+        def _create_fixture_ref_alt(union_name, test_func, i):  # noqa
 
             # If an explicit list of ids was provided, slice it. Otherwise use the provided callable
             if ids is not None:
@@ -860,7 +867,7 @@ def _parametrize_plus(argnames=None,
 
             # Create the alternative
             f_fix_alt = FixtureParamAlternative(union_name=union_name, fixture_ref=argvalues[i],
-                                                argnames=argnames, param_index=i, id=_id)
+                                                decorated=test_func, argnames=argnames, param_index=i, id=_id)
             # Finally copy the custom id/marks on the FixtureParamAlternative if any
             if is_marked_parameter_value(marked_argvalues[i]):
                 f_fix_alt = ParameterSet(values=(f_fix_alt,),
@@ -869,7 +876,7 @@ def _parametrize_plus(argnames=None,
 
             return f_fix_alt
 
-        def _create_fixture_ref_product(fh, union_name, i, fixture_ref_positions, test_func_name, hook):  # noqa
+        def _create_fixture_ref_product(fh, union_name, i, fixture_ref_positions, test_func, hook):  # noqa
 
             # If an explicit list of ids was provided, slice it. Otherwise the provided callable will be used
             _id = ids[i] if explicit_ids_to_use else ids
@@ -878,18 +885,18 @@ def _parametrize_plus(argnames=None,
             param_values = argvalues[i]
 
             # Create a unique fixture name
-            p_fix_name = "%s_%s_P%s" % (test_func_name, param_names_str, i)
-            p_fix_name = check_name_available(fh, p_fix_name, if_name_exists=CHANGE, caller=parametrize_plus)
+            p_fix_name = "%s_%s_P%s" % (test_func.__name__, param_names_str, i)
+            p_fix_name = check_name_available(fh, p_fix_name, if_name_exists=CHANGE, caller=parametrize)
 
             if debug:
                 print(" - Creating new fixture %r to handle parameter %s that is a cross-product" % (p_fix_name, i))
 
             # Create the fixture
-            _make_fixture_product(fh, name=p_fix_name, hook=hook, caller=parametrize_plus,
+            _make_fixture_product(fh, name=p_fix_name, hook=hook, caller=parametrize,
                                   fixtures_or_values=param_values, fixture_positions=fixture_ref_positions)
 
             # Create the corresponding alternative
-            p_fix_alt = ProductParamAlternative(union_name=union_name, alternative_name=p_fix_name,
+            p_fix_alt = ProductParamAlternative(union_name=union_name, alternative_name=p_fix_name, decorated=test_func,
                                                 argval=argvalues[i], argnames=argnames, param_index=i, id=_id)
             # copy the custom id/marks to the ParamAlternative if any
             if is_marked_parameter_value(marked_argvalues[i]):
@@ -934,20 +941,20 @@ def _parametrize_plus(argnames=None,
                     #  one for each consecutive group as shown below. This should not lead to different results but perf
                     #  might differ. Maybe add a parameter in the signature so that users can test it ?
                     #  this would make the ids more readable by removing the "P2toP3"-like ids
-                    p_fix_alt = _create_params_alt(fixtures_dest, test_func_name=test_func_name, hook=hook,
+                    p_fix_alt = _create_params_alt(fixtures_dest, test_func=test_func, hook=hook,
                                                    union_name=fixture_union_name, from_i=prev_i + 1, to_i=i)
                     fixture_alternatives.append(p_fix_alt)
 
                 # B/ Now handle the fixture ref at position <i>
                 if j_list is None:
                     # argvalues[i] contains a single argvalue that is a fixture_ref : add the referenced fixture
-                    f_fix_alt = _create_fixture_ref_alt(union_name=fixture_union_name, i=i)
+                    f_fix_alt = _create_fixture_ref_alt(union_name=fixture_union_name, test_func=test_func, i=i)
                     fixture_alternatives.append(f_fix_alt)
                 else:
                     # argvalues[i] is a tuple, some of them being fixture_ref. create a fixture refering to all of them
                     prod_fix_alt = _create_fixture_ref_product(fixtures_dest, union_name=fixture_union_name, i=i,
                                                                fixture_ref_positions=j_list,
-                                                               test_func_name=test_func_name, hook=hook)
+                                                               test_func=test_func, hook=hook)
                     fixture_alternatives.append(prod_fix_alt)
 
                 prev_i = i
@@ -955,7 +962,7 @@ def _parametrize_plus(argnames=None,
             # C/ handle last consecutive group of normal parameters, if any
             i = len(argvalues)  # noqa
             if i > prev_i + 1:
-                p_fix_alt = _create_params_alt(fixtures_dest, test_func_name=test_func_name, hook=hook,
+                p_fix_alt = _create_params_alt(fixtures_dest, test_func=test_func, hook=hook,
                                                union_name=fixture_union_name, from_i=prev_i + 1, to_i=i)
                 fixture_alternatives.append(p_fix_alt)
 

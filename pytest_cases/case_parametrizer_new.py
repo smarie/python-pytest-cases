@@ -25,11 +25,14 @@ from .common_pytest_lazy_values import LazyValue, LazyTuple, LazyTupleItem
 from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params, \
     list_all_fixtures_in
 
-from . import fixture
 from .case_funcs import matches_tag_query, is_case_function, is_case_class, CASE_PREFIX_FUN, copy_case_info, \
     get_case_id, get_case_marks, GEN_BY_US
+
+from .fixture_core1_unions import USED, NOT_USED
+from .fixture_core2 import CombinedFixtureParamValue, fixture
 from .fixture__creation import check_name_available, CHANGE
-from .fixture_parametrize_plus import fixture_ref, _parametrize_plus, UnionFixtureAlternative
+from .fixture_parametrize_plus import fixture_ref, _parametrize_plus, FixtureParamAlternative, ParamAlternative, \
+    SingleParamAlternative, MultiParamAlternative
 
 try:
     ModuleNotFoundError
@@ -322,7 +325,7 @@ def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType
                                                               debug)]
 
 
-class CaseParameter(object):
+class CaseParamValue(object):
     """Common class for lazy values and fixture refs created from cases"""
     __slots__ = ()
 
@@ -330,7 +333,7 @@ class CaseParameter(object):
         raise NotImplementedError()
 
 
-class _NonFixtureCase(LazyValue, CaseParameter):
+class _LazyValueCaseParamValue(LazyValue, CaseParamValue):
     """A case that does not require any fixture is transformed into a `lazy_value` parameter
     when passed to @parametrize.
 
@@ -340,8 +343,17 @@ class _NonFixtureCase(LazyValue, CaseParameter):
     def get_case_function(self, request):
         return self.valuegetter
 
+    def as_lazy_tuple(self, nb_params):
+        return _LazyTupleCaseParamValue(self, nb_params)
 
-class _FixtureCase(fixture_ref, CaseParameter):
+
+class _LazyTupleCaseParamValue(LazyTuple, CaseParamValue):
+    """A case representing a tuple"""
+    def get_case_function(self, request):
+        return self._lazyvalue.valuegetter
+
+
+class _FixtureRefCaseParamValue(fixture_ref, CaseParamValue):
     """A case that requires at least a fixture is transformed into a `fixture_ref` parameter
     when passed to @parametrize"""
 
@@ -393,7 +405,7 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
             case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
             print("Case function %s > 1 lazy_value() with id %s and additional marks %s"
                   % (case_fun_str, case_id, case_marks))
-        return (_NonFixtureCase(case_fun, id=case_id, marks=case_marks),)
+        return (_LazyValueCaseParamValue(case_fun, id=case_id, marks=case_marks),)
         # else:
         #     THIS WAS A PREMATURE OPTIMIZATION WITH MANY SHORTCOMINGS. For example what if the case function is
         #     itself parametrized with lazy values ? Let's consider that a parametrized case should be a fixture,
@@ -421,7 +433,7 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
                                                                import_fixtures=import_fixtures, debug=debug)
 
         # reference that case fixture, and preserve the case id in the associated id whatever the generated fixture name
-        argvalues = _FixtureCase(fix_name, id=case_id)
+        argvalues = _FixtureRefCaseParamValue(fix_name, id=case_id)
         if debug:
             case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
             print("Case function %s > fixture_ref(%r) with marks %s" % (case_fun_str, fix_name, remaining_marks))
@@ -815,15 +827,20 @@ def _extract_cases_from_module_or_class(module=None,                      # type
 
 def get_current_cases(request_or_item):
     """
-    Returns a dictionary of {argname: (actual_id, case_function)} for a given `pytest` item. The `actual_id`
-    might differ from the case_id defined on the case, since it might be overridden through pytest cusomtization.
-    To get more information on the case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`.
-
-    You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id
-    or its tags. See https://smarie.github.io/python-pytest-cases/#filters-and-tags
-
+    Returns a dictionary containing all case parameters for the currently active `pytest` item.
     You can either pass the `pytest` item (available in some hooks) or the `request` (available in hooks, and also
     directly as a fixture).
+
+    For each test function argument parametrized using a `@parametrize_with_case(<argname>, ...)` this dictionary
+    contains an entry `{<argname>: (actual_id, case_function)}`. If several argnames are parametrized this way,
+    a dedicated entry will be present for each argname.
+
+    If a fixture parametrized with cases is active, the dictionary will contain an entry `{<fixturename>: <dct>}` where
+    `<dct>` is a dictionary `{<argname>: (actual_id, case_function)}`.
+
+    To get more information on a case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`.
+    You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id
+    or its tags. See https://smarie.github.io/python-pytest-cases/#filters-and-tags
 
     Note that you can get the same contents directly by using the `current_cases` fixture.
     """
@@ -835,32 +852,138 @@ def get_current_cases(request_or_item):
     else:
         request = request_or_item
 
+    # (1) scan for MultiParamAlternatives to store fixturename -> argnames
+    mp_fix_to_args = dict()
+    for argname_or_fixturename, current_param_value in item.callspec.params.items():
+        if isinstance(current_param_value, MultiParamAlternative):
+            mp_fix_to_args[current_param_value.alternative_name] = current_param_value.argnames, current_param_value.decorated
+
+    # (2) now extract the cases
     results = dict()
-    for param_or_fixture_name, current_param_value in item.callspec.params.items():
+    for argname_or_fixturename, current_param_value in item.callspec.params.items():
 
-        # First, unpack possible lazy tuples
-        if isinstance(current_param_value, LazyTupleItem):
-            # a non-fixture case that corresponds to several arguments. There will be an entry for each argument
-            current_param_value = current_param_value.host._lazyvalue
+        # (1) Combined parameters on a fixture, except those including fixture refs
+        if isinstance(current_param_value, CombinedFixtureParamValue):
+            # create a sub dictionary
+            fix_results = _get_or_create_subdict(results, argname_or_fixturename)
 
-        if isinstance(current_param_value, CaseParameter):
-            # a non-fixture case : a `lazy_value`
-            case_func = current_param_value.get_case_function(request)
-            actual_id = current_param_value.get_id()
-            results[param_or_fixture_name] = (actual_id, case_func)
+            # now de-combine each distinct @parametrize that was made on that fixture
+            #  (we had to combine them in our @fixture because pytest does not support multiple parametrize on fixtures)
+            for argnames, argvals in current_param_value.iterparams():
+                # this is a single @parametrize(argnames, argvals)
+                if len(argnames) == 1:
+                    _possibly_add_cases_to_results(request, fix_results, mp_fix_to_args, argnames[0], argvals)
+                else:
+                    if isinstance(argvals, LazyTuple):
+                        for item, argname in enumerate(argnames):
+                            argval = LazyTupleItem(argvals, item)
+                            _possibly_add_cases_to_results(request, fix_results, mp_fix_to_args, argname, argval)
+                    else:
+                        print()
 
-        elif isinstance(current_param_value, UnionFixtureAlternative):
-            # a fixture case: we have to dig one level more in order to access the actual `fixture_ref`
-            # Also for consistency with the non-fixture parameters, we create an entry for each argname
-            actual_id = current_param_value.get_alternative_id()
-            case_func = current_param_value.argval.get_case_function(request)
-            for argname in current_param_value.argnames:
-                results[argname] = (actual_id, case_func)
-
-        elif isinstance(current_param_value, LazyTuple):
-            raise TypeError("This should not happen, please report")
+        # (2) Parameters on a test function, or parameters on a fixture with a fixture_ref inside (other fixture gen)
+        else:
+            _possibly_add_cases_to_results(request, results, mp_fix_to_args, argname_or_fixturename, current_param_value)
 
     return results
+
+
+def _possibly_add_cases_to_results(request, results, mp_fix_to_args, argname_or_fixturename, current_param_value):
+
+    actual_id = None
+    argnames = None
+    argname = None
+    case_func = None
+    parametrized = None
+
+    # Does this parameter correspond to a fixture generated by a MultiParamAlternative ?
+    try:
+        argnames, parametrized = mp_fix_to_args[argname_or_fixturename]
+    except KeyError:
+        can_be_a_complex_parametrize_value = True
+    else:
+        can_be_a_complex_parametrize_value = False
+
+    # Is this parameter a ParamAlternative ? (this would mean that at least one case was a fixture)
+    if can_be_a_complex_parametrize_value and isinstance(current_param_value, ParamAlternative):
+        # Common part
+        parametrized = current_param_value.decorated
+        actual_id = current_param_value.get_alternative_id()
+
+        # Handle all kind of parameters when a fixture union was created (at least a fixture ref).
+        if isinstance(current_param_value, FixtureParamAlternative):
+            # a fixture case (fixture_ref)
+            if isinstance(current_param_value.argval, _FixtureRefCaseParamValue):
+                argnames = current_param_value.argnames
+                case_func = current_param_value.argval.get_case_function(request)
+            else:
+                # another fixture ref - not a case, silently return
+                return
+
+        elif isinstance(current_param_value, SingleParamAlternative):
+            # a non-fixture case (lazy_value) when at least one other case is a fixture
+            if isinstance(current_param_value.argval, _LazyTupleCaseParamValue):
+                # an entire tuple. This only happens here, as for simpler params the tuple items appear directly.
+                # actual_id = current_param_value.argval.get_id() not needed
+                argnames = current_param_value.argnames
+                case_func = current_param_value.argval.get_case_function(request)
+            else:
+                # a single value. continue: this will be handled similar to what is below
+                current_param_value = current_param_value.argval
+
+        # elif isinstance(current_param_value, ProductParamAlternative):
+        #     # This should not happen with cases, this is a tuple where a *member* is a fixture_ref
+        #     pass
+
+        elif isinstance(current_param_value, MultiParamAlternative):
+            # ignore silently, already handled in the pass before the main loop
+            return
+
+    # If the parametrization target is not the test but a fixture, store the cases in a dub-dict
+    if parametrized is not None and parametrized.__name__ != request.node.function.__name__:
+        results = _get_or_create_subdict(results, parametrized.__name__)
+
+    # If we did not yet find the case function, this is because this was a simple parametrize without fixture ref.
+    if case_func is None:
+        if isinstance(current_param_value, LazyTupleItem):
+            # a non-fixture case (lazy_value) that corresponds to several arguments. There will be an entry for each arg
+            current_param_value = current_param_value.host._lazyvalue
+
+        # ------ and finally
+
+        if isinstance(current_param_value, _LazyValueCaseParamValue):
+            # a non-fixture case (lazy_value)
+            case_func = current_param_value.get_case_function(request)
+            actual_id = current_param_value.get_id()
+            if argnames is None:
+                argname = argname_or_fixturename
+
+        elif current_param_value in (NOT_USED, USED):
+            # ignore silently
+            return
+        else:
+            # raise TypeError("Internal error - type not expected : %r" % type(current_param_value))
+            # some other parameter - return silently
+            return
+
+    # Finally do it
+    if argnames is not None:
+        if (actual_id is None) or (case_func is None):
+            raise ValueError("Internal error - please report")
+        for argname in argnames:
+            results[argname] = (actual_id, case_func)
+    else:
+        if (argname is None) or (actual_id is None) or (case_func is None):
+            raise ValueError("Internal error - please report")
+        results[argname] = (actual_id, case_func)
+
+
+def _get_or_create_subdict(dct, key):
+    try:
+        return dct[key]
+    except KeyError:
+        dct[key] = dict()
+        return dct[key]
 
 
 def get_current_case_id(request_or_item,

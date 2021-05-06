@@ -1468,10 +1468,18 @@ def current_cases(request):
     """
     A fixture containing `get_current_cases(request)`
 
-    This is a dictionary of {argname: (actual_id, case_function)} for a given `pytest` item. The `actual_id`
-    might differ from the case_id defined on the case, since it might be overridden through pytest cusomtization.
-    To get more information on the case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`.
+    Returns a dictionary containing all case parameters for the currently active `pytest` item.
+    You can either pass the `pytest` item (available in some hooks) or the `request` (available in hooks, and also
+    directly as a fixture).
 
+    For each test function argument parametrized using a `@parametrize_with_case(<argname>, ...)` this dictionary
+    contains an entry `{<argname>: (actual_id, case_function)}`. If several argnames are parametrized this way,
+    a dedicated entry will be present for each argname.
+
+    If a fixture parametrized with cases is active, the dictionary will contain an entry `{<fixturename>: <dct>}` where
+    `<dct>` is a dictionary `{<argname>: (actual_id, case_function)}`.
+
+    To get more information on a case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`.
     You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id
     or its tags. See https://smarie.github.io/python-pytest-cases/#filters-and-tags
     """

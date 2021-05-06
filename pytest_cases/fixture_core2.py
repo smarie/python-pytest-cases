@@ -323,6 +323,34 @@ def fixture(scope="function",        # type: str
                                   hook=hook, _caller_module_offset_when_unpack=3, **kwargs)
 
 
+class FixtureParam(object):
+    __slots__ = 'argnames',
+
+    def __init__(self, argnames):
+        self.argnames = argnames
+
+    def __repr__(self):
+        return "FixtureParam(argnames=%s)" % self.argnames
+
+
+class CombinedFixtureParamValue(object):
+    """Represents a parameter value created when @parametrize is used on a @fixture """
+    __slots__ = 'param_defs', 'argvalues',
+
+    def __init__(self,
+                 param_defs, # type: Iterable[FixtureParam]
+                 argvalues):
+        self.param_defs = param_defs
+        self.argvalues = argvalues
+
+    def iterparams(self):
+        return ((pdef.argnames, v) for pdef, v in zip(self.param_defs, self.argvalues))
+
+    def __repr__(self):
+        list_str = " ; ".join(["<%r: %s>" % (a, v) for a, v in self.iterparams()])
+        return "CombinedFixtureParamValue(%s)" % list_str
+
+
 def _decorate_fixture_plus(fixture_func,
                            scope="function",   # type: str
                            autouse=False,      # type: bool
@@ -398,7 +426,7 @@ def _decorate_fixture_plus(fixture_func,
 
     # (2) create the huge "param" containing all params combined
     # --loop (use the same order to get it right)
-    params_names_or_name_combinations = []
+    param_defs = []
     params_values = []
     params_ids = []
     params_marks = []
@@ -411,7 +439,7 @@ def _decorate_fixture_plus(fixture_func,
                              "name in a @pytest.mark.parametrize mark")
 
         # remember the argnames
-        params_names_or_name_combinations.append(pmark.param_names)
+        param_defs.append(FixtureParam(pmark.param_names))
 
         # separate specific configuration (pytest.param()) from the values
         custom_pids, _pmarks, _pvalues = extract_parameterset_info(pmark.param_names, pmark.param_values, check_nb=True)
@@ -426,19 +454,24 @@ def _decorate_fixture_plus(fixture_func,
         params_values.append(tuple(_pvalues))
 
     # (3) generate the ids and values, possibly reapplying marks
-    if len(params_names_or_name_combinations) == 1:
-        # we can simplify - that will be more readable
+    if len(param_defs) == 1:
+        # A single @parametrize : we can simplify - that will be more readable
         final_ids = params_ids[0]
         final_marks = params_marks[0]
-        final_values = list(params_values[0])
+        # note: we dot his even for a single @parametrize as it allows `current_case` to get the parameter names easily
+        final_values = [CombinedFixtureParamValue(param_defs, (v,)) for v in params_values[0]]
 
         # reapply the marks
         for i, marks in enumerate(final_marks):
             if marks is not None:
                 final_values[i] = make_marked_parameter_value((final_values[i],), marks=marks)
     else:
-        final_values = list(product(*params_values))
+        # Multiple @parametrize: since pytest does not support several, we merge them with "apparence" of several
+        # --equivalent id
         final_ids = combine_ids(product(*params_ids))
+        # --merge all values, we'll unpack them in the wrapper below
+        final_values = [CombinedFixtureParamValue(param_defs, v) for v in product(*params_values)]
+
         final_marks = tuple(product(*params_marks))
 
         # reapply the marks
@@ -451,7 +484,7 @@ def _decorate_fixture_plus(fixture_func,
         raise ValueError("Internal error related to fixture parametrization- please report")
 
     # (4) wrap the fixture function so as to remove the parameter names and add 'request' if needed
-    all_param_names = tuple(v for pnames in params_names_or_name_combinations for v in pnames)
+    all_param_names = tuple(v for pnames in param_defs for v in pnames.argnames)
 
     # --create the new signature that we want to expose to pytest
     old_sig = signature(fixture_func)
@@ -470,19 +503,22 @@ def _decorate_fixture_plus(fixture_func,
     def _map_arguments(*_args, **_kwargs):
         request = _kwargs['request'] if func_needs_request else _kwargs.pop('request')
 
+        # sanity check: we have created this combined value in the combined parametrization.
+        _paramz = request.param
+        if not isinstance(_paramz, CombinedFixtureParamValue):
+            # This can happen when indirect parametrization has been used.
+            # In that case we can work but this parameter will not appear in `current_cases` fixture
+            _paramz = CombinedFixtureParamValue(param_defs, _paramz if len(param_defs) > 1 else (_paramz,))
+
         # populate the parameters
-        if len(params_names_or_name_combinations) == 1:
-            _params = [request.param]  # remove the simplification
-        else:
-            _params = request.param
-        for p_names, fixture_param_value in zip(params_names_or_name_combinations, _params):
+        for p_names, p_argvals in _paramz.iterparams():
             if len(p_names) == 1:
                 # a single parameter for that generated fixture (@pytest.mark.parametrize with a single name)
-                _kwargs[p_names[0]] = get_lazy_args(fixture_param_value, request)
+                _kwargs[p_names[0]] = get_lazy_args(p_argvals, request)
             else:
                 # several parameters for that generated fixture (@pytest.mark.parametrize with several names)
                 # unpack all of them and inject them in the kwargs
-                for old_p_name, old_p_value in zip(p_names, fixture_param_value):
+                for old_p_name, old_p_value in zip(p_names, p_argvals):
                     _kwargs[old_p_name] = get_lazy_args(old_p_value, request)
 
         return _args, _kwargs
