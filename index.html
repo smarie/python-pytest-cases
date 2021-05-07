@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.1">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
     
     
       
@@ -18,7 +18,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.9299cb39.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.bde7dde4.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.ef6f36e2.min.css">
@@ -200,6 +200,7 @@
       
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
+      
         
       
       
@@ -214,6 +215,7 @@
       
         
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
   
   
     
@@ -384,8 +386,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#c-accessing-the-current-case-id" class="md-nav__link">
-    c- Accessing the current case id
+  <a href="#c-accessing-the-current-case" class="md-nav__link">
+    c- Accessing the current case
   </a>
   
 </li>
@@ -541,6 +543,7 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
     
   
   
@@ -709,8 +712,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#c-accessing-the-current-case-id" class="md-nav__link">
-    c- Accessing the current case id
+  <a href="#c-accessing-the-current-case" class="md-nav__link">
+    c- Accessing the current case
   </a>
   
 </li>
@@ -790,6 +793,9 @@
 <p><a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/pytest-cases.svg" /></a> <img alt="Pytest versions" src="https://img.shields.io/badge/pytest-2%20%7C%203%20%7C%204%20%7C%205%20%7C%206-blue" /> <a href="https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml"><img alt="Build Status" src="https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml/badge.svg" /></a> <a href="reports/junit/report.html"><img alt="Tests Status" src="reports/junit/junit-badge.svg?dummy=8484744" /></a> <a href="https://codecov.io/gh/smarie/python-pytest-cases"><img alt="codecov" src="https://codecov.io/gh/smarie/python-pytest-cases/branch/main/graph/badge.svg" /></a></p>
 <p><a href="https://smarie.github.io/python-pytest-cases/"><img alt="Documentation" src="https://img.shields.io/badge/doc-latest-blue.svg" /></a> <a href="https://pypi.python.org/pypi/pytest-cases/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pytest-cases.svg" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads" src="https://pepy.tech/badge/pytest-cases" /></a> <a href="https://pepy.tech/project/pytest-cases"><img alt="Downloads per week" src="https://pepy.tech/badge/pytest-cases/week" /></a> <a href="https://github.com/smarie/python-pytest-cases/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/smarie/python-pytest-cases.svg" /></a>
 <a href="https://doi.org/10.5281/zenodo.3937829"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3937829.svg" /></a></p>
+<div class="admonition success">
+<p class="admonition-title">New <code>current_cases</code> fixture to easily know the current case for each parameter ! See <a href="#c-accessing-the-current-case">below</a> for details.</p>
+</div>
 <div class="admonition success">
 <p class="admonition-title">Major refactoring of test ids in v3.0.0 ! See <a href="#d-test-ids">below</a> for details.</p>
 </div>
@@ -1169,18 +1175,42 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 <div class="admonition warning">
 <p class="admonition-title">If you add a cache mechanism, make sure that your test functions do not modify the returned objects !</p>
 </div>
-<h3 id="c-accessing-the-current-case-id">c- Accessing the current case id<a class="headerlink" href="#c-accessing-the-current-case-id" title="Permanent link">&para;</a></h3>
-<p>You may need to access the current case id from within a <code>pytest</code> hook or the test itself. For this the <code>get_current_case_id</code> helper function is provided:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">get_current_case_id</span>
+<h3 id="c-accessing-the-current-case">c- Accessing the current case<a class="headerlink" href="#c-accessing-the-current-case" title="Permanent link">&para;</a></h3>
+<p>In some scenarii you may wish to access the case functions that are currently used to provide the parameter values. This may be</p>
+<ul>
+<li>to make your test behave differently depending on the case function, case id or case tags</li>
+<li>to <code>pytest.skip</code> some combinations of parameters/cases that do not make sense</li>
+<li>...</li>
+</ul>
+<p>With <code>pytest-cases</code> starting in version <code>3.5</code>, this is now possible thanks to the <code>current_cases</code> fixture. Simply use this fixture to get a dictionary containing the actual parameter id and case function for all parameters parametrized with cases in the current test node. Parametrized fixtures, if any, will appear in a sub-dictionary indexed by the fixture name.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">fixture</span>
 
 <span class="k">def</span> <span class="nf">case_a</span><span class="p">():</span>
     <span class="k">return</span> <span class="mi">1</span>
 
+<span class="nd">@fixture</span>
+<span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="n">case_a</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_fixture</span><span class="p">(</span><span class="n">foo</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">foo</span>
+
 <span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="n">case_a</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_lazy_val_case</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">get_current_case_id</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span>
+<span class="k">def</span> <span class="nf">test_get_current_case</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">my_fixture</span><span class="p">,</span> <span class="n">current_cases</span><span class="p">):</span>
+
+    <span class="c1"># this is how to access the case function for a test parameter</span>
+    <span class="n">actual_case_id</span><span class="p">,</span> <span class="n">case_fun</span> <span class="o">=</span> <span class="n">current_cases</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+    <span class="c1"># this is how to access the case function for a fixture parameter</span>
+    <span class="n">fix_actual_case_id</span><span class="p">,</span> <span class="n">fix_case_fun</span> <span class="o">=</span> <span class="n">current_cases</span><span class="p">[</span><span class="s2">&quot;my_fixture&quot;</span><span class="p">][</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span>
+
+    <span class="c1"># let&#39;s print everything</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">current_cases</span><span class="p">)</span>
 </code></pre></div>
-<p>See <a href="api_reference/#get_current_case_id">API reference</a> for details.</p>
+<p>yields</p>
+<div class="highlight"><pre><span></span><code>{&#39;data&#39;: (&#39;a&#39;, &lt;function case_a at 0x00000205BED1CF28&gt;),
+ &#39;my_fixture&#39;: {&#39;foo&#39;: (&#39;a&#39;, &lt;function case_a at 0x00000205BED1CF28&gt;)}}
+</code></pre></div>
+<p>To get more information on the case function, you can use <code>get_case_id(f)</code>, <code>get_case_marks(f)</code>, <code>get_case_tags(f)</code>. You can also use <code>matches_tag_query</code> to check if a case function matches some expectations either concerning its id or its tags. See <a href="api_reference/#matches_tag_query">API reference</a>.</p>
+<p>Note: you can get the same information from a pytest hook, using the <code>get_current_cases</code> function. See <a href="api_reference/#get_current_cases">API reference</a> for details.</p>
 <h3 id="d-test-ids">d- Test ids<a class="headerlink" href="#d-test-ids" title="Permanent link">&para;</a></h3>
 <p>Starting from version 3.0.0, test ids induced by <code>@parametrize_with_cases</code> are similar to the ids induced by <code>@pytest.mark.parametrize</code>, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.</p>
 <p>For this you can pass a callable to <code>@parametrize_with_cases(ids=&lt;callable&gt;)</code>. In this callable, you may wish to use <code>get_case_id</code>, <code>get_case_marks</code>, <code>get_case_tags</code>, or <code>matches_tag_query</code> to return a custom id.</p>
@@ -1338,10 +1368,10 @@ test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-earthling]
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.7353b375.min.js"></script>
+      <script src="assets/javascripts/bundle.1d3bfcf1.min.js"></script>
       
     
   </body>
