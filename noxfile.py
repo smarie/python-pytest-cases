@@ -120,7 +120,7 @@ def tests(session: PowerSession, coverage, pkg_specs):
     # finally run all tests
     if not coverage:
         # simple: pytest only
-        session.run2("python -m pytest -v %s/tests/" % pkg_name)
+        session.run2("python -m pytest --cache-clear -v %s/tests/" % pkg_name)
     else:
         # coverage + junit html reports + badge generation
         session.install_reqs(phase="coverage", phase_reqs=["coverage", "pytest-html", "requests", "xunitparser"],
@@ -128,7 +128,7 @@ def tests(session: PowerSession, coverage, pkg_specs):
 
         # --coverage + junit html reports
         session.run2("coverage run --source {pkg_name} "
-                     "-m pytest --junitxml={dst}/junit.xml --html={dst}/report.html -v {pkg_name}/tests/"
+                     "-m pytest --cache-clear --junitxml={dst}/junit.xml --html={dst}/report.html -v {pkg_name}/tests/"
                      "".format(pkg_name=pkg_name, dst=Folders.test_reports))
         # session.run2("coverage report")  # this shows in terminal + fails under XX%, same as --cov-report term --cov-fail-under=70  # noqa
         session.run2("coverage xml -o {covxml}".format(covxml=Folders.coverage_xml))
