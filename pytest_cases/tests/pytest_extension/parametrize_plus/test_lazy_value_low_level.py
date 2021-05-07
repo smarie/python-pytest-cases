@@ -62,19 +62,21 @@ def test_value_ref():
 
     # now do the same test for lazy values used as a tuple of parameters
     new_lv = lazy_value(foo)
-    assert not new_lv.has_cached_value()
-    assert a.has_cached_value()
+    assert not new_lv.has_cached_value(fake_request)
+    assert a.has_cached_value(fake_request)
+    with pytest.raises(ValueError):
+        a.has_cached_value()
 
     for src in new_lv, a:
         # set the counter according to the state of the cache
-        _called = 0 if not src.has_cached_value() else 1
+        _called = 0 if not src.has_cached_value(fake_request) else 1
         at = src.as_lazy_tuple(2)
 
         # test that it is hashable
         assert hash(at) == hash((LazyTuple, src, 2))
 
         # test when the tuple is unpacked into several parameters
-        if not at.has_cached_value():
+        if not at.has_cached_value(fake_request):
             for i, a in enumerate(at):
                 # test that it is hashable
                 assert hash(a) == hash((LazyTupleItem, at, i))
@@ -83,8 +85,7 @@ def test_value_ref():
                 assert mini_idval(a, 'a', 1) == 'foo[%s]' % i
                 assert ('LazyTupleItem(item=%s' % i) in repr(a)
         else:
-            # this does not happen in real usage but in case a plugin messes with this
-            assert tuple(at) == (1, 2)
+            assert tuple(at)[0], tuple(at)[1] == (1, 2)
 
         # test when the tuple is not unpacked -
         # note: this is not supposed to happen when @parametrize decorates a test function,
@@ -104,7 +105,9 @@ def test_value_ref():
 
         # test that retrieving the tuple does not loose the id
         assert str(at) == 'foo'
-        assert at.has_cached_value()
+        assert at.has_cached_value(fake_request2)
+        assert not at.has_cached_value(fake_request)
+        assert at.has_cached_value(raise_if_no_context=False)
 
 
 def test_lv_clone():

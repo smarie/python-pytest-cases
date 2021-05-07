@@ -147,9 +147,8 @@ class _LazyValue(Lazy):
         """Creates a copy of this _LazyValue"""
         new_obj = cls(valuegetter=obj.valuegetter, id=obj._id, marks=obj._marks)
         # make sure the copy will not need to retrieve the result if already done
-        if obj.has_cached_value():
-            new_obj.cached_value_context = obj.cached_value_context
-            new_obj.cached_value = obj.cached_value
+        new_obj.cached_value_context = obj.cached_value_context
+        new_obj.cached_value = obj.cached_value
         return new_obj
 
     # noinspection PyMissingConstructor
@@ -225,7 +224,7 @@ class _LazyValue(Lazy):
         """
         node = get_test_node(request_or_item)
 
-        if self.cached_value_context is None or self.cached_value_context() is not node:
+        if not self.has_cached_value(node=node):
             # retrieve the value by calling the function
             self.cached_value = self.valuegetter()
             # remember the pytest context of the call with a weak reference to avoir gc issues
@@ -233,10 +232,36 @@ class _LazyValue(Lazy):
 
         return self.cached_value
 
-    def has_cached_value(self):
-        """Return True if there is a cached value in self.value, but with no guarantee that it corresponds to the
-        current request"""
-        return self.cached_value_context is not None
+    def has_cached_value(self, request_or_item=None, node=None, raise_if_no_context=True):
+        """Return True if there is a cached value in self.value correnponding to the given request
+
+        A degraded query "is there a cached value" (whatever the context) can be performed by not passing any
+        request, item or node, and switching `raise_if_no_context` to False.
+
+        :param request_or_item: the pytest request or item
+        :param node: the pytest node if it already known.
+        :param raise_if_no_context: a boolean indicating if an error should be raised if `request_or_item` and `node`
+            are both None. Default is `True`.
+        """
+        if node is None:
+            # can we get that context information from the request/item ?
+            if request_or_item is None:
+                if raise_if_no_context:
+                    raise ValueError("No request, item or node was provided: I can not tell if there is a "
+                                     "cached value for your context. Switch `raise_if_no_context=False` if"
+                                     " you wish to get a degraded answer.")
+                else:
+                    # degraded answer: just tell if the cache was populated at least once
+                    return self.cached_value_context is not None
+
+            # get node context information
+            node = get_test_node(request_or_item)
+
+        elif request_or_item is not None:
+            raise ValueError("Only one of `request_or_item` and `node` should be provided")
+
+        # True if there is a cached value context that is the same as the context of the request
+        return self.cached_value_context is not None and self.cached_value_context() is node
 
     def as_lazy_tuple(self, nb_params):
         return LazyTuple(self, nb_params)
@@ -280,7 +305,7 @@ class _LazyTupleItem(Lazy):
         """Override the inherited method to avoid infinite recursion"""
         vals_to_display = (
             ('item', self.item),  # item number first for easier debug
-            ('tuple', self.host.cached_value if self.host.has_cached_value() else self.host._lazyvalue),  # lazy value tuple or cached tuple
+            ('tuple', self.host.cached_value if self.host.has_cached_value(raise_if_no_context=False) else self.host._lazyvalue),  # lazy value tuple or cached tuple
         )
         return "%s(%s)" % (self.__class__.__name__, ", ".join("%s=%r" % (k, v) for k, v in vals_to_display))
 
@@ -348,8 +373,19 @@ class LazyTuple(Lazy):
         """
         return self._lazyvalue.get(request_or_item)
 
-    def has_cached_value(self):
-        return self._lazyvalue.has_cached_value()
+    def has_cached_value(self, request_or_item=None, node=None, raise_if_no_context=True):
+        """Return True if there is a cached value correnponding to the given request
+
+        A degraded query "is there a cached value" (whatever the context) can be performed by not passing any
+        request, item or node, and switching `raise_if_no_context` to False.
+
+        :param request_or_item: the pytest request or item
+        :param node: the pytest node if it already known.
+        :param raise_if_no_context: a boolean indicating if an error should be raised if `request_or_item` and `node`
+            are both None. Default is `True`.
+        """
+        return self._lazyvalue.has_cached_value(request_or_item=request_or_item, node=node,
+                                                raise_if_no_context=raise_if_no_context)
 
     @property
     def cached_value(self):
@@ -361,17 +397,16 @@ class LazyTuple(Lazy):
         a facade (a LazyTupleItem), so that pytest can store this item independently wherever needed, without
         yet calling the value getter.
         """
-        if self._lazyvalue.has_cached_value():
-            # this is never called by pytest, but keep it for debugging
-            return self._lazyvalue.cached_value[item]
-        elif item >= self.theoretical_size:
+        if item >= self.theoretical_size:
             raise IndexError(item)
         else:
-            # do not retrieve yet: return a facade
+            # note: do not use the cache here since we do not know the context.
+            # return a facade than will be able to use the cache of the tuple
             return LazyTupleItem(self, item)
 
     def force_getitem(self, item, request):
         """ Call the underlying value getter, then return self[i]. """
+        # Note: this will use the cache correctly if needed
         argvalue = self.get(request)
         try:
             return argvalue[item]
