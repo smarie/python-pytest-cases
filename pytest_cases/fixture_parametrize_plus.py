@@ -2,7 +2,6 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from collections import Iterable
 from inspect import isgeneratorfunction
 from warnings import warn
 
@@ -12,6 +11,11 @@ try:  # python 3.3+
 except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
+try:
+    from collections.abc import Iterable
+except ImportError:  # noqa
+    from collections import Iterable
+    
 try:
     from typing import Union, Callable, List, Any, Sequence, Optional  # noqa
 
