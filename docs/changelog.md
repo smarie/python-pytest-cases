@@ -1,5 +1,10 @@
 # Changelog
 
+### 3.5.1 - python 3.10 compatibility + improved error message
+
+ - Fixed error message related to misuse of `fixture_ref`. Fixes [#209](https://github.com/smarie/python-pytest-cases/issues/209)
+ - Fixed import error with python 3.10. Fixes [#207](https://github.com/smarie/python-pytest-cases/issues/207)
+
 ### 3.5.0 - New `current_cases` fixture and `get_current_cases` function + Fixes
 
  - New: Users can now easily access the current cases for each parametrized argument thanks to the new `current_cases` fixture. A new helper function `get_current_cases` is also provided, for direct access from a hook. `get_current_case_id` becomes deprecated in favour of these two. Fixes [#195](https://github.com/smarie/python-pytest-cases/issues/195)
