@@ -156,7 +156,8 @@ class InvalidParamsList(Exception):
         self.params = params
 
     def __str__(self):
-        return "Invalid parameters list (`argvalues`) in pytest parametrize: %s" % self.params
+        return "Invalid parameters list (`argvalues`) in pytest parametrize. `list(argvalues)` returned an error. " \
+               "Please make sure that `argvalues` is a list, tuple or iterable : %r" % self.params
 
 
 def is_fixture_union_params(params):

@@ -162,7 +162,10 @@ class fixture_ref(object):  # noqa
     def _check_iterable(self):
         """Raise a TypeError if this fixture reference is not iterable, that is, it does not represent a tuple"""
         if self.theoretical_size is None:
-            raise TypeError("This fixture_ref has not yet been initialized")
+            raise TypeError("This `fixture_ref` has not yet been initialized, so it cannot be unpacked/iterated upon. "
+                            "This is not supposed to happen when a `fixture_ref` is used correctly, i.e. as an item in"
+                            " the `argvalues` of a `@parametrize` decorator. Please check the documentation for "
+                            "details.")
         if self.theoretical_size == 1:
             raise TypeError("This fixture_ref does not represent a tuple of arguments, it is not iterable")
 

@@ -3,6 +3,8 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
+
+from pytest_cases.fixture_core1_unions import InvalidParamsList
 from pytest_cases import fixture, fixture_ref, parametrize
 from pytest_cases.tests.conftest import global_fixture
 
@@ -49,3 +51,11 @@ def c():
 def test_foo(a, b):
     """here the fixture is used for both parameters at the same time"""
     assert (a, b) == (3, 2)
+
+
+def test_invalid_argvalues_message():
+    """ Check that the error message is friendly when the fixture_ref is misused"""
+    with pytest.raises(InvalidParamsList) as exc_info:
+        parametrize("fixture_a", fixture_ref('a'))
+    assert str(exc_info.value).startswith("Invalid parameters list (`argvalues`) in pytest parametrize. "
+                                          "`list(argvalues)` returned an error.")
