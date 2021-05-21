@@ -879,7 +879,13 @@ def get_current_cases(request_or_item):
                             argval = LazyTupleItem(argvals, item)
                             _possibly_add_cases_to_results(request, fix_results, mp_fix_to_args, argname, argval)
                     else:
-                        print()
+                        # not lazy = normal parameter = there is no way this is a case
+                        pass
+
+            # cleanup: delete the empty subdict if the params were not cases.
+            if len(fix_results) == 0:
+                del results[argname_or_fixturename]
+
 
         # (2) Parameters on a test function, or parameters on a fixture with a fixture_ref inside (other fixture gen)
         else:
@@ -944,8 +950,17 @@ def _possibly_add_cases_to_results(request, results, mp_fix_to_args, argname_or_
             return
 
     # If the parametrization target is not the test but a fixture, store the cases in a dub-dict
+    orig_results = None
     if parametrized is not None and parametrized.__name__ != request.node.function.__name__:
+        # store the wrapping dict because we'll delete this entry in the end if it is empty
+        orig_results = results
         results = _get_or_create_subdict(results, parametrized.__name__)
+
+    # this function will need to be called before returning
+    def _cleanup_before_return():
+        # remove the subdict if it was created for nothing
+        if orig_results is not None and len(results) == 0:
+            del orig_results[parametrized.__name__]
 
     # If we did not yet find the case function, this is because this was a simple parametrize without fixture ref.
     if case_func is None:
@@ -964,10 +979,12 @@ def _possibly_add_cases_to_results(request, results, mp_fix_to_args, argname_or_
 
         elif current_param_value in (NOT_USED, USED):
             # ignore silently
+            _cleanup_before_return()
             return
         else:
             # raise TypeError("Internal error - type not expected : %r" % type(current_param_value))
             # some other parameter - return silently
+            _cleanup_before_return()
             return
 
     # Finally do it
@@ -980,6 +997,8 @@ def _possibly_add_cases_to_results(request, results, mp_fix_to_args, argname_or_
         if (argname is None) or (actual_id is None) or (case_func is None):
             raise ValueError("Internal error - please report")
         results[argname] = (actual_id, case_func)
+
+    _cleanup_before_return()
 
 
 def _get_or_create_subdict(dct, key):
