@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.5.2 - bugfix with the `currentcases` fixture
+
+ - Fixed issues where the `currentcases` fixture would not return the correct case function. Fixed [#212](https://github.com/smarie/python-pytest-cases/issues/212)
+
 ### 3.5.1 - python 3.10 compatibility + improved error message
 
  - Fixed error message related to misuse of `fixture_ref`. Fixes [#209](https://github.com/smarie/python-pytest-cases/issues/209)
