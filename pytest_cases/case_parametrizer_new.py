@@ -341,7 +341,7 @@ class _LazyValueCaseParamValue(LazyValue, CaseParamValue):
     """
 
     def get_case_function(self, request):
-        return self.valuegetter
+        return _get_original_case_func(self.valuegetter)[0]
 
     def as_lazy_tuple(self, nb_params):
         return _LazyTupleCaseParamValue(self, nb_params)
@@ -350,7 +350,7 @@ class _LazyValueCaseParamValue(LazyValue, CaseParamValue):
 class _LazyTupleCaseParamValue(LazyTuple, CaseParamValue):
     """A case representing a tuple"""
     def get_case_function(self, request):
-        return self._lazyvalue.valuegetter
+        return _get_original_case_func(self._lazyvalue.valuegetter)[0]
 
 
 class _FixtureRefCaseParamValue(fixture_ref, CaseParamValue):
@@ -929,7 +929,11 @@ def _possibly_add_cases_to_results(request, results, mp_fix_to_args, argname_or_
                 case_func = current_param_value.argval.get_case_function(request)
             else:
                 # a single value. continue: this will be handled similar to what is below
-                current_param_value = current_param_value.argval
+                argnames = current_param_value.argnames
+                if len(argnames) == 1:
+                    current_param_value = current_param_value.argval[0]
+                else:
+                    current_param_value = current_param_value.argval
 
         # elif isinstance(current_param_value, ProductParamAlternative):
         #     # This should not happen with cases, this is a tuple where a *member* is a fixture_ref
