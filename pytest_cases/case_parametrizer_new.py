@@ -422,7 +422,7 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         #                             id="%s-%s" % (case_id, c.id), marks=case_marks + tuple(c.marks))
         #                  for c in meta._calls)
     else:
-        # at least a required fixture (direct req or through @pytest.mark.usefixtures ):
+        # at least 1 required fixture (direct req or through @pytest.mark.usefixtures ), OR parametrized.
 
         # if meta.is_parametrized:
         #    # nothing to do, the parametrization marks are on the fixture to create so they will be taken into account

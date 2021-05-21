@@ -1,5 +1,9 @@
 # Changelog
 
+### (in progress) - `currentcases` fixture cleanup
+
+ - Fixed minor issue where empty entries could be present in `currentcases`. Fixes [#213](https://github.com/smarie/python-pytest-cases/issues/213)
+
 ### 3.5.2 - bugfix with the `currentcases` fixture
 
  - Fixed issues where the `currentcases` fixture would not return the correct case function. Fixed [#212](https://github.com/smarie/python-pytest-cases/issues/212)
