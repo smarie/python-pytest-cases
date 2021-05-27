@@ -403,7 +403,9 @@ def _decorate_fixture_plus(fixture_func,
 
         # get caller module to create the symbols
         caller_module = get_caller_module(frame_offset=_caller_module_offset_when_unpack)
-        _make_unpack_fixture(caller_module, unpack_into, name, hook=hook)
+
+        # note that we cannot use in_cls=True since we have no way to assign the unpacked fixtures to the class
+        _make_unpack_fixture(caller_module, unpack_into, name, hook=hook, in_cls=False)
 
     # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
     parametrizer_marks = get_pytest_parametrize_marks(fixture_func)

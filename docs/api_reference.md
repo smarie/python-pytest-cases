@@ -380,7 +380,7 @@ As a consequence it does not support the `params` and `ids` arguments anymore.
  - **scope**: the scope for which this fixture is shared, one of "function" (default), "class", "module" or "session".
  - **autouse**: if True, the fixture func is activated for all tests that can see it.  If False (the default) then an explicitreference is needed to activate the fixture.
  - **name**: the name of the fixture. This defaults to the name of the decorated function. Note: If a fixture is used in the same module in which it is defined, the function name of the fixture will be shadowed by the function arg that requests the fixture; one wayto resolve this is to name the decorated function ``fixture_<fixturename>`` and then use ``@pytest.fixture(name='<fixturename>')``.
- - **unpack_into**: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
+ - **unpack_into**: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See [`unpack_fixture`](#unpack_fixture) for details.
  - **hook**: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
  - **kwargs**: other keyword arguments for `@pytest.fixture`
 
@@ -389,8 +389,9 @@ As a consequence it does not support the `params` and `ids` arguments anymore.
 ```python
 def unpack_fixture(argnames: str,
                    fixture: Union[str, Callable],
+                   in_cls: bool = False,
                    hook: Callable = None
-                   ) -> Tuple[<Fixture>]
+                   ) -> Tuple[<Fixture>, ...]
 ```
 
 Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to elements unpacked from `fixture` in order. For example if `fixture` is a tuple of length 2, `argnames="a,b"` will create two fixtures containing the first and second element respectively.
@@ -412,10 +413,29 @@ def test_function(a, b):
     assert a[0] == b
 ```
 
+You can also use this function inside a class with `in_cls=True`. In that case you MUST assign the output of the function to variables, as the created fixtures won't be registered with the encompassing module.
+
+```python
+import pytest
+from pytest_cases import unpack_fixture, fixture
+
+@fixture
+@pytest.mark.parametrize("o", ['hello', 'world'])
+def c(o):
+    return o, o[0]
+
+class TestClass:
+    a, b = unpack_fixture("a,b", c, in_cls=True)
+
+    def test_function(self, a, b):
+        assert a[0] == b
+```
+
 **Parameters**
 
  - **argnames**: same as `@pytest.mark.parametrize` `argnames`.
  - **fixture**: a fixture name string or a fixture symbol. If a fixture symbol is provided, the created fixtures will have the same scope. If a name is provided, they will have scope='function'. Note that in practice the performance loss resulting from using `function` rather than a higher scope is negligible since the created fixtures' body is a one-liner.
+ - **in_cls**: a boolean (default `False`). You may wish to turn this to `True` to use this function inside a class. If you do so, you **MUST** assign the output to variables in the class.
  - **hook**: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
 
 **Outputs:** the created fixtures.

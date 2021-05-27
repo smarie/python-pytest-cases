@@ -116,7 +116,9 @@ def _fixture_product(fixtures_dest,
 
     # if unpacking is requested, do it here
     if unpack_into is not None:
-        _make_unpack_fixture(fixtures_dest, argnames=unpack_into, fixture=name, hook=hook)
+        # note that as for fixture unions, we can not expose the `in_cls` parameter.
+        # but there is an easy workaround if unpacking is needed: call unpack_fixture separately
+        _make_unpack_fixture(fixtures_dest, argnames=unpack_into, fixture=name, hook=hook, in_cls=False)
 
     return fix
 

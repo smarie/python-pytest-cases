@@ -330,7 +330,10 @@ def fixture_union(name,                # type: str
 
     # if unpacking is requested, do it here
     if unpack_into is not None:
-        _make_unpack_fixture(caller_module, argnames=unpack_into, fixture=name, hook=hook)
+        # Note: we can't expose the `in_cls` argument as we would not be able to output both the union and the
+        # unpacked fixtures. However there is a simple workaround for this scenario of unpacking a union inside a class:
+        # call unpack_fixture separately.
+        _make_unpack_fixture(caller_module, argnames=unpack_into, fixture=name, hook=hook, in_cls=False)
 
     return union_fix
 
@@ -409,9 +412,10 @@ _make_fixture_union = _fixture_union
 """A readable alias for callers not using the returned symbol"""
 
 
-def unpack_fixture(argnames,  # type: str
-                   fixture,   # type: Union[str, Callable]
-                   hook=None  # type: Callable[[Callable], Callable]
+def unpack_fixture(argnames,      # type: str
+                   fixture,       # type: Union[str, Callable]
+                   in_cls=False,  # type: bool
+                   hook=None      # type: Callable[[Callable], Callable]
                    ):
     """
     Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to
@@ -437,33 +441,59 @@ def unpack_fixture(argnames,  # type: str
         assert a[0] == b
     ```
 
+    You can also use this function inside a class with `in_cls=True`. In that case you MUST assign the output of the
+    function to variables, as the created fixtures won't be registered with the encompassing module.
+
+    ```python
+    import pytest
+    from pytest_cases import unpack_fixture, fixture
+
+    @fixture
+    @pytest.mark.parametrize("o", ['hello', 'world'])
+    def c(o):
+        return o, o[0]
+
+    class TestClass:
+        a, b = unpack_fixture("a,b", c, in_cls=True)
+
+        def test_function(self, a, b):
+            assert a[0] == b
+    ```
+
     :param argnames: same as `@pytest.mark.parametrize` `argnames`.
     :param fixture: a fixture name string or a fixture symbol. If a fixture symbol is provided, the created fixtures
         will have the same scope. If a name is provided, they will have scope='function'. Note that in practice the
         performance loss resulting from using `function` rather than a higher scope is negligible since the created
         fixtures' body is a one-liner.
+    :param in_cls: a boolean (default False). You may wish to turn this to `True` to use this function inside a class.
+        If you do so, you **MUST** assign the output to variables in the class.
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
         will be called everytime a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :return: the created fixtures.
     """
-    # get caller module to create the symbols
-    # todo what if this is called in a class ?
-    caller_module = get_caller_module()
-    return _unpack_fixture(caller_module, argnames, fixture, hook=hook)
+    if in_cls:
+        # the user needs to capture the outputs of the function in symbols in the class
+        caller_module = None
+    else:
+        # get the caller module to create the symbols in it. Assigning outputs is optional
+        caller_module = get_caller_module()
+    return _unpack_fixture(caller_module, argnames, fixture, hook=hook, in_cls=in_cls)
 
 
 def _unpack_fixture(fixtures_dest,  # type: ModuleType
                     argnames,       # type: Union[str, Iterable[str]]
                     fixture,        # type: Union[str, Callable]
+                    in_cls,         # type: bool
                     hook            # type: Callable[[Callable], Callable]
                     ):
     """
 
-    :param fixtures_dest:
+    :param fixtures_dest: if this is `None` the fixtures wont be registered anywhere (just returned)
     :param argnames:
     :param fixture:
+    :param in_cls: a boolean indicating if the `self` argument should be prepended.
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
         will be called everytime a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
@@ -483,6 +513,13 @@ def _unpack_fixture(fixtures_dest,  # type: ModuleType
 
     # finally create the sub-fixtures
     created_fixtures = []
+
+    # we'll need to create their signature
+    if in_cls:
+        _sig = "(self, %s, request)" % source_f_name
+    else:
+        _sig = "(%s, request)" % source_f_name
+
     for value_idx, argname in enumerate(argnames_lst):
         # create the fixture
         # To fix late binding issue with `value_idx` we add an extra layer of scope: a factory function
@@ -490,7 +527,7 @@ def _unpack_fixture(fixtures_dest,  # type: ModuleType
         def _create_fixture(_value_idx):
             # no need to autouse=True: this fixture does not bring any added value in terms of setup.
             @pytest_fixture(name=argname, scope=scope, autouse=False, hook=hook)
-            @with_signature("%s(%s, request)" % (argname, source_f_name))
+            @with_signature(argname + _sig)
             def _param_fixture(request, **kwargs):
                 # ignore the "not used" marks, like in @ignore_unused
                 if not is_used_request(request):
@@ -505,9 +542,10 @@ def _unpack_fixture(fixtures_dest,  # type: ModuleType
         # create it
         fix = _create_fixture(value_idx)
 
-        # add to module
-        check_name_available(fixtures_dest, argname, if_name_exists=WARN, caller=unpack_fixture)
-        setattr(fixtures_dest, argname, fix)
+        if fixtures_dest is not None:
+            # add to module
+            check_name_available(fixtures_dest, argname, if_name_exists=WARN, caller=unpack_fixture)
+            setattr(fixtures_dest, argname, fix)
 
         # collect to return the whole list eventually
         created_fixtures.append(fix)
