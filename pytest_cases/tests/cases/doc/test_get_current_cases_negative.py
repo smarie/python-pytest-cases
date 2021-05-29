@@ -31,7 +31,7 @@ def case_foo2(name):
 
 @parametrize_with_cases("a", cases=case_foo2)
 def test_foo2(a, current_cases):
-    assert current_cases == {'a': ('foo2', case_foo2)}
+    assert current_cases == {'a': ('foo2', case_foo2, {'name': 'bar'})}
 
 
 # ----------- fix for issue 213 bis

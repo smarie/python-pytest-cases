@@ -136,6 +136,16 @@ def safe_isclass(obj  # type: object
         return False
 
 
+def safe_isinstance(obj,  # type: object
+                    cls):
+    # type: (...) -> bool
+    """Ignore any exception via isinstance"""
+    try:
+        return isinstance(obj, cls)
+    except Exception:  # noqa
+        return False
+
+
 def assert_is_fixture(fixture_fun  # type: Any
                       ):
     """
@@ -885,3 +895,16 @@ def inject_host(apply_decorator):
         return apply_decorator(test_or_fixture_func, container)
 
     return apply
+
+
+def get_pytest_request_and_item(request_or_item):
+    """Return the `request` and `item` (node) from whatever is provided"""
+    try:
+        item = request_or_item.node
+    except AttributeError:
+        item = request_or_item
+        request = item._request
+    else:
+        request = request_or_item
+
+    return item, request

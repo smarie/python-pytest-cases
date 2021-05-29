@@ -7,6 +7,7 @@ from . import test_get_current_cases_cases as casesfile
 
 from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 
+
 @case(tags=("no_fix_needed",))
 def case_a():
     return 1, 2
@@ -68,10 +69,14 @@ def _assert_cases(current_cases, local=True):
         'a': case_a if local else casesfile.case_a,
         'b': case_b if local else casesfile.case_b
     }
+    assert len(current_cases["purelazy_a"]) == 3
     assert current_cases["purelazy_a"][1] is ref_dict[current_cases["purelazy_a"][0]]
+    assert current_cases["purelazy_a"][2] == {}
 
+    assert len(current_cases["purelazy_t1"]) == 3
     assert current_cases["purelazy_t1"][0] == "custom_id"
     assert current_cases["purelazy_t1"][1] is (tuplecase_a if local else casesfile.tuplecase_a)
+    assert current_cases["purelazy_t1"][2] == {}
     assert current_cases["purelazy_t1"] == current_cases["purelazy_t2"]
 
     ref_dict = {
@@ -79,12 +84,15 @@ def _assert_cases(current_cases, local=True):
         'b': case_b if local else casesfile.case_b,
         'custom_id': case_a_fixture if local else casesfile.case_a_fixture
     }
+    assert len(current_cases["withfixrefs_f"]) == 3
     assert current_cases["withfixrefs_f"][1] is ref_dict[current_cases["withfixrefs_f"][0]]
+    assert current_cases["withfixrefs_f"][2] == {}
 
     ref_dict = {
         'custom_id': tuplecase_a if local else casesfile.tuplecase_a,
         "a_fixture": tuplecase_a_fixture if local else casesfile.tuplecase_a_fixture
     }
+    assert len(current_cases["withfixrefs_f1"]) == 3
     assert current_cases["withfixrefs_f1"][1] is ref_dict[current_cases["withfixrefs_f1"][0]]
     assert current_cases["withfixrefs_f2"] == current_cases["withfixrefs_f1"]
 
