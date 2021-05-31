@@ -1525,23 +1525,29 @@
     <p id="t1470" class="pln"><span class="n"><a href="#t1470">1470</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t1471" class="pln"><span class="n"><a href="#t1471">1471</a></span><span class="t"><span class="str">    This is a dictionary containing all case parameters for the currently active `pytest` item.</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1472" class="pln"><span class="n"><a href="#t1472">1472</a></span><span class="t"><span class="str">    For each test function argument parametrized using a `@parametrize_with_case(&lt;argname>, ...)` this dictionary</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1473" class="pln"><span class="n"><a href="#t1473">1473</a></span><span class="t"><span class="str">    contains an entry `{&lt;argname>: (actual_id, case_function)}`. If several argnames are parametrized this way,</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1474" class="pln"><span class="n"><a href="#t1474">1474</a></span><span class="t"><span class="str">    a dedicated entry will be present for each argname.</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1473" class="pln"><span class="n"><a href="#t1473">1473</a></span><span class="t"><span class="str">    contains an entry `{&lt;argname>: (case_id, case_function, case_params)}`. If several argnames are parametrized this</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1474" class="pln"><span class="n"><a href="#t1474">1474</a></span><span class="t"><span class="str">    way, a dedicated entry will be present for each argname. The tuple is a `namedtuple` containing</span>&nbsp;</span><span class="r"></span></p>
     <p id="t1475" class="pln"><span class="n"><a href="#t1475">1475</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t1476" class="pln"><span class="n"><a href="#t1476">1476</a></span><span class="t"><span class="str">    If a fixture parametrized with cases is active, the dictionary will contain an entry `{&lt;fixturename>: &lt;dct>}` where</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1477" class="pln"><span class="n"><a href="#t1477">1477</a></span><span class="t"><span class="str">    `&lt;dct>` is a dictionary `{&lt;argname>: (actual_id, case_function)}`.</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1478" class="pln"><span class="n"><a href="#t1478">1478</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t1479" class="pln"><span class="n"><a href="#t1479">1479</a></span><span class="t"><span class="str">    To get more information on a case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`.</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1480" class="pln"><span class="n"><a href="#t1480">1480</a></span><span class="t"><span class="str">    You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1481" class="pln"><span class="n"><a href="#t1481">1481</a></span><span class="t"><span class="str">    or its tags. See https://smarie.github.io/python-pytest-cases/#filters-and-tags</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1482" class="pln"><span class="n"><a href="#t1482">1482</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t1483" class="run"><span class="n"><a href="#t1483">1483</a></span><span class="t">    <span class="key">return</span> <span class="nam">get_current_cases</span><span class="op">(</span><span class="nam">request</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1476" class="pln"><span class="n"><a href="#t1476">1476</a></span><span class="t"><span class="str">     - `id` a string containing the actual case id constructed by `@parametrize_with_cases`.</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1477" class="pln"><span class="n"><a href="#t1477">1477</a></span><span class="t"><span class="str">     - `function` the original case function.</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1478" class="pln"><span class="n"><a href="#t1478">1478</a></span><span class="t"><span class="str">     - `params` a dictionary, containing the parameters of the case, if itself is parametrized. Note that if the</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1479" class="pln"><span class="n"><a href="#t1479">1479</a></span><span class="t"><span class="str">    case is parametrized with `@parametrize_with_cases`, the associated parameter value in the dictionary will also be</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1480" class="pln"><span class="n"><a href="#t1480">1480</a></span><span class="t"><span class="str">    `(actual_id, case_function, case_params)`.</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1481" class="pln"><span class="n"><a href="#t1481">1481</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t1482" class="pln"><span class="n"><a href="#t1482">1482</a></span><span class="t"><span class="str">    If a fixture parametrized with cases is active, the dictionary will contain an entry `{&lt;fixturename>: &lt;dct>}` where</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1483" class="pln"><span class="n"><a href="#t1483">1483</a></span><span class="t"><span class="str">    `&lt;dct>` is a dictionary `{&lt;argname>: (case_id, case_function, case_params)}`.</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1484" class="pln"><span class="n"><a href="#t1484">1484</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t1485" class="pln"><span class="n"><a href="#t1485">1485</a></span><span class="t"><span class="str">    To get more information on a case function, you can use `get_case_marks(f)`, `get_case_tags(f)`.</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1486" class="pln"><span class="n"><a href="#t1486">1486</a></span><span class="t"><span class="str">    You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1487" class="pln"><span class="n"><a href="#t1487">1487</a></span><span class="t"><span class="str">    or its tags. See https://smarie.github.io/python-pytest-cases/#filters-and-tags</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1488" class="pln"><span class="n"><a href="#t1488">1488</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t1489" class="run"><span class="n"><a href="#t1489">1489</a></span><span class="t">    <span class="key">return</span> <span class="nam">get_current_cases</span><span class="op">(</span><span class="nam">request</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </div>
 <div id="footer">
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.5</a>,
-            created at 2021-05-31 19:35 +0000
+            created at 2021-05-31 20:04 +0000
         </p>
     </div>
 </div>

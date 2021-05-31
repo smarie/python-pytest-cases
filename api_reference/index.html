@@ -893,9 +893,15 @@
 <h2 id="1-fixtures">1 - Fixtures<a class="headerlink" href="#1-fixtures" title="Permanent link">&para;</a></h2>
 <h3 id="current_cases"><code>current_cases</code><a class="headerlink" href="#current_cases" title="Permanent link">&para;</a></h3>
 <p>A fixture containing <a href="#get_current_cases"><code>get_current_cases(request)</code></a>.</p>
-<p>This is a dictionary containing all case parameters for the currently active <code>pytest</code> item. For each test function argument parametrized using a <a href="#parametrize_with_cases"><code>@parametrize_with_case(&lt;argname&gt;, ...)</code></a> this dictionary contains an entry <code>{&lt;argname&gt;: (actual_id, case_function)}</code>. If several argnames are parametrized this way, a dedicated entry will be present for each argname.</p>
-<p>If a fixture parametrized with cases is active, the dictionary will contain an entry <code>{&lt;fixturename&gt;: &lt;dct&gt;}</code> where <code>&lt;dct&gt;</code> is a dictionary <code>{&lt;argname&gt;: (actual_id, case_function)}</code>.</p>
-<p>To get more information on a case function, you can use <a href="#get_case_id"><code>get_case_id(f)</code></a>, <a href="#get_case_marks"><code>get_case_marks(f)</code></a>, <a href="#get_case_tags"><code>get_case_tags(f)</code></a>. You can also use <a href="#matches_tag_query"><code>matches_tag_query</code></a> to check if a case function matches some expectations either concerning its id
+<p>This is a dictionary containing all case parameters for the currently active <code>pytest</code> item. For each test function argument parametrized using a <a href="#parametrize_with_cases"><code>@parametrize_with_case(&lt;argname&gt;, ...)</code></a> this dictionary contains an entry <code>{&lt;argname&gt;: (case_id, case_function, case_params)}</code>. If several argnames are parametrized this way, a dedicated entry will be present for each argname. The tuple is a <code>namedtuple</code> containing </p>
+<div class="highlight"><pre><span></span><code> - `id` a string containing the actual case id constructed by `@parametrize_with_cases`.
+ - `function` the original case function.
+ - `params` a dictionary, containing the parameters of the case, if itself is parametrized. Note that if the
+case is parametrized with `@parametrize_with_cases`, the associated parameter value in the dictionary will also be
+`(case_id, case_function, case_params)`.
+</code></pre></div>
+<p>If a fixture parametrized with cases is active, the dictionary will contain an entry <code>{&lt;fixturename&gt;: &lt;dct&gt;}</code> where <code>&lt;dct&gt;</code> is a dictionary <code>{&lt;argname&gt;: (case_id, case_function, case_params)}</code>.</p>
+<p>To get more information on a case function, you can use <a href="#get_case_marks"><code>get_case_marks(f)</code></a>, <a href="#get_case_tags"><code>get_case_tags(f)</code></a>. You can also use <a href="#matches_tag_query"><code>matches_tag_query</code></a> to check if a case function matches some expectations either concerning its id
 or its tags. See <a href="https://smarie.github.io/python-pytest-cases/#filters-and-tags">filters and tags documentation</a>.</p>
 <h2 id="2-case-functions">2 - Case functions<a class="headerlink" href="#2-case-functions" title="Permanent link">&para;</a></h2>
 <p>As explained in the <a href="..">documentation</a>, case functions have no requirement anymore, and starting from version 2.0.0 of <code>pytest_cases</code> they can be parametrized with the usual <code>@pytest.mark.parametrize</code> or its improvement <a href="#parametrize"><code>@parametrize</code></a>. Therefore the only remaining decorator is the optional <code>@case</code> decorator:</p>
@@ -1136,8 +1142,14 @@ or its tags. See <a href="https://smarie.github.io/python-pytest-cases/#filters-
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_current_cases</span><span class="p">(</span><span class="n">request_or_item</span><span class="p">):</span>
 </code></pre></div>
 <p>Returns a dictionary containing all case parameters for the currently active <code>pytest</code> item. You can either pass the <code>pytest</code> item (available in some hooks) or the <code>request</code> (available in hooks, and also directly as a fixture).</p>
-<p>For each test function argument parametrized using a <a href="#parametrize_with_cases"><code>@parametrize_with_case(&lt;argname&gt;, ...)</code></a> this dictionary contains an entry <code>{&lt;argname&gt;: (actual_id, case_function)}</code>. If several argnames are parametrized this way, a dedicated entry will be present for each argname.</p>
-<p>If a fixture parametrized with cases is active, the dictionary will contain an entry <code>{&lt;fixturename&gt;: &lt;dct&gt;}</code> where <code>&lt;dct&gt;</code> is a dictionary <code>{&lt;argname&gt;: (actual_id, case_function)}</code>.</p>
+<p>For each test function argument parametrized using a <a href="#parametrize_with_cases"><code>@parametrize_with_case(&lt;argname&gt;, ...)</code></a> this dictionary contains an entry <code>{&lt;argname&gt;: (case_id, case_function, case_params)}</code>. If several argnames are parametrized this way, a dedicated entry will be present for each argname. The tuple is a <code>namedtuple</code> containing </p>
+<div class="highlight"><pre><span></span><code> - `id` a string containing the actual case id constructed by `@parametrize_with_cases`.
+ - `function` the original case function.
+ - `params` a dictionary, containing the parameters of the case, if itself is parametrized. Note that if the
+case is parametrized with `@parametrize_with_cases`, the associated parameter value in the dictionary will also be
+`(case_id, case_function, case_params)`.
+</code></pre></div>
+<p>If a fixture parametrized with cases is active, the dictionary will contain an entry <code>{&lt;fixturename&gt;: &lt;dct&gt;}</code> where <code>&lt;dct&gt;</code> is a dictionary <code>{&lt;argname&gt;: (case_id, case_function, case_params)}</code>.</p>
 <p>To get more information on a case function, you can use <a href="#get_case_id"><code>get_case_id(f)</code></a>, <a href="#get_case_marks"><code>get_case_marks(f)</code></a>, <a href="#get_case_tags"><code>get_case_tags(f)</code></a>. You can also use <a href="#matches_tag_query"><code>matches_tag_query</code></a> to check if a case function matches some expectations either concerning its id
 or its tags. See <a href="https://smarie.github.io/python-pytest-cases/#filters-and-tags">filters and tags documentation</a>.</p>
 <p>Note that you can get the same contents directly by using the <a href="#current_cases"><code>current_cases</code></a> fixture.</p>
