@@ -521,7 +521,14 @@ yields
   }}
 ```
 
-As you can see above, details are provided as `namedtuple`s. When a case itself is parametrized, its current parameter value(s) appear too (in the above example, `case_a` is parametrized with `nb`).
+As you can see above, details are provided as `namedtuple`s. When a case itself is parametrized, its current parameter value(s) appear too (in the above example, `case_a` is parametrized with `nb`). This can be used to skip a test conditionally, for example:
+
+```python
+if data_fun is case_a and data_params['nb'] == 1:
+    pytest.skip("This specific case is skipped")
+```
+
+It can also be used to insert a debug breakpoint for a specific case.
 
 To get more information on the case function, you can use `get_case_marks(func)`, `get_case_tags(func)`. You can also use `matches_tag_query(...)` to check if a case function matches some expectations either concerning its id or its tags. See [API reference](./api_reference.md#matches_tag_query).
 
