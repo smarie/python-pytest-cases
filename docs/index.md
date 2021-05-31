@@ -488,10 +488,11 @@ In some scenarii you may wish to access the case functions that are currently us
 With `pytest-cases` starting in version `3.5`, this is now possible thanks to the `current_cases` fixture. Simply use this fixture to get a dictionary containing the actual parameter id and case function for all parameters parametrized with cases in the current test node. Parametrized fixtures, if any, will appear in a sub-dictionary indexed by the fixture name.
 
 ```python
-from pytest_cases import parametrize_with_cases, fixture
+from pytest_cases import parametrize, parametrize_with_cases, fixture
 
+@parametrize(nb=(1,))
 def case_a():
-    return 1
+    return nb
 
 @fixture
 @parametrize_with_cases("foo", cases=case_a)
@@ -501,24 +502,28 @@ def my_fixture(foo):
 @parametrize_with_cases("data", cases=case_a)
 def test_get_current_case(data, my_fixture, current_cases):
     
-    # this is how to access the case function for a test parameter
-    actual_case_id, case_fun = current_cases["data"]
+    # access the case details for a test parameter
+    data_id, data_fun, data_params = current_cases["data"]
 
-    # this is how to access the case function for a fixture parameter
-    fix_actual_case_id, fix_case_fun = current_cases["my_fixture"]["foo"]
+    # access the case details for a fixture parameter
+    my_fixture_id, my_fixture_fun, my_fixture_params = current_cases["my_fixture"]["foo"]
     
-    # let's print everything
+    # let's print all case information for this test node
     print(current_cases)
 ```
 
 yields
 
 ```
-{'data': ('a', <function case_a at 0x00000205BED1CF28>),
- 'my_fixture': {'foo': ('a', <function case_a at 0x00000205BED1CF28>)}}
+{'data': Case(id='a', func=<function case_a at 0x000001C0CAE9E700>, params={'nb': 1}), 
+ 'my_fixture': {
+     'foo': Case(id='a', func=<function case_a at 0x000001C0CAE9E700>, params={'nb': 1})
+  }}
 ```
 
-To get more information on the case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`. You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id or its tags. See [API reference](./api_reference.md#matches_tag_query).
+As you can see above, details are provided as `namedtuple`s. When a case itself is parametrized, its current parameter value(s) appear too (in the above example, `case_a` is parametrized with `nb`).
+
+To get more information on the case function, you can use `get_case_marks(func)`, `get_case_tags(func)`. You can also use `matches_tag_query(...)` to check if a case function matches some expectations either concerning its id or its tags. See [API reference](./api_reference.md#matches_tag_query).
 
 Note: you can get the same information from a pytest hook, using the `get_current_cases` function. See [API reference](./api_reference.md#get_current_cases) for details.
 

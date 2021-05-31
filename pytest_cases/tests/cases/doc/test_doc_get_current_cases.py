@@ -1,8 +1,9 @@
-from pytest_cases import parametrize_with_cases, fixture
+from pytest_cases import parametrize_with_cases, fixture, parametrize
 
 
-def case_a():
-    return 1
+@parametrize(nb=(1,))
+def case_a(nb):
+    return nb
 
 
 @fixture
@@ -24,9 +25,9 @@ def test_get_current_case(data, my_fixture, current_cases):
     print(current_cases)
 
     assert current_cases == {
-        "data": ("a", case_a, {}),
+        "data": ("a", case_a, {'nb': 1}),
         "my_fixture": {
-            "foo": ("a", case_a, {})
+            "foo": ("a", case_a, {'nb': 1})
         }
     }
 
