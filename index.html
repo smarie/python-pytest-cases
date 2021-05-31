@@ -1212,7 +1212,11 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
      &#39;foo&#39;: Case(id=&#39;a&#39;, func=&lt;function case_a at 0x000001C0CAE9E700&gt;, params={&#39;nb&#39;: 1})
   }}
 </code></pre></div>
-<p>As you can see above, details are provided as <code>namedtuple</code>s. When a case itself is parametrized, its current parameter value(s) appear too (in the above example, <code>case_a</code> is parametrized with <code>nb</code>).</p>
+<p>As you can see above, details are provided as <code>namedtuple</code>s. When a case itself is parametrized, its current parameter value(s) appear too (in the above example, <code>case_a</code> is parametrized with <code>nb</code>). This can be used to skip a test conditionally, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">data_fun</span> <span class="ow">is</span> <span class="n">case_a</span> <span class="ow">and</span> <span class="n">data_params</span><span class="p">[</span><span class="s1">&#39;nb&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;This specific case is skipped&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>It can also be used to insert a debug breakpoint for a specific case.</p>
 <p>To get more information on the case function, you can use <code>get_case_marks(func)</code>, <code>get_case_tags(func)</code>. You can also use <code>matches_tag_query(...)</code> to check if a case function matches some expectations either concerning its id or its tags. See <a href="api_reference/#matches_tag_query">API reference</a>.</p>
 <p>Note: you can get the same information from a pytest hook, using the <code>get_current_cases</code> function. See <a href="api_reference/#get_current_cases">API reference</a> for details.</p>
 <h3 id="d-test-ids">d- Test ids<a class="headerlink" href="#d-test-ids" title="Permanent link">&para;</a></h3>
