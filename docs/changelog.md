@@ -1,6 +1,12 @@
 # Changelog
 
-### (in progress) - `currentcases` fixture cleanup
+### 3.6.0 - `unpack_fixtures` in classes + `current_cases` improvements
+
+ - The `current_cases` fixture now contains case parameters if any. Fixes [#214](https://github.com/smarie/python-pytest-cases/issues/214)
+
+ - The `current_cases` fixture entries are now instances of `namedtuple`.
+
+ - New `in_cls` argument in `unpack_fixtures` so that it can be used inside classes. Fixes [#201](https://github.com/smarie/python-pytest-cases/issues/201)
 
  - Fixed minor issue where empty entries could be present in `currentcases`. Fixes [#213](https://github.com/smarie/python-pytest-cases/issues/213)
 
