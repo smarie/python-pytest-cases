@@ -5,6 +5,8 @@
 # Use true division operator always even in old python 2.x (used in `_extract_cases_from_module`)
 from __future__ import division
 
+from collections import namedtuple
+
 import functools
 from importlib import import_module
 from inspect import getmembers, ismodule
@@ -1005,6 +1007,9 @@ def get_current_param(value, argname_or_fixturename, mp_fix_to_args):
     return argnames, actual_value, parametrized
 
 
+Case = namedtuple("Case", ("id", "func", "params"))
+
+
 def get_current_cases(request_or_item):
     """
     Returns a dictionary containing all case parameters for the currently active `pytest` item.
@@ -1077,7 +1082,7 @@ def get_current_cases(request_or_item):
                 pass
 
             # Finally fill the results
-            dct[name] = (case_id, case_func, case_params_dct)
+            dct[name] = Case(case_id, case_func, case_params_dct)
 
         elif preserve:
             # used in nested scenarii
@@ -1105,9 +1110,12 @@ def get_current_cases(request_or_item):
         except KeyError:
             pass
 
-    # merge the two
-    cases_res_dict_fixs.update(cases_res_dict)
-    return cases_res_dict_fixs
+    # merge the two - put the fixtures at the end
+    for k, v in cases_res_dict_fixs.items():
+        if k not in cases_res_dict:
+            cases_res_dict[k] = v
+
+    return cases_res_dict
 
 
 def _get_place_as(f):
