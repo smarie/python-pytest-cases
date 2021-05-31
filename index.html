@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.6">
     
     
       
@@ -18,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.bde7dde4.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.875de78c.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ef6f36e2.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.f1a3b89f.min.css">
         
       
     
@@ -1183,10 +1183,11 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 <li>...</li>
 </ul>
 <p>With <code>pytest-cases</code> starting in version <code>3.5</code>, this is now possible thanks to the <code>current_cases</code> fixture. Simply use this fixture to get a dictionary containing the actual parameter id and case function for all parameters parametrized with cases in the current test node. Parametrized fixtures, if any, will appear in a sub-dictionary indexed by the fixture name.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">fixture</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">parametrize</span><span class="p">,</span> <span class="n">parametrize_with_cases</span><span class="p">,</span> <span class="n">fixture</span>
 
+<span class="nd">@parametrize</span><span class="p">(</span><span class="n">nb</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
 <span class="k">def</span> <span class="nf">case_a</span><span class="p">():</span>
-    <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">nb</span>
 
 <span class="nd">@fixture</span>
 <span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="n">case_a</span><span class="p">)</span>
@@ -1196,20 +1197,23 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 <span class="nd">@parametrize_with_cases</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">cases</span><span class="o">=</span><span class="n">case_a</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_get_current_case</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">my_fixture</span><span class="p">,</span> <span class="n">current_cases</span><span class="p">):</span>
 
-    <span class="c1"># this is how to access the case function for a test parameter</span>
-    <span class="n">actual_case_id</span><span class="p">,</span> <span class="n">case_fun</span> <span class="o">=</span> <span class="n">current_cases</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+    <span class="c1"># access the case details for a test parameter</span>
+    <span class="n">data_id</span><span class="p">,</span> <span class="n">data_fun</span><span class="p">,</span> <span class="n">data_params</span> <span class="o">=</span> <span class="n">current_cases</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
-    <span class="c1"># this is how to access the case function for a fixture parameter</span>
-    <span class="n">fix_actual_case_id</span><span class="p">,</span> <span class="n">fix_case_fun</span> <span class="o">=</span> <span class="n">current_cases</span><span class="p">[</span><span class="s2">&quot;my_fixture&quot;</span><span class="p">][</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span>
+    <span class="c1"># access the case details for a fixture parameter</span>
+    <span class="n">my_fixture_id</span><span class="p">,</span> <span class="n">my_fixture_fun</span><span class="p">,</span> <span class="n">my_fixture_params</span> <span class="o">=</span> <span class="n">current_cases</span><span class="p">[</span><span class="s2">&quot;my_fixture&quot;</span><span class="p">][</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span>
 
-    <span class="c1"># let&#39;s print everything</span>
+    <span class="c1"># let&#39;s print all case information for this test node</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">current_cases</span><span class="p">)</span>
 </code></pre></div>
 <p>yields</p>
-<div class="highlight"><pre><span></span><code>{&#39;data&#39;: (&#39;a&#39;, &lt;function case_a at 0x00000205BED1CF28&gt;),
- &#39;my_fixture&#39;: {&#39;foo&#39;: (&#39;a&#39;, &lt;function case_a at 0x00000205BED1CF28&gt;)}}
+<div class="highlight"><pre><span></span><code>{&#39;data&#39;: Case(id=&#39;a&#39;, func=&lt;function case_a at 0x000001C0CAE9E700&gt;, params={&#39;nb&#39;: 1}), 
+ &#39;my_fixture&#39;: {
+     &#39;foo&#39;: Case(id=&#39;a&#39;, func=&lt;function case_a at 0x000001C0CAE9E700&gt;, params={&#39;nb&#39;: 1})
+  }}
 </code></pre></div>
-<p>To get more information on the case function, you can use <code>get_case_id(f)</code>, <code>get_case_marks(f)</code>, <code>get_case_tags(f)</code>. You can also use <code>matches_tag_query</code> to check if a case function matches some expectations either concerning its id or its tags. See <a href="api_reference/#matches_tag_query">API reference</a>.</p>
+<p>As you can see above, details are provided as <code>namedtuple</code>s. When a case itself is parametrized, its current parameter value(s) appear too (in the above example, <code>case_a</code> is parametrized with <code>nb</code>).</p>
+<p>To get more information on the case function, you can use <code>get_case_marks(func)</code>, <code>get_case_tags(func)</code>. You can also use <code>matches_tag_query(...)</code> to check if a case function matches some expectations either concerning its id or its tags. See <a href="api_reference/#matches_tag_query">API reference</a>.</p>
 <p>Note: you can get the same information from a pytest hook, using the <code>get_current_cases</code> function. See <a href="api_reference/#get_current_cases">API reference</a> for details.</p>
 <h3 id="d-test-ids">d- Test ids<a class="headerlink" href="#d-test-ids" title="Permanent link">&para;</a></h3>
 <p>Starting from version 3.0.0, test ids induced by <code>@parametrize_with_cases</code> are similar to the ids induced by <code>@pytest.mark.parametrize</code>, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.</p>
@@ -1371,7 +1375,7 @@ test_doc_debug.py::test_explicit_idstyle[msg\hello_fixture-earthling]
     <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.a1609d9a.min.js"></script>
+      <script src="assets/javascripts/bundle.34eae1b6.min.js"></script>
       
     
   </body>

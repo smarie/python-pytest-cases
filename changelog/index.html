@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.6">
     
     
       
@@ -18,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.bde7dde4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.875de78c.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ef6f36e2.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
         
       
     
@@ -303,8 +303,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#in-progress-currentcases-fixture-cleanup" class="md-nav__link">
-    (in progress) - currentcases fixture cleanup
+  <a href="#360-unpack_fixtures-in-classes-current_cases-improvements" class="md-nav__link">
+    3.6.0 - unpack_fixtures in classes + current_cases improvements
   </a>
   
 </li>
@@ -1029,8 +1029,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#in-progress-currentcases-fixture-cleanup" class="md-nav__link">
-    (in progress) - currentcases fixture cleanup
+  <a href="#360-unpack_fixtures-in-classes-current_cases-improvements" class="md-nav__link">
+    3.6.0 - unpack_fixtures in classes + current_cases improvements
   </a>
   
 </li>
@@ -1739,9 +1739,20 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="in-progress-currentcases-fixture-cleanup">(in progress) - <code>currentcases</code> fixture cleanup<a class="headerlink" href="#in-progress-currentcases-fixture-cleanup" title="Permanent link">&para;</a></h3>
+<h3 id="360-unpack_fixtures-in-classes-current_cases-improvements">3.6.0 - <code>unpack_fixtures</code> in classes + <code>current_cases</code> improvements<a class="headerlink" href="#360-unpack_fixtures-in-classes-current_cases-improvements" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Fixed minor issue where empty entries could be present in <code>currentcases</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/213">#213</a></li>
+<li>
+<p>The <code>current_cases</code> fixture now contains case parameters if any. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/214">#214</a></p>
+</li>
+<li>
+<p>The <code>current_cases</code> fixture entries are now instances of <code>namedtuple</code>.</p>
+</li>
+<li>
+<p>New <code>in_cls</code> argument in <code>unpack_fixtures</code> so that it can be used inside classes. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/201">#201</a></p>
+</li>
+<li>
+<p>Fixed minor issue where empty entries could be present in <code>currentcases</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/213">#213</a></p>
+</li>
 </ul>
 <h3 id="352-bugfix-with-the-currentcases-fixture">3.5.2 - bugfix with the <code>currentcases</code> fixture<a class="headerlink" href="#352-bugfix-with-the-currentcases-fixture" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2422,7 +2433,7 @@ Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/20">#20</a>.
     <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.a1609d9a.min.js"></script>
+      <script src="../assets/javascripts/bundle.34eae1b6.min.js"></script>
       
     
   </body>

@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.6">
     
     
       
@@ -18,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.bde7dde4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.875de78c.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ef6f36e2.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
         
       
     
@@ -1196,15 +1196,16 @@ or its tags. See <a href="https://smarie.github.io/python-pytest-cases/#filters-
 <li><strong>scope</strong>: the scope for which this fixture is shared, one of "function" (default), "class", "module" or "session".</li>
 <li><strong>autouse</strong>: if True, the fixture func is activated for all tests that can see it.  If False (the default) then an explicitreference is needed to activate the fixture.</li>
 <li><strong>name</strong>: the name of the fixture. This defaults to the name of the decorated function. Note: If a fixture is used in the same module in which it is defined, the function name of the fixture will be shadowed by the function arg that requests the fixture; one wayto resolve this is to name the decorated function <code>fixture_&lt;fixturename&gt;</code> and then use <code>@pytest.fixture(name='&lt;fixturename&gt;')</code>.</li>
-<li><strong>unpack_into</strong>: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See <code>unpack_fixture</code> for details.</li>
+<li><strong>unpack_into</strong>: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See <a href="#unpack_fixture"><code>unpack_fixture</code></a> for details.</li>
 <li><strong>hook</strong>: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use <code>saved_fixture</code> from <code>pytest-harvest</code> as a hook in order to save all such created fixtures in the fixture store.</li>
 <li><strong>kwargs</strong>: other keyword arguments for <code>@pytest.fixture</code></li>
 </ul>
 <h3 id="unpack_fixture"><code>unpack_fixture</code><a class="headerlink" href="#unpack_fixture" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">unpack_fixture</span><span class="p">(</span><span class="n">argnames</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                    <span class="n">fixture</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span>
+                   <span class="n">in_cls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                    <span class="n">hook</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span>
-                   <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="o">&lt;</span><span class="n">Fixture</span><span class="o">&gt;</span><span class="p">]</span>
+                   <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="o">&lt;</span><span class="n">Fixture</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 </code></pre></div>
 <p>Creates several fixtures with names <code>argnames</code> from the source <code>fixture</code>. Created fixtures will correspond to elements unpacked from <code>fixture</code> in order. For example if <code>fixture</code> is a tuple of length 2, <code>argnames="a,b"</code> will create two fixtures containing the first and second element respectively.</p>
 <p>The created fixtures are automatically registered into the callers' module, but you may wish to assign them to variables for convenience. In that case make sure that you use the same names, e.g. <code>a, b = unpack_fixture('a,b', 'c')</code>.</p>
@@ -1221,10 +1222,26 @@ or its tags. See <a href="https://smarie.github.io/python-pytest-cases/#filters-
 <span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
 </code></pre></div>
+<p>You can also use this function inside a class with <code>in_cls=True</code>. In that case you MUST assign the output of the function to variables, as the created fixtures won't be registered with the encompassing module.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">unpack_fixture</span><span class="p">,</span> <span class="n">fixture</span>
+
+<span class="nd">@fixture</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">c</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">TestClass</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">unpack_fixture</span><span class="p">(</span><span class="s2">&quot;a,b&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">in_cls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
+</code></pre></div>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>argnames</strong>: same as <code>@pytest.mark.parametrize</code> <code>argnames</code>.</li>
 <li><strong>fixture</strong>: a fixture name string or a fixture symbol. If a fixture symbol is provided, the created fixtures will have the same scope. If a name is provided, they will have scope='function'. Note that in practice the performance loss resulting from using <code>function</code> rather than a higher scope is negligible since the created fixtures' body is a one-liner.</li>
+<li><strong>in_cls</strong>: a boolean (default <code>False</code>). You may wish to turn this to <code>True</code> to use this function inside a class. If you do so, you <strong>MUST</strong> assign the output to variables in the class.</li>
 <li><strong>hook</strong>: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use <code>saved_fixture</code> from <code>pytest-harvest</code> as a hook in order to save all such created fixtures in the fixture store.</li>
 </ul>
 <p><strong>Outputs:</strong> the created fixtures.</p>
@@ -1462,7 +1479,7 @@ leads to very explicit ids: <code>&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;<
     <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.a1609d9a.min.js"></script>
+      <script src="../assets/javascripts/bundle.34eae1b6.min.js"></script>
       
     
   </body>
