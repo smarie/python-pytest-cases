@@ -8,11 +8,17 @@ In general, using `help(symbol)` is the recommended way to get the latest docume
 
 A fixture containing [`get_current_cases(request)`](#get_current_cases).
 
-This is a dictionary containing all case parameters for the currently active `pytest` item. For each test function argument parametrized using a [`@parametrize_with_case(<argname>, ...)`](#parametrize_with_cases) this dictionary contains an entry `{<argname>: (actual_id, case_function)}`. If several argnames are parametrized this way, a dedicated entry will be present for each argname.
+This is a dictionary containing all case parameters for the currently active `pytest` item. For each test function argument parametrized using a [`@parametrize_with_case(<argname>, ...)`](#parametrize_with_cases) this dictionary contains an entry `{<argname>: (case_id, case_function, case_params)}`. If several argnames are parametrized this way, a dedicated entry will be present for each argname. The tuple is a `namedtuple` containing 
+    
+     - `id` a string containing the actual case id constructed by `@parametrize_with_cases`.
+     - `function` the original case function.
+     - `params` a dictionary, containing the parameters of the case, if itself is parametrized. Note that if the
+    case is parametrized with `@parametrize_with_cases`, the associated parameter value in the dictionary will also be
+    `(case_id, case_function, case_params)`.
 
-If a fixture parametrized with cases is active, the dictionary will contain an entry `{<fixturename>: <dct>}` where `<dct>` is a dictionary `{<argname>: (actual_id, case_function)}`.
+If a fixture parametrized with cases is active, the dictionary will contain an entry `{<fixturename>: <dct>}` where `<dct>` is a dictionary `{<argname>: (case_id, case_function, case_params)}`.
 
-To get more information on a case function, you can use [`get_case_id(f)`](#get_case_id), [`get_case_marks(f)`](#get_case_marks), [`get_case_tags(f)`](#get_case_tags). You can also use [`matches_tag_query`](#matches_tag_query) to check if a case function matches some expectations either concerning its id
+To get more information on a case function, you can use [`get_case_marks(f)`](#get_case_marks), [`get_case_tags(f)`](#get_case_tags). You can also use [`matches_tag_query`](#matches_tag_query) to check if a case function matches some expectations either concerning its id
 or its tags. See [filters and tags documentation](https://smarie.github.io/python-pytest-cases/#filters-and-tags).
 
 ## 2 - Case functions
@@ -311,9 +317,15 @@ def get_current_cases(request_or_item):
 
 Returns a dictionary containing all case parameters for the currently active `pytest` item. You can either pass the `pytest` item (available in some hooks) or the `request` (available in hooks, and also directly as a fixture).
 
-For each test function argument parametrized using a [`@parametrize_with_case(<argname>, ...)`](#parametrize_with_cases) this dictionary contains an entry `{<argname>: (actual_id, case_function)}`. If several argnames are parametrized this way, a dedicated entry will be present for each argname.
+For each test function argument parametrized using a [`@parametrize_with_case(<argname>, ...)`](#parametrize_with_cases) this dictionary contains an entry `{<argname>: (case_id, case_function, case_params)}`. If several argnames are parametrized this way, a dedicated entry will be present for each argname. The tuple is a `namedtuple` containing 
+    
+     - `id` a string containing the actual case id constructed by `@parametrize_with_cases`.
+     - `function` the original case function.
+     - `params` a dictionary, containing the parameters of the case, if itself is parametrized. Note that if the
+    case is parametrized with `@parametrize_with_cases`, the associated parameter value in the dictionary will also be
+    `(case_id, case_function, case_params)`.
 
-If a fixture parametrized with cases is active, the dictionary will contain an entry `{<fixturename>: <dct>}` where `<dct>` is a dictionary `{<argname>: (actual_id, case_function)}`.
+If a fixture parametrized with cases is active, the dictionary will contain an entry `{<fixturename>: <dct>}` where `<dct>` is a dictionary `{<argname>: (case_id, case_function, case_params)}`.
 
 To get more information on a case function, you can use [`get_case_id(f)`](#get_case_id), [`get_case_marks(f)`](#get_case_marks), [`get_case_tags(f)`](#get_case_tags). You can also use [`matches_tag_query`](#matches_tag_query) to check if a case function matches some expectations either concerning its id
 or its tags. See [filters and tags documentation](https://smarie.github.io/python-pytest-cases/#filters-and-tags).

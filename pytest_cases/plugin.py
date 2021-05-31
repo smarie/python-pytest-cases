@@ -1470,13 +1470,19 @@ def current_cases(request):
 
     This is a dictionary containing all case parameters for the currently active `pytest` item.
     For each test function argument parametrized using a `@parametrize_with_case(<argname>, ...)` this dictionary
-    contains an entry `{<argname>: (actual_id, case_function)}`. If several argnames are parametrized this way,
-    a dedicated entry will be present for each argname.
+    contains an entry `{<argname>: (case_id, case_function, case_params)}`. If several argnames are parametrized this
+    way, a dedicated entry will be present for each argname. The tuple is a `namedtuple` containing
+
+     - `id` a string containing the actual case id constructed by `@parametrize_with_cases`.
+     - `function` the original case function.
+     - `params` a dictionary, containing the parameters of the case, if itself is parametrized. Note that if the
+    case is parametrized with `@parametrize_with_cases`, the associated parameter value in the dictionary will also be
+    `(actual_id, case_function, case_params)`.
 
     If a fixture parametrized with cases is active, the dictionary will contain an entry `{<fixturename>: <dct>}` where
-    `<dct>` is a dictionary `{<argname>: (actual_id, case_function)}`.
+    `<dct>` is a dictionary `{<argname>: (case_id, case_function, case_params)}`.
 
-    To get more information on a case function, you can use `get_case_id(f)`, `get_case_marks(f)`, `get_case_tags(f)`.
+    To get more information on a case function, you can use `get_case_marks(f)`, `get_case_tags(f)`.
     You can also use `matches_tag_query` to check if a case function matches some expectations either concerning its id
     or its tags. See https://smarie.github.io/python-pytest-cases/#filters-and-tags
     """
