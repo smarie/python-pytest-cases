@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.1 - bugfix - parametrizing a class with `@parametrize`
+
+ - Fixed `ValueError` when `@parametrize` is used to parametrize a class. Also, added a more explicit `TypeError` when `@parametrize` is used to parametrize a class and at least a fixture reference is present. Fixed [#215](https://github.com/smarie/python-pytest-cases/issues/215).
+
 ### 3.6.0 - `unpack_fixtures` in classes + `current_cases` improvements
 
  - The `current_cases` fixture now contains case parameters if any. Fixes [#214](https://github.com/smarie/python-pytest-cases/issues/214)
