@@ -31,7 +31,8 @@ from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
     extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, \
-    get_marked_parameter_values, resolve_ids, get_marked_parameter_id, get_marked_parameter_marks, is_fixture
+    get_marked_parameter_values, resolve_ids, get_marked_parameter_id, get_marked_parameter_marks, is_fixture, \
+    safe_isinstance
 
 from .fixture__creation import check_name_available, CHANGE, WARN
 from .fixture_core1_unions import InvalidParamsList, NOT_USED, UnionFixtureAlternative, _make_fixture_union, \
@@ -788,11 +789,16 @@ def _parametrize_plus(argnames=None,
         else:
             # wrap the decorator to check if the test function has the parameters as arguments
             def _apply(test_func):
-                s = signature(test_func)
-                for p in argnames:
-                    if p not in s.parameters:
-                        raise ValueError("parameter '%s' not found in test function signature '%s%s'"
-                                         "" % (p, test_func.__name__, s))
+                if not safe_isinstance(test_func, type):
+                    # a Function: raise a proper error message if improper use
+                    s = signature(test_func)
+                    for p in argnames:
+                        if p not in s.parameters:
+                            raise ValueError("parameter '%s' not found in test function signature '%s%s'"
+                                             "" % (p, test_func.__name__, s))
+                else:
+                    # a Class: we cannot really perform any check.
+                    pass
                 return _decorator(test_func)
 
         return _apply, False
@@ -926,6 +932,11 @@ def _parametrize_plus(argnames=None,
             test_func_name = test_func.__name__
 
             # first check if the test function has the parameters as arguments
+            if safe_isinstance(test_func, type):
+                # a test class: not supported yet
+                raise NotImplementedError("@parametrize can not be used to decorate a Test class when the argvalues "
+                                          "contain at least one reference to a fixture.")
+
             old_sig = signature(test_func)
             for p in argnames:
                 if p not in old_sig.parameters:
