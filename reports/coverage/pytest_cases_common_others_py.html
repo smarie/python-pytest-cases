@@ -26,7 +26,7 @@
             <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">145 run</button>
             <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">62 missing</button>
             <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">3 excluded</button>
-            <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">16 partial</button>
+            <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">15 partial</button>
         </h2>
     </div>
 </div>
@@ -483,7 +483,7 @@
     <p id="t428" class="run"><span class="n"><a href="#t428">428</a></span><span class="t">                    <span class="key">return</span> <span class="nam">cls</span>&nbsp;</span><span class="r"></span></p>
     <p id="t429" class="run"><span class="n"><a href="#t429">429</a></span><span class="t">            <span class="nam">meth</span> <span class="op">=</span> <span class="nam">getattr</span><span class="op">(</span><span class="nam">meth</span><span class="op">,</span> <span class="str">'__func__'</span><span class="op">,</span> <span class="nam">meth</span><span class="op">)</span>  <span class="com"># fallback to __qualname__ parsing</span>&nbsp;</span><span class="r"></span></p>
     <p id="t430" class="pln"><span class="n"><a href="#t430">430</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t431" class="par run show_par"><span class="n"><a href="#t431">431</a></span><span class="t">        <span class="key">if</span> <span class="nam">inspect</span><span class="op">.</span><span class="nam">isfunction</span><span class="op">(</span><span class="nam">meth</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">431&#x202F;&#x219B;&#x202F;452</span><span class="annotate long">line 431 didn't jump to line 452, because the condition on line 431 was never false</span></span></p>
+    <p id="t431" class="run"><span class="n"><a href="#t431">431</a></span><span class="t">        <span class="key">if</span> <span class="nam">inspect</span><span class="op">.</span><span class="nam">isfunction</span><span class="op">(</span><span class="nam">meth</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t432" class="run"><span class="n"><a href="#t432">432</a></span><span class="t">            <span class="nam">host</span> <span class="op">=</span> <span class="nam">inspect</span><span class="op">.</span><span class="nam">getmodule</span><span class="op">(</span><span class="nam">meth</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t433" class="run"><span class="n"><a href="#t433">433</a></span><span class="t">            <span class="nam">host_part</span> <span class="op">=</span> <span class="nam">meth</span><span class="op">.</span><span class="nam">__qualname__</span><span class="op">.</span><span class="nam">split</span><span class="op">(</span><span class="str">'.&lt;locals>'</span><span class="op">,</span> <span class="num">1</span><span class="op">)</span><span class="op">[</span><span class="num">0</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p id="t434" class="pln"><span class="n"><a href="#t434">434</a></span><span class="t">            <span class="com"># note: the local part of qname is not walkable see https://www.python.org/dev/peps/pep-3155/#limitations</span>&nbsp;</span><span class="r"></span></p>
@@ -621,7 +621,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.5</a>,
-            created at 2021-05-31 20:04 +0000
+            created at 2021-06-03 15:31 +0000
         </p>
     </div>
 </div>
