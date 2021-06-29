@@ -22,7 +22,7 @@ from .common_mini_six import string_types
 from .common_others import get_code_first_line, AUTO, qname, funcopy, needs_binding, get_function_host, \
     in_same_module, get_host_module, get_class_that_defined_method
 from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks, \
-    get_param_argnames_as_list
+    get_param_argnames_as_list, Mark
 from .common_pytest_lazy_values import LazyValue, LazyTuple, LazyTupleItem
 from .common_pytest import safe_isclass, MiniMetafunc, is_fixture, get_fixture_name, inject_host, add_fixture_params, \
     list_all_fixtures_in, get_pytest_request_and_item, safe_isinstance
@@ -269,8 +269,8 @@ def get_all_cases(parametrization_target,  # type: Callable
     for c in cases:
         # load case or cases depending on type
         if safe_isclass(c):
-            # class
-            new_cases = extract_cases_from_class(c, case_fun_prefix=prefix, check_name=False)  # do not check name, it was explicitly passed
+            # class - do not check name, it was explicitly passed
+            new_cases = extract_cases_from_class(c, case_fun_prefix=prefix, check_name=False)
             cases_funs += new_cases
         elif callable(c):
             # function
@@ -303,7 +303,7 @@ def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType
                          import_fixtures=False,   # type: bool
                          debug=False              # type: bool
                          ):
-    # type: (...) -> List[Union[lazy_value, fixture_ref]]
+    # type: (...) -> List[CaseParamValue]
     """
     Transforms a list of cases (obtained from `get_all_cases`) into a list of argvalues for `@parametrize`.
     Each case function `case_fun` is transformed into one or several `lazy_value`(s) or a `fixture_ref`:
@@ -387,7 +387,7 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
                       import_fixtures=False,   # type: bool
                       debug=False              # type: bool
                       ):
-    # type: (...) -> Tuple[lazy_value]
+    # type: (...) -> Tuple[CaseParamValue, ...]
     """Transform a single case into one or several `lazy_value`(s) or a `fixture_ref` to be used in `@parametrize`
 
     If `case_fun` requires at least on fixture, a fixture will be created if not yet present, and a `fixture_ref` will
@@ -464,7 +464,7 @@ def get_or_create_case_fixture(case_id,                # type: str
                                import_fixtures=False,  # type: bool
                                debug=False             # type: bool
                                ):
-    # type: (...) -> Tuple[str, Tuple[MarkInfo]]
+    # type: (...) -> Tuple[str, Tuple[Mark]]
     """
     When case functions require fixtures, we want to rely on pytest to inject everything. Therefore
     we create a "case fixture" wrapping the case function. Since a case function may not be located in the same place
@@ -529,8 +529,8 @@ def get_or_create_case_fixture(case_id,                # type: str
                     for f in list_all_fixtures_in(true_case_func_host, recurse_to_module=False, return_names=False):
                         f_name = get_fixture_name(f)
                         if (f_name in existing_fixture_names) or (f.__name__ in existing_fixture_names):
-                            raise ValueError("Cannot import fixture %r from %r as it would override an existing symbol in "
-                                             "%r. Please set `@parametrize_with_cases(import_fixtures=False)`"
+                            raise ValueError("Cannot import fixture %r from %r as it would override an existing symbol "
+                                             "in %r. Please set `@parametrize_with_cases(import_fixtures=False)`"
                                              "" % (f, from_module, target_host))
                         target_host_module = target_host if not target_in_class else get_host_module(target_host)
                         setattr(target_host_module, f.__name__, f)
@@ -786,7 +786,8 @@ def _extract_cases_from_module_or_class(module=None,                      # type
     for m_name, m in getmembers(container, _of_interest):
         if is_case_class(m):
             co_firstlineno = get_code_first_line(m)
-            cls_cases = extract_cases_from_class(m, case_fun_prefix=case_fun_prefix, _case_param_factory=_case_param_factory)
+            cls_cases = extract_cases_from_class(m, case_fun_prefix=case_fun_prefix,
+                                                 _case_param_factory=_case_param_factory)
             for _i, _m_item in enumerate(cls_cases):
                 gen_line_nb = co_firstlineno + (_i / len(cls_cases))
                 cases_dct[gen_line_nb] = _m_item

@@ -16,11 +16,10 @@ try:  # python 3.3+
 except ImportError:
     from funcsigs import signature, Parameter  # noqa
 
-from distutils.version import LooseVersion
 from inspect import isgeneratorfunction, isclass
 
 try:
-    from typing import Union, Callable, Any, Optional, Tuple, Type  # noqa
+    from typing import Union, Callable, Any, Optional, Tuple, Type, Iterable, Sized, List  # noqa
 except ImportError:
     pass
 

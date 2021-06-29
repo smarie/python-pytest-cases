@@ -230,7 +230,8 @@ def _create_params_fixture(fixtures_dest,
         def _create_fixture(_param_idx):
 
             if debug:
-                print("Creating nonparametrized 'view' fixture %r returning %r[%s]" % (argname, root_fixture_name, _param_idx))
+                print("Creating nonparametrized 'view' fixture %r returning %r[%s]"
+                      % (argname, root_fixture_name, _param_idx))
 
             @fixture(name=argname, scope=scope, autouse=autouse, hook=hook, **kwargs)
             @with_signature("%s(%s)" % (argname, root_fixture_name))
@@ -338,7 +339,7 @@ class CombinedFixtureParamValue(object):
     __slots__ = 'param_defs', 'argvalues',
 
     def __init__(self,
-                 param_defs, # type: Iterable[FixtureParam]
+                 param_defs,  # type: Iterable[FixtureParam]
                  argvalues):
         self.param_defs = param_defs
         self.argvalues = argvalues

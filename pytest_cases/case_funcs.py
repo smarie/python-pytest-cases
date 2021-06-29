@@ -6,7 +6,7 @@ from copy import copy
 from decopatch import function_decorator, DECORATED
 
 try:  # python 3.5+
-    from typing import Type, Callable, Union, Optional, Any, Tuple, Dict, Iterable, List, Set
+    from typing import Callable, Union, Optional, Any, Tuple, Iterable, List, Set
 except ImportError:
     pass
 
@@ -275,10 +275,16 @@ def matches_tag_query(case_fun,      # type: Callable
     return selected
 
 
+try:
+    SeveralMarkDecorators = Union[Tuple[MarkDecorator, ...], List[MarkDecorator], Set[MarkDecorator]]
+except:  # noqa
+    pass
+
+
 @function_decorator
 def case(id=None,             # type: str  # noqa
          tags=None,           # type: Union[Any, Iterable[Any]]
-         marks=(),            # type: Union[MarkDecorator, Tuple[MarkDecorator, ...], List[MarkDecorator], Set[MarkDecorator]]
+         marks=(),            # type: Union[MarkDecorator, SeveralMarkDecorators]
          case_func=DECORATED  # noqa
          ):
     """

@@ -15,10 +15,10 @@ try:
     from collections.abc import Iterable
 except ImportError:  # noqa
     from collections import Iterable
-    
-try:
-    from typing import Union, Callable, List, Any, Sequence, Optional  # noqa
 
+try:
+    from typing import Union, Callable, List, Any, Sequence, Optional, Type  # noqa
+    from types import ModuleType  # noqa
 except ImportError:
     pass
 
@@ -643,10 +643,11 @@ def parametrize(argnames=None,   # type: str
     (3) new possibilities in argvalues:
 
      - one can include references to fixtures with `fixture_ref(<fixture>)` where <fixture> can be the fixture name or
-       fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union" fixture
-       will be created with a unique name, and the test function will be wrapped so as to be injected with the correct
-       parameters from this fixture. Special test ids will be created to illustrate the switching between the various
-       normal parameters and fixtures. You can see debug print messages about all fixtures created using `debug=True`
+       fixture function. When such a fixture reference is detected in the argvalues, a new function-scope "union"
+       fixture will be created with a unique name, and the test function will be wrapped so as to be injected with the
+       correct parameters from this fixture. Special test ids will be created to illustrate the switching between the
+       various normal parameters and fixtures. You can see debug print messages about all fixtures created using
+       `debug=True`
 
      - one can include lazy argvalues with `lazy_value(<valuegetter>, [id=..., marks=...])`. A `lazy_value` is the same
        thing than a function-scoped fixture, except that the value getter function is not a fixture and therefore can
@@ -762,7 +763,7 @@ def _parametrize_plus(argnames=None,
             for n, v in args.items():
                 yield "%s=%s" % (n, mini_idval(val=v, argname='', idx=v))
 
-        idgen = lambda **args: "-".join(_make_ids(**args))
+        idgen = lambda **args: "-".join(_make_ids(**args))  # noqa
 
     # generate id
     if idgen is not None:
@@ -1118,7 +1119,7 @@ def _get_argnames_argvalues(argnames=None, argvalues=None, **args):
         argvalues = kw_argvalues
         # simplify if needed to comply with pytest.mark.parametrize
         if len(argnames) == 1:
-            argvalues = [l[0] if not is_marked_parameter_value(l) else l for l in argvalues]
+            argvalues = [_l[0] if not is_marked_parameter_value(_l) else _l for _l in argvalues]
         return argnames, argvalues
 
     if isinstance(argnames, string_types):
@@ -1165,6 +1166,7 @@ def _gen_ids(argnames, argvalues, idgen):
             raise TypeError("idgen should be a callable or a string, found: %r" % idgen)
 
         _formatter = idgen
+
         def gen_id_using_str_formatter(**params):
             try:
                 # format using the idgen template

@@ -20,14 +20,15 @@ except ImportError:
     from funcsigs import signature  # noqa
 
 try:  # python 3.3+ type hints
-    from typing import List, Tuple, Union, Iterable, MutableMapping  # noqa
-    from _pytest.python import CallSpec2, Function
+    from typing import List, Tuple, Union, Iterable, MutableMapping, Mapping, Optional  # noqa
+    from _pytest.python import CallSpec2
+    from _pytest.config import Config
 except ImportError:
     pass
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST54_OR_GREATER
+from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
     get_param_argnames_as_list
 
@@ -449,12 +450,15 @@ class FixtureClosureNode(object):
 
         for c in self.get_leaves():
             j = 0
-            for i in range(len(initial_list)):
+            for _ in range(len(initial_list)):
+                # get next element in the list (but the list may reduce in size during the loop)
                 fixture_name = initial_list[j]
                 if fixture_name not in c.gather_all_required():
+                    # Remove element from the list. Therefore, do not increment j
                     del initial_list[j]
                     results_list.append(fixture_name)
                 else:
+                    # Do not remove from the list: increment j
                     j += 1
 
         return results_list
@@ -535,7 +539,8 @@ class SuperClosure(MutableSequence):
 
     In this implementation, it is backed by a fixture closure tree, that we have to preserve in order to get
     parametrization right. In another branch of this project ('super_closure' branch) we tried to forget the tree
-    and only keep the partitions, but parametrization order was not as intuitive for the end user as all unions appeared as parametrized first (since they induced the partitions).
+    and only keep the partitions, but parametrization order was not as intuitive for the end user as all unions
+    appeared as parametrized first (since they induced the partitions).
     """
     __slots__ = 'tree', 'all_fixture_defs'
 
@@ -579,8 +584,9 @@ class SuperClosure(MutableSequence):
         alternatives = self.tree.get_alternatives()
         nb_alternative_closures = len(alternatives)
         return "SuperClosure with %s alternative closures:\n" % nb_alternative_closures \
-               + "\n".join(" - %s (filters: %s)" % (p, ", ".join("%s=%s[%s]=%s" % (k, k, v[0], v[1]) for k, v in f.items()))
-                                                    for f, p in alternatives) \
+               + "\n".join(" - %s (filters: %s)" % (p, ", ".join("%s=%s[%s]=%s" % (k, k, v[0], v[1])
+                                                                 for k, v in f.items()))
+                           for f, p in alternatives) \
                + "\nThe 'super closure list' is %s\n\nThe fixture tree is :\n%s\n" % (list(self), self.tree)
 
     def get_all_fixture_defs(self, drop_fake_fixtures=True):
@@ -1389,9 +1395,9 @@ _OPTION_NAME = 'with_reorder'
 _SKIP = 'skip'
 _NORMAL = 'normal'
 _OPTIONS = {
-    _NORMAL: """(default) the usual reordering done by pytest to optimize setup/teardown of session- / module- 
+    _NORMAL: """(default) the usual reordering done by pytest to optimize setup/teardown of session- / module-
 / class- fixtures, as well as all the modifications made by other plugins (e.g. pytest-reorder)""",
-    _SKIP: """skips *all* reordering, even the one done by pytest itself or installed plugins 
+    _SKIP: """skips *all* reordering, even the one done by pytest itself or installed plugins
 (e.g. pytest-reorder)"""
 }
 
@@ -1407,7 +1413,7 @@ def pytest_addoption(parser):
 
 
 # will be loaded when the pytest_configure hook below is called
-PYTEST_CONFIG = None  # type: _pytest.config.Config
+PYTEST_CONFIG = None  # type: Optional[Config]
 
 
 def pytest_load_initial_conftests(early_config):

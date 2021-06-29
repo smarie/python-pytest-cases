@@ -38,7 +38,7 @@ def get_code_first_line(f):
             raise ValueError("Cannot get code information for function or class %r" % f)
 
 
-# Below is the beginning of a switch from our code scanning tool above to the same one than pytest. See `case_parametrizer_new`
+# Below is the beginning of a switch from our scanning code to the same one than pytest. See `case_parametrizer_new`
 # from _pytest.compat import get_real_func as compat_get_real_func
 #
 # try:
@@ -49,13 +49,19 @@ def get_code_first_line(f):
 try:
     ExpectedError = Optional[Union[Type[Exception], str, Exception, Callable[[Exception], Optional[bool]]]]
     """The expected error in case failure is expected. An exception type, instance, or a validation function"""
+
+    ExpectedErrorType = Optional[Type[BaseException]]
+    ExpectedErrorPattern = Optional[re.Pattern]
+    ExpectedErrorInstance = Optional[BaseException]
+    ExpectedErrorValidator = Optional[Callable[[BaseException], Optional[bool]]]
+
 except:  # noqa
     pass
 
 
 def unfold_expected_err(expected_e  # type: ExpectedError
                         ):
-    # type: (...) -> Tuple[Optional[Type[BaseException]], Optional[re.Pattern], Optional[BaseException], Optional[Callable[[BaseException], Optional[bool]]]]
+    # type: (...) -> Tuple[ExpectedErrorType, ExpectedErrorPattern, ExpectedErrorInstance, ExpectedErrorValidator]
     """
     'Unfolds' the expected error `expected_e` to return a tuple of
      - expected error type
@@ -132,7 +138,7 @@ def assert_exception(expected    # type: ExpectedError
         raise TypeError()
 
     # good repr pattern - ok
-    with assert_exception(r"ValueError\('hello'[,]+\)"):
+    with assert_exception(r"ValueError\\('hello'[,]+\\)"):
         raise ValueError("hello")
 
     # good instance equality check - ok

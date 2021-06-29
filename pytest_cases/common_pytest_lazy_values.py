@@ -55,7 +55,7 @@ class Lazy(object):
         """Default equality method based on the _field_names"""
         try:
             return all(getattr(self, k) == getattr(other, k) for k in self._field_names)
-        except:
+        except Exception:  # noqa
             return False
 
     def __repr__(self):
@@ -85,7 +85,7 @@ def _unwrap(obj):
     Note: maybe from inspect import unwrap could do the same?
     """
     start_obj = obj
-    for i in range(100):
+    for _ in range(100):
         # __pytest_wrapped__ is set by @pytest.fixture when wrapping the fixture function
         # to trigger a warning if it gets called directly instead of by pytest: we don't
         # want to unwrap further than this otherwise we lose useful wrappings like @mock.patch (#3774)
@@ -303,9 +303,16 @@ class _LazyTupleItem(Lazy):
 
     def __repr__(self):
         """Override the inherited method to avoid infinite recursion"""
+
+        # lazy value tuple or cached tuple
+        if self.host.has_cached_value(raise_if_no_context=False):
+            tuple_to_represent = self.host.cached_value
+        else:
+            tuple_to_represent = self.host._lazyvalue  # noqa
+
         vals_to_display = (
             ('item', self.item),  # item number first for easier debug
-            ('tuple', self.host.cached_value if self.host.has_cached_value(raise_if_no_context=False) else self.host._lazyvalue),  # lazy value tuple or cached tuple
+            ('tuple', tuple_to_represent),
         )
         return "%s(%s)" % (self.__class__.__name__, ", ".join("%s=%r" % (k, v) for k, v in vals_to_display))
 
@@ -506,7 +513,7 @@ def is_lazy_value(argval):
     try:
         # note: we use the private and not public class here on purpose
         return isinstance(argval, _LazyValue)
-    except:
+    except Exception:  # noqa
         return False
 
 
@@ -519,7 +526,7 @@ def is_lazy(argval):
     try:
         # note: we use the private and not public classes here on purpose
         return isinstance(argval, (_LazyValue, LazyTuple, _LazyTupleItem))
-    except:
+    except Exception:  # noqa
         return False
 
 

@@ -5,13 +5,9 @@
 from .common_pytest_lazy_values import lazy_value, is_lazy
 from .common_others import unfold_expected_err, assert_exception, AUTO
 
-AUTO2 = AUTO
-"""Deprecated symbol, for retrocompatibility. Will be dropped soon."""
-
 from .fixture_core1_unions import fixture_union, NOT_USED, unpack_fixture, ignore_unused
 from .fixture_core2 import pytest_fixture_plus, fixture_plus, fixture, param_fixtures, param_fixture
 from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, parametrize, fixture_ref
-
 
 from .case_funcs import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
     get_case_tags, matches_tag_query, is_case_class, is_case_function
@@ -28,6 +24,11 @@ except ImportError:
     from setuptools_scm import get_version as _gv
     from os import path as _path
     __version__ = _gv(_path.join(_path.dirname(__file__), _path.pardir))
+
+
+AUTO2 = AUTO
+"""Deprecated symbol, for retrocompatibility. Will be dropped soon."""
+
 
 __all__ = [
     '__version__',
