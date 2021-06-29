@@ -117,6 +117,10 @@ jobs:
       - run: conda list
         shell: bash -l {0}  # so that conda works
 
+      # 5) Run the flake8 report and badge
+      - name: Run flake8 analysis and generate corresponding badge
+        shell: bash -l {0}  # so that conda works
+        run: nox -s flake8
 
       # -------------- only on Ubuntu + MAIN PUSH (no pull request, no tag) -----------
 

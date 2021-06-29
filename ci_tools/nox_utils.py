@@ -149,6 +149,7 @@ class PowerSession(Session):
             setup=False,
             install=False,
             tests=False,
+            extras=(),
             # custom phase
             phase=None,
             phase_reqs=None,
@@ -161,6 +162,7 @@ class PowerSession(Session):
          - setup.cfg "[options] setup_requires" (if setup=True)
          - setup.cfg "[options] install_requires" (if install=True)
          - setup.cfg "[options] test_requires" (if tests=True)
+         - setup.cfg "[options.extras_require] <...>" (if extras=(a tuple of extras))
 
         Two additional mechanisms are provided in order to customize how packages are installed.
 
@@ -206,6 +208,10 @@ class PowerSession(Session):
                              use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
         if tests:
             self.install_any("setup.cfg#tests_requires", setup_cfg.tests_requires,
+                             use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
+
+        for extra in extras:
+            self.install_any("setup.cfg#extras_require#%s" % extra, setup_cfg.extras_require[extra],
                              use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
 
         if phase is not None:
@@ -321,7 +327,7 @@ def read_pyproject_toml():
         raise FileNotFoundError("No `pyproject.toml` file exists. No dependency will be installed ...")
 
 
-SetupCfg = namedtuple('SetupCfg', ('setup_requires', 'install_requires', 'tests_requires'))
+SetupCfg = namedtuple('SetupCfg', ('setup_requires', 'install_requires', 'tests_requires', 'extras_require'))
 
 
 def read_setuptools_cfg():
@@ -332,16 +338,10 @@ def read_setuptools_cfg():
     from setuptools import Distribution
     dist = Distribution()
     dist.parse_config_files()
-
-    # standard requirements
-    options_dct = dist.get_option_dict('options')
-    setup_reqs = options_dct['setup_requires'][1].strip().splitlines()
-    install_reqs = options_dct['install_requires'][1].strip().splitlines()
-    tests_reqs = options_dct['tests_require'][1].strip().splitlines()
-
-    return SetupCfg(setup_requires=setup_reqs,
-                    install_requires=install_reqs,
-                    tests_requires=tests_reqs)
+    return SetupCfg(setup_requires=dist.setup_requires,
+                    install_requires=dist.install_requires,
+                    tests_requires=dist.tests_require,
+                    extras_require=dist.extras_require)
 
 
 def get_req_pkg_name(r):
