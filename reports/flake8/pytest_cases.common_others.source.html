@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>pytest_cases/common_others.py - flake8 annotated source</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+      <div id="masthead" class="sev-3"></div>
+      <div id="page">
+         <h1>
+            <a href="pytest_cases.common_others.report.html">
+               <img src="back.svg" alt="&#x2B05;">
+               pytest_cases/common_others.py source
+            </a>
+         </h1>
+
+         <div id="doc">
+            <div id="l1"
+               class="code sev- "><tt><i>1</i> <span class="c1"># Authors: Sylvain MARIE &lt;sylvain.marie@se.com&gt;</span></tt>
+            </div>
+            <div id="l2"
+               class="code sev- "><tt><i>2</i> <span class="c1">#          + All contributors to &lt;https://github.com/smarie/python-pytest-cases&gt;</span></tt>
+            </div>
+            <div id="l3"
+               class="code sev- "><tt><i>3</i> <span class="c1">#</span></tt>
+            </div>
+            <div id="l4"
+               class="code sev- "><tt><i>4</i> <span class="c1"># License: 3-clause BSD, &lt;https://github.com/smarie/python-pytest-cases/blob/master/LICENSE&gt;</span></tt>
+            </div>
+            <div id="l5"
+               class="code sev- "><tt><i>5</i> <span class="kn">import</span> <span class="nn">functools</span></tt>
+            </div>
+            <div id="l6"
+               class="code sev- "><tt><i>6</i> <span class="kn">import</span> <span class="nn">inspect</span></tt>
+            </div>
+            <div id="l7"
+               class="code sev- "><tt><i>7</i> <span class="kn">import</span> <span class="nn">makefun</span></tt>
+            </div>
+            <div id="l8"
+               class="code sev- "><tt><i>8</i> <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span></tt>
+            </div>
+            <div id="l9"
+               class="code sev- "><tt><i>9</i> <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">findsource</span></tt>
+            </div>
+            <div id="l10"
+               class="code sev- "><tt><i>10</i> <span class="kn">import</span> <span class="nn">re</span></tt>
+            </div>
+            <div id="l11"
+               class="code sev- "><tt><i>11</i> &nbsp;</tt>
+            </div>
+            <div id="l12"
+               class="code sev- "><tt><i>12</i> <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l13"
+               class="code sev- "><tt><i>13</i>     <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l14"
+               class="code sev- "><tt><i>14</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l15"
+               class="code sev- "><tt><i>15</i>     <span class="k">pass</span></tt>
+            </div>
+            <div id="l16"
+               class="code sev- "><tt><i>16</i> &nbsp;</tt>
+            </div>
+            <div id="l17"
+               class="code sev- "><tt><i>17</i> <span class="kn">from</span> <span class="nn">.common_mini_six</span> <span class="kn">import</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">PY3</span></tt>
+            </div>
+            <div id="l18"
+               class="code sev- "><tt><i>18</i> &nbsp;</tt>
+            </div>
+            <div id="l19"
+               class="code sev- "><tt><i>19</i> &nbsp;</tt>
+            </div>
+            <div id="l20"
+               class="code sev- "><tt><i>20</i> <span class="k">def</span> <span class="nf">get_code_first_line</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
+            </div>
+            <div id="l21"
+               class="code sev- "><tt><i>21</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l22"
+               class="code sev- "><tt><i>22</i> <span class="sd">    Returns the source code associated to function or class f. It is robust to wrappers such as @lru_cache</span></tt>
+            </div>
+            <div id="l23"
+               class="code sev- "><tt><i>23</i> <span class="sd">    :param f:</span></tt>
+            </div>
+            <div id="l24"
+               class="code sev- "><tt><i>24</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l25"
+               class="code sev- "><tt><i>25</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l26"
+               class="code sev- "><tt><i>26</i>     <span class="c1"># todo maybe use inspect.unwrap instead?</span></tt>
+            </div>
+            <div id="l27"
+               class="code sev- "><tt><i>27</i>     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;__wrapped__&#39;</span><span class="p">):</span></tt>
+            </div>
+            <div id="l28"
+               class="code sev- "><tt><i>28</i>         <span class="k">return</span> <span class="n">get_code_first_line</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">__wrapped__</span><span class="p">)</span></tt>
+            </div>
+            <div id="l29"
+               class="code sev- "><tt><i>29</i>     <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;__code__&#39;</span><span class="p">):</span></tt>
+            </div>
+            <div id="l30"
+               class="code sev- "><tt><i>30</i>         <span class="c1"># a function</span></tt>
+            </div>
+            <div id="l31"
+               class="code sev- "><tt><i>31</i>         <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_firstlineno</span></tt>
+            </div>
+            <div id="l32"
+               class="code sev- "><tt><i>32</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l33"
+               class="code sev- "><tt><i>33</i>         <span class="c1"># a class ?</span></tt>
+            </div>
+            <div id="l34"
+               class="code sev- "><tt><i>34</i>         <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l35"
+               class="code sev- "><tt><i>35</i>             <span class="n">_</span><span class="p">,</span> <span class="n">lineno</span> <span class="o">=</span> <span class="n">findsource</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></tt>
+            </div>
+            <div id="l36"
+               class="code sev- "><tt><i>36</i>             <span class="k">return</span> <span class="n">lineno</span></tt>
+            </div>
+            <div id="l37"
+               class="code sev- "><tt><i>37</i>         <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l38"
+               class="code sev- "><tt><i>38</i>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot get code information for function or class </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">f</span><span class="p">)</span></tt>
+            </div>
+            <div id="l39"
+               class="code sev- "><tt><i>39</i> &nbsp;</tt>
+            </div>
+            <div id="l40"
+               class="code sev- "><tt><i>40</i> &nbsp;</tt>
+            </div>
+            <div id="l41"
+               class="code sev- "><tt><i>41</i> <span class="c1"># Below is the beginning of a switch from our scanning code to the same one than pytest. See `case_parametrizer_new`</span></tt>
+            </div>
+            <div id="l42"
+               class="code sev- "><tt><i>42</i> <span class="c1"># from _pytest.compat import get_real_func as compat_get_real_func</span></tt>
+            </div>
+            <div id="l43"
+               class="code sev- "><tt><i>43</i> <span class="c1">#</span></tt>
+            </div>
+            <div id="l44"
+               class="code sev- "><tt><i>44</i> <span class="c1"># try:</span></tt>
+            </div>
+            <div id="l45"
+               class="code sev- "><tt><i>45</i> <span class="c1">#     from _pytest._code.source import getfslineno as compat_getfslineno</span></tt>
+            </div>
+            <div id="l46"
+               class="code sev- "><tt><i>46</i> <span class="c1"># except ImportError:</span></tt>
+            </div>
+            <div id="l47"
+               class="code sev- "><tt><i>47</i> <span class="c1">#     from _pytest.compat import getfslineno as compat_getfslineno</span></tt>
+            </div>
+            <div id="l48"
+               class="code sev- "><tt><i>48</i> &nbsp;</tt>
+            </div>
+            <div id="l49"
+               class="code sev- "><tt><i>49</i> <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l50"
+               class="code sev- "><tt><i>50</i>     <span class="n">ExpectedError</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="ne">Exception</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]]]</span></tt>
+            </div>
+            <div id="l51"
+               class="code sev- "><tt><i>51</i>     <span class="sd">&quot;&quot;&quot;The expected error in case failure is expected. An exception type, instance, or a validation function&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l52"
+               class="code sev- "><tt><i>52</i> &nbsp;</tt>
+            </div>
+            <div id="l53"
+               class="code sev- "><tt><i>53</i>     <span class="n">ExpectedErrorType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]]</span></tt>
+            </div>
+            <div id="l54"
+               class="code sev- "><tt><i>54</i>     <span class="n">ExpectedErrorPattern</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">]</span></tt>
+            </div>
+            <div id="l55"
+               class="code sev- "><tt><i>55</i>     <span class="n">ExpectedErrorInstance</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span></tt>
+            </div>
+            <div id="l56"
+               class="code sev- "><tt><i>56</i>     <span class="n">ExpectedErrorValidator</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="ne">BaseException</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]]</span></tt>
+            </div>
+            <div id="l57"
+               class="code sev- "><tt><i>57</i> &nbsp;</tt>
+            </div>
+            <div id="l58"
+               class="code sev- "><tt><i>58</i> <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l59"
+               class="code sev- "><tt><i>59</i>     <span class="k">pass</span></tt>
+            </div>
+            <div id="l60"
+               class="code sev- "><tt><i>60</i> &nbsp;</tt>
+            </div>
+            <div id="l61"
+               class="code sev- "><tt><i>61</i> &nbsp;</tt>
+            </div>
+            <div id="l62"
+               class="code sev- "><tt><i>62</i> <span class="k">def</span> <span class="nf">unfold_expected_err</span><span class="p">(</span><span class="n">expected_e</span>  <span class="c1"># type: ExpectedError</span></tt>
+            </div>
+            <div id="l63"
+               class="code sev- "><tt><i>63</i>                         <span class="p">):</span></tt>
+            </div>
+            <div id="l64"
+               class="code sev- "><tt><i>64</i>     <span class="c1"># type: (...) -&gt; Tuple[ExpectedErrorType, ExpectedErrorPattern, ExpectedErrorInstance, ExpectedErrorValidator]</span></tt>
+            </div>
+            <div id="l65"
+               class="code sev- "><tt><i>65</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l66"
+               class="code sev- "><tt><i>66</i> <span class="sd">    &#39;Unfolds&#39; the expected error `expected_e` to return a tuple of</span></tt>
+            </div>
+            <div id="l67"
+               class="code sev- "><tt><i>67</i> <span class="sd">     - expected error type</span></tt>
+            </div>
+            <div id="l68"
+               class="code sev- "><tt><i>68</i> <span class="sd">     - expected error representation pattern (a regex Pattern)</span></tt>
+            </div>
+            <div id="l69"
+               class="code sev- "><tt><i>69</i> <span class="sd">     - expected error instance</span></tt>
+            </div>
+            <div id="l70"
+               class="code sev- "><tt><i>70</i> <span class="sd">     - error validation callable</span></tt>
+            </div>
+            <div id="l71"
+               class="code sev- "><tt><i>71</i> &nbsp;</tt>
+            </div>
+            <div id="l72"
+               class="code sev- "><tt><i>72</i> <span class="sd">    If `expected_e` is an exception type, returns `expected_e, None, None, None`</span></tt>
+            </div>
+            <div id="l73"
+               class="code sev- "><tt><i>73</i> &nbsp;</tt>
+            </div>
+            <div id="l74"
+               class="code sev- "><tt><i>74</i> <span class="sd">    If `expected_e` is a string, returns `BaseException, re.compile(expected_e), None, None`</span></tt>
+            </div>
+            <div id="l75"
+               class="code sev- "><tt><i>75</i> &nbsp;</tt>
+            </div>
+            <div id="l76"
+               class="code sev- "><tt><i>76</i> <span class="sd">    If `expected_e` is an exception instance, returns `type(expected_e), None, expected_e, None`</span></tt>
+            </div>
+            <div id="l77"
+               class="code sev- "><tt><i>77</i> &nbsp;</tt>
+            </div>
+            <div id="l78"
+               class="code sev- "><tt><i>78</i> <span class="sd">    If `expected_e` is an exception validation function, returns `BaseException, None, None, expected_e`</span></tt>
+            </div>
+            <div id="l79"
+               class="code sev- "><tt><i>79</i> &nbsp;</tt>
+            </div>
+            <div id="l80"
+               class="code sev- "><tt><i>80</i> <span class="sd">    :param expected_e: an `ExpectedError`, that is, either an exception type, a regex string, an exception</span></tt>
+            </div>
+            <div id="l81"
+               class="code sev- "><tt><i>81</i> <span class="sd">        instance, or an exception validation function</span></tt>
+            </div>
+            <div id="l82"
+               class="code sev- "><tt><i>82</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l83"
+               class="code sev- "><tt><i>83</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l84"
+               class="code sev- "><tt><i>84</i>     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">expected_e</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">expected_e</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">):</span></tt>
+            </div>
+            <div id="l85"
+               class="code sev- "><tt><i>85</i>         <span class="k">return</span> <span class="n">expected_e</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l86"
+               class="code sev- "><tt><i>86</i> &nbsp;</tt>
+            </div>
+            <div id="l87"
+               class="code sev- "><tt><i>87</i>     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expected_e</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
+            </div>
+            <div id="l88"
+               class="code sev- "><tt><i>88</i>         <span class="k">return</span> <span class="ne">BaseException</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">expected_e</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l89"
+               class="code sev- "><tt><i>89</i> &nbsp;</tt>
+            </div>
+            <div id="l90"
+               class="code sev- "><tt><i>90</i>     <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">expected_e</span><span class="p">),</span> <span class="ne">Exception</span><span class="p">):</span></tt>
+            </div>
+            <div id="l91"
+               class="code sev- "><tt><i>91</i>         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">expected_e</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="n">expected_e</span><span class="p">,</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l92"
+               class="code sev- "><tt><i>92</i> &nbsp;</tt>
+            </div>
+            <div id="l93"
+               class="code sev- "><tt><i>93</i>     <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">expected_e</span><span class="p">):</span></tt>
+            </div>
+            <div id="l94"
+               class="code sev- "><tt><i>94</i>         <span class="k">return</span> <span class="ne">BaseException</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">expected_e</span></tt>
+            </div>
+            <div id="l95"
+               class="code sev- "><tt><i>95</i> &nbsp;</tt>
+            </div>
+            <div id="l96"
+               class="code sev- "><tt><i>96</i>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ExpectedNormal error should either be an exception type, an exception instance, or an exception &quot;</span></tt>
+            </div>
+            <div id="l97"
+               class="code sev- "><tt><i>97</i>                      <span class="s2">&quot;validation callable&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l98"
+               class="code sev- "><tt><i>98</i> &nbsp;</tt>
+            </div>
+            <div id="l99"
+               class="code sev- "><tt><i>99</i> &nbsp;</tt>
+            </div>
+            <div id="l100"
+               class="code sev- "><tt><i>100</i> <span class="k">def</span> <span class="nf">assert_exception</span><span class="p">(</span><span class="n">expected</span>    <span class="c1"># type: ExpectedError</span></tt>
+            </div>
+            <div id="l101"
+               class="code sev- "><tt><i>101</i>                      <span class="p">):</span></tt>
+            </div>
+            <div id="l102"
+               class="code sev- "><tt><i>102</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l103"
+               class="code sev- "><tt><i>103</i> <span class="sd">    A context manager to check that some bit of code raises an exception. Sometimes it might be more</span></tt>
+            </div>
+            <div id="l104"
+               class="code sev- "><tt><i>104</i> <span class="sd">    handy than `with pytest.raises():`.</span></tt>
+            </div>
+            <div id="l105"
+               class="code sev- "><tt><i>105</i> &nbsp;</tt>
+            </div>
+            <div id="l106"
+               class="code sev- "><tt><i>106</i> <span class="sd">    `expected` can be:</span></tt>
+            </div>
+            <div id="l107"
+               class="code sev- "><tt><i>107</i> &nbsp;</tt>
+            </div>
+            <div id="l108"
+               class="code sev- "><tt><i>108</i> <span class="sd">     - an expected error type, in which case `isinstance(caught, expected)` will be used for validity checking</span></tt>
+            </div>
+            <div id="l109"
+               class="code sev- "><tt><i>109</i> &nbsp;</tt>
+            </div>
+            <div id="l110"
+               class="code sev- "><tt><i>110</i> <span class="sd">     - an expected error representation pattern (a regex pattern string), in which case</span></tt>
+            </div>
+            <div id="l111"
+               class="code sev- "><tt><i>111</i> <span class="sd">       `expected.match(repr(caught))` will be used for validity checking</span></tt>
+            </div>
+            <div id="l112"
+               class="code sev- "><tt><i>112</i> &nbsp;</tt>
+            </div>
+            <div id="l113"
+               class="code sev- "><tt><i>113</i> <span class="sd">     - an expected error instance, in which case BOTH `isinstance(caught, type(expected))` AND</span></tt>
+            </div>
+            <div id="l114"
+               class="code sev- "><tt><i>114</i> <span class="sd">       `caught == expected` will be used for validity checking</span></tt>
+            </div>
+            <div id="l115"
+               class="code sev- "><tt><i>115</i> &nbsp;</tt>
+            </div>
+            <div id="l116"
+               class="code sev- "><tt><i>116</i> <span class="sd">     - an error validation callable, in which case `expected(caught) is not False` will be used for validity</span></tt>
+            </div>
+            <div id="l117"
+               class="code sev- "><tt><i>117</i> <span class="sd">       checking</span></tt>
+            </div>
+            <div id="l118"
+               class="code sev- "><tt><i>118</i> &nbsp;</tt>
+            </div>
+            <div id="l119"
+               class="code sev- "><tt><i>119</i> <span class="sd">    Upon failure, this raises an `ExceptionCheckingError` (a subclass of `AssertionError`)</span></tt>
+            </div>
+            <div id="l120"
+               class="code sev- "><tt><i>120</i> &nbsp;</tt>
+            </div>
+            <div id="l121"
+               class="code sev- "><tt><i>121</i> <span class="sd">    ```python</span></tt>
+            </div>
+            <div id="l122"
+               class="code sev- "><tt><i>122</i> <span class="sd">    # good type - ok</span></tt>
+            </div>
+            <div id="l123"
+               class="code sev- "><tt><i>123</i> <span class="sd">    with assert_exception(ValueError):</span></tt>
+            </div>
+            <div id="l124"
+               class="code sev- "><tt><i>124</i> <span class="sd">        raise ValueError()</span></tt>
+            </div>
+            <div id="l125"
+               class="code sev- "><tt><i>125</i> &nbsp;</tt>
+            </div>
+            <div id="l126"
+               class="code sev- "><tt><i>126</i> <span class="sd">    # good type - inherited - ok</span></tt>
+            </div>
+            <div id="l127"
+               class="code sev- "><tt><i>127</i> <span class="sd">    class MyErr(ValueError):</span></tt>
+            </div>
+            <div id="l128"
+               class="code sev- "><tt><i>128</i> <span class="sd">        pass</span></tt>
+            </div>
+            <div id="l129"
+               class="code sev- "><tt><i>129</i> <span class="sd">    with assert_exception(ValueError):</span></tt>
+            </div>
+            <div id="l130"
+               class="code sev- "><tt><i>130</i> <span class="sd">        raise MyErr()</span></tt>
+            </div>
+            <div id="l131"
+               class="code sev- "><tt><i>131</i> &nbsp;</tt>
+            </div>
+            <div id="l132"
+               class="code sev- "><tt><i>132</i> <span class="sd">    # no exception - raises ExceptionCheckingError</span></tt>
+            </div>
+            <div id="l133"
+               class="code sev- "><tt><i>133</i> <span class="sd">    with assert_exception(ValueError):</span></tt>
+            </div>
+            <div id="l134"
+               class="code sev- "><tt><i>134</i> <span class="sd">        pass</span></tt>
+            </div>
+            <div id="l135"
+               class="code sev- "><tt><i>135</i> &nbsp;</tt>
+            </div>
+            <div id="l136"
+               class="code sev- "><tt><i>136</i> <span class="sd">    # wrong type - raises ExceptionCheckingError</span></tt>
+            </div>
+            <div id="l137"
+               class="code sev- "><tt><i>137</i> <span class="sd">    with assert_exception(ValueError):</span></tt>
+            </div>
+            <div id="l138"
+               class="code sev- "><tt><i>138</i> <span class="sd">        raise TypeError()</span></tt>
+            </div>
+            <div id="l139"
+               class="code sev- "><tt><i>139</i> &nbsp;</tt>
+            </div>
+            <div id="l140"
+               class="code sev- "><tt><i>140</i> <span class="sd">    # good repr pattern - ok</span></tt>
+            </div>
+            <div id="l141"
+               class="code sev- "><tt><i>141</i> <span class="sd">    with assert_exception(r&quot;ValueError\\(&#39;hello&#39;[,]+\\)&quot;):</span></tt>
+            </div>
+            <div id="l142"
+               class="code sev- "><tt><i>142</i> <span class="sd">        raise ValueError(&quot;hello&quot;)</span></tt>
+            </div>
+            <div id="l143"
+               class="code sev- "><tt><i>143</i> &nbsp;</tt>
+            </div>
+            <div id="l144"
+               class="code sev- "><tt><i>144</i> <span class="sd">    # good instance equality check - ok</span></tt>
+            </div>
+            <div id="l145"
+               class="code sev- "><tt><i>145</i> <span class="sd">    class MyExc(Exception):</span></tt>
+            </div>
+            <div id="l146"
+               class="code sev- "><tt><i>146</i> <span class="sd">        def __eq__(self, other):</span></tt>
+            </div>
+            <div id="l147"
+               class="code sev- "><tt><i>147</i> <span class="sd">            return vars(self) == vars(other)</span></tt>
+            </div>
+            <div id="l148"
+               class="code sev- "><tt><i>148</i> <span class="sd">    with assert_exception(MyExc(&#39;hello&#39;)):</span></tt>
+            </div>
+            <div id="l149"
+               class="code sev- "><tt><i>149</i> <span class="sd">        raise MyExc(&quot;hello&quot;)</span></tt>
+            </div>
+            <div id="l150"
+               class="code sev- "><tt><i>150</i> &nbsp;</tt>
+            </div>
+            <div id="l151"
+               class="code sev- "><tt><i>151</i> <span class="sd">    # good equality but wrong type - raises ExceptionCheckingError</span></tt>
+            </div>
+            <div id="l152"
+               class="code sev- "><tt><i>152</i> <span class="sd">    with assert_exception(MyExc(&#39;hello&#39;)):</span></tt>
+            </div>
+            <div id="l153"
+               class="code sev- "><tt><i>153</i> <span class="sd">        raise Exception(&quot;hello&quot;)</span></tt>
+            </div>
+            <div id="l154"
+               class="code sev- "><tt><i>154</i> <span class="sd">    ```</span></tt>
+            </div>
+            <div id="l155"
+               class="code sev- "><tt><i>155</i> &nbsp;</tt>
+            </div>
+            <div id="l156"
+               class="code sev- "><tt><i>156</i> <span class="sd">    :param expected: an exception type, instance, repr string pattern, or a callable</span></tt>
+            </div>
+            <div id="l157"
+               class="code sev- "><tt><i>157</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l158"
+               class="code sev- "><tt><i>158</i>     <span class="k">return</span> <span class="n">AssertException</span><span class="p">(</span><span class="n">expected</span><span class="p">)</span></tt>
+            </div>
+            <div id="l159"
+               class="code sev- "><tt><i>159</i> &nbsp;</tt>
+            </div>
+            <div id="l160"
+               class="code sev- "><tt><i>160</i> &nbsp;</tt>
+            </div>
+            <div id="l161"
+               class="code sev- "><tt><i>161</i> <span class="k">class</span> <span class="nc">ExceptionCheckingError</span><span class="p">(</span><span class="ne">AssertionError</span><span class="p">):</span></tt>
+            </div>
+            <div id="l162"
+               class="code sev- "><tt><i>162</i>     <span class="k">pass</span></tt>
+            </div>
+            <div id="l163"
+               class="code sev- "><tt><i>163</i> &nbsp;</tt>
+            </div>
+            <div id="l164"
+               class="code sev- "><tt><i>164</i> &nbsp;</tt>
+            </div>
+            <div id="l165"
+               class="code sev- "><tt><i>165</i> <span class="k">class</span> <span class="nc">AssertException</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
+            </div>
+            <div id="l166"
+               class="code sev- "><tt><i>166</i>     <span class="sd">&quot;&quot;&quot; An implementation of the `assert_exception` context manager&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l167"
+               class="code sev- "><tt><i>167</i> &nbsp;</tt>
+            </div>
+            <div id="l168"
+               class="code sev- "><tt><i>168</i>     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;expected_exception&#39;</span><span class="p">,</span> <span class="s1">&#39;err_type&#39;</span><span class="p">,</span> <span class="s1">&#39;err_ptrn&#39;</span><span class="p">,</span> <span class="s1">&#39;err_inst&#39;</span><span class="p">,</span> <span class="s1">&#39;err_checker&#39;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l169"
+               class="code sev- "><tt><i>169</i> &nbsp;</tt>
+            </div>
+            <div id="l170"
+               class="code sev- "><tt><i>170</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_exception</span><span class="p">):</span></tt>
+            </div>
+            <div id="l171"
+               class="code sev- "><tt><i>171</i>         <span class="c1"># First see what we need to assert</span></tt>
+            </div>
+            <div id="l172"
+               class="code sev- "><tt><i>172</i>         <span class="n">err_type</span><span class="p">,</span> <span class="n">err_ptrn</span><span class="p">,</span> <span class="n">err_inst</span><span class="p">,</span> <span class="n">err_checker</span> <span class="o">=</span> <span class="n">unfold_expected_err</span><span class="p">(</span><span class="n">expected_exception</span><span class="p">)</span></tt>
+            </div>
+            <div id="l173"
+               class="code sev- "><tt><i>173</i>         <span class="bp">self</span><span class="o">.</span><span class="n">expected_exception</span> <span class="o">=</span> <span class="n">expected_exception</span></tt>
+            </div>
+            <div id="l174"
+               class="code sev- "><tt><i>174</i>         <span class="bp">self</span><span class="o">.</span><span class="n">err_type</span> <span class="o">=</span> <span class="n">err_type</span></tt>
+            </div>
+            <div id="l175"
+               class="code sev- "><tt><i>175</i>         <span class="bp">self</span><span class="o">.</span><span class="n">err_ptrn</span> <span class="o">=</span> <span class="n">err_ptrn</span></tt>
+            </div>
+            <div id="l176"
+               class="code sev- "><tt><i>176</i>         <span class="bp">self</span><span class="o">.</span><span class="n">err_inst</span> <span class="o">=</span> <span class="n">err_inst</span></tt>
+            </div>
+            <div id="l177"
+               class="code sev- "><tt><i>177</i>         <span class="bp">self</span><span class="o">.</span><span class="n">err_checker</span> <span class="o">=</span> <span class="n">err_checker</span></tt>
+            </div>
+            <div id="l178"
+               class="code sev- "><tt><i>178</i> &nbsp;</tt>
+            </div>
+            <div id="l179"
+               class="code sev- "><tt><i>179</i>     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l180"
+               class="code sev- "><tt><i>180</i>         <span class="k">pass</span></tt>
+            </div>
+            <div id="l181"
+               class="code sev- "><tt><i>181</i> &nbsp;</tt>
+            </div>
+            <div id="l182"
+               class="code sev- "><tt><i>182</i>     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span></tt>
+            </div>
+            <div id="l183"
+               class="code sev- "><tt><i>183</i>         <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l184"
+               class="code sev- "><tt><i>184</i>             <span class="c1"># bad: no exception caught</span></tt>
+            </div>
+            <div id="l185"
+               class="code sev- "><tt><i>185</i>             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;DID NOT RAISE any BaseException&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l186"
+               class="code sev- "><tt><i>186</i> &nbsp;</tt>
+            </div>
+            <div id="l187"
+               class="code sev- "><tt><i>187</i>         <span class="c1"># Type check</span></tt>
+            </div>
+            <div id="l188"
+               class="code sev- "><tt><i>188</i>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_type</span><span class="p">):</span></tt>
+            </div>
+            <div id="l189"
+               class="code sev- "><tt><i>189</i>             <span class="k">raise</span> <span class="n">ExceptionCheckingError</span><span class="p">(</span><span class="s2">&quot;Caught exception </span><span class="si">%r</span><span class="s2"> is not an instance of expected type </span><span class="si">%r</span><span class="s2">&quot;</span></tt>
+            </div>
+            <div id="l190"
+               class="code sev- "><tt><i>190</i>                                          <span class="o">%</span> <span class="p">(</span><span class="n">exc_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_type</span><span class="p">))</span></tt>
+            </div>
+            <div id="l191"
+               class="code sev- "><tt><i>191</i> &nbsp;</tt>
+            </div>
+            <div id="l192"
+               class="code sev- "><tt><i>192</i>         <span class="c1"># Optional - pattern matching</span></tt>
+            </div>
+            <div id="l193"
+               class="code sev- "><tt><i>193</i>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_ptrn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l194"
+               class="code sev- "><tt><i>194</i>             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_ptrn</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc_val</span><span class="p">)):</span></tt>
+            </div>
+            <div id="l195"
+               class="code sev- "><tt><i>195</i>                 <span class="k">raise</span> <span class="n">ExceptionCheckingError</span><span class="p">(</span><span class="s2">&quot;Caught exception </span><span class="si">%r</span><span class="s2"> does not match expected pattern </span><span class="si">%r</span><span class="s2">&quot;</span></tt>
+            </div>
+            <div id="l196"
+               class="code sev- "><tt><i>196</i>                                              <span class="o">%</span> <span class="p">(</span><span class="n">exc_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_ptrn</span><span class="p">))</span></tt>
+            </div>
+            <div id="l197"
+               class="code sev- "><tt><i>197</i> &nbsp;</tt>
+            </div>
+            <div id="l198"
+               class="code sev- "><tt><i>198</i>         <span class="c1"># Optional - Additional Exception instance check with equality</span></tt>
+            </div>
+            <div id="l199"
+               class="code sev- "><tt><i>199</i>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l200"
+               class="code sev- "><tt><i>200</i>             <span class="c1"># note: do not use != because in python 2 that is not equivalent</span></tt>
+            </div>
+            <div id="l201"
+               class="code sev- "><tt><i>201</i>             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">exc_val</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_inst</span><span class="p">):</span></tt>
+            </div>
+            <div id="l202"
+               class="code sev- "><tt><i>202</i>                 <span class="k">raise</span> <span class="n">ExceptionCheckingError</span><span class="p">(</span><span class="s2">&quot;Caught exception </span><span class="si">%r</span><span class="s2"> does not equal expected instance </span><span class="si">%r</span><span class="s2">&quot;</span></tt>
+            </div>
+            <div id="l203"
+               class="code sev- "><tt><i>203</i>                                              <span class="o">%</span> <span class="p">(</span><span class="n">exc_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_inst</span><span class="p">))</span></tt>
+            </div>
+            <div id="l204"
+               class="code sev- "><tt><i>204</i> &nbsp;</tt>
+            </div>
+            <div id="l205"
+               class="code sev- "><tt><i>205</i>         <span class="c1"># Optional - Additional Exception instance check with custom checker</span></tt>
+            </div>
+            <div id="l206"
+               class="code sev- "><tt><i>206</i>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_checker</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l207"
+               class="code sev- "><tt><i>207</i>             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_checker</span><span class="p">(</span><span class="n">exc_val</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span></tt>
+            </div>
+            <div id="l208"
+               class="code sev- "><tt><i>208</i>                 <span class="k">raise</span> <span class="n">ExceptionCheckingError</span><span class="p">(</span><span class="s2">&quot;Caught exception </span><span class="si">%r</span><span class="s2"> is not valid according to </span><span class="si">%r</span><span class="s2">&quot;</span></tt>
+            </div>
+            <div id="l209"
+               class="code sev- "><tt><i>209</i>                                              <span class="o">%</span> <span class="p">(</span><span class="n">exc_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_checker</span><span class="p">))</span></tt>
+            </div>
+            <div id="l210"
+               class="code sev- "><tt><i>210</i> &nbsp;</tt>
+            </div>
+            <div id="l211"
+               class="code sev- "><tt><i>211</i>         <span class="c1"># Suppress the exception since it is valid.</span></tt>
+            </div>
+            <div id="l212"
+               class="code sev- "><tt><i>212</i>         <span class="c1"># See https://docs.python.org/2/reference/datamodel.html#object.__exit__</span></tt>
+            </div>
+            <div id="l213"
+               class="code sev- "><tt><i>213</i>         <span class="k">return</span> <span class="kc">True</span></tt>
+            </div>
+            <div id="l214"
+               class="code sev- "><tt><i>214</i> &nbsp;</tt>
+            </div>
+            <div id="l215"
+               class="code sev- "><tt><i>215</i> &nbsp;</tt>
+            </div>
+            <div id="l216"
+               class="code sev- "><tt><i>216</i> <span class="n">AUTO</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span></tt>
+            </div>
+            <div id="l217"
+               class="code sev- "><tt><i>217</i> <span class="sd">&quot;&quot;&quot;Marker for automatic defaults&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l218"
+               class="code sev- "><tt><i>218</i> &nbsp;</tt>
+            </div>
+            <div id="l219"
+               class="code sev- "><tt><i>219</i> &nbsp;</tt>
+            </div>
+            <div id="l220"
+               class="code sev- "><tt><i>220</i> <span class="k">def</span> <span class="nf">get_host_module</span><span class="p">(</span><span class="n">a</span><span class="p">):</span></tt>
+            </div>
+            <div id="l221"
+               class="code sev- "><tt><i>221</i>     <span class="sd">&quot;&quot;&quot;get the host module of a, or a if it is already a module&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l222"
+               class="code sev- "><tt><i>222</i>     <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismodule</span><span class="p">(</span><span class="n">a</span><span class="p">):</span></tt>
+            </div>
+            <div id="l223"
+               class="code sev- "><tt><i>223</i>         <span class="k">return</span> <span class="n">a</span></tt>
+            </div>
+            <div id="l224"
+               class="code sev- "><tt><i>224</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l225"
+               class="code sev- "><tt><i>225</i>         <span class="k">return</span> <span class="n">import_module</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="vm">__module__</span><span class="p">)</span></tt>
+            </div>
+            <div id="l226"
+               class="code sev- "><tt><i>226</i> &nbsp;</tt>
+            </div>
+            <div id="l227"
+               class="code sev- "><tt><i>227</i> &nbsp;</tt>
+            </div>
+            <div id="l228"
+               class="code sev- "><tt><i>228</i> <span class="k">def</span> <span class="nf">in_same_module</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span></tt>
+            </div>
+            <div id="l229"
+               class="code sev- "><tt><i>229</i>     <span class="sd">&quot;&quot;&quot;Compare the host modules of a and b&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l230"
+               class="code sev- "><tt><i>230</i>     <span class="k">return</span> <span class="n">get_host_module</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="n">get_host_module</span><span class="p">(</span><span class="n">b</span><span class="p">)</span></tt>
+            </div>
+            <div id="l231"
+               class="code sev- "><tt><i>231</i> &nbsp;</tt>
+            </div>
+            <div id="l232"
+               class="code sev- "><tt><i>232</i> &nbsp;</tt>
+            </div>
+            <div id="l233"
+               class="code sev- "><tt><i>233</i> <span class="k">def</span> <span class="nf">get_function_host</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">fallback_to_module</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
+            </div>
+            <div id="l234"
+               class="code sev- "><tt><i>234</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l235"
+               class="code sev- "><tt><i>235</i> <span class="sd">    Returns the module or class where func is defined. Approximate method based on qname but &quot;good enough&quot;</span></tt>
+            </div>
+            <div id="l236"
+               class="code sev- "><tt><i>236</i> &nbsp;</tt>
+            </div>
+            <div id="l237"
+               class="code sev- "><tt><i>237</i> <span class="sd">    :param func:</span></tt>
+            </div>
+            <div id="l238"
+               class="code sev- "><tt><i>238</i> <span class="sd">    :param fallback_to_module: if True and an HostNotConstructedYet error is caught, the host module is returned</span></tt>
+            </div>
+            <div id="l239"
+               class="code sev- "><tt><i>239</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l240"
+               class="code sev- "><tt><i>240</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l241"
+               class="code sev- "><tt><i>241</i>     <span class="n">host</span> <span class="o">=</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l242"
+               class="code sev- "><tt><i>242</i>     <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l243"
+               class="code sev- "><tt><i>243</i>         <span class="n">host</span> <span class="o">=</span> <span class="n">get_class_that_defined_method</span><span class="p">(</span><span class="n">func</span><span class="p">)</span></tt>
+            </div>
+            <div id="l244"
+               class="code sev- "><tt><i>244</i>     <span class="k">except</span> <span class="n">HostNotConstructedYet</span><span class="p">:</span></tt>
+            </div>
+            <div id="l245"
+               class="code sev- "><tt><i>245</i>         <span class="c1"># ignore if `fallback_to_module=True`</span></tt>
+            </div>
+            <div id="l246"
+               class="code sev- "><tt><i>246</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">fallback_to_module</span><span class="p">:</span></tt>
+            </div>
+            <div id="l247"
+               class="code sev- "><tt><i>247</i>             <span class="k">raise</span></tt>
+            </div>
+            <div id="l248"
+               class="code sev- "><tt><i>248</i> &nbsp;</tt>
+            </div>
+            <div id="l249"
+               class="code sev- "><tt><i>249</i>     <span class="k">if</span> <span class="n">host</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l250"
+               class="code sev- "><tt><i>250</i>         <span class="n">host</span> <span class="o">=</span> <span class="n">get_host_module</span><span class="p">(</span><span class="n">func</span><span class="p">)</span></tt>
+            </div>
+            <div id="l251"
+               class="code sev- "><tt><i>251</i> &nbsp;</tt>
+            </div>
+            <div id="l252"
+               class="code sev- "><tt><i>252</i>     <span class="k">return</span> <span class="n">host</span></tt>
+            </div>
+            <div id="l253"
+               class="code sev- "><tt><i>253</i> &nbsp;</tt>
+            </div>
+            <div id="l254"
+               class="code sev- "><tt><i>254</i> &nbsp;</tt>
+            </div>
+            <div id="l255"
+               class="code sev- "><tt><i>255</i> <span class="k">def</span> <span class="nf">needs_binding</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">return_bound</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span></tt>
+            </div>
+            <div id="l256"
+               class="code sev- "><tt><i>256</i>     <span class="c1"># type: (...) -&gt; Union[bool, Tuple[bool, Callable]]</span></tt>
+            </div>
+            <div id="l257"
+               class="code sev- "><tt><i>257</i>     <span class="sd">&quot;&quot;&quot;Utility to check if a function needs to be bound to be used &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l258"
+               class="code sev- "><tt><i>258</i> &nbsp;</tt>
+            </div>
+            <div id="l259"
+               class="code sev- "><tt><i>259</i>     <span class="c1"># detect non-callables</span></tt>
+            </div>
+            <div id="l260"
+               class="code sev- "><tt><i>260</i>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">staticmethod</span><span class="p">):</span></tt>
+            </div>
+            <div id="l261"
+               class="code sev- "><tt><i>261</i>         <span class="c1"># only happens if the method is provided as Foo.__dict__[&#39;b&#39;], not as Foo.b</span></tt>
+            </div>
+            <div id="l262"
+               class="code sev- "><tt><i>262</i>         <span class="c1"># binding is really easy here: pass any class</span></tt>
+            </div>
+            <div id="l263"
+               class="code sev- "><tt><i>263</i> &nbsp;</tt>
+            </div>
+            <div id="l264"
+               class="code sev- "><tt><i>264</i>         <span class="c1"># no need for the actual class</span></tt>
+            </div>
+            <div id="l265"
+               class="code sev- "><tt><i>265</i>         <span class="c1"># bound = f.__get__(get_class_that_defined_method(f.__func__))</span></tt>
+            </div>
+            <div id="l266"
+               class="code sev- "><tt><i>266</i> &nbsp;</tt>
+            </div>
+            <div id="l267"
+               class="code sev- "><tt><i>267</i>         <span class="c1"># f.__func__ (python 3) or f.__get__(object) (py2 and py3) work</span></tt>
+            </div>
+            <div id="l268"
+               class="code sev- "><tt><i>268</i>         <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="nb">object</span><span class="p">))</span> <span class="k">if</span> <span class="n">return_bound</span> <span class="k">else</span> <span class="kc">True</span></tt>
+            </div>
+            <div id="l269"
+               class="code sev- "><tt><i>269</i> &nbsp;</tt>
+            </div>
+            <div id="l270"
+               class="code sev- "><tt><i>270</i>     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">classmethod</span><span class="p">):</span></tt>
+            </div>
+            <div id="l271"
+               class="code sev- "><tt><i>271</i>         <span class="c1"># only happens if the method is provided as Foo.__dict__[&#39;b&#39;], not as Foo.b</span></tt>
+            </div>
+            <div id="l272"
+               class="code sev- "><tt><i>272</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">return_bound</span><span class="p">:</span></tt>
+            </div>
+            <div id="l273"
+               class="code sev- "><tt><i>273</i>             <span class="k">return</span> <span class="kc">True</span></tt>
+            </div>
+            <div id="l274"
+               class="code sev- "><tt><i>274</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l275"
+               class="code sev- "><tt><i>275</i>             <span class="n">host_cls</span> <span class="o">=</span> <span class="n">get_class_that_defined_method</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="vm">__func__</span><span class="p">)</span></tt>
+            </div>
+            <div id="l276"
+               class="code sev- "><tt><i>276</i>             <span class="n">bound</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">host_cls</span><span class="p">,</span> <span class="n">host_cls</span><span class="p">)</span></tt>
+            </div>
+            <div id="l277"
+               class="code sev- "><tt><i>277</i>             <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">bound</span></tt>
+            </div>
+            <div id="l278"
+               class="code sev- "><tt><i>278</i> &nbsp;</tt>
+            </div>
+            <div id="l279"
+               class="code sev- "><tt><i>279</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l280"
+               class="code sev- "><tt><i>280</i>         <span class="c1"># note that for the two above cases callable(f) returns False !</span></tt>
+            </div>
+            <div id="l281"
+               class="code sev- "><tt><i>281</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">PY3</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethoddescriptor</span><span class="p">(</span><span class="n">f</span><span class="p">)):</span></tt>
+            </div>
+            <div id="l282"
+               class="code sev- "><tt><i>282</i>             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`f` is not a callable !&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l283"
+               class="code sev- "><tt><i>283</i> &nbsp;</tt>
+            </div>
+            <div id="l284"
+               class="code sev- "><tt><i>284</i>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fixed_ismethod</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_bound_builtin_method</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
+            </div>
+            <div id="l285"
+               class="code sev- "><tt><i>285</i>         <span class="c1"># already bound, although TODO the functools.partial one is a shortcut that should be analyzed more deeply</span></tt>
+            </div>
+            <div id="l286"
+               class="code sev- "><tt><i>286</i>         <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_bound</span> <span class="k">else</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l287"
+               class="code sev- "><tt><i>287</i> &nbsp;</tt>
+            </div>
+            <div id="l288"
+               class="code sev- "><tt><i>288</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l289"
+               class="code sev- "><tt><i>289</i>         <span class="c1"># can be a static method, a class method, a descriptor...</span></tt>
+            </div>
+            <div id="l290"
+               class="code sev- "><tt><i>290</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">PY3</span><span class="p">:</span></tt>
+            </div>
+            <div id="l291"
+               class="code sev- "><tt><i>291</i>             <span class="n">host_cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;im_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
+            </div>
+            <div id="l292"
+               class="code sev- "><tt><i>292</i>             <span class="k">if</span> <span class="n">host_cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l293"
+               class="code sev- "><tt><i>293</i>                 <span class="c1"># defined outside a class: no need for binding</span></tt>
+            </div>
+            <div id="l294"
+               class="code sev- "><tt><i>294</i>                 <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_bound</span> <span class="k">else</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l295"
+               class="code sev- "><tt><i>295</i>             <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l296"
+               class="code sev- "><tt><i>296</i>                 <span class="n">bound_obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;im_self&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
+            </div>
+            <div id="l297"
+               class="code sev- "><tt><i>297</i>                 <span class="k">if</span> <span class="n">bound_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l298"
+               class="code sev- "><tt><i>298</i>                     <span class="c1"># unbound method</span></tt>
+            </div>
+            <div id="l299"
+               class="code sev- "><tt><i>299</i>                     <span class="k">if</span> <span class="n">return_bound</span><span class="p">:</span></tt>
+            </div>
+            <div id="l300"
+               class="code sev- "><tt><i>300</i>                         <span class="c1"># bind it on an instance</span></tt>
+            </div>
+            <div id="l301"
+               class="code sev- "><tt><i>301</i>                         <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">host_cls</span><span class="p">(),</span> <span class="n">host_cls</span><span class="p">)</span>  <span class="c1"># functools.partial(f, host_cls())</span></tt>
+            </div>
+            <div id="l302"
+               class="code sev- "><tt><i>302</i>                     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l303"
+               class="code sev- "><tt><i>303</i>                         <span class="k">return</span> <span class="kc">True</span></tt>
+            </div>
+            <div id="l304"
+               class="code sev- "><tt><i>304</i>                 <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l305"
+               class="code sev- "><tt><i>305</i>                     <span class="c1"># yes: already bound, no binding needed</span></tt>
+            </div>
+            <div id="l306"
+               class="code sev- "><tt><i>306</i>                     <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_bound</span> <span class="k">else</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l307"
+               class="code sev- "><tt><i>307</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l308"
+               class="code sev- "><tt><i>308</i>             <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l309"
+               class="code sev- "><tt><i>309</i>                 <span class="n">qname</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__qualname__</span></tt>
+            </div>
+            <div id="l310"
+               class="code sev- "><tt><i>310</i>             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l311"
+               class="code sev- "><tt><i>311</i>                 <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_bound</span> <span class="k">else</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l312"
+               class="code sev- "><tt><i>312</i>             <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l313"
+               class="code sev- "><tt><i>313</i>                 <span class="k">if</span> <span class="n">qname</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span></tt>
+            </div>
+            <div id="l314"
+               class="code sev- "><tt><i>314</i>                     <span class="c1"># not nested - plain old function in a module</span></tt>
+            </div>
+            <div id="l315"
+               class="code sev- "><tt><i>315</i>                     <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_bound</span> <span class="k">else</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l316"
+               class="code sev- "><tt><i>316</i>                 <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l317"
+               class="code sev- "><tt><i>317</i>                     <span class="c1"># NESTED in a class or a function or ...</span></tt>
+            </div>
+            <div id="l318"
+               class="code sev- "><tt><i>318</i>                     <span class="n">qname_parts</span> <span class="o">=</span> <span class="n">qname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l319"
+               class="code sev- "><tt><i>319</i> &nbsp;</tt>
+            </div>
+            <div id="l320"
+               class="code sev- "><tt><i>320</i>                     <span class="c1"># normal unbound method (since we already eliminated bound ones above with fixed_ismethod(f))</span></tt>
+            </div>
+            <div id="l321"
+               class="code sev- "><tt><i>321</i>                     <span class="c1"># or static method accessed on an instance or on a class (!)</span></tt>
+            </div>
+            <div id="l322"
+               class="code sev- "><tt><i>322</i>                     <span class="c1"># or descriptor-created method</span></tt>
+            </div>
+            <div id="l323"
+               class="code sev- "><tt><i>323</i>                     <span class="c1"># if &quot;__get__&quot; in qname_parts:</span></tt>
+            </div>
+            <div id="l324"
+               class="code sev- "><tt><i>324</i>                     <span class="c1">#     # a method generated by a descriptor - should be already bound but...</span></tt>
+            </div>
+            <div id="l325"
+               class="code sev- "><tt><i>325</i>                     <span class="c1">#     #</span></tt>
+            </div>
+            <div id="l326"
+               class="code sev- "><tt><i>326</i>                     <span class="c1">#     # see https://docs.python.org/3/reference/datamodel.html#object.__set_name__</span></tt>
+            </div>
+            <div id="l327"
+               class="code sev- "><tt><i>327</i>                     <span class="c1">#     # The attribute __objclass__ may indicate that an instance of the given type (or a subclass)</span></tt>
+            </div>
+            <div id="l328"
+               class="code sev- "><tt><i>328</i>                     <span class="c1">#     # is expected or required as the first positional argument</span></tt>
+            </div>
+            <div id="l329"
+               class="code sev- "><tt><i>329</i>                     <span class="c1">#     cls_needed = getattr(f, &#39;__objclass__&#39;, None)</span></tt>
+            </div>
+            <div id="l330"
+               class="code sev- "><tt><i>330</i>                     <span class="c1">#     if cls_needed is not None:</span></tt>
+            </div>
+            <div id="l331"
+               class="code sev- "><tt><i>331</i>                     <span class="c1">#         return (True, functools.partial(f, cls_needed())) if return_bound else True</span></tt>
+            </div>
+            <div id="l332"
+               class="code sev- "><tt><i>332</i>                     <span class="c1">#     else:</span></tt>
+            </div>
+            <div id="l333"
+               class="code sev- "><tt><i>333</i>                     <span class="c1">#         return (False, f) if return_bound else False</span></tt>
+            </div>
+            <div id="l334"
+               class="code sev- "><tt><i>334</i> &nbsp;</tt>
+            </div>
+            <div id="l335"
+               class="code sev- "><tt><i>335</i>                     <span class="k">if</span> <span class="n">qname_parts</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&lt;locals&gt;&quot;</span><span class="p">:</span></tt>
+            </div>
+            <div id="l336"
+               class="code sev- "><tt><i>336</i>                         <span class="c1"># a function generated by another function. most probably does not require binding</span></tt>
+            </div>
+            <div id="l337"
+               class="code sev- "><tt><i>337</i>                         <span class="c1"># since `get_class_that_defined_method` does not support those (as PEP3155 states)</span></tt>
+            </div>
+            <div id="l338"
+               class="code sev- "><tt><i>338</i>                         <span class="c1"># we have no choice but to make this assumption.</span></tt>
+            </div>
+            <div id="l339"
+               class="code sev- "><tt><i>339</i>                         <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_bound</span> <span class="k">else</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l340"
+               class="code sev- "><tt><i>340</i> &nbsp;</tt>
+            </div>
+            <div id="l341"
+               class="code sev- "><tt><i>341</i>                     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l342"
+               class="code sev- "><tt><i>342</i>                         <span class="c1"># unfortunately in order to detect static methods we have no choice: we need the host class</span></tt>
+            </div>
+            <div id="l343"
+               class="code sev- "><tt><i>343</i>                         <span class="n">host_cls</span> <span class="o">=</span> <span class="n">get_class_that_defined_method</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></tt>
+            </div>
+            <div id="l344"
+               class="code sev- "><tt><i>344</i>                         <span class="k">if</span> <span class="n">host_cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l345"
+               class="code sev- "><tt><i>345</i>                             <span class="n">get_class_that_defined_method</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># for debugging, do it again</span></tt>
+            </div>
+            <div id="l346"
+               class="code sev- "><tt><i>346</i>                             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This case does not seem covered, please report&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l347"
+               class="code sev- "><tt><i>347</i> &nbsp;</tt>
+            </div>
+            <div id="l348"
+               class="code sev- "><tt><i>348</i>                         <span class="c1"># is it a static method (on instance or class, it is the same),</span></tt>
+            </div>
+            <div id="l349"
+               class="code sev- "><tt><i>349</i>                         <span class="c1"># an unbound classmethod, or an unbound method ?</span></tt>
+            </div>
+            <div id="l350"
+               class="code sev- "><tt><i>350</i>                         <span class="c1"># To answer we need to go back to the definition</span></tt>
+            </div>
+            <div id="l351"
+               class="code sev- "><tt><i>351</i>                         <span class="n">func_def</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getattr_static</span><span class="p">(</span><span class="n">host_cls</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></tt>
+            </div>
+            <div id="l352"
+               class="code sev- "><tt><i>352</i>                         <span class="c1"># assert inspect.getattr(host_cls, f.__name__) is f</span></tt>
+            </div>
+            <div id="l353"
+               class="code sev- "><tt><i>353</i>                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func_def</span><span class="p">,</span> <span class="nb">staticmethod</span><span class="p">):</span></tt>
+            </div>
+            <div id="l354"
+               class="code sev- "><tt><i>354</i>                             <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_bound</span> <span class="k">else</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l355"
+               class="code sev- "><tt><i>355</i>                         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func_def</span><span class="p">,</span> <span class="nb">classmethod</span><span class="p">):</span></tt>
+            </div>
+            <div id="l356"
+               class="code sev- "><tt><i>356</i>                             <span class="c1"># unbound class method</span></tt>
+            </div>
+            <div id="l357"
+               class="code sev- "><tt><i>357</i>                             <span class="k">if</span> <span class="n">return_bound</span><span class="p">:</span></tt>
+            </div>
+            <div id="l358"
+               class="code sev- "><tt><i>358</i>                                 <span class="c1"># bind it on the class</span></tt>
+            </div>
+            <div id="l359"
+               class="code sev- "><tt><i>359</i>                                 <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">host_cls</span><span class="p">,</span> <span class="n">host_cls</span><span class="p">)</span>  <span class="c1"># functools.partial(f, host_cls)</span></tt>
+            </div>
+            <div id="l360"
+               class="code sev- "><tt><i>360</i>                             <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l361"
+               class="code sev- "><tt><i>361</i>                                 <span class="k">return</span> <span class="kc">True</span></tt>
+            </div>
+            <div id="l362"
+               class="code sev- "><tt><i>362</i>                         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l363"
+               class="code sev- "><tt><i>363</i>                             <span class="c1"># unbound method</span></tt>
+            </div>
+            <div id="l364"
+               class="code sev- "><tt><i>364</i>                             <span class="k">if</span> <span class="n">return_bound</span><span class="p">:</span></tt>
+            </div>
+            <div id="l365"
+               class="code sev- "><tt><i>365</i>                                 <span class="c1"># bind it on an instance</span></tt>
+            </div>
+            <div id="l366"
+               class="code sev- "><tt><i>366</i>                                 <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">host_cls</span><span class="p">(),</span> <span class="n">host_cls</span><span class="p">)</span>  <span class="c1"># functools.partial(f, host_cls())</span></tt>
+            </div>
+            <div id="l367"
+               class="code sev- "><tt><i>367</i>                             <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l368"
+               class="code sev- "><tt><i>368</i>                                 <span class="k">return</span> <span class="kc">True</span></tt>
+            </div>
+            <div id="l369"
+               class="code sev- "><tt><i>369</i> &nbsp;</tt>
+            </div>
+            <div id="l370"
+               class="code sev- "><tt><i>370</i> &nbsp;</tt>
+            </div>
+            <div id="l371"
+               class="code sev- "><tt><i>371</i> <span class="k">def</span> <span class="nf">is_static_method</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span></tt>
+            </div>
+            <div id="l372"
+               class="code sev- "><tt><i>372</i>     <span class="sd">&quot;&quot;&quot; Adapted from https://stackoverflow.com/a/64436801/7262247</span></tt>
+            </div>
+            <div id="l373"
+               class="code sev- "><tt><i>373</i> &nbsp;</tt>
+            </div>
+            <div id="l374"
+               class="code sev- "><tt><i>374</i> <span class="sd">    indeed isinstance(staticmethod) does not work if the method is already bound</span></tt>
+            </div>
+            <div id="l375"
+               class="code sev- "><tt><i>375</i> &nbsp;</tt>
+            </div>
+            <div id="l376"
+               class="code sev- "><tt><i>376</i> <span class="sd">    :param cls:</span></tt>
+            </div>
+            <div id="l377"
+               class="code sev- "><tt><i>377</i> <span class="sd">    :param func_name:</span></tt>
+            </div>
+            <div id="l378"
+               class="code sev- "><tt><i>378</i> <span class="sd">    :param func: optional, if you have it already</span></tt>
+            </div>
+            <div id="l379"
+               class="code sev- "><tt><i>379</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l380"
+               class="code sev- "><tt><i>380</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l381"
+               class="code sev- "><tt><i>381</i>     <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l382"
+               class="code sev-3  le">
+               <ul class="violations">
+               
+                  <li>
+                     <span class="count sev-3">
+                        S101
+                     </span>
+                     Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.</li>
+               
+               </ul><tt><i>382</i>         <span class="k">assert</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span> <span class="ow">is</span> <span class="n">func</span></tt>
+            </div>
+            <div id="l383"
+               class="code sev- "><tt><i>383</i> &nbsp;</tt>
+            </div>
+            <div id="l384"
+               class="code sev- "><tt><i>384</i>     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getattr_static</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">),</span> <span class="nb">staticmethod</span><span class="p">)</span></tt>
+            </div>
+            <div id="l385"
+               class="code sev- "><tt><i>385</i> &nbsp;</tt>
+            </div>
+            <div id="l386"
+               class="code sev- "><tt><i>386</i> &nbsp;</tt>
+            </div>
+            <div id="l387"
+               class="code sev- "><tt><i>387</i> <span class="k">def</span> <span class="nf">is_class_method</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span></tt>
+            </div>
+            <div id="l388"
+               class="code sev- "><tt><i>388</i>     <span class="sd">&quot;&quot;&quot; Adapted from https://stackoverflow.com/a/64436801/7262247</span></tt>
+            </div>
+            <div id="l389"
+               class="code sev- "><tt><i>389</i> &nbsp;</tt>
+            </div>
+            <div id="l390"
+               class="code sev- "><tt><i>390</i> <span class="sd">    indeed isinstance(classmethod) does not work if the method is already bound</span></tt>
+            </div>
+            <div id="l391"
+               class="code sev- "><tt><i>391</i> &nbsp;</tt>
+            </div>
+            <div id="l392"
+               class="code sev- "><tt><i>392</i> <span class="sd">    :param cls:</span></tt>
+            </div>
+            <div id="l393"
+               class="code sev- "><tt><i>393</i> <span class="sd">    :param func_name:</span></tt>
+            </div>
+            <div id="l394"
+               class="code sev- "><tt><i>394</i> <span class="sd">    :param func: optional, if you have it already</span></tt>
+            </div>
+            <div id="l395"
+               class="code sev- "><tt><i>395</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l396"
+               class="code sev- "><tt><i>396</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l397"
+               class="code sev- "><tt><i>397</i>     <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l398"
+               class="code sev-3  le">
+               <ul class="violations">
+               
+                  <li>
+                     <span class="count sev-3">
+                        S101
+                     </span>
+                     Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.</li>
+               
+               </ul><tt><i>398</i>         <span class="k">assert</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span> <span class="ow">is</span> <span class="n">func</span></tt>
+            </div>
+            <div id="l399"
+               class="code sev- "><tt><i>399</i> &nbsp;</tt>
+            </div>
+            <div id="l400"
+               class="code sev- "><tt><i>400</i>     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getattr_static</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_name</span><span class="p">),</span> <span class="nb">classmethod</span><span class="p">)</span></tt>
+            </div>
+            <div id="l401"
+               class="code sev- "><tt><i>401</i> &nbsp;</tt>
+            </div>
+            <div id="l402"
+               class="code sev- "><tt><i>402</i> &nbsp;</tt>
+            </div>
+            <div id="l403"
+               class="code sev- "><tt><i>403</i> <span class="k">def</span> <span class="nf">is_bound_builtin_method</span><span class="p">(</span><span class="n">meth</span><span class="p">):</span></tt>
+            </div>
+            <div id="l404"
+               class="code sev- "><tt><i>404</i>     <span class="sd">&quot;&quot;&quot;Helper returning True if meth is a bound built-in method&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l405"
+               class="code sev- "><tt><i>405</i>     <span class="k">return</span> <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">isbuiltin</span><span class="p">(</span><span class="n">meth</span><span class="p">)</span></tt>
+            </div>
+            <div id="l406"
+               class="code sev- "><tt><i>406</i>             <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">meth</span><span class="p">,</span> <span class="s1">&#39;__self__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l407"
+               class="code sev- "><tt><i>407</i>             <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">meth</span><span class="o">.</span><span class="vm">__self__</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></tt>
+            </div>
+            <div id="l408"
+               class="code sev- "><tt><i>408</i> &nbsp;</tt>
+            </div>
+            <div id="l409"
+               class="code sev- "><tt><i>409</i> &nbsp;</tt>
+            </div>
+            <div id="l410"
+               class="code sev- "><tt><i>410</i> <span class="k">class</span> <span class="nc">HostNotConstructedYet</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span></tt>
+            </div>
+            <div id="l411"
+               class="code sev- "><tt><i>411</i>     <span class="sd">&quot;&quot;&quot;Raised by `get_class_that_defined_method` in the situation where the host class is not in the host module yet.&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l412"
+               class="code sev- "><tt><i>412</i>     <span class="k">pass</span></tt>
+            </div>
+            <div id="l413"
+               class="code sev- "><tt><i>413</i> &nbsp;</tt>
+            </div>
+            <div id="l414"
+               class="code sev- "><tt><i>414</i> &nbsp;</tt>
+            </div>
+            <div id="l415"
+               class="code sev- "><tt><i>415</i> <span class="k">if</span> <span class="n">PY3</span><span class="p">:</span></tt>
+            </div>
+            <div id="l416"
+               class="code sev- "><tt><i>416</i>     <span class="c1"># this does not need fixing</span></tt>
+            </div>
+            <div id="l417"
+               class="code sev- "><tt><i>417</i>     <span class="n">fixed_ismethod</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span></tt>
+            </div>
+            <div id="l418"
+               class="code sev- "><tt><i>418</i> &nbsp;</tt>
+            </div>
+            <div id="l419"
+               class="code sev- "><tt><i>419</i>     <span class="k">def</span> <span class="nf">get_class_that_defined_method</span><span class="p">(</span><span class="n">meth</span><span class="p">):</span></tt>
+            </div>
+            <div id="l420"
+               class="code sev- "><tt><i>420</i>         <span class="sd">&quot;&quot;&quot;from https://stackoverflow.com/a/25959545/7262247</span></tt>
+            </div>
+            <div id="l421"
+               class="code sev- "><tt><i>421</i> &nbsp;</tt>
+            </div>
+            <div id="l422"
+               class="code sev- "><tt><i>422</i> <span class="sd">        Improved to support nesting, and to raise an Exception if __qualname__ does</span></tt>
+            </div>
+            <div id="l423"
+               class="code sev- "><tt><i>423</i> <span class="sd">        not properly work (instead of returning None which may be misleading)</span></tt>
+            </div>
+            <div id="l424"
+               class="code sev- "><tt><i>424</i> &nbsp;</tt>
+            </div>
+            <div id="l425"
+               class="code sev- "><tt><i>425</i> <span class="sd">        And yes PEP3155 states that __qualname__ should be used for such introspection.</span></tt>
+            </div>
+            <div id="l426"
+               class="code sev- "><tt><i>426</i> <span class="sd">        See https://www.python.org/dev/peps/pep-3155/#rationale</span></tt>
+            </div>
+            <div id="l427"
+               class="code sev- "><tt><i>427</i> <span class="sd">        &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l428"
+               class="code sev- "><tt><i>428</i>         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meth</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">):</span></tt>
+            </div>
+            <div id="l429"
+               class="code sev- "><tt><i>429</i>             <span class="k">return</span> <span class="n">get_class_that_defined_method</span><span class="p">(</span><span class="n">meth</span><span class="o">.</span><span class="n">func</span><span class="p">)</span></tt>
+            </div>
+            <div id="l430"
+               class="code sev- "><tt><i>430</i> &nbsp;</tt>
+            </div>
+            <div id="l431"
+               class="code sev- "><tt><i>431</i>         <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">meth</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_bound_builtin_method</span><span class="p">(</span><span class="n">meth</span><span class="p">):</span></tt>
+            </div>
+            <div id="l432"
+               class="code sev- "><tt><i>432</i>             <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmro</span><span class="p">(</span><span class="n">meth</span><span class="o">.</span><span class="vm">__self__</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span></tt>
+            </div>
+            <div id="l433"
+               class="code sev- "><tt><i>433</i>                 <span class="k">if</span> <span class="n">meth</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span></tt>
+            </div>
+            <div id="l434"
+               class="code sev- "><tt><i>434</i>                     <span class="k">return</span> <span class="bp">cls</span></tt>
+            </div>
+            <div id="l435"
+               class="code sev- "><tt><i>435</i>             <span class="n">meth</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">meth</span><span class="p">,</span> <span class="s1">&#39;__func__&#39;</span><span class="p">,</span> <span class="n">meth</span><span class="p">)</span>  <span class="c1"># fallback to __qualname__ parsing</span></tt>
+            </div>
+            <div id="l436"
+               class="code sev- "><tt><i>436</i> &nbsp;</tt>
+            </div>
+            <div id="l437"
+               class="code sev- "><tt><i>437</i>         <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">meth</span><span class="p">):</span></tt>
+            </div>
+            <div id="l438"
+               class="code sev- "><tt><i>438</i>             <span class="n">host</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmodule</span><span class="p">(</span><span class="n">meth</span><span class="p">)</span></tt>
+            </div>
+            <div id="l439"
+               class="code sev- "><tt><i>439</i>             <span class="n">host_part</span> <span class="o">=</span> <span class="n">meth</span><span class="o">.</span><span class="vm">__qualname__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&lt;locals&gt;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></tt>
+            </div>
+            <div id="l440"
+               class="code sev- "><tt><i>440</i>             <span class="c1"># note: the local part of qname is not walkable see https://www.python.org/dev/peps/pep-3155/#limitations</span></tt>
+            </div>
+            <div id="l441"
+               class="code sev- "><tt><i>441</i>             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">host_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span></tt>
+            </div>
+            <div id="l442"
+               class="code sev- "><tt><i>442</i>                 <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l443"
+               class="code sev- "><tt><i>443</i>                     <span class="n">host</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span></tt>
+            </div>
+            <div id="l444"
+               class="code sev- "><tt><i>444</i>                 <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l445"
+               class="code sev- "><tt><i>445</i>                     <span class="c1"># non-resolvable __qualname__</span></tt>
+            </div>
+            <div id="l446"
+               class="code sev- "><tt><i>446</i>                     <span class="k">raise</span> <span class="n">HostNotConstructedYet</span><span class="p">(</span></tt>
+            </div>
+            <div id="l447"
+               class="code sev- "><tt><i>447</i>                         <span class="s2">&quot;__qualname__ is not resolvable, this can happen if the host class of this method &quot;</span></tt>
+            </div>
+            <div id="l448"
+               class="code sev- "><tt><i>448</i>                         <span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> has not yet been created. PEP3155 does not seem to tell us what we should do &quot;</span></tt>
+            </div>
+            <div id="l449"
+               class="code sev- "><tt><i>449</i>                         <span class="s2">&quot;in this case.&quot;</span> <span class="o">%</span> <span class="n">meth</span></tt>
+            </div>
+            <div id="l450"
+               class="code sev- "><tt><i>450</i>                     <span class="p">)</span></tt>
+            </div>
+            <div id="l451"
+               class="code sev- "><tt><i>451</i>                 <span class="k">if</span> <span class="n">host</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l452"
+               class="code sev- "><tt><i>452</i>                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;__qualname__ leads to `None`, this is strange and not PEP3155 compliant, please &quot;</span></tt>
+            </div>
+            <div id="l453"
+               class="code sev- "><tt><i>453</i>                                      <span class="s2">&quot;report&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l454"
+               class="code sev- "><tt><i>454</i> &nbsp;</tt>
+            </div>
+            <div id="l455"
+               class="code sev- "><tt><i>455</i>             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span></tt>
+            </div>
+            <div id="l456"
+               class="code sev- "><tt><i>456</i>                 <span class="k">return</span> <span class="n">host</span></tt>
+            </div>
+            <div id="l457"
+               class="code sev- "><tt><i>457</i> &nbsp;</tt>
+            </div>
+            <div id="l458"
+               class="code sev- "><tt><i>458</i>         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">meth</span><span class="p">,</span> <span class="s1">&#39;__objclass__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># handle special descriptor objects</span></tt>
+            </div>
+            <div id="l459"
+               class="code sev- "><tt><i>459</i> &nbsp;</tt>
+            </div>
+            <div id="l460"
+               class="code sev- "><tt><i>460</i> <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l461"
+               class="code sev- "><tt><i>461</i>     <span class="k">def</span> <span class="nf">fixed_ismethod</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
+            </div>
+            <div id="l462"
+               class="code sev- "><tt><i>462</i>         <span class="sd">&quot;&quot;&quot;inspect.ismethod does not have the same contract in python 2: it returns True even for bound methods&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l463"
+               class="code sev- "><tt><i>463</i>         <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;__self__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="vm">__self__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l464"
+               class="code sev- "><tt><i>464</i> &nbsp;</tt>
+            </div>
+            <div id="l465"
+               class="code sev- "><tt><i>465</i>     <span class="k">def</span> <span class="nf">get_class_that_defined_method</span><span class="p">(</span><span class="n">meth</span><span class="p">):</span></tt>
+            </div>
+            <div id="l466"
+               class="code sev- "><tt><i>466</i>         <span class="sd">&quot;&quot;&quot;from https://stackoverflow.com/a/961057/7262247</span></tt>
+            </div>
+            <div id="l467"
+               class="code sev- "><tt><i>467</i> &nbsp;</tt>
+            </div>
+            <div id="l468"
+               class="code sev- "><tt><i>468</i> <span class="sd">        Adapted to support partial</span></tt>
+            </div>
+            <div id="l469"
+               class="code sev- "><tt><i>469</i> <span class="sd">        &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l470"
+               class="code sev- "><tt><i>470</i>         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meth</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">):</span></tt>
+            </div>
+            <div id="l471"
+               class="code sev- "><tt><i>471</i>             <span class="k">return</span> <span class="n">get_class_that_defined_method</span><span class="p">(</span><span class="n">meth</span><span class="o">.</span><span class="n">func</span><span class="p">)</span></tt>
+            </div>
+            <div id="l472"
+               class="code sev- "><tt><i>472</i> &nbsp;</tt>
+            </div>
+            <div id="l473"
+               class="code sev- "><tt><i>473</i>         <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l474"
+               class="code sev- "><tt><i>474</i>             <span class="n">_mro</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmro</span><span class="p">(</span><span class="n">meth</span><span class="o">.</span><span class="n">im_class</span><span class="p">)</span></tt>
+            </div>
+            <div id="l475"
+               class="code sev- "><tt><i>475</i>         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l476"
+               class="code sev- "><tt><i>476</i>             <span class="c1"># no host class</span></tt>
+            </div>
+            <div id="l477"
+               class="code sev- "><tt><i>477</i>             <span class="k">return</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l478"
+               class="code sev- "><tt><i>478</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l479"
+               class="code sev- "><tt><i>479</i>             <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">_mro</span><span class="p">:</span></tt>
+            </div>
+            <div id="l480"
+               class="code sev- "><tt><i>480</i>                 <span class="k">if</span> <span class="n">meth</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span></tt>
+            </div>
+            <div id="l481"
+               class="code sev- "><tt><i>481</i>                     <span class="k">return</span> <span class="bp">cls</span></tt>
+            </div>
+            <div id="l482"
+               class="code sev- "><tt><i>482</i>         <span class="k">return</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l483"
+               class="code sev- "><tt><i>483</i> &nbsp;</tt>
+            </div>
+            <div id="l484"
+               class="code sev- "><tt><i>484</i> &nbsp;</tt>
+            </div>
+            <div id="l485"
+               class="code sev- "><tt><i>485</i> <span class="k">if</span> <span class="n">PY3</span><span class="p">:</span></tt>
+            </div>
+            <div id="l486"
+               class="code sev- "><tt><i>486</i>     <span class="k">def</span> <span class="nf">qname</span><span class="p">(</span><span class="n">func</span><span class="p">):</span></tt>
+            </div>
+            <div id="l487"
+               class="code sev- "><tt><i>487</i>         <span class="k">return</span> <span class="n">func</span><span class="o">.</span><span class="vm">__qualname__</span></tt>
+            </div>
+            <div id="l488"
+               class="code sev- "><tt><i>488</i> <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l489"
+               class="code sev- "><tt><i>489</i>     <span class="k">def</span> <span class="nf">qname</span><span class="p">(</span><span class="n">func</span><span class="p">):</span></tt>
+            </div>
+            <div id="l490"
+               class="code sev- "><tt><i>490</i>         <span class="sd">&quot;&quot;&quot;&#39;good enough&#39; python 2 implementation of __qualname__&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l491"
+               class="code sev- "><tt><i>491</i>         <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l492"
+               class="code sev- "><tt><i>492</i>             <span class="n">hostclass</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">im_class</span></tt>
+            </div>
+            <div id="l493"
+               class="code sev- "><tt><i>493</i>         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l494"
+               class="code sev- "><tt><i>494</i>             <span class="c1"># no host class</span></tt>
+            </div>
+            <div id="l495"
+               class="code sev- "><tt><i>495</i>             <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></tt>
+            </div>
+            <div id="l496"
+               class="code sev- "><tt><i>496</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l497"
+               class="code sev- "><tt><i>497</i>             <span class="c1"># host class: recurse (note that in python 2 nested classes do not have a way to know their parent class)</span></tt>
+            </div>
+            <div id="l498"
+               class="code sev- "><tt><i>498</i>             <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">qname</span><span class="p">(</span><span class="n">hostclass</span><span class="p">),</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></tt>
+            </div>
+            <div id="l499"
+               class="code sev- "><tt><i>499</i> &nbsp;</tt>
+            </div>
+            <div id="l500"
+               class="code sev- "><tt><i>500</i> &nbsp;</tt>
+            </div>
+            <div id="l501"
+               class="code sev- "><tt><i>501</i> <span class="c1"># if sys.version_info &gt; (3, ):</span></tt>
+            </div>
+            <div id="l502"
+               class="code sev- "><tt><i>502</i> <span class="k">def</span> <span class="nf">funcopy</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
+            </div>
+            <div id="l503"
+               class="code sev- "><tt><i>503</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l504"
+               class="code sev- "><tt><i>504</i> &nbsp;</tt>
+            </div>
+            <div id="l505"
+               class="code sev- "><tt><i>505</i> <span class="sd">    &gt;&gt;&gt; def foo():</span></tt>
+            </div>
+            <div id="l506"
+               class="code sev- "><tt><i>506</i> <span class="sd">    ...     return 1</span></tt>
+            </div>
+            <div id="l507"
+               class="code sev- "><tt><i>507</i> <span class="sd">    &gt;&gt;&gt; foo.att = 2</span></tt>
+            </div>
+            <div id="l508"
+               class="code sev- "><tt><i>508</i> <span class="sd">    &gt;&gt;&gt; f = funcopy(foo)</span></tt>
+            </div>
+            <div id="l509"
+               class="code sev- "><tt><i>509</i> <span class="sd">    &gt;&gt;&gt; f.att</span></tt>
+            </div>
+            <div id="l510"
+               class="code sev- "><tt><i>510</i> <span class="sd">    2</span></tt>
+            </div>
+            <div id="l511"
+               class="code sev- "><tt><i>511</i> <span class="sd">    &gt;&gt;&gt; f()</span></tt>
+            </div>
+            <div id="l512"
+               class="code sev- "><tt><i>512</i> <span class="sd">    1</span></tt>
+            </div>
+            <div id="l513"
+               class="code sev- "><tt><i>513</i> &nbsp;</tt>
+            </div>
+            <div id="l514"
+               class="code sev- "><tt><i>514</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l515"
+               class="code sev- "><tt><i>515</i>     <span class="c1"># see https://stackoverflow.com/a/6527746/7262247</span></tt>
+            </div>
+            <div id="l516"
+               class="code sev- "><tt><i>516</i>     <span class="c1"># and https://stackoverflow.com/a/13503277/7262247</span></tt>
+            </div>
+            <div id="l517"
+               class="code sev- "><tt><i>517</i>     <span class="c1"># apparently it is not possible to create an actual copy with copy() !</span></tt>
+            </div>
+            <div id="l518"
+               class="code sev- "><tt><i>518</i>     <span class="c1"># Use makefun.partial which preserves the parametrization marks (we need them)</span></tt>
+            </div>
+            <div id="l519"
+               class="code sev- "><tt><i>519</i>     <span class="k">return</span> <span class="n">makefun</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></tt>
+            </div>
+            <div id="l520"
+               class="code sev- "><tt><i>520</i>     <span class="c1"># fun = FunctionType(f.__code__, f.__globals__, f.__name__, f.__defaults__, f.__closure__)</span></tt>
+            </div>
+            <div id="l521"
+               class="code sev- "><tt><i>521</i>     <span class="c1"># fun.__dict__.update(f.__dict__)</span></tt>
+            </div>
+            <div id="l522"
+               class="code sev- "><tt><i>522</i>     <span class="c1"># fun = functools.update_wrapper(fun, f)</span></tt>
+            </div>
+            <div id="l523"
+               class="code sev- "><tt><i>523</i>     <span class="c1"># fun.__kwdefaults__ = f.__kwdefaults__</span></tt>
+            </div>
+            <div id="l524"
+               class="code sev- "><tt><i>524</i>     <span class="c1"># return fun</span></tt>
+            </div>
+            <div id="l525"
+               class="code sev- "><tt><i>525</i> <span class="c1"># else:</span></tt>
+            </div>
+            <div id="l526"
+               class="code sev- "><tt><i>526</i> <span class="c1">#     def funcopy(f):</span></tt>
+            </div>
+            <div id="l527"
+               class="code sev- "><tt><i>527</i> <span class="c1">#         fun = FunctionType(f.func_code, f.func_globals, name=f.func_name, argdefs=f.func_defaults,</span></tt>
+            </div>
+            <div id="l528"
+               class="code sev- "><tt><i>528</i> <span class="c1">#                            closure=f.func_closure)</span></tt>
+            </div>
+            <div id="l529"
+               class="code sev- "><tt><i>529</i> <span class="c1">#         fun.__dict__.update(f.__dict__)</span></tt>
+            </div>
+            <div id="l530"
+               class="code sev- "><tt><i>530</i> <span class="c1">#         fun = functools.update_wrapper(fun, f)</span></tt>
+            </div>
+            <div id="l531"
+               class="code sev- "><tt><i>531</i> <span class="c1">#         fun.__kwdefaults__ = f.__kwdefaults__</span></tt>
+            </div>
+            <div id="l532"
+               class="code sev- "><tt><i>532</i> <span class="c1">#         return fun</span></tt>
+            </div>
+            <div id="l533"
+               class="code sev- "><tt><i>533</i> &nbsp;</tt>
+            </div>
+            <div id="l534"
+               class="code sev- "><tt><i>534</i> &nbsp;</tt>
+            </div>
+            <div id="l535"
+               class="code sev- "><tt><i>535</i> <span class="k">def</span> <span class="nf">robust_isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span></tt>
+            </div>
+            <div id="l536"
+               class="code sev- "><tt><i>536</i>     <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l537"
+               class="code sev- "><tt><i>537</i>         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span></tt>
+            </div>
+            <div id="l538"
+               class="code sev- "><tt><i>538</i>     <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l539"
+               class="code sev- "><tt><i>539</i>         <span class="k">return</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l540"
+               class="code sev- "><tt><i>540</i> &nbsp;</tt>
+            </div>
+            <div id="l541"
+               class="code sev- "><tt><i>541</i> &nbsp;</tt>
+            </div>
+            <div id="l542"
+               class="code sev- "><tt><i>542</i> <span class="k">def</span> <span class="nf">isidentifier</span><span class="p">(</span><span class="n">s</span>  <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l543"
+               class="code sev- "><tt><i>543</i>                  <span class="p">):</span></tt>
+            </div>
+            <div id="l544"
+               class="code sev- "><tt><i>544</i>     <span class="sd">&quot;&quot;&quot;python 2+3 compliant &lt;str&gt;.isidentifier()&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l545"
+               class="code sev- "><tt><i>545</i>     <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l546"
+               class="code sev- "><tt><i>546</i>         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">()</span></tt>
+            </div>
+            <div id="l547"
+               class="code sev- "><tt><i>547</i>     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l548"
+               class="code sev- "><tt><i>548</i>         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;[a-zA-Z_]</span><span class="se">\\</span><span class="s2">w*</span><span class="se">\\</span><span class="s2">Z&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span></tt>
+            </div>
+            <div id="l549"
+               class="code sev- "><tt><i>549</i> &nbsp;</tt>
+            </div>
+            <div id="l550"
+               class="code sev- "><tt><i>550</i> &nbsp;</tt>
+            </div>
+            <div id="l551"
+               class="code sev- "><tt><i>551</i> <span class="k">def</span> <span class="nf">make_identifier</span><span class="p">(</span><span class="n">name</span>  <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l552"
+               class="code sev- "><tt><i>552</i>                     <span class="p">):</span></tt>
+            </div>
+            <div id="l553"
+               class="code sev- "><tt><i>553</i>     <span class="sd">&quot;&quot;&quot;Transform the given name into a valid python identifier&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l554"
+               class="code sev- "><tt><i>554</i>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
+            </div>
+            <div id="l555"
+               class="code sev- "><tt><i>555</i>         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;name should be a string, found : </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></tt>
+            </div>
+            <div id="l556"
+               class="code sev- "><tt><i>556</i>     <span class="k">elif</span> <span class="n">isidentifier</span><span class="p">(</span><span class="n">name</span><span class="p">):</span></tt>
+            </div>
+            <div id="l557"
+               class="code sev- "><tt><i>557</i>         <span class="k">return</span> <span class="n">name</span></tt>
+            </div>
+            <div id="l558"
+               class="code sev- "><tt><i>558</i>     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span></tt>
+            </div>
+            <div id="l559"
+               class="code sev- "><tt><i>559</i>         <span class="c1"># empty string</span></tt>
+            </div>
+            <div id="l560"
+               class="code sev- "><tt><i>560</i>         <span class="k">return</span> <span class="s2">&quot;_&quot;</span></tt>
+            </div>
+            <div id="l561"
+               class="code sev- "><tt><i>561</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l562"
+               class="code sev- "><tt><i>562</i>         <span class="c1"># first remove any forbidden character (https://stackoverflow.com/a/3305731/7262247)</span></tt>
+            </div>
+            <div id="l563"
+               class="code sev- "><tt><i>563</i>         <span class="c1"># \W : matches any character that is not a word character</span></tt>
+            </div>
+            <div id="l564"
+               class="code sev- "><tt><i>564</i>         <span class="n">new_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">W+&quot;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></tt>
+            </div>
+            <div id="l565"
+               class="code sev- "><tt><i>565</i>         <span class="c1"># then add a leading underscore if needed</span></tt>
+            </div>
+            <div id="l566"
+               class="code sev- "><tt><i>566</i>         <span class="c1"># ^(?=\\d) : matches any digit that would be at the beginning of the string</span></tt>
+            </div>
+            <div id="l567"
+               class="code sev- "><tt><i>567</i>         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^(?=</span><span class="se">\\</span><span class="s2">d)&quot;</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span></tt>
+            </div>
+            <div id="l568"
+               class="code sev- "><tt><i>568</i>             <span class="n">new_name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">new_name</span></tt>
+            </div>
+            <div id="l569"
+               class="code sev- "><tt><i>569</i>         <span class="k">return</span> <span class="n">new_name</span></tt>
+            </div>
+            
+         </div>
+      </div>
+   </body>
+</html>

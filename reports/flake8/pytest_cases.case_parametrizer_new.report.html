@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>flake8 violations: pytest_cases/case_parametrizer_new.py</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+<script>
+function bindHandler(link) {
+   var code = link.getAttribute('data-code');
+   var key = location.pathname + '#' + code;
+
+   var ul = link.parentNode.querySelector('.details');
+   if (sessionStorage[key] != 'open') {
+      ul.style.display = 'none';
+   }
+   link.addEventListener('click', function (event) {
+      if (!ul.style.display || ul.style.display == 'none') {
+         ul.style.display = 'block';
+         sessionStorage[key] = 'open';
+      } else {
+         ul.style.display = 'none';
+         sessionStorage[key] = 'closed';
+      }
+   });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+   var links = document.querySelectorAll('#index > li > a');
+   for (var i = 0; i < links.length; i++) {
+      bindHandler(links[i]);
+   }
+});
+</script>
+   </head>
+   <body>
+      <div id="masthead" class="sev-3"></div>
+      <div id="page">
+         <p id="srclink">
+            <a title="View full annotated source"
+               href="pytest_cases.case_parametrizer_new.source.html">
+               <img src="file.svg" alt="&#x2261;">
+            </a></p>
+         <h1>
+            <a href="index.html">
+               <img src="back.svg" alt="&#x2B05;">
+               pytest_cases/case_parametrizer_new.py
+            </a>
+         </h1>
+
+         <ul id="index">
+         
+         <li>
+            <a data-code="S101">
+               <span class="count sev-3">
+                  4
+               </span>
+               <strong>S101:</strong> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+               
+            </a>
+            <ul class="details">
+            <li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l197">
+                  <tt><i>197</i>         <span class="k">assert</span> <span class="n">case_fun_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l596">
+                  <tt><i>596</i>     <span class="k">assert</span> <span class="ow">not</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">orig_case</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l597">
+                  <tt><i>597</i>     <span class="k">assert</span> <span class="n">orig_case</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="n">orig_name</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l651">
+                  <tt><i>651</i>         <span class="k">assert</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;test_&#39;</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+         
+         <li>
+            <a data-code="T001">
+               <span class="count sev-3">
+                  4
+               </span>
+               <strong>T001:</strong> print found.
+               
+            </a>
+            <ul class="details">
+            <li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l421">
+                  <tt><i>421</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; 1 lazy_value() with id </span><span class="si">%s</span><span class="s2"> and additional marks </span><span class="si">%s</span><span class="s2">&quot;</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l454">
+                  <tt><i>454</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; fixture_ref(</span><span class="si">%r</span><span class="s2">) with marks </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">case_fun_str</span><span class="p">,</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">remaining_marks</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l511">
+                  <tt><i>511</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; Reusing fixture </span><span class="si">%r</span><span class="s2"> and marks </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">qname</span><span class="p">(</span><span class="n">true_case_func</span><span class="p">),</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">marks</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l551">
+                  <tt><i>551</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; Creating fixture </span><span class="si">%r</span><span class="s2"> in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">qname</span><span class="p">(</span><span class="n">true_case_func</span><span class="p">),</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">target_host</span><span class="p">))</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+         
+         </ul>
+      </div>
+   </body>
+</html>

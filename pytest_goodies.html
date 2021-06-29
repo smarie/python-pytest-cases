@@ -9,8 +9,8 @@
       
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.6">
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
     
     
       
@@ -18,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.875de78c.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.ca7ac06f.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.f1a3b89f.min.css">
         
       
     
@@ -38,6 +38,8 @@
     
     
       
+
+
     
     
   </head>
@@ -51,7 +53,7 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
   
     
-    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -70,7 +72,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="pytest_cases" class="md-header__button md-logo" aria-label="pytest_cases" data-md-component="logo">
+    <a href="index.html" title="pytest_cases" class="md-header__button md-logo" aria-label="pytest_cases" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -163,7 +165,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="pytest_cases" class="md-nav__button md-logo" aria-label="pytest_cases" data-md-component="logo">
+    <a href="index.html" title="pytest_cases" class="md-nav__button md-logo" aria-label="pytest_cases" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -195,7 +197,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="index.html" class="md-nav__link">
         Home
       </a>
     </li>
@@ -210,7 +212,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
+      <a href="examples.html" class="md-nav__link">
         Examples
       </a>
     </li>
@@ -239,7 +241,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="pytest_goodies.html" class="md-nav__link md-nav__link--active">
         pytest goodies
       </a>
       
@@ -390,7 +392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../unions_theory/" class="md-nav__link">
+      <a href="unions_theory.html" class="md-nav__link">
         fixture unions theory
       </a>
     </li>
@@ -405,7 +407,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/" class="md-nav__link">
+      <a href="api_reference.html" class="md-nav__link">
         API reference
       </a>
     </li>
@@ -420,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
+      <a href="changelog.html" class="md-nav__link">
         Changelog
       </a>
     </li>
@@ -622,7 +624,7 @@
 <span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span>
 </code></pre></div>
-<p>And it is also available in <a href="../api_reference/#fixture_union"><code>fixture_union</code></a>:</p>
+<p>And it is also available in <a href="api_reference.html#fixture_union"><code>fixture_union</code></a>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">fixture_union</span>
 
@@ -672,7 +674,7 @@
 <h2 id="fixture_union"><code>fixture_union</code><a class="headerlink" href="#fixture_union" title="Permanent link">&para;</a></h2>
 <p>As of <code>pytest</code> 5, it is not possible to create a "union" fixture, i.e. a parametrized fixture that would first take all the possible values of fixture A, then all possible values of fixture B, etc. Indeed all fixture dependencies (a.k.a. "closure") of each test node are grouped together, and if they have parameters a big "cross-product" of the parameters is done by <code>pytest</code>.</p>
 <p>The topic has been largely discussed in <a href="https://github.com/pytest-dev/pytest/issues/349">pytest-dev#349</a> and a <a href="https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html">request for proposal</a> has been finally made.</p>
-<p><a href="../api_reference/#fixture_union"><code>fixture_union</code></a> is an implementation of this proposal. It is also used by <a href="../api_reference/#parametrize"><code>@parametrize</code></a> to support <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a> in parameter values, see <a href="#parametrize">below</a>. The theory is presented in more details in <a href="../unions_theory/">this page</a>, while below are more practical examples.</p>
+<p><a href="api_reference.html#fixture_union"><code>fixture_union</code></a> is an implementation of this proposal. It is also used by <a href="api_reference.html#parametrize"><code>@parametrize</code></a> to support <a href="api_reference.html#fixture_ref"><code>fixture_ref</code></a> in parameter values, see <a href="#parametrize">below</a>. The theory is presented in more details in <a href="unions_theory.html">this page</a>, while below are more practical examples.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pytest_cases</span> <span class="kn">import</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">fixture_union</span>
 
 <span class="nd">@fixture</span>
@@ -695,7 +697,7 @@
 &lt;...&gt;::test_basic_union[\second-b] b    PASSED
 </code></pre></div>
 <h3 id="idstyle">idstyle<a class="headerlink" href="#idstyle" title="Permanent link">&para;</a></h3>
-<p>As you can see the ids of union fixtures are slightly different from standard ids, so that you can easily understand what is going on. You can change this feature with <code>ìdstyle</code>, see <a href="../api_reference/#fixture_union">API documentation</a> for details.</p>
+<p>As you can see the ids of union fixtures are slightly different from standard ids, so that you can easily understand what is going on. You can change this feature with <code>ìdstyle</code>, see <a href="api_reference.html#fixture_union">API documentation</a> for details.</p>
 <h3 id="marks-and-ids">marks and ids<a class="headerlink" href="#marks-and-ids" title="Permanent link">&para;</a></h3>
 <p>You can mark any of the alternatives with <code>pytest.mark</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
 <h3 id="unpacking">unpacking<a class="headerlink" href="#unpacking" title="Permanent link">&para;</a></h3>
@@ -708,12 +710,12 @@
 <p>If you're familiar with <code>pytest-cases</code> already, you might note that <code>@cases_data</code> is not so different than a fixture union: we do a union of all case functions. If one day union fixtures are directly supported by <code>pytest</code>, we will probably refactor this lib to align all the concepts.</p>
 </div>
 <h2 id="parametrize"><code>@parametrize</code><a class="headerlink" href="#parametrize" title="Permanent link">&para;</a></h2>
-<p><a href="../api_reference/#parametrize"><code>@parametrize</code></a> is a replacement for <code>@pytest.mark.parametrize</code> with many additional features to make the most of parametrization. See <a href="../api_reference/#parametrize">API reference</a> for details about all the new features. In particular it allows you to include references to fixtures and to value-generating functions in the parameter values. </p>
+<p><a href="api_reference.html#parametrize"><code>@parametrize</code></a> is a replacement for <code>@pytest.mark.parametrize</code> with many additional features to make the most of parametrization. See <a href="api_reference.html#parametrize">API reference</a> for details about all the new features. In particular it allows you to include references to fixtures and to value-generating functions in the parameter values. </p>
 <ul>
-<li>Simply use <a href="../api_reference/#fixture_ref"><code>fixture_ref(&lt;fixture&gt;)</code></a> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function. New: from version <code>3.2</code> on, if <code>auto_refs=True</code> (default), <code>@parametrize</code> will automatically detect fixture symbols in the list of argvalues, and will create <code>fixture_ref</code>s automatically around them so that you don't need to.</li>
-<li>if you do not wish to create a fixture, you can also use <a href="../api_reference/#lazy_value"><code>lazy_value(&lt;function&gt;)</code></a></li>
-<li>Note that when parametrizing several argnames, both <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a> and <a href="../api_reference/#lazy_value"><code>lazy_value</code></a> can be used <em>as</em> the tuple, or <em>in</em> the tuple. Several <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a> and/or <a href="../api_reference/#lazy_value"><code>lazy_value</code></a> can be used in the same tuple, too.</li>
-<li>By default the id associated with a <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a> or a <a href="../api_reference/#lazy_value"><code>lazy_value</code></a> is the name of the fixture or function. Custom ids can be passed with the <code>id=&lt;id&gt;</code> parameter. </li>
+<li>Simply use <a href="api_reference.html#fixture_ref"><code>fixture_ref(&lt;fixture&gt;)</code></a> in the parameter values, where <code>&lt;fixture&gt;</code> can be the fixture name or fixture function. New: from version <code>3.2</code> on, if <code>auto_refs=True</code> (default), <code>@parametrize</code> will automatically detect fixture symbols in the list of argvalues, and will create <code>fixture_ref</code>s automatically around them so that you don't need to.</li>
+<li>if you do not wish to create a fixture, you can also use <a href="api_reference.html#lazy_value"><code>lazy_value(&lt;function&gt;)</code></a></li>
+<li>Note that when parametrizing several argnames, both <a href="api_reference.html#fixture_ref"><code>fixture_ref</code></a> and <a href="api_reference.html#lazy_value"><code>lazy_value</code></a> can be used <em>as</em> the tuple, or <em>in</em> the tuple. Several <a href="api_reference.html#fixture_ref"><code>fixture_ref</code></a> and/or <a href="api_reference.html#lazy_value"><code>lazy_value</code></a> can be used in the same tuple, too.</li>
+<li>By default the id associated with a <a href="api_reference.html#fixture_ref"><code>fixture_ref</code></a> or a <a href="api_reference.html#lazy_value"><code>lazy_value</code></a> is the name of the fixture or function. Custom ids can be passed with the <code>id=&lt;id&gt;</code> parameter. </li>
 </ul>
 <p>For example, with a single argument:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pytest</span>
@@ -761,7 +763,7 @@ test_prints<span class="o">[</span>greetings-you-!<span class="o">]</span> PASSE
 <p>You can also mark any of the argvalues with <code>pytest.param</code> to pass a custom id or a custom "skip" or "fail" mark, just as you do in <code>pytest</code>. See <a href="https://docs.pytest.org/en/stable/example/parametrize.html#set-marks-or-test-id-for-individual-parametrized-test">pytest documentation</a>.</p>
 <p>You can also pass a custom callable or generator in <code>ids</code> as in <code>@pytest.mark.parametrize</code>.</p>
 <h3 id="idstyle-customization">idstyle customization<a class="headerlink" href="#idstyle-customization" title="Permanent link">&para;</a></h3>
-<p>As you can see in the example above, the default ids are similar to what you would intuitively expect, even when you use <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a>.</p>
+<p>As you can see in the example above, the default ids are similar to what you would intuitively expect, even when you use <a href="api_reference.html#fixture_ref"><code>fixture_ref</code></a>.</p>
 <p>This is because by default <code>idstyle=None</code>, to preserve test ids very close to standard <code>pytest</code> by default. But still, a <code>fixture_union</code> is generated behind the scenes when there is a fixture reference. So this is actually non-standard. You may therefore prefer to see explicit ids showing the various fixture alternatives, as in <a href="#fixture_union"><code>fixture_union</code></a>. For this simply set the <code>idstyle</code> to <code>'compact'</code>, <code>'explicit'</code> or to a callable such as <code>str</code>.</p>
 <p>For example, changing the previous example to add <code>idstyle="explicit"</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="o">...</span><span class="n">same</span> <span class="k">as</span> <span class="n">above</span><span class="o">...</span><span class="p">)</span>
@@ -792,14 +794,14 @@ test_prints[main_msg\greetings-you-?] PASSED          [ 91%]hello you?
 test_prints[main_msg\greetings-you-!] PASSED          [100%]hello you!
 </code></pre></div>
 <p>You can see that with this explicit style, the various "alternatives" in the fixture union generated behind the scenes for the <code>main_msg</code> parameter appear explicitly. In particular you see that there is an alternative <code>main_msg\P2:4</code> covering several parameters in a row.</p>
-<p>Note that this <code>idstyle</code> is not taken into account if you only use <a href="../api_reference/#lazy_value"><code>lazy_value</code></a>s but no <code>fixture_ref</code>, as <code>lazy_value</code>s do not require to create a fixture union behind the scenes.</p>
+<p>Note that this <code>idstyle</code> is not taken into account if you only use <a href="api_reference.html#lazy_value"><code>lazy_value</code></a>s but no <code>fixture_ref</code>, as <code>lazy_value</code>s do not require to create a fixture union behind the scenes.</p>
 <h3 id="parametrization-order">parametrization order<a class="headerlink" href="#parametrization-order" title="Permanent link">&para;</a></h3>
-<p>Another consequence of using <a href="../api_reference/#fixture_ref"><code>fixture_ref</code></a> is that the priority order of the parameters, relative to other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your other <code>@pytest.mark.parametrize</code> calls with <code>param_fixture</code>s so that all the parameters are fixtures (see <a href="#param_fixtures"><code>param_fixture</code></a>).</p>
+<p>Another consequence of using <a href="api_reference.html#fixture_ref"><code>fixture_ref</code></a> is that the priority order of the parameters, relative to other standard <code>pytest.mark.parametrize</code> parameters that you would place on the same function, will get impacted. You may solve this by replacing your other <code>@pytest.mark.parametrize</code> calls with <code>param_fixture</code>s so that all the parameters are fixtures (see <a href="#param_fixtures"><code>param_fixture</code></a>).</p>
 <h2 id="passing-a-hook">passing a <code>hook</code><a class="headerlink" href="#passing-a-hook" title="Permanent link">&para;</a></h2>
 <p>As per version <code>1.14</code>, all the above functions now support passing a <code>hook</code> argument. This argument should be a callable. It will be called everytime a fixture is about to be created by <code>pytest_cases</code> on your behalf. The fixture function is passed as the argument of the hook, and the hook should return it as the result.</p>
 <p>You can use this fixture to better understand which fixtures are created behind the scenes, and also to decorate the fixture functions before they are created. For example you can use <code>hook=saved_fixture</code> (from <a href="https://smarie.github.io/python-pytest-harvest/"><code>pytest-harvest</code></a>) in order to save the created fixtures in the fixture store.  </p>
 <h2 id="assert_exception"><code>assert_exception</code><a class="headerlink" href="#assert_exception" title="Permanent link">&para;</a></h2>
-<p><code>assert_exception</code> context manager is an alternative to <code>pytest.raises</code> to check exceptions in your tests. You can either check type, instance equality, repr string pattern, or use custom validation functions. See <a href="../api_reference/">API reference</a>.</p>
+<p><code>assert_exception</code> context manager is an alternative to <code>pytest.raises</code> to check exceptions in your tests. You can either check type, instance equality, repr string pattern, or use custom validation functions. See <a href="api_reference.html">API reference</a>.</p>
 <h2 id="-with-reorder"><code>--with-reorder</code><a class="headerlink" href="#-with-reorder" title="Permanent link">&para;</a></h2>
 <p><code>pytest</code> postprocesses the order of the collected items in order to optimize setup/teardown of session, module and class fixtures. This optimization algorithm happens at the <code>pytest_collection_modifyitems</code> stage, and is still under improvement, as can be seen in <a href="https://github.com/pytest-dev/pytest/pull/3551">pytest#3551</a>, <a href="https://github.com/pytest-dev/pytest/issues/3393">pytest#3393</a>, <a href="https://github.com/pytest-dev/pytest/issues/2846">#2846</a>...</p>
 <p>Besides other plugins such as <a href="https://github.com/not-raspberry/pytest_reorder">pytest-reorder</a> can modify the order as well.</p>
@@ -830,7 +832,8 @@ test_prints[main_msg\greetings-you-!] PASSED          [100%]hello you!
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
-        <a href="../examples/" class="md-footer__link md-footer__link--prev" rel="prev">
+        
+        <a href="examples.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Examples" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -845,7 +848,8 @@ test_prints[main_msg\greetings-you-!] PASSED          [100%]hello you!
         </a>
       
       
-        <a href="../unions_theory/" class="md-footer__link md-footer__link--next" rel="next">
+        
+        <a href="unions_theory.html" class="md-footer__link md-footer__link--next" aria-label="Next: fixture unions theory" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
@@ -880,10 +884,10 @@ test_prints[main_msg\greetings-you-!] PASSED          [100%]hello you!
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.34eae1b6.min.js"></script>
+      <script src="assets/javascripts/bundle.82b56eb2.min.js"></script>
       
     
   </body>

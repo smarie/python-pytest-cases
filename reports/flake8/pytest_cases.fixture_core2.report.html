@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>flake8 violations: pytest_cases/fixture_core2.py</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+<script>
+function bindHandler(link) {
+   var code = link.getAttribute('data-code');
+   var key = location.pathname + '#' + code;
+
+   var ul = link.parentNode.querySelector('.details');
+   if (sessionStorage[key] != 'open') {
+      ul.style.display = 'none';
+   }
+   link.addEventListener('click', function (event) {
+      if (!ul.style.display || ul.style.display == 'none') {
+         ul.style.display = 'block';
+         sessionStorage[key] = 'open';
+      } else {
+         ul.style.display = 'none';
+         sessionStorage[key] = 'closed';
+      }
+   });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+   var links = document.querySelectorAll('#index > li > a');
+   for (var i = 0; i < links.length; i++) {
+      bindHandler(links[i]);
+   }
+});
+</script>
+   </head>
+   <body>
+      <div id="masthead" class="sev-3"></div>
+      <div id="page">
+         <p id="srclink">
+            <a title="View full annotated source"
+               href="pytest_cases.fixture_core2.source.html">
+               <img src="file.svg" alt="&#x2261;">
+            </a></p>
+         <h1>
+            <a href="index.html">
+               <img src="back.svg" alt="&#x2B05;">
+               pytest_cases/fixture_core2.py
+            </a>
+         </h1>
+
+         <ul id="index">
+         
+         <li>
+            <a data-code="T001">
+               <span class="count sev-3">
+                  4
+               </span>
+               <strong>T001:</strong> print found.
+               
+            </a>
+            <ul class="details">
+            <li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l114">
+                  <tt><i>114</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating unparametrized fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="n">argvalue_to_return</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l124">
+                  <tt><i>124</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating parametrized fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l214">
+                  <tt><i>214</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating parametrized &#39;root&#39; fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">root_fixture_name</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l233">
+                  <tt><i>233</i>                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating nonparametrized &#39;view&#39; fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">[</span><span class="si">%s</span><span class="s2">]&quot;</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+         
+         </ul>
+      </div>
+   </body>
+</html>
