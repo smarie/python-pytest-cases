@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.2 - Qualimetry
+
+ - Fixed most `flake8` errors and updated documentation to use `genbadge`. Fixes [#223](https://github.com/smarie/python-pytest-cases/issues/223)
+
 ### 3.6.1 - bugfix - parametrizing a class with `@parametrize`
 
  - Fixed `ValueError` when `@parametrize` is used to parametrize a class. Also, added a more explicit `TypeError` when `@parametrize` is used to parametrize a class and at least a fixture reference is present. Fixed [#215](https://github.com/smarie/python-pytest-cases/issues/215).
