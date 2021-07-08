@@ -1054,7 +1054,7 @@ def _parametrize_plus(argnames=None,
                 return kwargs
 
             if not isgeneratorfunction(test_func):
-                # normal test function with return statement
+                # normal test or fixture function with return statement
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):  # noqa
                     if kwargs.get(fixture_union_name, None) is NOT_USED:
@@ -1066,7 +1066,7 @@ def _parametrize_plus(argnames=None,
                         return test_func(*args, **kwargs)
 
             else:
-                # generator test function (with one or several yield statements)
+                # generator test or fixture function (with one or several yield statements)
                 @wraps(test_func, new_sig=new_sig)
                 def wrapped_test_func(*args, **kwargs):  # noqa
                     if kwargs.get(fixture_union_name, None) is NOT_USED:

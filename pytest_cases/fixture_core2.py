@@ -106,9 +106,10 @@ def _create_param_fixture(fixtures_dest,
             raise ValueError("When auto_simplify=True the argvalue can not be a pytest.param")
 
         # create the fixture - set its name so that the optional hook can read it easily
-        @with_signature("%s()" % argname)
-        def __param_fixture():
-            return argvalue_to_return
+        @with_signature("%s(request)" % argname)
+        def __param_fixture(request):
+            # do not forget to resolve the lazy values !
+            return get_lazy_args(argvalue_to_return, request)
 
         if debug:
             print("Creating unparametrized fixture %r returning %r" % (argname, argvalue_to_return))
