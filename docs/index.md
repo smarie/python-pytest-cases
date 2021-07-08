@@ -30,7 +30,7 @@ If `pytest-cases` helps you with your research work, don't hesitate to spread th
 ## Installing
 
 ```bash
-> pip install pytest_cases
+> pip install pytest-cases
 ```
 
 Note: Installing pytest-cases has effects on the order of `pytest` tests execution, even if you do not use its features. One positive side effect is that it fixed [pytest#5054](https://github.com/pytest-dev/pytest/issues/5054). But if you see less desirable ordering please [report it](https://github.com/smarie/python-pytest-cases/issues).
