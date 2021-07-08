@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for pytest_cases/case_parametrizer_new.py: 89%</title>
+    <title>Coverage for pytest_cases/case_parametrizer_new.py: 90%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="jquery.min.js"></script>
@@ -18,15 +18,15 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>pytest_cases/case_parametrizer_new.py</b> :
-            <span class="pc_cov">89%</span>
+            <span class="pc_cov">90%</span>
         </h1>
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
             432 statements &nbsp;
-            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">391 run</button>
-            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">41 missing</button>
+            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">393 run</button>
+            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">39 missing</button>
             <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">2 excluded</button>
-            <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">26 partial</button>
+            <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">24 partial</button>
         </h2>
     </div>
 </div>
@@ -471,9 +471,9 @@
     <p id="t416" class="pln"><span class="n"><a href="#t416">416</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t417" class="pln"><span class="n"><a href="#t417">417</a></span><span class="t">        <span class="com"># if not meta.is_parametrized:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t418" class="pln"><span class="n"><a href="#t418">418</a></span><span class="t">        <span class="com"># single unparametrized case function</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t419" class="par run show_par"><span class="n"><a href="#t419">419</a></span><span class="t">        <span class="key">if</span> <span class="nam">debug</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">419&#x202F;&#x219B;&#x202F;420</span><span class="annotate long">line 419 didn't jump to line 420, because the condition on line 419 was never true</span></span></p>
-    <p id="t420" class="mis show_mis"><span class="n"><a href="#t420">420</a></span><span class="t">            <span class="nam">case_fun_str</span> <span class="op">=</span> <span class="nam">qname</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">.</span><span class="nam">func</span> <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">,</span> <span class="nam">functools</span><span class="op">.</span><span class="nam">partial</span><span class="op">)</span> <span class="key">else</span> <span class="nam">case_fun</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t421" class="mis show_mis"><span class="n"><a href="#t421">421</a></span><span class="t">            <span class="nam">print</span><span class="op">(</span><span class="str">"Case function %s > 1 lazy_value() with id %s and additional marks %s"</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t419" class="run"><span class="n"><a href="#t419">419</a></span><span class="t">        <span class="key">if</span> <span class="nam">debug</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t420" class="run"><span class="n"><a href="#t420">420</a></span><span class="t">            <span class="nam">case_fun_str</span> <span class="op">=</span> <span class="nam">qname</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">.</span><span class="nam">func</span> <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">,</span> <span class="nam">functools</span><span class="op">.</span><span class="nam">partial</span><span class="op">)</span> <span class="key">else</span> <span class="nam">case_fun</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t421" class="run"><span class="n"><a href="#t421">421</a></span><span class="t">            <span class="nam">print</span><span class="op">(</span><span class="str">"Case function %s > 1 lazy_value() with id %s and additional marks %s"</span>&nbsp;</span><span class="r"></span></p>
     <p id="t422" class="pln"><span class="n"><a href="#t422">422</a></span><span class="t">                  <span class="op">%</span> <span class="op">(</span><span class="nam">case_fun_str</span><span class="op">,</span> <span class="nam">case_id</span><span class="op">,</span> <span class="nam">case_marks</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t423" class="run"><span class="n"><a href="#t423">423</a></span><span class="t">        <span class="key">return</span> <span class="op">(</span><span class="nam">_LazyValueCaseParamValue</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">,</span> <span class="nam">id</span><span class="op">=</span><span class="nam">case_id</span><span class="op">,</span> <span class="nam">marks</span><span class="op">=</span><span class="nam">case_marks</span><span class="op">)</span><span class="op">,</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t424" class="pln"><span class="n"><a href="#t424">424</a></span><span class="t">        <span class="com"># else:</span>&nbsp;</span><span class="r"></span></p>
@@ -578,7 +578,7 @@
     <p id="t523" class="run"><span class="n"><a href="#t523">523</a></span><span class="t">        <span class="nam">fixtures_in_cases_module</span> <span class="op">=</span> <span class="nam">list_all_fixtures_in</span><span class="op">(</span><span class="nam">true_case_func_host</span><span class="op">,</span> <span class="nam">recurse_to_module</span><span class="op">=</span><span class="key">False</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t524" class="run"><span class="n"><a href="#t524">524</a></span><span class="t">        <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">fixtures_in_cases_module</span><span class="op">)</span> <span class="op">></span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t525" class="pln"><span class="n"><a href="#t525">525</a></span><span class="t">            <span class="com"># EXPERIMENTAL we can try to import the fixtures into current module</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t526" class="par run show_par"><span class="n"><a href="#t526">526</a></span><span class="t">            <span class="key">if</span> <span class="nam">import_fixtures</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">526&#x202F;&#x219B;&#x202F;541</span><span class="annotate long">line 526 didn't jump to line 541, because the condition on line 526 was never false</span></span></p>
+    <p id="t526" class="run"><span class="n"><a href="#t526">526</a></span><span class="t">            <span class="key">if</span> <span class="nam">import_fixtures</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t527" class="run"><span class="n"><a href="#t527">527</a></span><span class="t">                <span class="nam">from_module</span> <span class="op">=</span> <span class="nam">get_host_module</span><span class="op">(</span><span class="nam">true_case_func_host</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t528" class="run"><span class="n"><a href="#t528">528</a></span><span class="t">                <span class="key">if</span> <span class="nam">from_module</span> <span class="key">not</span> <span class="key">in</span> <span class="nam">imported_fixtures_list</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t529" class="run"><span class="n"><a href="#t529">529</a></span><span class="t">                    <span class="key">for</span> <span class="nam">f</span> <span class="key">in</span> <span class="nam">list_all_fixtures_in</span><span class="op">(</span><span class="nam">true_case_func_host</span><span class="op">,</span> <span class="nam">recurse_to_module</span><span class="op">=</span><span class="key">False</span><span class="op">,</span> <span class="nam">return_names</span><span class="op">=</span><span class="key">False</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1347,7 +1347,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.5</a>,
-            created at 2021-07-08 13:35 +0000
+            created at 2021-07-08 14:19 +0000
         </p>
     </div>
 </div>
