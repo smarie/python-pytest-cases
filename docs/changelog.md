@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.3 - Bugfix
+
+ - Fixed an issue where a lazy value would not be resolved. This happens when the "auto-simplify fixture" happens in `@parametrize`. Fixes [#225](https://github.com/smarie/python-pytest-cases/issues/225)
+
 ### 3.6.2 - Qualimetry
 
  - Fixed most `flake8` errors and updated documentation to use `genbadge`. Fixes [#223](https://github.com/smarie/python-pytest-cases/issues/223)
