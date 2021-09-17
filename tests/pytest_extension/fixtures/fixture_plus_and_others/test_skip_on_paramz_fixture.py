@@ -1,7 +1,7 @@
 import pytest
 
 import pytest_cases
-from pytest_cases.tests.utils import skip as skip_mark
+from tests.utils import skip as skip_mark
 
 
 @pytest.mark.parametrize('v', [0, skip_mark(1)])
