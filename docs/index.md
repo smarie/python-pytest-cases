@@ -7,11 +7,9 @@
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937829.svg)](https://doi.org/10.5281/zenodo.3937829)
 
-!!! success "New `current_cases` fixture to easily know the current case for each parameter ! See [below](#c-accessing-the-current-case) for details."
+!!! success "Slides from the `pytest-cases` presentation at EuroPython 2021 are now [available here](https://ep2021.europython.eu/talks/649sqwq-powerful-tests-and-reproducible-benchmarks-with-pytest-cases/)."
 
-!!! success "Major refactoring of test ids in v3.0.0 ! See [below](#d-test-ids) for details."
-
-!!! success "`@parametrize` now automatically detects fixture symbols ! See [documentation](./pytest_goodies.md#parametrize) for details."
+!!! success "New `current_cases` fixture to easily know the current case for each parameter ! See [below](#d-accessing-the-current-case) for details."
 
 Did you ever think that most of your test functions were actually *the same test code*, but with *different data inputs* and expected results/exceptions ?
 
@@ -413,7 +411,13 @@ test_fixtures.py::test_users[a_is_from_db-id=1]
 
 ## Advanced topics
 
-### a- Parametrizing fixtures
+### a- Scope of cases
+
+By default a case function is transformed into a lazy *parameter* using [`lazy_value`](api_reference.md#lazy_value). This is not a *fixture*, but simply a new `parametrize` mechanism that allows parameters to be provided by functions (See [`@parametrize`](pytest_goodies.md#parametrize)).
+
+However, as soon as a case function is either parametrized or requires a fixture, then it is automatically transformed into a fixture so that `pytest` can handle it properly. In that situation, the fixture needs to have a scope. By default this scope is `"function"`. You can change it using [the `scope` argument in `@parametrize_with_cases`](api_reference.md#parametrize_with_cases).
+
+### b- Parametrizing fixtures
 
 In some scenarii you might wish to parametrize a fixture with the cases, rather than the test function. For example 
 
@@ -440,7 +444,7 @@ def test_foo(c):
     assert isinstance(c, int)
 ```
 
-### b- Caching cases
+### c- Caching cases
 
 After starting to reuse cases in several test functions, you might end-up thinking *"why do I have to spend the data parsing/generation time several times ? It is the same case."*. 
 
@@ -448,7 +452,7 @@ After starting to reuse cases in several test functions, you might end-up thinki
 
 That being said, **if you are certain that your tests do not modify your cases data**, there are several ways to solve this issue:
 
- - the easiest way is to **use fixtures with a broad scope**, as explained [above](#a-parametrizing-fixtures). However in some parametrization scenarii, `pytest` does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome
+ - the easiest way is to **use fixtures with a broad scope**, as explained [above](#b-parametrizing-fixtures). However in some parametrization scenarii, `pytest` does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome
  
 ```python
 from pytest_cases import parametrize, parametrize_with_cases, fixture
@@ -477,7 +481,7 @@ def test_caching(cached_a, d):
 
 !!! warning "If you add a cache mechanism, make sure that your test functions do not modify the returned objects !"
 
-### c- Accessing the current case
+### d- Accessing the current case
 
 In some scenarii you may wish to access the case functions that are currently used to provide the parameter values. This may be
 
@@ -534,7 +538,7 @@ To get more information on the case function, you can use `get_case_marks(func)`
 
 Note: you can get the same information from a pytest hook, using the `get_current_cases` function. See [API reference](./api_reference.md#get_current_cases) for details.
 
-### d- Test ids
+### e- Test ids
 
 Starting from version 3.0.0, test ids induced by `@parametrize_with_cases` are similar to the ids induced by `@pytest.mark.parametrize`, even if a case function is itself parametrized or requires a fixture. In some situations you may wish to get a better control on the test ids.
 
@@ -580,7 +584,7 @@ test_doc_ids_debug.py::test_foo[#hello_name#-earthling]
 ============================== 4 passed in 0.07s ==============================
 ```
 
-### e- Debugging
+### f- Debugging
 
 When all of your case functions are simple, `@parametrize_with_cases` generates a `@parametrize` decorator with argvalues being a list of `lazy_value(<case_func>)` for all of them. This in turn falls back to a good old `@pytest.mark.parametrize`, so the behaviour is close to what you are used to see when using `pytest`.
 
@@ -642,6 +646,8 @@ See also [`@parametrize` documentation](./pytest_goodies.md#parametrize) for det
 
 ## See Also
 
+### `pytest`
+
  - [pytest documentation on parametrize](https://docs.pytest.org/en/latest/parametrize.html)
  - [pytest documentation on fixtures](https://docs.pytest.org/en/latest/fixture.html#fixture-parametrize)
  - [pytest-steps](https://smarie.github.io/python-pytest-steps/)
@@ -649,6 +655,9 @@ See also [`@parametrize` documentation](./pytest_goodies.md#parametrize) for det
  - [pytest-patterns](https://smarie.github.io/pytest-patterns/) for examples showing how to combine the various plugins to create data science benchmarks.
 
 ### Others
+
+ - [makefun](https://smarie.github.io/python-makefun/) is used to dynamically generate functions or modify user-provided function signatures.
+ - [decopatch](https://smarie.github.io/python-decopatch/) is used to create decorators.
 
 *Do you like this library ? You might also like [my other python libraries](https://github.com/smarie/OVERVIEW#python)* 
 
