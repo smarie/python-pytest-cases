@@ -4,6 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import functools
 import inspect
+from keyword import iskeyword
 import makefun
 from importlib import import_module
 from inspect import findsource
@@ -553,7 +554,12 @@ def make_identifier(name  # type: str
     """Transform the given name into a valid python identifier"""
     if not isinstance(name, string_types):
         raise TypeError("name should be a string, found : %r" % name)
-    elif isidentifier(name):
+
+    if iskeyword(name):
+        # reserved keywords: add an underscore
+        name = name + "_"
+
+    if isidentifier(name):
         return name
     elif len(name) == 0:
         # empty string
