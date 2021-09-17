@@ -555,7 +555,7 @@ def make_identifier(name  # type: str
     if not isinstance(name, string_types):
         raise TypeError("name should be a string, found : %r" % name)
 
-    if iskeyword(name):
+    if iskeyword(name) or (not PY3 and name == "None"):
         # reserved keywords: add an underscore
         name = name + "_"
 
