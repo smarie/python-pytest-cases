@@ -265,7 +265,7 @@ def release(session: PowerSession):
     session.install_reqs(phase="release", phase_reqs=["click", "PyGithub"])
     session.run2("python ci_tools/github_release.py -s {gh_token} "
                  "--repo-slug {gh_org}/{gh_repo} -cf ./docs/changelog.md "
-                 "-d https://{gh_org}.github.io/{gh_repo}/changelog.html {tag}"
+                 "-d https://{gh_org}.github.io/{gh_repo}/changelog {tag}"
                  "".format(gh_token=gh_token, gh_org=gh_org, gh_repo=gh_repo, tag=current_tag))
 
 
