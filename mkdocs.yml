@@ -1,8 +1,8 @@
 site_name: pytest_cases
 # site_description: 'A short description of my project'
 repo_url: https://github.com/smarie/python-pytest-cases
-docs_dir: .
-site_dir: ../site
+# docs_dir: docs
+# site_dir: ../site
 # default branch is main instead of master now on github
 edit_uri : ./edit/main/docs
 nav:

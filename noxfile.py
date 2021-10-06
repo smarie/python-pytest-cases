@@ -184,9 +184,9 @@ def docs(session: PowerSession):
 
     if session.posargs:
         # use posargs instead of "serve"
-        session.run2("mkdocs -f ./docs/mkdocs.yml %s" % " ".join(session.posargs))
+        session.run2("mkdocs %s" % " ".join(session.posargs))
     else:
-        session.run2("mkdocs serve -f ./docs/mkdocs.yml")
+        session.run2("mkdocs serve")
 
 
 @power_session(python=[PY37])
