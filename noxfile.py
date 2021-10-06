@@ -196,14 +196,14 @@ def publish(session: PowerSession):
     session.install_reqs(phase="mkdocs", phase_reqs=["mkdocs-material", "mkdocs", "pymdown-extensions", "pygments"])
 
     # possibly rebuild the docs in a static way (mkdocs serve does not build locally)
-    session.run2("mkdocs build -f ./docs/mkdocs.yml")
+    session.run2("mkdocs build")
 
     # check that the doc has been generated with coverage
     if not Folders.site_reports.exists():
         raise ValueError("Test reports have not been built yet. Please run 'nox -s tests-3.7' first")
 
     # publish the docs
-    session.run2("mkdocs gh-deploy -f ./docs/mkdocs.yml")
+    session.run2("mkdocs gh-deploy")
 
     # publish the coverage - now in github actions only
     # session.install_reqs(phase="codecov", phase_reqs=["codecov", "keyring"])
