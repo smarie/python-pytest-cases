@@ -3,6 +3,8 @@ site_name: pytest_cases
 repo_url: https://github.com/smarie/python-pytest-cases
 docs_dir: .
 site_dir: ../site
+# default branch is main instead of master now on github
+edit_uri : ./edit/main/docs
 nav:
     - Home: index.md
     - Examples: examples.md
