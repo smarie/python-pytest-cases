@@ -168,8 +168,10 @@ def flake8(session: PowerSession):
     Folders.flake8_reports.mkdir(parents=True, exist_ok=True)
     rm_file(Folders.flake8_intermediate_file)
 
+    session.cd("src")
+
     # Options are set in `setup.cfg` file
-    session.run("flake8", "src/%s" % pkg_name, "--exit-zero", "--format=html", "--htmldir", str(Folders.flake8_reports),
+    session.run("flake8", pkg_name, "--exit-zero", "--format=html", "--htmldir", str(Folders.flake8_reports),
                 "--statistics", "--tee", "--output-file", str(Folders.flake8_intermediate_file))
     # generate our badge
     session.run2("genbadge flake8 -i %s -o %s" % (Folders.flake8_intermediate_file, Folders.flake8_badge))
