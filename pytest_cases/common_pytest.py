@@ -241,7 +241,8 @@ def get_param_names(fnode):
     p_markers = get_parametrization_markers(fnode)
     param_names = []
     for paramz_mark in p_markers:
-        param_names += get_param_argnames_as_list(paramz_mark.args[0])
+        argnames = paramz_mark.args[0] if len(paramz_mark.args) > 0 else paramz_mark.kwargs['argnames']
+        param_names += get_param_argnames_as_list(argnames)
     return param_names
 
 
