@@ -1,8 +1,12 @@
 # Changelog
 
+### 3.6.5 - Bugfix
+
+ - Fixed an issue where using keyword `argnames` in `@pytest.mark.parametrize` would cause `IndexError: tuple index out of range` in the tests collection phase. Fixed [#234](https://github.com/smarie/python-pytest-cases/issues/234).
+
 ### 3.6.4 - Bugfix
 
-- A case id can now be a reserved keyword without triggering any `SyntaxError`, even if the case is transformed into a fixture. Fixes [#230](https://github.com/smarie/python-pytest-cases/issues/230)
+ - A case id can now be a reserved keyword without triggering any `SyntaxError`, even if the case is transformed into a fixture. Fixes [#230](https://github.com/smarie/python-pytest-cases/issues/230)
 
 ### 3.6.3 - Bugfix
 
