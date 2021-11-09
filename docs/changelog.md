@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.6 - Layout change
+
+ - Restructured project so that tests are truly independent, to ease rpm/apt/etc. packaging. Fixed [#220](https://github.com/smarie/python-pytest-cases/issues/220).
+
 ### 3.6.5 - Bugfix
 
  - Fixed an issue where using keyword `argnames` in `@pytest.mark.parametrize` would cause `IndexError: tuple index out of range` in the tests collection phase. Fixed [#234](https://github.com/smarie/python-pytest-cases/issues/234).
