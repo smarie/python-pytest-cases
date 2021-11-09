@@ -6,7 +6,7 @@ import pytest
 
 from pytest_cases.fixture_core1_unions import InvalidParamsList
 from pytest_cases import fixture, fixture_ref, parametrize
-from pytest_cases.tests.conftest import global_fixture
+from tests.conftest import global_fixture
 
 
 @pytest.fixture

@@ -33,6 +33,6 @@ DOWNLOAD_URL = URL + "/tarball/" + get_version()
 setup(
     download_url=DOWNLOAD_URL,
     use_scm_version={
-        "write_to": "pytest_cases/_version.py"
+        "write_to": "src/pytest_cases/_version.py"
     },  # we can't put `use_scm_version` in setup.cfg yet unfortunately
 )
