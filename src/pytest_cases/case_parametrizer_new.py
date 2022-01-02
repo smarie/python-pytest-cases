@@ -13,6 +13,11 @@ from inspect import getmembers, ismodule
 import re
 from warnings import warn
 
+try:  # python 3.3+
+    from inspect import signature
+except ImportError:
+    from funcsigs import signature  # noqa
+
 try:
     from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
 except ImportError:
@@ -812,6 +817,15 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                     # nothing to do: no need to partialize a 'self' argument
                     pass
                 else:
+                    # Make sure that there is at least one argument
+                    try:
+                        s = signature(m)
+                    except Exception:  # noqa
+                        # ignore any error here, this is optional.
+                        pass
+                    else:
+                        if len(s.parameters) < 1:
+                            raise TypeError("case method is missing 'self' argument but is not static: %s" % m)
                     # partialize the function to get one without the 'self' argument
                     new_m = functools.partial(m, cls())
                     # remember the class

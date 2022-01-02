@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.7 In Progress - Minor improvements
+
+ - Improved error message when a case function nested in a class has no `self` argument and is not static. Fixes [#243](https://github.com/smarie/python-pytest-cases/issues/243)
+
 ### 3.6.6 - Layout change
 
  - Restructured project so that tests are truly independent, to ease rpm/apt/etc. packaging. Fixed [#220](https://github.com/smarie/python-pytest-cases/issues/220).
