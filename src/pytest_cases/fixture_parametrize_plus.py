@@ -613,7 +613,7 @@ class ParamIdMakers(UnionIdMakers):
 _IDGEN = object()
 
 
-def parametrize(argnames=None,   # type: str
+def parametrize(argnames=None,   # type: Union[str, List[str]]
                 argvalues=None,  # type: Iterable[Any]
                 indirect=False,  # type: bool
                 ids=None,        # type: Union[Callable, Iterable[str]]
