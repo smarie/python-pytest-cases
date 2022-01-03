@@ -1,8 +1,10 @@
 # Changelog
 
-### 3.6.7 In Progress - Minor improvements
+### 3.6.7 - Minor improvements and preparing for pytest 7
 
  - Improved error message when a case function nested in a class has no `self` argument and is not static. Fixes [#243](https://github.com/smarie/python-pytest-cases/issues/243)
+ - Added support for the new Scopes enum in pytest 7. Fixed [#241](https://github.com/smarie/python-pytest-cases/issues/241)
+ - Fixed `__version__` in development mode.
 
 ### 3.6.6 - Layout change
 

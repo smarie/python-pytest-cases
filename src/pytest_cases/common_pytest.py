@@ -521,18 +521,37 @@ def get_pytest_nodeid(metafunc):
 
 
 try:
-    from _pytest.fixtures import scopes as pt_scopes
+    # pytest 7+ : scopes is an enum
+    from _pytest.scope import Scope
+
+    def get_pytest_function_scopeval():
+        return Scope.Function
+
+    def has_function_scope(fixdef):
+        return fixdef._scope is Scope.Function
+
+    def set_callspec_arg_scope_to_function(callspec, arg_name):
+        callspec._arg2scope[arg_name] = Scope.Function
+
 except ImportError:
-    # pytest 2
-    from _pytest.python import scopes as pt_scopes, Metafunc  # noqa
+    try:
+        # pytest 3+
+        from _pytest.fixtures import scopes as pt_scopes
+    except ImportError:
+        # pytest 2
+        from _pytest.python import scopes as pt_scopes
 
+    # def get_pytest_scopenum(scope_str):
+    #     return pt_scopes.index(scope_str)
 
-def get_pytest_scopenum(scope_str):
-    return pt_scopes.index(scope_str)
+    def get_pytest_function_scopeval():
+        return pt_scopes.index("function")
 
+    def has_function_scope(fixdef):
+        return fixdef.scopenum == get_pytest_function_scopeval()
 
-def get_pytest_function_scopenum():
-    return pt_scopes.index("function")
+    def set_callspec_arg_scope_to_function(callspec, arg_name):
+        callspec._arg2scopenum[arg_name] = get_pytest_function_scopeval()  # noqa
 
 
 from _pytest.python import _idval  # noqa
