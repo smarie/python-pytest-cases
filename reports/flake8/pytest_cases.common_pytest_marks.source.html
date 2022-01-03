@@ -146,444 +146,447 @@
                class="code sev- "><tt><i>43</i> <span class="n">PYTEST6_OR_GREATER</span> <span class="o">=</span> <span class="n">PYTEST_VERSION</span> <span class="o">&gt;=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="s1">&#39;6.0.0&#39;</span><span class="p">)</span></tt>
             </div>
             <div id="l44"
-               class="code sev- "><tt><i>44</i> &nbsp;</tt>
+               class="code sev- "><tt><i>44</i> <span class="n">PYTEST7_OR_GREATER</span> <span class="o">=</span> <span class="n">PYTEST_VERSION</span> <span class="o">&gt;=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="s1">&#39;7.0.0&#39;</span><span class="p">)</span></tt>
             </div>
             <div id="l45"
                class="code sev- "><tt><i>45</i> &nbsp;</tt>
             </div>
             <div id="l46"
-               class="code sev- "><tt><i>46</i> <span class="k">def</span> <span class="nf">get_param_argnames_as_list</span><span class="p">(</span><span class="n">argnames</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>46</i> &nbsp;</tt>
             </div>
             <div id="l47"
-               class="code sev- "><tt><i>47</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>47</i> <span class="k">def</span> <span class="nf">get_param_argnames_as_list</span><span class="p">(</span><span class="n">argnames</span><span class="p">):</span></tt>
             </div>
             <div id="l48"
-               class="code sev- "><tt><i>48</i> <span class="sd">    pytest parametrize accepts both coma-separated names and list/tuples.</span></tt>
+               class="code sev- "><tt><i>48</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l49"
-               class="code sev- "><tt><i>49</i> <span class="sd">    This function makes sure that we always return a list</span></tt>
+               class="code sev- "><tt><i>49</i> <span class="sd">    pytest parametrize accepts both coma-separated names and list/tuples.</span></tt>
             </div>
             <div id="l50"
-               class="code sev- "><tt><i>50</i> <span class="sd">    :param argnames:</span></tt>
+               class="code sev- "><tt><i>50</i> <span class="sd">    This function makes sure that we always return a list</span></tt>
             </div>
             <div id="l51"
-               class="code sev- "><tt><i>51</i> <span class="sd">    :return:</span></tt>
+               class="code sev- "><tt><i>51</i> <span class="sd">    :param argnames:</span></tt>
             </div>
             <div id="l52"
-               class="code sev- "><tt><i>52</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>52</i> <span class="sd">    :return:</span></tt>
             </div>
             <div id="l53"
-               class="code sev- "><tt><i>53</i>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>53</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l54"
-               class="code sev- "><tt><i>54</i>         <span class="n">argnames</span> <span class="o">=</span> <span class="n">argnames</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>54</i>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
             </div>
             <div id="l55"
-               class="code sev- "><tt><i>55</i>     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>55</i>         <span class="n">argnames</span> <span class="o">=</span> <span class="n">argnames</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span></tt>
             </div>
             <div id="l56"
-               class="code sev- "><tt><i>56</i> &nbsp;</tt>
+               class="code sev- "><tt><i>56</i>     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span></tt>
             </div>
             <div id="l57"
                class="code sev- "><tt><i>57</i> &nbsp;</tt>
             </div>
             <div id="l58"
-               class="code sev- "><tt><i>58</i> <span class="c1"># noinspection PyUnusedLocal</span></tt>
+               class="code sev- "><tt><i>58</i> &nbsp;</tt>
             </div>
             <div id="l59"
-               class="code sev- "><tt><i>59</i> <span class="k">def</span> <span class="nf">_pytest_mark_parametrize</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>59</i> <span class="c1"># noinspection PyUnusedLocal</span></tt>
             </div>
             <div id="l60"
-               class="code sev- "><tt><i>60</i>     <span class="sd">&quot;&quot;&quot; Fake method to have a reference signature of pytest.mark.parametrize&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>60</i> <span class="k">def</span> <span class="nf">_pytest_mark_parametrize</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
             </div>
             <div id="l61"
-               class="code sev- "><tt><i>61</i>     <span class="k">pass</span></tt>
+               class="code sev- "><tt><i>61</i>     <span class="sd">&quot;&quot;&quot; Fake method to have a reference signature of pytest.mark.parametrize&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l62"
-               class="code sev- "><tt><i>62</i> &nbsp;</tt>
+               class="code sev- "><tt><i>62</i>     <span class="k">pass</span></tt>
             </div>
             <div id="l63"
                class="code sev- "><tt><i>63</i> &nbsp;</tt>
             </div>
             <div id="l64"
-               class="code sev- "><tt><i>64</i> <span class="k">def</span> <span class="nf">get_parametrize_signature</span><span class="p">():</span></tt>
+               class="code sev- "><tt><i>64</i> &nbsp;</tt>
             </div>
             <div id="l65"
-               class="code sev- "><tt><i>65</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>65</i> <span class="k">def</span> <span class="nf">get_parametrize_signature</span><span class="p">():</span></tt>
             </div>
             <div id="l66"
-               class="code sev- "><tt><i>66</i> &nbsp;</tt>
+               class="code sev- "><tt><i>66</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l67"
-               class="code sev- "><tt><i>67</i> <span class="sd">    :return: a reference signature representing</span></tt>
+               class="code sev- "><tt><i>67</i> &nbsp;</tt>
             </div>
             <div id="l68"
-               class="code sev- "><tt><i>68</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>68</i> <span class="sd">    :return: a reference signature representing</span></tt>
             </div>
             <div id="l69"
-               class="code sev- "><tt><i>69</i>     <span class="k">return</span> <span class="n">signature</span><span class="p">(</span><span class="n">_pytest_mark_parametrize</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>69</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l70"
-               class="code sev- "><tt><i>70</i> &nbsp;</tt>
+               class="code sev- "><tt><i>70</i>     <span class="k">return</span> <span class="n">signature</span><span class="p">(</span><span class="n">_pytest_mark_parametrize</span><span class="p">)</span></tt>
             </div>
             <div id="l71"
                class="code sev- "><tt><i>71</i> &nbsp;</tt>
             </div>
             <div id="l72"
-               class="code sev- "><tt><i>72</i> <span class="k">class</span> <span class="nc">_ParametrizationMark</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>72</i> &nbsp;</tt>
             </div>
             <div id="l73"
-               class="code sev- "><tt><i>73</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>73</i> <span class="k">class</span> <span class="nc">_ParametrizationMark</span><span class="p">:</span></tt>
             </div>
             <div id="l74"
-               class="code sev- "><tt><i>74</i> <span class="sd">    Container for the mark information that we grab from the fixtures (`@fixture`)</span></tt>
+               class="code sev- "><tt><i>74</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l75"
-               class="code sev- "><tt><i>75</i> &nbsp;</tt>
+               class="code sev- "><tt><i>75</i> <span class="sd">    Container for the mark information that we grab from the fixtures (`@fixture`)</span></tt>
             </div>
             <div id="l76"
-               class="code sev- "><tt><i>76</i> <span class="sd">    Represents the information required by `@fixture` to work.</span></tt>
+               class="code sev- "><tt><i>76</i> &nbsp;</tt>
             </div>
             <div id="l77"
-               class="code sev- "><tt><i>77</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>77</i> <span class="sd">    Represents the information required by `@fixture` to work.</span></tt>
             </div>
             <div id="l78"
-               class="code sev- "><tt><i>78</i>     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;param_names&quot;</span><span class="p">,</span> <span class="s2">&quot;param_values&quot;</span><span class="p">,</span> <span class="s2">&quot;param_ids&quot;</span></tt>
+               class="code sev- "><tt><i>78</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l79"
-               class="code sev- "><tt><i>79</i> &nbsp;</tt>
+               class="code sev- "><tt><i>79</i>     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;param_names&quot;</span><span class="p">,</span> <span class="s2">&quot;param_values&quot;</span><span class="p">,</span> <span class="s2">&quot;param_ids&quot;</span></tt>
             </div>
             <div id="l80"
-               class="code sev- "><tt><i>80</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mark</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>80</i> &nbsp;</tt>
             </div>
             <div id="l81"
-               class="code sev- "><tt><i>81</i>         <span class="n">bound</span> <span class="o">=</span> <span class="n">get_parametrize_signature</span><span class="p">()</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="o">*</span><span class="n">mark</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">mark</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>81</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mark</span><span class="p">):</span></tt>
             </div>
             <div id="l82"
-               class="code sev- "><tt><i>82</i>         <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>82</i>         <span class="n">bound</span> <span class="o">=</span> <span class="n">get_parametrize_signature</span><span class="p">()</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="o">*</span><span class="n">mark</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">mark</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></tt>
             </div>
             <div id="l83"
-               class="code sev- "><tt><i>83</i>             <span class="n">remaining_kwargs</span> <span class="o">=</span> <span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>83</i>         <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l84"
-               class="code sev- "><tt><i>84</i>         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>84</i>             <span class="n">remaining_kwargs</span> <span class="o">=</span> <span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">]</span></tt>
             </div>
             <div id="l85"
-               class="code sev- "><tt><i>85</i>             <span class="k">pass</span></tt>
+               class="code sev- "><tt><i>85</i>         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span></tt>
             </div>
             <div id="l86"
-               class="code sev- "><tt><i>86</i>         <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>86</i>             <span class="k">pass</span></tt>
             </div>
             <div id="l87"
-               class="code sev- "><tt><i>87</i>             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">remaining_kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>87</i>         <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l88"
-               class="code sev- "><tt><i>88</i>                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;parametrize kwargs not taken into account: </span><span class="si">%s</span><span class="s2">. Please report it at&quot;</span></tt>
+               class="code sev- "><tt><i>88</i>             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">remaining_kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l89"
-               class="code sev- "><tt><i>89</i>                               <span class="s2">&quot; https://github.com/smarie/python-pytest-cases/issues&quot;</span> <span class="o">%</span> <span class="n">remaining_kwargs</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>89</i>                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;parametrize kwargs not taken into account: </span><span class="si">%s</span><span class="s2">. Please report it at&quot;</span></tt>
             </div>
             <div id="l90"
-               class="code sev- "><tt><i>90</i>         <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span> <span class="o">=</span> <span class="n">get_param_argnames_as_list</span><span class="p">(</span><span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;argnames&#39;</span><span class="p">])</span></tt>
+               class="code sev- "><tt><i>90</i>                               <span class="s2">&quot; https://github.com/smarie/python-pytest-cases/issues&quot;</span> <span class="o">%</span> <span class="n">remaining_kwargs</span><span class="p">)</span></tt>
             </div>
             <div id="l91"
-               class="code sev- "><tt><i>91</i>         <span class="bp">self</span><span class="o">.</span><span class="n">param_values</span> <span class="o">=</span> <span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;argvalues&#39;</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>91</i>         <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span> <span class="o">=</span> <span class="n">get_param_argnames_as_list</span><span class="p">(</span><span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;argnames&#39;</span><span class="p">])</span></tt>
             </div>
             <div id="l92"
-               class="code sev- "><tt><i>92</i>         <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>92</i>         <span class="bp">self</span><span class="o">.</span><span class="n">param_values</span> <span class="o">=</span> <span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;argvalues&#39;</span><span class="p">]</span></tt>
             </div>
             <div id="l93"
-               class="code sev- "><tt><i>93</i>             <span class="n">bound</span><span class="o">.</span><span class="n">apply_defaults</span><span class="p">()</span></tt>
+               class="code sev- "><tt><i>93</i>         <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l94"
-               class="code sev- "><tt><i>94</i>             <span class="bp">self</span><span class="o">.</span><span class="n">param_ids</span> <span class="o">=</span> <span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;ids&#39;</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>94</i>             <span class="n">bound</span><span class="o">.</span><span class="n">apply_defaults</span><span class="p">()</span></tt>
             </div>
             <div id="l95"
-               class="code sev- "><tt><i>95</i>         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>95</i>             <span class="bp">self</span><span class="o">.</span><span class="n">param_ids</span> <span class="o">=</span> <span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;ids&#39;</span><span class="p">]</span></tt>
             </div>
             <div id="l96"
-               class="code sev- "><tt><i>96</i>             <span class="c1"># can happen if signature is from funcsigs so we have to apply ourselves</span></tt>
+               class="code sev- "><tt><i>96</i>         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
             </div>
             <div id="l97"
-               class="code sev- "><tt><i>97</i>             <span class="bp">self</span><span class="o">.</span><span class="n">param_ids</span> <span class="o">=</span> <span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ids&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>97</i>             <span class="c1"># can happen if signature is from funcsigs so we have to apply ourselves</span></tt>
             </div>
             <div id="l98"
-               class="code sev- "><tt><i>98</i> &nbsp;</tt>
+               class="code sev- "><tt><i>98</i>             <span class="bp">self</span><span class="o">.</span><span class="n">param_ids</span> <span class="o">=</span> <span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ids&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
             </div>
             <div id="l99"
                class="code sev- "><tt><i>99</i> &nbsp;</tt>
             </div>
             <div id="l100"
-               class="code sev- "><tt><i>100</i> <span class="c1"># -------- tools to get the parametrization mark whatever the pytest version</span></tt>
+               class="code sev- "><tt><i>100</i> &nbsp;</tt>
             </div>
             <div id="l101"
-               class="code sev- "><tt><i>101</i> <span class="k">class</span> <span class="nc">_LegacyMark</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>101</i> <span class="c1"># -------- tools to get the parametrization mark whatever the pytest version</span></tt>
             </div>
             <div id="l102"
-               class="code sev- "><tt><i>102</i>     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span></tt>
+               class="code sev- "><tt><i>102</i> <span class="k">class</span> <span class="nc">_LegacyMark</span><span class="p">:</span></tt>
             </div>
             <div id="l103"
-               class="code sev- "><tt><i>103</i> &nbsp;</tt>
+               class="code sev- "><tt><i>103</i>     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span></tt>
             </div>
             <div id="l104"
-               class="code sev- "><tt><i>104</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>104</i> &nbsp;</tt>
             </div>
             <div id="l105"
-               class="code sev- "><tt><i>105</i>         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span></tt>
+               class="code sev- "><tt><i>105</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
             </div>
             <div id="l106"
-               class="code sev- "><tt><i>106</i>         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></tt>
+               class="code sev- "><tt><i>106</i>         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span></tt>
             </div>
             <div id="l107"
-               class="code sev- "><tt><i>107</i> &nbsp;</tt>
+               class="code sev- "><tt><i>107</i>         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></tt>
             </div>
             <div id="l108"
                class="code sev- "><tt><i>108</i> &nbsp;</tt>
             </div>
             <div id="l109"
-               class="code sev- "><tt><i>109</i> <span class="c1"># ---------------- working on functions</span></tt>
+               class="code sev- "><tt><i>109</i> &nbsp;</tt>
             </div>
             <div id="l110"
-               class="code sev- "><tt><i>110</i> <span class="k">def</span> <span class="nf">copy_pytest_marks</span><span class="p">(</span><span class="n">from_f</span><span class="p">,</span> <span class="n">to_f</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>110</i> <span class="c1"># ---------------- working on functions</span></tt>
             </div>
             <div id="l111"
-               class="code sev- "><tt><i>111</i>     <span class="sd">&quot;&quot;&quot;Copy all pytest marks from a function or class to another&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>111</i> <span class="k">def</span> <span class="nf">copy_pytest_marks</span><span class="p">(</span><span class="n">from_f</span><span class="p">,</span> <span class="n">to_f</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span></tt>
             </div>
             <div id="l112"
-               class="code sev- "><tt><i>112</i>     <span class="n">from_marks</span> <span class="o">=</span> <span class="n">get_pytest_marks_on_function</span><span class="p">(</span><span class="n">from_f</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>112</i>     <span class="sd">&quot;&quot;&quot;Copy all pytest marks from a function or class to another&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l113"
-               class="code sev- "><tt><i>113</i>     <span class="n">to_marks</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">override</span> <span class="k">else</span> <span class="n">get_pytest_marks_on_function</span><span class="p">(</span><span class="n">to_f</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>113</i>     <span class="n">from_marks</span> <span class="o">=</span> <span class="n">get_pytest_marks_on_function</span><span class="p">(</span><span class="n">from_f</span><span class="p">)</span></tt>
             </div>
             <div id="l114"
-               class="code sev- "><tt><i>114</i>     <span class="c1"># note: the new marks are appended *after* existing if no override</span></tt>
+               class="code sev- "><tt><i>114</i>     <span class="n">to_marks</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">override</span> <span class="k">else</span> <span class="n">get_pytest_marks_on_function</span><span class="p">(</span><span class="n">to_f</span><span class="p">)</span></tt>
             </div>
             <div id="l115"
-               class="code sev- "><tt><i>115</i>     <span class="n">to_f</span><span class="o">.</span><span class="n">pytestmark</span> <span class="o">=</span> <span class="n">to_marks</span> <span class="o">+</span> <span class="n">from_marks</span></tt>
+               class="code sev- "><tt><i>115</i>     <span class="c1"># note: the new marks are appended *after* existing if no override</span></tt>
             </div>
             <div id="l116"
-               class="code sev- "><tt><i>116</i> &nbsp;</tt>
+               class="code sev- "><tt><i>116</i>     <span class="n">to_f</span><span class="o">.</span><span class="n">pytestmark</span> <span class="o">=</span> <span class="n">to_marks</span> <span class="o">+</span> <span class="n">from_marks</span></tt>
             </div>
             <div id="l117"
                class="code sev- "><tt><i>117</i> &nbsp;</tt>
             </div>
             <div id="l118"
-               class="code sev- "><tt><i>118</i> <span class="k">def</span> <span class="nf">filter_marks</span><span class="p">(</span><span class="n">marks</span><span class="p">,</span>  <span class="c1"># type: Iterable[Mark]</span></tt>
+               class="code sev- "><tt><i>118</i> &nbsp;</tt>
             </div>
             <div id="l119"
-               class="code sev- "><tt><i>119</i>                  <span class="n">remove</span>  <span class="c1"># type: str</span></tt>
+               class="code sev- "><tt><i>119</i> <span class="k">def</span> <span class="nf">filter_marks</span><span class="p">(</span><span class="n">marks</span><span class="p">,</span>  <span class="c1"># type: Iterable[Mark]</span></tt>
             </div>
             <div id="l120"
-               class="code sev- "><tt><i>120</i>                  <span class="p">):</span></tt>
+               class="code sev- "><tt><i>120</i>                  <span class="n">remove</span>  <span class="c1"># type: str</span></tt>
             </div>
             <div id="l121"
-               class="code sev- "><tt><i>121</i>     <span class="c1"># type: (...) -&gt; Tuple[Mark]</span></tt>
+               class="code sev- "><tt><i>121</i>                  <span class="p">):</span></tt>
             </div>
             <div id="l122"
-               class="code sev- "><tt><i>122</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>122</i>     <span class="c1"># type: (...) -&gt; Tuple[Mark]</span></tt>
             </div>
             <div id="l123"
-               class="code sev- "><tt><i>123</i> <span class="sd">    Returns a tuple of all marks in `marks` that do not have a &#39;parametrize&#39; name.</span></tt>
+               class="code sev- "><tt><i>123</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l124"
-               class="code sev- "><tt><i>124</i> &nbsp;</tt>
+               class="code sev- "><tt><i>124</i> <span class="sd">    Returns a tuple of all marks in `marks` that do not have a &#39;parametrize&#39; name.</span></tt>
             </div>
             <div id="l125"
-               class="code sev- "><tt><i>125</i> <span class="sd">    :param marks:</span></tt>
+               class="code sev- "><tt><i>125</i> &nbsp;</tt>
             </div>
             <div id="l126"
-               class="code sev- "><tt><i>126</i> <span class="sd">    :param remove:</span></tt>
+               class="code sev- "><tt><i>126</i> <span class="sd">    :param marks:</span></tt>
             </div>
             <div id="l127"
-               class="code sev- "><tt><i>127</i> <span class="sd">    :return:</span></tt>
+               class="code sev- "><tt><i>127</i> <span class="sd">    :param remove:</span></tt>
             </div>
             <div id="l128"
-               class="code sev- "><tt><i>128</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>128</i> <span class="sd">    :return:</span></tt>
             </div>
             <div id="l129"
-               class="code sev- "><tt><i>129</i>     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">remove</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>129</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l130"
-               class="code sev- "><tt><i>130</i> &nbsp;</tt>
+               class="code sev- "><tt><i>130</i>     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">remove</span><span class="p">)</span></tt>
             </div>
             <div id="l131"
                class="code sev- "><tt><i>131</i> &nbsp;</tt>
             </div>
             <div id="l132"
-               class="code sev- "><tt><i>132</i> <span class="k">def</span> <span class="nf">get_pytest_marks_on_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>132</i> &nbsp;</tt>
             </div>
             <div id="l133"
-               class="code sev- "><tt><i>133</i>                                  <span class="n">as_decorators</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># type: bool</span></tt>
+               class="code sev- "><tt><i>133</i> <span class="k">def</span> <span class="nf">get_pytest_marks_on_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span></tt>
             </div>
             <div id="l134"
-               class="code sev- "><tt><i>134</i>                                  <span class="p">):</span></tt>
+               class="code sev- "><tt><i>134</i>                                  <span class="n">as_decorators</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># type: bool</span></tt>
             </div>
             <div id="l135"
-               class="code sev- "><tt><i>135</i>     <span class="c1"># type: (...) -&gt; Union[List[Mark], List[MarkDecorator]]</span></tt>
+               class="code sev- "><tt><i>135</i>                                  <span class="p">):</span></tt>
             </div>
             <div id="l136"
-               class="code sev- "><tt><i>136</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>136</i>     <span class="c1"># type: (...) -&gt; Union[List[Mark], List[MarkDecorator]]</span></tt>
             </div>
             <div id="l137"
-               class="code sev- "><tt><i>137</i> <span class="sd">    Utility to return a list of *ALL* pytest marks (not only parametrization) applied on a function</span></tt>
+               class="code sev- "><tt><i>137</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l138"
-               class="code sev- "><tt><i>138</i> <span class="sd">    Note that this also works on classes</span></tt>
+               class="code sev- "><tt><i>138</i> <span class="sd">    Utility to return a list of *ALL* pytest marks (not only parametrization) applied on a function</span></tt>
             </div>
             <div id="l139"
-               class="code sev- "><tt><i>139</i> &nbsp;</tt>
+               class="code sev- "><tt><i>139</i> <span class="sd">    Note that this also works on classes</span></tt>
             </div>
             <div id="l140"
-               class="code sev- "><tt><i>140</i> <span class="sd">    :param f:</span></tt>
+               class="code sev- "><tt><i>140</i> &nbsp;</tt>
             </div>
             <div id="l141"
-               class="code sev- "><tt><i>141</i> <span class="sd">    :param as_decorators: transforms the marks into decorators before returning them</span></tt>
+               class="code sev- "><tt><i>141</i> <span class="sd">    :param f:</span></tt>
             </div>
             <div id="l142"
-               class="code sev- "><tt><i>142</i> <span class="sd">    :return:</span></tt>
+               class="code sev- "><tt><i>142</i> <span class="sd">    :param as_decorators: transforms the marks into decorators before returning them</span></tt>
             </div>
             <div id="l143"
-               class="code sev- "><tt><i>143</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>143</i> <span class="sd">    :return:</span></tt>
             </div>
             <div id="l144"
-               class="code sev- "><tt><i>144</i>     <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>144</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l145"
-               class="code sev- "><tt><i>145</i>         <span class="n">mks</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">pytestmark</span></tt>
+               class="code sev- "><tt><i>145</i>     <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l146"
-               class="code sev- "><tt><i>146</i>     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>146</i>         <span class="n">mks</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">pytestmark</span></tt>
             </div>
             <div id="l147"
-               class="code sev- "><tt><i>147</i>         <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>147</i>     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
             </div>
             <div id="l148"
-               class="code sev- "><tt><i>148</i>             <span class="c1"># old pytest &lt; 3: marks are set as fields on the function object</span></tt>
+               class="code sev- "><tt><i>148</i>         <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l149"
-               class="code sev- "><tt><i>149</i>             <span class="c1"># but they do not have a particulat type, their type is &#39;instance&#39;...</span></tt>
+               class="code sev- "><tt><i>149</i>             <span class="c1"># old pytest &lt; 3: marks are set as fields on the function object</span></tt>
             </div>
             <div id="l150"
-               class="code sev- "><tt><i>150</i>             <span class="n">mks</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;MarkInfo &#39;&quot;</span><span class="p">)]</span></tt>
+               class="code sev- "><tt><i>150</i>             <span class="c1"># but they do not have a particulat type, their type is &#39;instance&#39;...</span></tt>
             </div>
             <div id="l151"
-               class="code sev- "><tt><i>151</i>         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>151</i>             <span class="n">mks</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;MarkInfo &#39;&quot;</span><span class="p">)]</span></tt>
             </div>
             <div id="l152"
-               class="code sev- "><tt><i>152</i>             <span class="k">return</span> <span class="p">[]</span></tt>
+               class="code sev- "><tt><i>152</i>         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
             </div>
             <div id="l153"
-               class="code sev- "><tt><i>153</i> &nbsp;</tt>
+               class="code sev- "><tt><i>153</i>             <span class="k">return</span> <span class="p">[]</span></tt>
             </div>
             <div id="l154"
-               class="code sev- "><tt><i>154</i>     <span class="c1"># in the new version of pytest the marks have to be transformed into decorators explicitly</span></tt>
+               class="code sev- "><tt><i>154</i> &nbsp;</tt>
             </div>
             <div id="l155"
-               class="code sev- "><tt><i>155</i>     <span class="k">if</span> <span class="n">as_decorators</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>155</i>     <span class="c1"># in the new version of pytest the marks have to be transformed into decorators explicitly</span></tt>
             </div>
             <div id="l156"
-               class="code sev- "><tt><i>156</i>         <span class="k">return</span> <span class="n">markinfos_to_markdecorators</span><span class="p">(</span><span class="n">mks</span><span class="p">,</span> <span class="n">function_marks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>156</i>     <span class="k">if</span> <span class="n">as_decorators</span><span class="p">:</span></tt>
             </div>
             <div id="l157"
-               class="code sev- "><tt><i>157</i>     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>157</i>         <span class="k">return</span> <span class="n">markinfos_to_markdecorators</span><span class="p">(</span><span class="n">mks</span><span class="p">,</span> <span class="n">function_marks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l158"
-               class="code sev- "><tt><i>158</i>         <span class="k">return</span> <span class="n">mks</span></tt>
+               class="code sev- "><tt><i>158</i>     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l159"
-               class="code sev- "><tt><i>159</i> &nbsp;</tt>
+               class="code sev- "><tt><i>159</i>         <span class="k">return</span> <span class="n">mks</span></tt>
             </div>
             <div id="l160"
                class="code sev- "><tt><i>160</i> &nbsp;</tt>
             </div>
             <div id="l161"
-               class="code sev- "><tt><i>161</i> <span class="k">def</span> <span class="nf">get_pytest_marks_on_item</span><span class="p">(</span><span class="n">item</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>161</i> &nbsp;</tt>
             </div>
             <div id="l162"
-               class="code sev- "><tt><i>162</i>     <span class="sd">&quot;&quot;&quot;lists all marks on an item such as `request._pyfuncitem`&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>162</i> <span class="k">def</span> <span class="nf">get_pytest_marks_on_item</span><span class="p">(</span><span class="n">item</span><span class="p">):</span></tt>
             </div>
             <div id="l163"
-               class="code sev- "><tt><i>163</i>     <span class="k">if</span> <span class="n">PYTEST3_OR_GREATER</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>163</i>     <span class="sd">&quot;&quot;&quot;lists all marks on an item such as `request._pyfuncitem`&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l164"
-               class="code sev- "><tt><i>164</i>         <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">callspec</span><span class="o">.</span><span class="n">marks</span></tt>
+               class="code sev- "><tt><i>164</i>     <span class="k">if</span> <span class="n">PYTEST3_OR_GREATER</span><span class="p">:</span></tt>
             </div>
             <div id="l165"
-               class="code sev- "><tt><i>165</i>     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>165</i>         <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">callspec</span><span class="o">.</span><span class="n">marks</span></tt>
             </div>
             <div id="l166"
-               class="code sev- "><tt><i>166</i>         <span class="k">return</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="n">MarkDecorator</span><span class="p">,</span> <span class="n">Mark</span><span class="p">))]</span></tt>
+               class="code sev- "><tt><i>166</i>     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l167"
-               class="code sev- "><tt><i>167</i> &nbsp;</tt>
+               class="code sev- "><tt><i>167</i>         <span class="k">return</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="n">MarkDecorator</span><span class="p">,</span> <span class="n">Mark</span><span class="p">))]</span></tt>
             </div>
             <div id="l168"
                class="code sev- "><tt><i>168</i> &nbsp;</tt>
             </div>
             <div id="l169"
-               class="code sev- "><tt><i>169</i> <span class="k">def</span> <span class="nf">get_pytest_usefixture_marks</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>169</i> &nbsp;</tt>
             </div>
             <div id="l170"
-               class="code sev- "><tt><i>170</i>     <span class="c1"># pytest &gt; 3.2.0</span></tt>
+               class="code sev- "><tt><i>170</i> <span class="k">def</span> <span class="nf">get_pytest_usefixture_marks</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
             </div>
             <div id="l171"
-               class="code sev- "><tt><i>171</i>     <span class="n">marks</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;pytestmark&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>171</i>     <span class="c1"># pytest &gt; 3.2.0</span></tt>
             </div>
             <div id="l172"
-               class="code sev- "><tt><i>172</i>     <span class="k">if</span> <span class="n">marks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>172</i>     <span class="n">marks</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;pytestmark&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
             </div>
             <div id="l173"
-               class="code sev- "><tt><i>173</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span></tt>
+               class="code sev- "><tt><i>173</i>     <span class="k">if</span> <span class="n">marks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l174"
-               class="code sev- "><tt><i>174</i>             <span class="n">mark</span><span class="o">.</span><span class="n">args</span> <span class="k">for</span> <span class="n">mark</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">if</span> <span class="n">mark</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;usefixtures&#39;</span></tt>
+               class="code sev- "><tt><i>174</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span></tt>
             </div>
             <div id="l175"
-               class="code sev- "><tt><i>175</i>         <span class="p">))</span></tt>
+               class="code sev- "><tt><i>175</i>             <span class="n">mark</span><span class="o">.</span><span class="n">args</span> <span class="k">for</span> <span class="n">mark</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">if</span> <span class="n">mark</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;usefixtures&#39;</span></tt>
             </div>
             <div id="l176"
-               class="code sev- "><tt><i>176</i>     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>176</i>         <span class="p">))</span></tt>
             </div>
             <div id="l177"
-               class="code sev- "><tt><i>177</i>         <span class="c1"># older versions</span></tt>
+               class="code sev- "><tt><i>177</i>     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l178"
-               class="code sev- "><tt><i>178</i>         <span class="n">mark_info</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;usefixtures&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>178</i>         <span class="c1"># older versions</span></tt>
             </div>
             <div id="l179"
-               class="code sev- "><tt><i>179</i>         <span class="k">if</span> <span class="n">mark_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>179</i>         <span class="n">mark_info</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;usefixtures&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
             </div>
             <div id="l180"
-               class="code sev- "><tt><i>180</i>             <span class="k">return</span> <span class="n">mark_info</span><span class="o">.</span><span class="n">args</span></tt>
+               class="code sev- "><tt><i>180</i>         <span class="k">if</span> <span class="n">mark_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l181"
-               class="code sev- "><tt><i>181</i>         <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>181</i>             <span class="k">return</span> <span class="n">mark_info</span><span class="o">.</span><span class="n">args</span></tt>
             </div>
             <div id="l182"
-               class="code sev- "><tt><i>182</i>             <span class="k">return</span> <span class="p">()</span></tt>
+               class="code sev- "><tt><i>182</i>         <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l183"
-               class="code sev- "><tt><i>183</i> &nbsp;</tt>
+               class="code sev- "><tt><i>183</i>             <span class="k">return</span> <span class="p">()</span></tt>
             </div>
             <div id="l184"
                class="code sev- "><tt><i>184</i> &nbsp;</tt>
             </div>
             <div id="l185"
-               class="code sev- "><tt><i>185</i> <span class="k">def</span> <span class="nf">remove_pytest_mark</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mark_name</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>185</i> &nbsp;</tt>
             </div>
             <div id="l186"
-               class="code sev- "><tt><i>186</i>     <span class="n">marks</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;pytestmark&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>186</i> <span class="k">def</span> <span class="nf">remove_pytest_mark</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mark_name</span><span class="p">):</span></tt>
             </div>
             <div id="l187"
-               class="code sev- "><tt><i>187</i>     <span class="k">if</span> <span class="n">marks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>187</i>     <span class="n">marks</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;pytestmark&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
             </div>
             <div id="l188"
-               class="code sev- "><tt><i>188</i>         <span class="c1"># pytest &gt; 3.2.0</span></tt>
+               class="code sev- "><tt><i>188</i>     <span class="k">if</span> <span class="n">marks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l189"
-               class="code sev- "><tt><i>189</i>         <span class="n">new_marks</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">mark_name</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>189</i>         <span class="c1"># pytest &gt; 3.2.0</span></tt>
             </div>
             <div id="l190"
+               class="code sev- "><tt><i>190</i>         <span class="n">new_marks</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">mark_name</span><span class="p">]</span></tt>
+            </div>
+            <div id="l191"
                class="code sev-3  le">
                <ul class="violations">
                
@@ -593,490 +596,490 @@
                      </span>
                      Do not call setattr with a constant attribute value, it is not any safer than normal property access.</li>
                
-               </ul><tt><i>190</i>         <span class="nb">setattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;pytestmark&#39;</span><span class="p">,</span> <span class="n">new_marks</span><span class="p">)</span></tt>
-            </div>
-            <div id="l191"
-               class="code sev- "><tt><i>191</i>     <span class="k">else</span><span class="p">:</span></tt>
+               </ul><tt><i>191</i>         <span class="nb">setattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;pytestmark&#39;</span><span class="p">,</span> <span class="n">new_marks</span><span class="p">)</span></tt>
             </div>
             <div id="l192"
-               class="code sev- "><tt><i>192</i>         <span class="c1"># older versions</span></tt>
+               class="code sev- "><tt><i>192</i>     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l193"
-               class="code sev- "><tt><i>193</i>         <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>193</i>         <span class="c1"># older versions</span></tt>
             </div>
             <div id="l194"
-               class="code sev- "><tt><i>194</i>             <span class="nb">delattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mark_name</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>194</i>         <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l195"
-               class="code sev- "><tt><i>195</i>         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>195</i>             <span class="nb">delattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mark_name</span><span class="p">)</span></tt>
             </div>
             <div id="l196"
-               class="code sev- "><tt><i>196</i>             <span class="k">pass</span></tt>
+               class="code sev- "><tt><i>196</i>         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
             </div>
             <div id="l197"
-               class="code sev- "><tt><i>197</i>     <span class="k">return</span> <span class="n">f</span></tt>
+               class="code sev- "><tt><i>197</i>             <span class="k">pass</span></tt>
             </div>
             <div id="l198"
-               class="code sev- "><tt><i>198</i> &nbsp;</tt>
+               class="code sev- "><tt><i>198</i>     <span class="k">return</span> <span class="n">f</span></tt>
             </div>
             <div id="l199"
                class="code sev- "><tt><i>199</i> &nbsp;</tt>
             </div>
             <div id="l200"
-               class="code sev- "><tt><i>200</i> <span class="k">def</span> <span class="nf">get_pytest_parametrize_marks</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>200</i> &nbsp;</tt>
             </div>
             <div id="l201"
-               class="code sev- "><tt><i>201</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>201</i> <span class="k">def</span> <span class="nf">get_pytest_parametrize_marks</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
             </div>
             <div id="l202"
-               class="code sev- "><tt><i>202</i> <span class="sd">    Returns the @pytest.mark.parametrize marks associated with a function (and only those)</span></tt>
+               class="code sev- "><tt><i>202</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l203"
-               class="code sev- "><tt><i>203</i> &nbsp;</tt>
+               class="code sev- "><tt><i>203</i> <span class="sd">    Returns the @pytest.mark.parametrize marks associated with a function (and only those)</span></tt>
             </div>
             <div id="l204"
-               class="code sev- "><tt><i>204</i> <span class="sd">    :param f:</span></tt>
+               class="code sev- "><tt><i>204</i> &nbsp;</tt>
             </div>
             <div id="l205"
-               class="code sev- "><tt><i>205</i> <span class="sd">    :return: a tuple containing all &#39;parametrize&#39; marks</span></tt>
+               class="code sev- "><tt><i>205</i> <span class="sd">    :param f:</span></tt>
             </div>
             <div id="l206"
-               class="code sev- "><tt><i>206</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>206</i> <span class="sd">    :return: a tuple containing all &#39;parametrize&#39; marks</span></tt>
             </div>
             <div id="l207"
-               class="code sev- "><tt><i>207</i>     <span class="c1"># pytest &gt; 3.2.0</span></tt>
+               class="code sev- "><tt><i>207</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l208"
-               class="code sev- "><tt><i>208</i>     <span class="n">marks</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;pytestmark&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>208</i>     <span class="c1"># pytest &gt; 3.2.0</span></tt>
             </div>
             <div id="l209"
-               class="code sev- "><tt><i>209</i>     <span class="k">if</span> <span class="n">marks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>209</i>     <span class="n">marks</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;pytestmark&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
             </div>
             <div id="l210"
-               class="code sev- "><tt><i>210</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_ParametrizationMark</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;parametrize&#39;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>210</i>     <span class="k">if</span> <span class="n">marks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l211"
-               class="code sev- "><tt><i>211</i>     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>211</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_ParametrizationMark</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;parametrize&#39;</span><span class="p">)</span></tt>
             </div>
             <div id="l212"
-               class="code sev- "><tt><i>212</i>         <span class="c1"># older versions</span></tt>
+               class="code sev- "><tt><i>212</i>     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l213"
-               class="code sev- "><tt><i>213</i>         <span class="n">mark_info</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;parametrize&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>213</i>         <span class="c1"># older versions</span></tt>
             </div>
             <div id="l214"
-               class="code sev- "><tt><i>214</i>         <span class="k">if</span> <span class="n">mark_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>214</i>         <span class="n">mark_info</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;parametrize&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
             </div>
             <div id="l215"
-               class="code sev- "><tt><i>215</i>             <span class="c1"># mark_info.args contains a list of (name, values)</span></tt>
+               class="code sev- "><tt><i>215</i>         <span class="k">if</span> <span class="n">mark_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l216"
-               class="code sev- "><tt><i>216</i>             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mark_info</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>216</i>             <span class="c1"># mark_info.args contains a list of (name, values)</span></tt>
             </div>
             <div id="l217"
-               class="code sev- "><tt><i>217</i>                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;internal pytest compatibility error - please report&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>217</i>             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mark_info</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l218"
-               class="code sev- "><tt><i>218</i>             <span class="n">nb_parametrize_decorations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mark_info</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span></tt>
+               class="code sev- "><tt><i>218</i>                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;internal pytest compatibility error - please report&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l219"
-               class="code sev- "><tt><i>219</i>             <span class="k">if</span> <span class="n">nb_parametrize_decorations</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mark_info</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>219</i>             <span class="n">nb_parametrize_decorations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mark_info</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span></tt>
             </div>
             <div id="l220"
-               class="code sev- "><tt><i>220</i>                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unfortunately with this old pytest version it is not possible to have several &quot;</span></tt>
+               class="code sev- "><tt><i>220</i>             <span class="k">if</span> <span class="n">nb_parametrize_decorations</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mark_info</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l221"
-               class="code sev- "><tt><i>221</i>                                  <span class="s2">&quot;parametrization decorators while specifying **kwargs, as all **kwargs are &quot;</span></tt>
+               class="code sev- "><tt><i>221</i>                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unfortunately with this old pytest version it is not possible to have several &quot;</span></tt>
             </div>
             <div id="l222"
-               class="code sev- "><tt><i>222</i>                                  <span class="s2">&quot;merged, leading to inconsistent results. Either upgrade pytest, remove the **kwargs,&quot;</span></tt>
+               class="code sev- "><tt><i>222</i>                                  <span class="s2">&quot;parametrization decorators while specifying **kwargs, as all **kwargs are &quot;</span></tt>
             </div>
             <div id="l223"
-               class="code sev- "><tt><i>223</i>                                  <span class="s2">&quot;or merge all the @parametrize decorators into a single one. **kwargs: </span><span class="si">%s</span><span class="s2">&quot;</span></tt>
+               class="code sev- "><tt><i>223</i>                                  <span class="s2">&quot;merged, leading to inconsistent results. Either upgrade pytest, remove the **kwargs,&quot;</span></tt>
             </div>
             <div id="l224"
-               class="code sev- "><tt><i>224</i>                                  <span class="o">%</span> <span class="n">mark_info</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>224</i>                                  <span class="s2">&quot;or merge all the @parametrize decorators into a single one. **kwargs: </span><span class="si">%s</span><span class="s2">&quot;</span></tt>
             </div>
             <div id="l225"
-               class="code sev- "><tt><i>225</i>             <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span></tt>
+               class="code sev- "><tt><i>225</i>                                  <span class="o">%</span> <span class="n">mark_info</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></tt>
             </div>
             <div id="l226"
-               class="code sev- "><tt><i>226</i>             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_parametrize_decorations</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>226</i>             <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span></tt>
             </div>
             <div id="l227"
-               class="code sev- "><tt><i>227</i>                 <span class="n">param_name</span><span class="p">,</span> <span class="n">param_values</span> <span class="o">=</span> <span class="n">mark_info</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span></tt>
+               class="code sev- "><tt><i>227</i>             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_parametrize_decorations</span><span class="p">):</span></tt>
             </div>
             <div id="l228"
-               class="code sev- "><tt><i>228</i>                 <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_ParametrizationMark</span><span class="p">(</span><span class="n">_LegacyMark</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="n">param_values</span><span class="p">,</span> <span class="o">**</span><span class="n">mark_info</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)))</span></tt>
+               class="code sev- "><tt><i>228</i>                 <span class="n">param_name</span><span class="p">,</span> <span class="n">param_values</span> <span class="o">=</span> <span class="n">mark_info</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span></tt>
             </div>
             <div id="l229"
-               class="code sev- "><tt><i>229</i>             <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>229</i>                 <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_ParametrizationMark</span><span class="p">(</span><span class="n">_LegacyMark</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="n">param_values</span><span class="p">,</span> <span class="o">**</span><span class="n">mark_info</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)))</span></tt>
             </div>
             <div id="l230"
-               class="code sev- "><tt><i>230</i>         <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>230</i>             <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></tt>
             </div>
             <div id="l231"
-               class="code sev- "><tt><i>231</i>             <span class="k">return</span> <span class="p">()</span></tt>
+               class="code sev- "><tt><i>231</i>         <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l232"
-               class="code sev- "><tt><i>232</i> &nbsp;</tt>
+               class="code sev- "><tt><i>232</i>             <span class="k">return</span> <span class="p">()</span></tt>
             </div>
             <div id="l233"
                class="code sev- "><tt><i>233</i> &nbsp;</tt>
             </div>
             <div id="l234"
-               class="code sev- "><tt><i>234</i> <span class="c1"># ---- tools to reapply marks on test parameter values, whatever the pytest version ----</span></tt>
+               class="code sev- "><tt><i>234</i> &nbsp;</tt>
             </div>
             <div id="l235"
-               class="code sev- "><tt><i>235</i> &nbsp;</tt>
+               class="code sev- "><tt><i>235</i> <span class="c1"># ---- tools to reapply marks on test parameter values, whatever the pytest version ----</span></tt>
             </div>
             <div id="l236"
-               class="code sev- "><tt><i>236</i> <span class="c1"># Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize</span></tt>
+               class="code sev- "><tt><i>236</i> &nbsp;</tt>
             </div>
             <div id="l237"
-               class="code sev- "><tt><i>237</i> <span class="c1"># see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize</span></tt>
+               class="code sev- "><tt><i>237</i> <span class="c1"># Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize</span></tt>
             </div>
             <div id="l238"
-               class="code sev- "><tt><i>238</i> &nbsp;</tt>
+               class="code sev- "><tt><i>238</i> <span class="c1"># see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize</span></tt>
             </div>
             <div id="l239"
-               class="code sev- "><tt><i>239</i> <span class="c1"># check if pytest.param exists</span></tt>
+               class="code sev- "><tt><i>239</i> &nbsp;</tt>
             </div>
             <div id="l240"
-               class="code sev- "><tt><i>240</i> <span class="n">has_pytest_param</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pytest</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>240</i> <span class="c1"># check if pytest.param exists</span></tt>
             </div>
             <div id="l241"
-               class="code sev- "><tt><i>241</i> &nbsp;</tt>
+               class="code sev- "><tt><i>241</i> <span class="n">has_pytest_param</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pytest</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">)</span></tt>
             </div>
             <div id="l242"
                class="code sev- "><tt><i>242</i> &nbsp;</tt>
             </div>
             <div id="l243"
-               class="code sev- "><tt><i>243</i> <span class="k">if</span> <span class="ow">not</span> <span class="n">has_pytest_param</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>243</i> &nbsp;</tt>
             </div>
             <div id="l244"
-               class="code sev- "><tt><i>244</i>     <span class="c1"># if not this is how it was done</span></tt>
+               class="code sev- "><tt><i>244</i> <span class="k">if</span> <span class="ow">not</span> <span class="n">has_pytest_param</span><span class="p">:</span></tt>
             </div>
             <div id="l245"
-               class="code sev- "><tt><i>245</i>     <span class="c1"># see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize</span></tt>
+               class="code sev- "><tt><i>245</i>     <span class="c1"># if not this is how it was done</span></tt>
             </div>
             <div id="l246"
-               class="code sev- "><tt><i>246</i>     <span class="k">def</span> <span class="nf">make_marked_parameter_value</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="n">marks</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>246</i>     <span class="c1"># see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize</span></tt>
             </div>
             <div id="l247"
-               class="code sev- "><tt><i>247</i>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">marks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>247</i>     <span class="k">def</span> <span class="nf">make_marked_parameter_value</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="n">marks</span><span class="p">):</span></tt>
             </div>
             <div id="l248"
-               class="code sev- "><tt><i>248</i>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multiple marks on parameters not supported for old versions of pytest&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>248</i>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">marks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span></tt>
             </div>
             <div id="l249"
-               class="code sev- "><tt><i>249</i>         <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>249</i>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multiple marks on parameters not supported for old versions of pytest&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l250"
-               class="code sev- "><tt><i>250</i>             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>250</i>         <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l251"
-               class="code sev- "><tt><i>251</i>                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;argvalues must be a tuple !&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>251</i>             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span></tt>
             </div>
             <div id="l252"
-               class="code sev- "><tt><i>252</i> &nbsp;</tt>
+               class="code sev- "><tt><i>252</i>                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;argvalues must be a tuple !&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l253"
-               class="code sev- "><tt><i>253</i>             <span class="c1"># get a decorator for each of the markinfo</span></tt>
+               class="code sev- "><tt><i>253</i> &nbsp;</tt>
             </div>
             <div id="l254"
-               class="code sev- "><tt><i>254</i>             <span class="n">marks_mod</span> <span class="o">=</span> <span class="n">markinfos_to_markdecorators</span><span class="p">(</span><span class="n">marks</span><span class="p">,</span> <span class="n">function_marks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>254</i>             <span class="c1"># get a decorator for each of the markinfo</span></tt>
             </div>
             <div id="l255"
-               class="code sev- "><tt><i>255</i> &nbsp;</tt>
+               class="code sev- "><tt><i>255</i>             <span class="n">marks_mod</span> <span class="o">=</span> <span class="n">markinfos_to_markdecorators</span><span class="p">(</span><span class="n">marks</span><span class="p">,</span> <span class="n">function_marks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
             </div>
             <div id="l256"
-               class="code sev- "><tt><i>256</i>             <span class="c1"># decorate. We need to distinguish between single value and multiple values</span></tt>
+               class="code sev- "><tt><i>256</i> &nbsp;</tt>
             </div>
             <div id="l257"
-               class="code sev- "><tt><i>257</i>             <span class="c1"># indeed in pytest 2 a single arg passed to the decorator is passed directly</span></tt>
+               class="code sev- "><tt><i>257</i>             <span class="c1"># decorate. We need to distinguish between single value and multiple values</span></tt>
             </div>
             <div id="l258"
-               class="code sev- "><tt><i>258</i>             <span class="c1"># (for example: @pytest.mark.skip(1) in parametrize)</span></tt>
+               class="code sev- "><tt><i>258</i>             <span class="c1"># indeed in pytest 2 a single arg passed to the decorator is passed directly</span></tt>
             </div>
             <div id="l259"
-               class="code sev- "><tt><i>259</i>             <span class="k">return</span> <span class="n">marks_mod</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">argvalues_tuple</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">marks_mod</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">argvalues_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></tt>
+               class="code sev- "><tt><i>259</i>             <span class="c1"># (for example: @pytest.mark.skip(1) in parametrize)</span></tt>
             </div>
             <div id="l260"
-               class="code sev- "><tt><i>260</i> <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>260</i>             <span class="k">return</span> <span class="n">marks_mod</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">argvalues_tuple</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">marks_mod</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">argvalues_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></tt>
             </div>
             <div id="l261"
-               class="code sev- "><tt><i>261</i>     <span class="c1"># Otherwise pytest.param exists, it is easier</span></tt>
+               class="code sev- "><tt><i>261</i> <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l262"
-               class="code sev- "><tt><i>262</i>     <span class="k">def</span> <span class="nf">make_marked_parameter_value</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="n">marks</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>262</i>     <span class="c1"># Otherwise pytest.param exists, it is easier</span></tt>
             </div>
             <div id="l263"
-               class="code sev- "><tt><i>263</i>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>263</i>     <span class="k">def</span> <span class="nf">make_marked_parameter_value</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="n">marks</span><span class="p">):</span></tt>
             </div>
             <div id="l264"
-               class="code sev- "><tt><i>264</i>             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;argvalues must be a tuple !&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>264</i>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span></tt>
             </div>
             <div id="l265"
-               class="code sev- "><tt><i>265</i> &nbsp;</tt>
+               class="code sev- "><tt><i>265</i>             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;argvalues must be a tuple !&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l266"
-               class="code sev- "><tt><i>266</i>         <span class="c1"># get a decorator for each of the markinfo</span></tt>
+               class="code sev- "><tt><i>266</i> &nbsp;</tt>
             </div>
             <div id="l267"
-               class="code sev- "><tt><i>267</i>         <span class="n">marks_mod</span> <span class="o">=</span> <span class="n">markinfos_to_markdecorators</span><span class="p">(</span><span class="n">marks</span><span class="p">,</span> <span class="n">function_marks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>267</i>         <span class="c1"># get a decorator for each of the markinfo</span></tt>
             </div>
             <div id="l268"
-               class="code sev- "><tt><i>268</i> &nbsp;</tt>
+               class="code sev- "><tt><i>268</i>         <span class="n">marks_mod</span> <span class="o">=</span> <span class="n">markinfos_to_markdecorators</span><span class="p">(</span><span class="n">marks</span><span class="p">,</span> <span class="n">function_marks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
             </div>
             <div id="l269"
-               class="code sev- "><tt><i>269</i>         <span class="c1"># decorate</span></tt>
+               class="code sev- "><tt><i>269</i> &nbsp;</tt>
             </div>
             <div id="l270"
-               class="code sev- "><tt><i>270</i>         <span class="k">return</span> <span class="n">pytest</span><span class="o">.</span><span class="n">param</span><span class="p">(</span><span class="o">*</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="n">marks</span><span class="o">=</span><span class="n">marks_mod</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>270</i>         <span class="c1"># decorate</span></tt>
             </div>
             <div id="l271"
-               class="code sev- "><tt><i>271</i> &nbsp;</tt>
+               class="code sev- "><tt><i>271</i>         <span class="k">return</span> <span class="n">pytest</span><span class="o">.</span><span class="n">param</span><span class="p">(</span><span class="o">*</span><span class="n">argvalues_tuple</span><span class="p">,</span> <span class="n">marks</span><span class="o">=</span><span class="n">marks_mod</span><span class="p">)</span></tt>
             </div>
             <div id="l272"
                class="code sev- "><tt><i>272</i> &nbsp;</tt>
             </div>
             <div id="l273"
-               class="code sev- "><tt><i>273</i> <span class="k">def</span> <span class="nf">markinfos_to_markdecorators</span><span class="p">(</span><span class="n">marks</span><span class="p">,</span>                <span class="c1"># type: Iterable[Mark]</span></tt>
+               class="code sev- "><tt><i>273</i> &nbsp;</tt>
             </div>
             <div id="l274"
-               class="code sev- "><tt><i>274</i>                                 <span class="n">function_marks</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># type: bool</span></tt>
+               class="code sev- "><tt><i>274</i> <span class="k">def</span> <span class="nf">markinfos_to_markdecorators</span><span class="p">(</span><span class="n">marks</span><span class="p">,</span>                <span class="c1"># type: Iterable[Mark]</span></tt>
             </div>
             <div id="l275"
-               class="code sev- "><tt><i>275</i>                                 <span class="p">):</span></tt>
+               class="code sev- "><tt><i>275</i>                                 <span class="n">function_marks</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># type: bool</span></tt>
             </div>
             <div id="l276"
-               class="code sev- "><tt><i>276</i>     <span class="c1"># type: (...) -&gt; List[MarkDecorator]</span></tt>
+               class="code sev- "><tt><i>276</i>                                 <span class="p">):</span></tt>
             </div>
             <div id="l277"
-               class="code sev- "><tt><i>277</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>277</i>     <span class="c1"># type: (...) -&gt; List[MarkDecorator]</span></tt>
             </div>
             <div id="l278"
-               class="code sev- "><tt><i>278</i> <span class="sd">    Transforms the provided marks (MarkInfo or Mark in recent pytest) obtained from marked cases, into MarkDecorator so</span></tt>
+               class="code sev- "><tt><i>278</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l279"
-               class="code sev- "><tt><i>279</i> <span class="sd">    that they can be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.</span></tt>
+               class="code sev- "><tt><i>279</i> <span class="sd">    Transforms the provided marks (MarkInfo or Mark in recent pytest) obtained from marked cases, into MarkDecorator so</span></tt>
             </div>
             <div id="l280"
-               class="code sev- "><tt><i>280</i> &nbsp;</tt>
+               class="code sev- "><tt><i>280</i> <span class="sd">    that they can be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.</span></tt>
             </div>
             <div id="l281"
-               class="code sev- "><tt><i>281</i> <span class="sd">    Returns a list.</span></tt>
+               class="code sev- "><tt><i>281</i> &nbsp;</tt>
             </div>
             <div id="l282"
-               class="code sev- "><tt><i>282</i> &nbsp;</tt>
+               class="code sev- "><tt><i>282</i> <span class="sd">    Returns a list.</span></tt>
             </div>
             <div id="l283"
-               class="code sev- "><tt><i>283</i> <span class="sd">    :param marks:</span></tt>
+               class="code sev- "><tt><i>283</i> &nbsp;</tt>
             </div>
             <div id="l284"
-               class="code sev- "><tt><i>284</i> <span class="sd">    :param function_marks:</span></tt>
+               class="code sev- "><tt><i>284</i> <span class="sd">    :param marks:</span></tt>
             </div>
             <div id="l285"
-               class="code sev- "><tt><i>285</i> <span class="sd">    :return:</span></tt>
+               class="code sev- "><tt><i>285</i> <span class="sd">    :param function_marks:</span></tt>
             </div>
             <div id="l286"
-               class="code sev- "><tt><i>286</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>286</i> <span class="sd">    :return:</span></tt>
             </div>
             <div id="l287"
-               class="code sev- "><tt><i>287</i>     <span class="n">marks_mod</span> <span class="o">=</span> <span class="p">[]</span></tt>
+               class="code sev- "><tt><i>287</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l288"
-               class="code sev- "><tt><i>288</i>     <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>288</i>     <span class="n">marks_mod</span> <span class="o">=</span> <span class="p">[]</span></tt>
             </div>
             <div id="l289"
-               class="code sev- "><tt><i>289</i>         <span class="c1"># suppress the warning message that pytest generates when calling pytest.mark.MarkDecorator() directly</span></tt>
+               class="code sev- "><tt><i>289</i>     <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l290"
-               class="code sev- "><tt><i>290</i>         <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span></tt>
+               class="code sev- "><tt><i>290</i>         <span class="c1"># suppress the warning message that pytest generates when calling pytest.mark.MarkDecorator() directly</span></tt>
             </div>
             <div id="l291"
-               class="code sev- "><tt><i>291</i>             <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>291</i>         <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span></tt>
             </div>
             <div id="l292"
-               class="code sev- "><tt><i>292</i>             <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>292</i>             <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l293"
-               class="code sev- "><tt><i>293</i>                 <span class="c1"># create a dummy new MarkDecorator named &quot;MarkDecorator&quot; for reference</span></tt>
+               class="code sev- "><tt><i>293</i>             <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span><span class="p">:</span></tt>
             </div>
             <div id="l294"
-               class="code sev- "><tt><i>294</i>                 <span class="n">md</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">MarkDecorator</span><span class="p">()</span></tt>
+               class="code sev- "><tt><i>294</i>                 <span class="c1"># create a dummy new MarkDecorator named &quot;MarkDecorator&quot; for reference</span></tt>
             </div>
             <div id="l295"
-               class="code sev- "><tt><i>295</i> &nbsp;</tt>
+               class="code sev- "><tt><i>295</i>                 <span class="n">md</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">MarkDecorator</span><span class="p">()</span></tt>
             </div>
             <div id="l296"
-               class="code sev- "><tt><i>296</i>                 <span class="k">if</span> <span class="n">PYTEST3_OR_GREATER</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>296</i> &nbsp;</tt>
             </div>
             <div id="l297"
-               class="code sev- "><tt><i>297</i>                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">md</span><span class="p">)):</span></tt>
+               class="code sev- "><tt><i>297</i>                 <span class="k">if</span> <span class="n">PYTEST3_OR_GREATER</span><span class="p">:</span></tt>
             </div>
             <div id="l298"
-               class="code sev- "><tt><i>298</i>                         <span class="c1"># already a decorator, we can use it</span></tt>
+               class="code sev- "><tt><i>298</i>                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">md</span><span class="p">)):</span></tt>
             </div>
             <div id="l299"
-               class="code sev- "><tt><i>299</i>                         <span class="n">marks_mod</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>299</i>                         <span class="c1"># already a decorator, we can use it</span></tt>
             </div>
             <div id="l300"
-               class="code sev- "><tt><i>300</i>                     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>300</i>                         <span class="n">marks_mod</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></tt>
             </div>
             <div id="l301"
-               class="code sev- "><tt><i>301</i>                         <span class="n">md</span><span class="o">.</span><span class="n">mark</span> <span class="o">=</span> <span class="n">m</span></tt>
+               class="code sev- "><tt><i>301</i>                     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l302"
-               class="code sev- "><tt><i>302</i>                         <span class="n">marks_mod</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>302</i>                         <span class="n">md</span><span class="o">.</span><span class="n">mark</span> <span class="o">=</span> <span class="n">m</span></tt>
             </div>
             <div id="l303"
-               class="code sev- "><tt><i>303</i>                 <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>303</i>                         <span class="n">marks_mod</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></tt>
             </div>
             <div id="l304"
-               class="code sev- "><tt><i>304</i>                     <span class="c1"># always recreate one, type comparison does not work (all generic stuff)</span></tt>
+               class="code sev- "><tt><i>304</i>                 <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l305"
-               class="code sev- "><tt><i>305</i>                     <span class="n">md</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span></tt>
+               class="code sev- "><tt><i>305</i>                     <span class="c1"># always recreate one, type comparison does not work (all generic stuff)</span></tt>
             </div>
             <div id="l306"
-               class="code sev- "><tt><i>306</i>                     <span class="c1"># md.markname = m.name</span></tt>
+               class="code sev- "><tt><i>306</i>                     <span class="n">md</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span></tt>
             </div>
             <div id="l307"
-               class="code sev- "><tt><i>307</i>                     <span class="k">if</span> <span class="n">function_marks</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>307</i>                     <span class="c1"># md.markname = m.name</span></tt>
             </div>
             <div id="l308"
-               class="code sev- "><tt><i>308</i>                         <span class="n">md</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">args</span>  <span class="c1"># a mark on a function does not include the function in the args</span></tt>
+               class="code sev- "><tt><i>308</i>                     <span class="k">if</span> <span class="n">function_marks</span><span class="p">:</span></tt>
             </div>
             <div id="l309"
-               class="code sev- "><tt><i>309</i>                     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>309</i>                         <span class="n">md</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">args</span>  <span class="c1"># a mark on a function does not include the function in the args</span></tt>
             </div>
             <div id="l310"
-               class="code sev- "><tt><i>310</i>                         <span class="n">md</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">args</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># not a function: the value is in the args, remove it</span></tt>
+               class="code sev- "><tt><i>310</i>                     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l311"
-               class="code sev- "><tt><i>311</i>                     <span class="n">md</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">kwargs</span></tt>
+               class="code sev- "><tt><i>311</i>                         <span class="n">md</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">args</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># not a function: the value is in the args, remove it</span></tt>
             </div>
             <div id="l312"
-               class="code sev- "><tt><i>312</i> &nbsp;</tt>
+               class="code sev- "><tt><i>312</i>                     <span class="n">md</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">kwargs</span></tt>
             </div>
             <div id="l313"
-               class="code sev- "><tt><i>313</i>                     <span class="c1"># markinfodecorator = getattr(pytest.mark, markinfo.name)</span></tt>
+               class="code sev- "><tt><i>313</i> &nbsp;</tt>
             </div>
             <div id="l314"
-               class="code sev- "><tt><i>314</i>                     <span class="c1"># markinfodecorator(*markinfo.args)</span></tt>
+               class="code sev- "><tt><i>314</i>                     <span class="c1"># markinfodecorator = getattr(pytest.mark, markinfo.name)</span></tt>
             </div>
             <div id="l315"
-               class="code sev- "><tt><i>315</i> &nbsp;</tt>
+               class="code sev- "><tt><i>315</i>                     <span class="c1"># markinfodecorator(*markinfo.args)</span></tt>
             </div>
             <div id="l316"
-               class="code sev- "><tt><i>316</i>                     <span class="n">marks_mod</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>316</i> &nbsp;</tt>
             </div>
             <div id="l317"
-               class="code sev- "><tt><i>317</i> &nbsp;</tt>
+               class="code sev- "><tt><i>317</i>                     <span class="n">marks_mod</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></tt>
             </div>
             <div id="l318"
-               class="code sev- "><tt><i>318</i>     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>318</i> &nbsp;</tt>
             </div>
             <div id="l319"
-               class="code sev- "><tt><i>319</i>         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Caught exception while trying to mark case: [</span><span class="si">%s</span><span class="s2">] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">))</span></tt>
+               class="code sev- "><tt><i>319</i>     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span></tt>
             </div>
             <div id="l320"
-               class="code sev- "><tt><i>320</i>     <span class="k">return</span> <span class="n">marks_mod</span></tt>
+               class="code sev- "><tt><i>320</i>         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Caught exception while trying to mark case: [</span><span class="si">%s</span><span class="s2">] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">))</span></tt>
             </div>
             <div id="l321"
-               class="code sev- "><tt><i>321</i> &nbsp;</tt>
+               class="code sev- "><tt><i>321</i>     <span class="k">return</span> <span class="n">marks_mod</span></tt>
             </div>
             <div id="l322"
                class="code sev- "><tt><i>322</i> &nbsp;</tt>
             </div>
             <div id="l323"
-               class="code sev- "><tt><i>323</i> <span class="k">def</span> <span class="nf">markdecorators_as_tuple</span><span class="p">(</span><span class="n">marks</span>  <span class="c1"># type: Optional[Union[MarkDecorator, Iterable[MarkDecorator]]]</span></tt>
+               class="code sev- "><tt><i>323</i> &nbsp;</tt>
             </div>
             <div id="l324"
-               class="code sev- "><tt><i>324</i>                             <span class="p">):</span></tt>
+               class="code sev- "><tt><i>324</i> <span class="k">def</span> <span class="nf">markdecorators_as_tuple</span><span class="p">(</span><span class="n">marks</span>  <span class="c1"># type: Optional[Union[MarkDecorator, Iterable[MarkDecorator]]]</span></tt>
             </div>
             <div id="l325"
-               class="code sev- "><tt><i>325</i>     <span class="c1"># type: (...) -&gt; Tuple[MarkDecorator, ...]</span></tt>
+               class="code sev- "><tt><i>325</i>                             <span class="p">):</span></tt>
             </div>
             <div id="l326"
-               class="code sev- "><tt><i>326</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>326</i>     <span class="c1"># type: (...) -&gt; Tuple[MarkDecorator, ...]</span></tt>
             </div>
             <div id="l327"
-               class="code sev- "><tt><i>327</i> <span class="sd">    Internal routine used to normalize marks received from users in a `marks=` parameter</span></tt>
+               class="code sev- "><tt><i>327</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l328"
-               class="code sev- "><tt><i>328</i> &nbsp;</tt>
+               class="code sev- "><tt><i>328</i> <span class="sd">    Internal routine used to normalize marks received from users in a `marks=` parameter</span></tt>
             </div>
             <div id="l329"
-               class="code sev- "><tt><i>329</i> <span class="sd">    :param marks:</span></tt>
+               class="code sev- "><tt><i>329</i> &nbsp;</tt>
             </div>
             <div id="l330"
-               class="code sev- "><tt><i>330</i> <span class="sd">    :return:</span></tt>
+               class="code sev- "><tt><i>330</i> <span class="sd">    :param marks:</span></tt>
             </div>
             <div id="l331"
-               class="code sev- "><tt><i>331</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>331</i> <span class="sd">    :return:</span></tt>
             </div>
             <div id="l332"
-               class="code sev- "><tt><i>332</i>     <span class="k">if</span> <span class="n">marks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>332</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l333"
-               class="code sev- "><tt><i>333</i>         <span class="k">return</span> <span class="p">()</span></tt>
+               class="code sev- "><tt><i>333</i>     <span class="k">if</span> <span class="n">marks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l334"
-               class="code sev- "><tt><i>334</i> &nbsp;</tt>
+               class="code sev- "><tt><i>334</i>         <span class="k">return</span> <span class="p">()</span></tt>
             </div>
             <div id="l335"
-               class="code sev- "><tt><i>335</i>     <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>335</i> &nbsp;</tt>
             </div>
             <div id="l336"
-               class="code sev- "><tt><i>336</i>         <span class="c1"># iterable ?</span></tt>
+               class="code sev- "><tt><i>336</i>     <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l337"
-               class="code sev- "><tt><i>337</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">marks</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>337</i>         <span class="c1"># iterable ?</span></tt>
             </div>
             <div id="l338"
-               class="code sev- "><tt><i>338</i>     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>338</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">marks</span><span class="p">)</span></tt>
             </div>
             <div id="l339"
-               class="code sev- "><tt><i>339</i>         <span class="c1"># single</span></tt>
+               class="code sev- "><tt><i>339</i>     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span></tt>
             </div>
             <div id="l340"
-               class="code sev- "><tt><i>340</i>         <span class="k">return</span> <span class="p">(</span><span class="n">marks</span><span class="p">,)</span></tt>
+               class="code sev- "><tt><i>340</i>         <span class="c1"># single</span></tt>
             </div>
             <div id="l341"
-               class="code sev- "><tt><i>341</i> &nbsp;</tt>
+               class="code sev- "><tt><i>341</i>         <span class="k">return</span> <span class="p">(</span><span class="n">marks</span><span class="p">,)</span></tt>
             </div>
             <div id="l342"
                class="code sev- "><tt><i>342</i> &nbsp;</tt>
             </div>
             <div id="l343"
-               class="code sev- "><tt><i>343</i> <span class="k">def</span> <span class="nf">markdecorators_to_markinfos</span><span class="p">(</span><span class="n">marks</span>  <span class="c1"># type: Sequence[MarkDecorator]</span></tt>
+               class="code sev- "><tt><i>343</i> &nbsp;</tt>
             </div>
             <div id="l344"
-               class="code sev- "><tt><i>344</i>                                 <span class="p">):</span></tt>
+               class="code sev- "><tt><i>344</i> <span class="k">def</span> <span class="nf">markdecorators_to_markinfos</span><span class="p">(</span><span class="n">marks</span>  <span class="c1"># type: Sequence[MarkDecorator]</span></tt>
             </div>
             <div id="l345"
-               class="code sev- "><tt><i>345</i>     <span class="c1"># type: (...) -&gt; Tuple[Mark, ...]</span></tt>
+               class="code sev- "><tt><i>345</i>                                 <span class="p">):</span></tt>
             </div>
             <div id="l346"
-               class="code sev- "><tt><i>346</i>     <span class="k">if</span> <span class="n">PYTEST3_OR_GREATER</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>346</i>     <span class="c1"># type: (...) -&gt; Tuple[Mark, ...]</span></tt>
             </div>
             <div id="l347"
-               class="code sev- "><tt><i>347</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">mark</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>347</i>     <span class="k">if</span> <span class="n">PYTEST3_OR_GREATER</span><span class="p">:</span></tt>
             </div>
             <div id="l348"
-               class="code sev- "><tt><i>348</i>     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">marks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>348</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">mark</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span><span class="p">)</span></tt>
             </div>
             <div id="l349"
-               class="code sev- "><tt><i>349</i>         <span class="k">return</span> <span class="p">()</span></tt>
+               class="code sev- "><tt><i>349</i>     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">marks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l350"
-               class="code sev- "><tt><i>350</i>     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>350</i>         <span class="k">return</span> <span class="p">()</span></tt>
             </div>
             <div id="l351"
-               class="code sev- "><tt><i>351</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Mark</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>351</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l352"
+               class="code sev- "><tt><i>352</i>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Mark</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marks</span><span class="p">)</span></tt>
             </div>
             
          </div>
