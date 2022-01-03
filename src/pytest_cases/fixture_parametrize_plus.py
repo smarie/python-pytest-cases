@@ -17,7 +17,7 @@ except ImportError:  # noqa
     from collections import Iterable
 
 try:
-    from typing import Union, Callable, List, Any, Sequence, Optional, Type  # noqa
+    from typing import Union, Callable, List, Any, Sequence, Optional, Type, Tuple  # noqa
     from types import ModuleType  # noqa
 except ImportError:
     pass
@@ -613,7 +613,7 @@ class ParamIdMakers(UnionIdMakers):
 _IDGEN = object()
 
 
-def parametrize(argnames=None,   # type: Union[str, List[str]]
+def parametrize(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 argvalues=None,  # type: Iterable[Any]
                 indirect=False,  # type: bool
                 ids=None,        # type: Union[Callable, Iterable[str]]
@@ -722,16 +722,16 @@ class InvalidIdTemplateException(Exception):
                % (self.idgen, self.params, self.caught.__class__, self.caught)
 
 
-def _parametrize_plus(argnames=None,
-                      argvalues=None,
-                      indirect=False,      # type: bool
-                      ids=None,            # type: Union[Callable, Iterable[str]]
-                      idstyle=None,        # type: Optional[Union[str, Callable]]
-                      idgen=_IDGEN,        # type: Union[str, Callable]
-                      auto_refs=True,      # type: bool
-                      scope=None,          # type: str
-                      hook=None,           # type: Callable[[Callable], Callable]
-                      debug=False,         # type: bool
+def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
+                      argvalues=None,  # type: Iterable[Any]
+                      indirect=False,  # type: bool
+                      ids=None,        # type: Union[Callable, Iterable[str]]
+                      idstyle=None,    # type: Optional[Union[str, Callable]]
+                      idgen=_IDGEN,    # type: Union[str, Callable]
+                      auto_refs=True,  # type: bool
+                      scope=None,      # type: str
+                      hook=None,       # type: Callable[[Callable], Callable]
+                      debug=False,     # type: bool
                       **args):
     """
 
@@ -1096,7 +1096,11 @@ def _parametrize_plus(argnames=None,
         return parametrize_plus_decorate, True
 
 
-def _get_argnames_argvalues(argnames=None, argvalues=None, **args):
+def _get_argnames_argvalues(
+    argnames=None,   # type: Union[str, Tuple[str], List[str]]
+    argvalues=None,  # type: Iterable[Any]
+    **args
+):
     """
 
     :param argnames:
