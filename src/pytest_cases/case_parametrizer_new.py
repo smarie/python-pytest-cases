@@ -824,7 +824,7 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                         # ignore any error here, this is optional.
                         pass
                     else:
-                        if len(s.parameters) < 1:
+                        if len(s.parameters) < 1 or (tuple(s.parameters.keys())[0] != "self"):
                             raise TypeError("case method is missing 'self' argument but is not static: %s" % m)
                     # partialize the function to get one without the 'self' argument
                     new_m = functools.partial(m, cls())
