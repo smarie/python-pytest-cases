@@ -74,7 +74,7 @@
                class="code sev- "><tt><i>19</i> <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l20"
-               class="code sev- "><tt><i>20</i>     <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>  <span class="c1"># noqa</span></tt>
+               class="code sev- "><tt><i>20</i>     <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Tuple</span>  <span class="c1"># noqa</span></tt>
             </div>
             <div id="l21"
                class="code sev- "><tt><i>21</i>     <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>  <span class="c1"># noqa</span></tt>
@@ -1880,7 +1880,7 @@
                class="code sev- "><tt><i>615</i> &nbsp;</tt>
             </div>
             <div id="l616"
-               class="code sev- "><tt><i>616</i> <span class="k">def</span> <span class="nf">parametrize</span><span class="p">(</span><span class="n">argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>   <span class="c1"># type: Union[str, List[str]]</span></tt>
+               class="code sev- "><tt><i>616</i> <span class="k">def</span> <span class="nf">parametrize</span><span class="p">(</span><span class="n">argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>   <span class="c1"># type: Union[str, Tuple[str], List[str]]</span></tt>
             </div>
             <div id="l617"
                class="code sev- "><tt><i>617</i>                 <span class="n">argvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Iterable[Any]</span></tt>
@@ -2207,34 +2207,34 @@
                class="code sev- "><tt><i>724</i> &nbsp;</tt>
             </div>
             <div id="l725"
-               class="code sev- "><tt><i>725</i> <span class="k">def</span> <span class="nf">_parametrize_plus</span><span class="p">(</span><span class="n">argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>725</i> <span class="k">def</span> <span class="nf">_parametrize_plus</span><span class="p">(</span><span class="n">argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>   <span class="c1"># type: Union[str, Tuple[str], List[str]]</span></tt>
             </div>
             <div id="l726"
-               class="code sev- "><tt><i>726</i>                       <span class="n">argvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>726</i>                       <span class="n">argvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Iterable[Any]</span></tt>
             </div>
             <div id="l727"
-               class="code sev- "><tt><i>727</i>                       <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>      <span class="c1"># type: bool</span></tt>
+               class="code sev- "><tt><i>727</i>                       <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># type: bool</span></tt>
             </div>
             <div id="l728"
-               class="code sev- "><tt><i>728</i>                       <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>            <span class="c1"># type: Union[Callable, Iterable[str]]</span></tt>
+               class="code sev- "><tt><i>728</i>                       <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>        <span class="c1"># type: Union[Callable, Iterable[str]]</span></tt>
             </div>
             <div id="l729"
-               class="code sev- "><tt><i>729</i>                       <span class="n">idstyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>        <span class="c1"># type: Optional[Union[str, Callable]]</span></tt>
+               class="code sev- "><tt><i>729</i>                       <span class="n">idstyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>    <span class="c1"># type: Optional[Union[str, Callable]]</span></tt>
             </div>
             <div id="l730"
-               class="code sev- "><tt><i>730</i>                       <span class="n">idgen</span><span class="o">=</span><span class="n">_IDGEN</span><span class="p">,</span>        <span class="c1"># type: Union[str, Callable]</span></tt>
+               class="code sev- "><tt><i>730</i>                       <span class="n">idgen</span><span class="o">=</span><span class="n">_IDGEN</span><span class="p">,</span>    <span class="c1"># type: Union[str, Callable]</span></tt>
             </div>
             <div id="l731"
-               class="code sev- "><tt><i>731</i>                       <span class="n">auto_refs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>      <span class="c1"># type: bool</span></tt>
+               class="code sev- "><tt><i>731</i>                       <span class="n">auto_refs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># type: bool</span></tt>
             </div>
             <div id="l732"
-               class="code sev- "><tt><i>732</i>                       <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>          <span class="c1"># type: str</span></tt>
+               class="code sev- "><tt><i>732</i>                       <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>      <span class="c1"># type: str</span></tt>
             </div>
             <div id="l733"
-               class="code sev- "><tt><i>733</i>                       <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>           <span class="c1"># type: Callable[[Callable], Callable]</span></tt>
+               class="code sev- "><tt><i>733</i>                       <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>       <span class="c1"># type: Callable[[Callable], Callable]</span></tt>
             </div>
             <div id="l734"
-               class="code sev- "><tt><i>734</i>                       <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>         <span class="c1"># type: bool</span></tt>
+               class="code sev- "><tt><i>734</i>                       <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>     <span class="c1"># type: bool</span></tt>
             </div>
             <div id="l735"
                class="code sev- "><tt><i>735</i>                       <span class="o">**</span><span class="n">args</span><span class="p">):</span></tt>
@@ -3428,838 +3428,850 @@
                class="code sev- "><tt><i>1098</i> &nbsp;</tt>
             </div>
             <div id="l1099"
-               class="code sev- "><tt><i>1099</i> <span class="k">def</span> <span class="nf">_get_argnames_argvalues</span><span class="p">(</span><span class="n">argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">argvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1099</i> <span class="k">def</span> <span class="nf">_get_argnames_argvalues</span><span class="p">(</span></tt>
             </div>
             <div id="l1100"
-               class="code sev- "><tt><i>1100</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>1100</i>     <span class="n">argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>   <span class="c1"># type: Union[str, Tuple[str], List[str]]</span></tt>
             </div>
             <div id="l1101"
-               class="code sev- "><tt><i>1101</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1101</i>     <span class="n">argvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Iterable[Any]</span></tt>
             </div>
             <div id="l1102"
-               class="code sev- "><tt><i>1102</i> <span class="sd">    :param argnames:</span></tt>
+               class="code sev- "><tt><i>1102</i>     <span class="o">**</span><span class="n">args</span></tt>
             </div>
             <div id="l1103"
-               class="code sev- "><tt><i>1103</i> <span class="sd">    :param argvalues:</span></tt>
+               class="code sev- "><tt><i>1103</i> <span class="p">):</span></tt>
             </div>
             <div id="l1104"
-               class="code sev- "><tt><i>1104</i> <span class="sd">    :param args:</span></tt>
+               class="code sev- "><tt><i>1104</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l1105"
-               class="code sev- "><tt><i>1105</i> <span class="sd">    :return: argnames, argvalues - both guaranteed to be lists</span></tt>
+               class="code sev- "><tt><i>1105</i> &nbsp;</tt>
             </div>
             <div id="l1106"
-               class="code sev- "><tt><i>1106</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>1106</i> <span class="sd">    :param argnames:</span></tt>
             </div>
             <div id="l1107"
-               class="code sev- "><tt><i>1107</i>     <span class="c1"># handle **args - a dict of {argnames: argvalues}</span></tt>
+               class="code sev- "><tt><i>1107</i> <span class="sd">    :param argvalues:</span></tt>
             </div>
             <div id="l1108"
-               class="code sev- "><tt><i>1108</i>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1108</i> <span class="sd">    :param args:</span></tt>
             </div>
             <div id="l1109"
-               class="code sev- "><tt><i>1109</i>         <span class="n">kw_argnames</span><span class="p">,</span> <span class="n">kw_argvalues</span> <span class="o">=</span> <span class="n">cart_product_pytest</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span></tt>
+               class="code sev- "><tt><i>1109</i> <span class="sd">    :return: argnames, argvalues - both guaranteed to be lists</span></tt>
             </div>
             <div id="l1110"
-               class="code sev- "><tt><i>1110</i>     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1110</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l1111"
-               class="code sev- "><tt><i>1111</i>         <span class="n">kw_argnames</span><span class="p">,</span> <span class="n">kw_argvalues</span> <span class="o">=</span> <span class="p">(),</span> <span class="p">()</span></tt>
+               class="code sev- "><tt><i>1111</i>     <span class="c1"># handle **args - a dict of {argnames: argvalues}</span></tt>
             </div>
             <div id="l1112"
-               class="code sev- "><tt><i>1112</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1112</i>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1113"
-               class="code sev- "><tt><i>1113</i>     <span class="k">if</span> <span class="n">argnames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1113</i>         <span class="n">kw_argnames</span><span class="p">,</span> <span class="n">kw_argvalues</span> <span class="o">=</span> <span class="n">cart_product_pytest</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span></tt>
             </div>
             <div id="l1114"
-               class="code sev- "><tt><i>1114</i>         <span class="c1"># (1) all {argnames: argvalues} pairs are provided in **args</span></tt>
+               class="code sev- "><tt><i>1114</i>     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1115"
-               class="code sev- "><tt><i>1115</i>         <span class="k">if</span> <span class="n">argvalues</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1115</i>         <span class="n">kw_argnames</span><span class="p">,</span> <span class="n">kw_argvalues</span> <span class="o">=</span> <span class="p">(),</span> <span class="p">()</span></tt>
             </div>
             <div id="l1116"
-               class="code sev- "><tt><i>1116</i>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No parameters provided&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1116</i> &nbsp;</tt>
             </div>
             <div id="l1117"
-               class="code sev- "><tt><i>1117</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1117</i>     <span class="k">if</span> <span class="n">argnames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l1118"
-               class="code sev- "><tt><i>1118</i>         <span class="n">argnames</span> <span class="o">=</span> <span class="n">kw_argnames</span></tt>
+               class="code sev- "><tt><i>1118</i>         <span class="c1"># (1) all {argnames: argvalues} pairs are provided in **args</span></tt>
             </div>
             <div id="l1119"
-               class="code sev- "><tt><i>1119</i>         <span class="n">argvalues</span> <span class="o">=</span> <span class="n">kw_argvalues</span></tt>
+               class="code sev- "><tt><i>1119</i>         <span class="k">if</span> <span class="n">argvalues</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1120"
-               class="code sev- "><tt><i>1120</i>         <span class="c1"># simplify if needed to comply with pytest.mark.parametrize</span></tt>
+               class="code sev- "><tt><i>1120</i>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No parameters provided&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l1121"
-               class="code sev- "><tt><i>1121</i>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1121</i> &nbsp;</tt>
             </div>
             <div id="l1122"
-               class="code sev- "><tt><i>1122</i>             <span class="n">argvalues</span> <span class="o">=</span> <span class="p">[</span><span class="n">_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_marked_parameter_value</span><span class="p">(</span><span class="n">_l</span><span class="p">)</span> <span class="k">else</span> <span class="n">_l</span> <span class="k">for</span> <span class="n">_l</span> <span class="ow">in</span> <span class="n">argvalues</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>1122</i>         <span class="n">argnames</span> <span class="o">=</span> <span class="n">kw_argnames</span></tt>
             </div>
             <div id="l1123"
-               class="code sev- "><tt><i>1123</i>         <span class="k">return</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span></tt>
+               class="code sev- "><tt><i>1123</i>         <span class="n">argvalues</span> <span class="o">=</span> <span class="n">kw_argvalues</span></tt>
             </div>
             <div id="l1124"
-               class="code sev- "><tt><i>1124</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1124</i>         <span class="c1"># simplify if needed to comply with pytest.mark.parametrize</span></tt>
             </div>
             <div id="l1125"
-               class="code sev- "><tt><i>1125</i>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1125</i>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span></tt>
             </div>
             <div id="l1126"
-               class="code sev- "><tt><i>1126</i>         <span class="c1"># (2) argnames + argvalues, as usual. However **args can also be passed and should be added</span></tt>
+               class="code sev- "><tt><i>1126</i>             <span class="n">argvalues</span> <span class="o">=</span> <span class="p">[</span><span class="n">_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_marked_parameter_value</span><span class="p">(</span><span class="n">_l</span><span class="p">)</span> <span class="k">else</span> <span class="n">_l</span> <span class="k">for</span> <span class="n">_l</span> <span class="ow">in</span> <span class="n">argvalues</span><span class="p">]</span></tt>
             </div>
             <div id="l1127"
-               class="code sev- "><tt><i>1127</i>         <span class="n">argnames</span> <span class="o">=</span> <span class="n">get_param_argnames_as_list</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1127</i>         <span class="k">return</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span></tt>
             </div>
             <div id="l1128"
                class="code sev- "><tt><i>1128</i> &nbsp;</tt>
             </div>
             <div id="l1129"
-               class="code sev- "><tt><i>1129</i>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span></tt>
+               class="code sev- "><tt><i>1129</i>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
             </div>
             <div id="l1130"
-               class="code sev- "><tt><i>1130</i>         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;argnames should be a string, list or a tuple&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1130</i>         <span class="c1"># (2) argnames + argvalues, as usual. However **args can also be passed and should be added</span></tt>
             </div>
             <div id="l1131"
-               class="code sev- "><tt><i>1131</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1131</i>         <span class="n">argnames</span> <span class="o">=</span> <span class="n">get_param_argnames_as_list</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span></tt>
             </div>
             <div id="l1132"
-               class="code sev- "><tt><i>1132</i>     <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">argname</span> <span class="ow">in</span> <span class="n">argnames</span><span class="p">]):</span></tt>
+               class="code sev- "><tt><i>1132</i> &nbsp;</tt>
             </div>
             <div id="l1133"
-               class="code sev- "><tt><i>1133</i>         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;all argnames should be strings&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1133</i>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span></tt>
             </div>
             <div id="l1134"
-               class="code sev- "><tt><i>1134</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1134</i>         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;argnames should be a string, list or a tuple&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l1135"
-               class="code sev- "><tt><i>1135</i>     <span class="k">if</span> <span class="n">argvalues</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1135</i> &nbsp;</tt>
             </div>
             <div id="l1136"
-               class="code sev- "><tt><i>1136</i>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No argvalues provided while argnames are provided&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1136</i>     <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">argname</span> <span class="ow">in</span> <span class="n">argnames</span><span class="p">]):</span></tt>
             </div>
             <div id="l1137"
-               class="code sev- "><tt><i>1137</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1137</i>         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;all argnames should be strings&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l1138"
-               class="code sev- "><tt><i>1138</i>     <span class="c1"># transform argvalues to a list (it can be a generator)</span></tt>
+               class="code sev- "><tt><i>1138</i> &nbsp;</tt>
             </div>
             <div id="l1139"
-               class="code sev- "><tt><i>1139</i>     <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1139</i>     <span class="k">if</span> <span class="n">argvalues</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l1140"
-               class="code sev- "><tt><i>1140</i>         <span class="n">argvalues</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">argvalues</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1140</i>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No argvalues provided while argnames are provided&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l1141"
-               class="code sev- "><tt><i>1141</i>     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1141</i> &nbsp;</tt>
             </div>
             <div id="l1142"
-               class="code sev- "><tt><i>1142</i>         <span class="k">raise</span> <span class="n">InvalidParamsList</span><span class="p">(</span><span class="n">argvalues</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1142</i>     <span class="c1"># transform argvalues to a list (it can be a generator)</span></tt>
             </div>
             <div id="l1143"
-               class="code sev- "><tt><i>1143</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1143</i>     <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l1144"
-               class="code sev- "><tt><i>1144</i>     <span class="c1"># append **args</span></tt>
+               class="code sev- "><tt><i>1144</i>         <span class="n">argvalues</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">argvalues</span><span class="p">)</span></tt>
             </div>
             <div id="l1145"
-               class="code sev- "><tt><i>1145</i>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kw_argnames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1145</i>     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span></tt>
             </div>
             <div id="l1146"
-               class="code sev- "><tt><i>1146</i>         <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span> <span class="o">=</span> <span class="n">cart_product_pytest</span><span class="p">((</span><span class="n">argnames</span><span class="p">,</span> <span class="n">kw_argnames</span><span class="p">),</span></tt>
+               class="code sev- "><tt><i>1146</i>         <span class="k">raise</span> <span class="n">InvalidParamsList</span><span class="p">(</span><span class="n">argvalues</span><span class="p">)</span></tt>
             </div>
             <div id="l1147"
-               class="code sev- "><tt><i>1147</i>                                                   <span class="p">(</span><span class="n">argvalues</span><span class="p">,</span> <span class="n">kw_argvalues</span><span class="p">))</span></tt>
+               class="code sev- "><tt><i>1147</i> &nbsp;</tt>
             </div>
             <div id="l1148"
-               class="code sev- "><tt><i>1148</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1148</i>     <span class="c1"># append **args</span></tt>
             </div>
             <div id="l1149"
-               class="code sev- "><tt><i>1149</i>     <span class="k">return</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span></tt>
+               class="code sev- "><tt><i>1149</i>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kw_argnames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1150"
-               class="code sev- "><tt><i>1150</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1150</i>         <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span> <span class="o">=</span> <span class="n">cart_product_pytest</span><span class="p">((</span><span class="n">argnames</span><span class="p">,</span> <span class="n">kw_argnames</span><span class="p">),</span></tt>
             </div>
             <div id="l1151"
-               class="code sev- "><tt><i>1151</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1151</i>                                                   <span class="p">(</span><span class="n">argvalues</span><span class="p">,</span> <span class="n">kw_argvalues</span><span class="p">))</span></tt>
             </div>
             <div id="l1152"
-               class="code sev- "><tt><i>1152</i> <span class="k">def</span> <span class="nf">_gen_ids</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">idgen</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1152</i> &nbsp;</tt>
             </div>
             <div id="l1153"
-               class="code sev- "><tt><i>1153</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>1153</i>     <span class="k">return</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span></tt>
             </div>
             <div id="l1154"
-               class="code sev- "><tt><i>1154</i> <span class="sd">    Generates an explicit test ids list from a non-none `idgen`.</span></tt>
+               class="code sev- "><tt><i>1154</i> &nbsp;</tt>
             </div>
             <div id="l1155"
                class="code sev- "><tt><i>1155</i> &nbsp;</tt>
             </div>
             <div id="l1156"
-               class="code sev- "><tt><i>1156</i> <span class="sd">    `idgen` should be either a callable of a string template.</span></tt>
+               class="code sev- "><tt><i>1156</i> <span class="k">def</span> <span class="nf">_gen_ids</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">idgen</span><span class="p">):</span></tt>
             </div>
             <div id="l1157"
-               class="code sev- "><tt><i>1157</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1157</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l1158"
-               class="code sev- "><tt><i>1158</i> <span class="sd">    :param argnames:</span></tt>
+               class="code sev- "><tt><i>1158</i> <span class="sd">    Generates an explicit test ids list from a non-none `idgen`.</span></tt>
             </div>
             <div id="l1159"
-               class="code sev- "><tt><i>1159</i> <span class="sd">    :param argvalues:</span></tt>
+               class="code sev- "><tt><i>1159</i> &nbsp;</tt>
             </div>
             <div id="l1160"
-               class="code sev- "><tt><i>1160</i> <span class="sd">    :param idgen:</span></tt>
+               class="code sev- "><tt><i>1160</i> <span class="sd">    `idgen` should be either a callable of a string template.</span></tt>
             </div>
             <div id="l1161"
-               class="code sev- "><tt><i>1161</i> <span class="sd">    :return:</span></tt>
+               class="code sev- "><tt><i>1161</i> &nbsp;</tt>
             </div>
             <div id="l1162"
-               class="code sev- "><tt><i>1162</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>1162</i> <span class="sd">    :param argnames:</span></tt>
             </div>
             <div id="l1163"
-               class="code sev- "><tt><i>1163</i>     <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">idgen</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1163</i> <span class="sd">    :param argvalues:</span></tt>
             </div>
             <div id="l1164"
-               class="code sev- "><tt><i>1164</i>         <span class="c1"># idgen is a new-style string formatting template</span></tt>
+               class="code sev- "><tt><i>1164</i> <span class="sd">    :param idgen:</span></tt>
             </div>
             <div id="l1165"
-               class="code sev- "><tt><i>1165</i>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idgen</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1165</i> <span class="sd">    :return:</span></tt>
             </div>
             <div id="l1166"
-               class="code sev- "><tt><i>1166</i>             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;idgen should be a callable or a string, found: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">idgen</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1166</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l1167"
-               class="code sev- "><tt><i>1167</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1167</i>     <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">idgen</span><span class="p">):</span></tt>
             </div>
             <div id="l1168"
-               class="code sev- "><tt><i>1168</i>         <span class="n">_formatter</span> <span class="o">=</span> <span class="n">idgen</span></tt>
+               class="code sev- "><tt><i>1168</i>         <span class="c1"># idgen is a new-style string formatting template</span></tt>
             </div>
             <div id="l1169"
-               class="code sev- "><tt><i>1169</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1169</i>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idgen</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
             </div>
             <div id="l1170"
-               class="code sev- "><tt><i>1170</i>         <span class="k">def</span> <span class="nf">gen_id_using_str_formatter</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1170</i>             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;idgen should be a callable or a string, found: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">idgen</span><span class="p">)</span></tt>
             </div>
             <div id="l1171"
-               class="code sev- "><tt><i>1171</i>             <span class="k">try</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1171</i> &nbsp;</tt>
             </div>
             <div id="l1172"
-               class="code sev- "><tt><i>1172</i>                 <span class="c1"># format using the idgen template</span></tt>
+               class="code sev- "><tt><i>1172</i>         <span class="n">_formatter</span> <span class="o">=</span> <span class="n">idgen</span></tt>
             </div>
             <div id="l1173"
-               class="code sev- "><tt><i>1173</i>                 <span class="k">return</span> <span class="n">_formatter</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1173</i> &nbsp;</tt>
             </div>
             <div id="l1174"
-               class="code sev- "><tt><i>1174</i>             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1174</i>         <span class="k">def</span> <span class="nf">gen_id_using_str_formatter</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">):</span></tt>
             </div>
             <div id="l1175"
-               class="code sev- "><tt><i>1175</i>                 <span class="k">raise</span> <span class="n">InvalidIdTemplateException</span><span class="p">(</span><span class="n">_formatter</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1175</i>             <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l1176"
-               class="code sev- "><tt><i>1176</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1176</i>                 <span class="c1"># format using the idgen template</span></tt>
             </div>
             <div id="l1177"
-               class="code sev- "><tt><i>1177</i>         <span class="n">idgen</span> <span class="o">=</span> <span class="n">gen_id_using_str_formatter</span></tt>
+               class="code sev- "><tt><i>1177</i>                 <span class="k">return</span> <span class="n">_formatter</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span></tt>
             </div>
             <div id="l1178"
-               class="code sev- "><tt><i>1178</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1178</i>             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span></tt>
             </div>
             <div id="l1179"
-               class="code sev- "><tt><i>1179</i>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1179</i>                 <span class="k">raise</span> <span class="n">InvalidIdTemplateException</span><span class="p">(</span><span class="n">_formatter</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></tt>
             </div>
             <div id="l1180"
-               class="code sev- "><tt><i>1180</i>         <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">idgen</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">_argvals</span><span class="p">)})</span> <span class="k">for</span> <span class="n">_argvals</span> <span class="ow">in</span> <span class="n">argvalues</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>1180</i> &nbsp;</tt>
             </div>
             <div id="l1181"
-               class="code sev- "><tt><i>1181</i>     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1181</i>         <span class="n">idgen</span> <span class="o">=</span> <span class="n">gen_id_using_str_formatter</span></tt>
             </div>
             <div id="l1182"
-               class="code sev- "><tt><i>1182</i>         <span class="n">_only_name</span> <span class="o">=</span> <span class="n">argnames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>1182</i> &nbsp;</tt>
             </div>
             <div id="l1183"
-               class="code sev- "><tt><i>1183</i>         <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">idgen</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">_only_name</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">argvalues</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>1183</i>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span></tt>
             </div>
             <div id="l1184"
-               class="code sev- "><tt><i>1184</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1184</i>         <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">idgen</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">_argvals</span><span class="p">)})</span> <span class="k">for</span> <span class="n">_argvals</span> <span class="ow">in</span> <span class="n">argvalues</span><span class="p">]</span></tt>
             </div>
             <div id="l1185"
-               class="code sev- "><tt><i>1185</i>     <span class="k">return</span> <span class="n">ids</span></tt>
+               class="code sev- "><tt><i>1185</i>     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1186"
-               class="code sev- "><tt><i>1186</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1186</i>         <span class="n">_only_name</span> <span class="o">=</span> <span class="n">argnames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></tt>
             </div>
             <div id="l1187"
-               class="code sev- "><tt><i>1187</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1187</i>         <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">idgen</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">_only_name</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">argvalues</span><span class="p">]</span></tt>
             </div>
             <div id="l1188"
-               class="code sev- "><tt><i>1188</i> <span class="k">def</span> <span class="nf">_process_argvalues</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">marked_argvalues</span><span class="p">,</span> <span class="n">nb_params</span><span class="p">,</span> <span class="n">has_custom_ids</span><span class="p">,</span> <span class="n">auto_refs</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1188</i> &nbsp;</tt>
             </div>
             <div id="l1189"
-               class="code sev- "><tt><i>1189</i>     <span class="sd">&quot;&quot;&quot;Internal method to use in _pytest_parametrize_plus</span></tt>
+               class="code sev- "><tt><i>1189</i>     <span class="k">return</span> <span class="n">ids</span></tt>
             </div>
             <div id="l1190"
                class="code sev- "><tt><i>1190</i> &nbsp;</tt>
             </div>
             <div id="l1191"
-               class="code sev- "><tt><i>1191</i> <span class="sd">    Processes the provided marked_argvalues (possibly marked with pytest.param) and returns</span></tt>
+               class="code sev- "><tt><i>1191</i> &nbsp;</tt>
             </div>
             <div id="l1192"
-               class="code sev- "><tt><i>1192</i> <span class="sd">    p_ids, p_marks, argvalues (not marked with pytest.param), fixture_indices</span></tt>
+               class="code sev- "><tt><i>1192</i> <span class="k">def</span> <span class="nf">_process_argvalues</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">marked_argvalues</span><span class="p">,</span> <span class="n">nb_params</span><span class="p">,</span> <span class="n">has_custom_ids</span><span class="p">,</span> <span class="n">auto_refs</span><span class="p">):</span></tt>
             </div>
             <div id="l1193"
-               class="code sev- "><tt><i>1193</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1193</i>     <span class="sd">&quot;&quot;&quot;Internal method to use in _pytest_parametrize_plus</span></tt>
             </div>
             <div id="l1194"
-               class="code sev- "><tt><i>1194</i> <span class="sd">    Note: `marked_argvalues` is modified in the process if a `lazy_value` is found with a custom id or marks.</span></tt>
+               class="code sev- "><tt><i>1194</i> &nbsp;</tt>
             </div>
             <div id="l1195"
-               class="code sev- "><tt><i>1195</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1195</i> <span class="sd">    Processes the provided marked_argvalues (possibly marked with pytest.param) and returns</span></tt>
             </div>
             <div id="l1196"
-               class="code sev- "><tt><i>1196</i> <span class="sd">    :param argnames:</span></tt>
+               class="code sev- "><tt><i>1196</i> <span class="sd">    p_ids, p_marks, argvalues (not marked with pytest.param), fixture_indices</span></tt>
             </div>
             <div id="l1197"
-               class="code sev- "><tt><i>1197</i> <span class="sd">    :param marked_argvalues:</span></tt>
+               class="code sev- "><tt><i>1197</i> &nbsp;</tt>
             </div>
             <div id="l1198"
-               class="code sev- "><tt><i>1198</i> <span class="sd">    :param nb_params:</span></tt>
+               class="code sev- "><tt><i>1198</i> <span class="sd">    Note: `marked_argvalues` is modified in the process if a `lazy_value` is found with a custom id or marks.</span></tt>
             </div>
             <div id="l1199"
-               class="code sev- "><tt><i>1199</i> <span class="sd">    :param has_custom_ids: a boolean indicating if custom ids are provided separately in `ids` or `idgen` (see</span></tt>
+               class="code sev- "><tt><i>1199</i> &nbsp;</tt>
             </div>
             <div id="l1200"
-               class="code sev- "><tt><i>1200</i> <span class="sd">        @parametrize)</span></tt>
+               class="code sev- "><tt><i>1200</i> <span class="sd">    :param argnames:</span></tt>
             </div>
             <div id="l1201"
-               class="code sev- "><tt><i>1201</i> <span class="sd">    :param auto_refs: if True, a `fixture_ref` will be created around fixture symbols used as argvalues automatically</span></tt>
+               class="code sev- "><tt><i>1201</i> <span class="sd">    :param marked_argvalues:</span></tt>
             </div>
             <div id="l1202"
-               class="code sev- "><tt><i>1202</i> <span class="sd">    :return:</span></tt>
+               class="code sev- "><tt><i>1202</i> <span class="sd">    :param nb_params:</span></tt>
             </div>
             <div id="l1203"
-               class="code sev- "><tt><i>1203</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>1203</i> <span class="sd">    :param has_custom_ids: a boolean indicating if custom ids are provided separately in `ids` or `idgen` (see</span></tt>
             </div>
             <div id="l1204"
-               class="code sev- "><tt><i>1204</i>     <span class="n">p_ids</span><span class="p">,</span> <span class="n">p_marks</span><span class="p">,</span> <span class="n">argvalues</span> <span class="o">=</span> <span class="n">extract_parameterset_info</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">marked_argvalues</span><span class="p">,</span> <span class="n">check_nb</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1204</i> <span class="sd">        @parametrize)</span></tt>
             </div>
             <div id="l1205"
-               class="code sev- "><tt><i>1205</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1205</i> <span class="sd">    :param auto_refs: if True, a `fixture_ref` will be created around fixture symbols used as argvalues automatically</span></tt>
             </div>
             <div id="l1206"
-               class="code sev- "><tt><i>1206</i>     <span class="c1"># find if there are fixture references or lazy values in the values provided</span></tt>
+               class="code sev- "><tt><i>1206</i> <span class="sd">    :return:</span></tt>
             </div>
             <div id="l1207"
-               class="code sev- "><tt><i>1207</i>     <span class="n">fixture_indices</span> <span class="o">=</span> <span class="p">[]</span></tt>
+               class="code sev- "><tt><i>1207</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l1208"
-               class="code sev- "><tt><i>1208</i>     <span class="n">mod_lvid_indices</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># indices of lazy_values for which we created a wrapper pytest.param with an id</span></tt>
+               class="code sev- "><tt><i>1208</i>     <span class="n">p_ids</span><span class="p">,</span> <span class="n">p_marks</span><span class="p">,</span> <span class="n">argvalues</span> <span class="o">=</span> <span class="n">extract_parameterset_info</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">marked_argvalues</span><span class="p">,</span> <span class="n">check_nb</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
             </div>
             <div id="l1209"
-               class="code sev- "><tt><i>1209</i>     <span class="k">if</span> <span class="n">nb_params</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1209</i> &nbsp;</tt>
             </div>
             <div id="l1210"
-               class="code sev- "><tt><i>1210</i>         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">argvalues</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1210</i>     <span class="c1"># find if there are fixture references or lazy values in the values provided</span></tt>
             </div>
             <div id="l1211"
-               class="code sev- "><tt><i>1211</i>             <span class="k">if</span> <span class="n">is_lazy_value</span><span class="p">(</span><span class="n">v</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1211</i>     <span class="n">fixture_indices</span> <span class="o">=</span> <span class="p">[]</span></tt>
             </div>
             <div id="l1212"
-               class="code sev- "><tt><i>1212</i>                 <span class="c1"># --- A lazy value is used for several parameters at the same time ---</span></tt>
+               class="code sev- "><tt><i>1212</i>     <span class="n">mod_lvid_indices</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># indices of lazy_values for which we created a wrapper pytest.param with an id</span></tt>
             </div>
             <div id="l1213"
-               class="code sev- "><tt><i>1213</i>                 <span class="c1"># Users can declare custom marks in the lazy value API, we have to take these into account</span></tt>
+               class="code sev- "><tt><i>1213</i>     <span class="k">if</span> <span class="n">nb_params</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span></tt>
             </div>
             <div id="l1214"
-               class="code sev- "><tt><i>1214</i>                 <span class="c1"># (1) if there was a pytest.param around it, we have to merge the marks from the lazy value into it</span></tt>
+               class="code sev- "><tt><i>1214</i>         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">argvalues</span><span class="p">):</span></tt>
             </div>
             <div id="l1215"
-               class="code sev- "><tt><i>1215</i>                 <span class="c1"># (2) if there was no pytest.param around it and there are marks, we have to create the pytest.param</span></tt>
+               class="code sev- "><tt><i>1215</i>             <span class="k">if</span> <span class="n">is_lazy_value</span><span class="p">(</span><span class="n">v</span><span class="p">):</span></tt>
             </div>
             <div id="l1216"
-               class="code sev- "><tt><i>1216</i>                 <span class="c1"># Note: a custom id in lazy value does not require such processing as it does not need to take</span></tt>
+               class="code sev- "><tt><i>1216</i>                 <span class="c1"># --- A lazy value is used for several parameters at the same time ---</span></tt>
             </div>
             <div id="l1217"
-               class="code sev- "><tt><i>1217</i>                 <span class="c1"># precedence over `ids` or `idgen`</span></tt>
+               class="code sev- "><tt><i>1217</i>                 <span class="c1"># Users can declare custom marks in the lazy value API, we have to take these into account</span></tt>
             </div>
             <div id="l1218"
-               class="code sev- "><tt><i>1218</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1218</i>                 <span class="c1"># (1) if there was a pytest.param around it, we have to merge the marks from the lazy value into it</span></tt>
             </div>
             <div id="l1219"
-               class="code sev- "><tt><i>1219</i>                 <span class="c1"># are there any marks ? (either added with lazy_value(marks=), or on the function itself)</span></tt>
+               class="code sev- "><tt><i>1219</i>                 <span class="c1"># (2) if there was no pytest.param around it and there are marks, we have to create the pytest.param</span></tt>
             </div>
             <div id="l1220"
-               class="code sev- "><tt><i>1220</i>                 <span class="n">_mks</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get_marks</span><span class="p">(</span><span class="n">as_decorators</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1220</i>                 <span class="c1"># Note: a custom id in lazy value does not require such processing as it does not need to take</span></tt>
             </div>
             <div id="l1221"
-               class="code sev- "><tt><i>1221</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_mks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1221</i>                 <span class="c1"># precedence over `ids` or `idgen`</span></tt>
             </div>
             <div id="l1222"
-               class="code sev- "><tt><i>1222</i>                     <span class="c1"># update/create the pytest.param marks on this value</span></tt>
+               class="code sev- "><tt><i>1222</i> &nbsp;</tt>
             </div>
             <div id="l1223"
-               class="code sev- "><tt><i>1223</i>                     <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">_mks</span><span class="p">)</span> <span class="k">if</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_mks</span></tt>
+               class="code sev- "><tt><i>1223</i>                 <span class="c1"># are there any marks ? (either added with lazy_value(marks=), or on the function itself)</span></tt>
             </div>
             <div id="l1224"
-               class="code sev- "><tt><i>1224</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1224</i>                 <span class="n">_mks</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get_marks</span><span class="p">(</span><span class="n">as_decorators</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l1225"
-               class="code sev- "><tt><i>1225</i>                     <span class="c1"># update the original marked_argvalues. Note that argvalues[i] = v</span></tt>
+               class="code sev- "><tt><i>1225</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_mks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1226"
-               class="code sev- "><tt><i>1226</i>                     <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">],),</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
+               class="code sev- "><tt><i>1226</i>                     <span class="c1"># update/create the pytest.param marks on this value</span></tt>
             </div>
             <div id="l1227"
-               class="code sev- "><tt><i>1227</i>             <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1227</i>                     <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">_mks</span><span class="p">)</span> <span class="k">if</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_mks</span></tt>
             </div>
             <div id="l1228"
-               class="code sev- "><tt><i>1228</i>                 <span class="k">if</span> <span class="n">auto_refs</span> <span class="ow">and</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">v</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1228</i> &nbsp;</tt>
             </div>
             <div id="l1229"
-               class="code sev- "><tt><i>1229</i>                     <span class="c1"># auto create wrapper fixture_refs</span></tt>
+               class="code sev- "><tt><i>1229</i>                     <span class="c1"># update the original marked_argvalues. Note that argvalues[i] = v</span></tt>
             </div>
             <div id="l1230"
-               class="code sev- "><tt><i>1230</i>                     <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">fixture_ref</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1230</i>                     <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">],),</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
             </div>
             <div id="l1231"
-               class="code sev- "><tt><i>1231</i>                     <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1231</i>             <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1232"
-               class="code sev- "><tt><i>1232</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></tt>
+               class="code sev- "><tt><i>1232</i>                 <span class="k">if</span> <span class="n">auto_refs</span> <span class="ow">and</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">v</span><span class="p">):</span></tt>
             </div>
             <div id="l1233"
-               class="code sev- "><tt><i>1233</i>                     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1233</i>                     <span class="c1"># auto create wrapper fixture_refs</span></tt>
             </div>
             <div id="l1234"
-               class="code sev- "><tt><i>1234</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">v</span><span class="p">,),</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
+               class="code sev- "><tt><i>1234</i>                     <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">fixture_ref</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></tt>
             </div>
             <div id="l1235"
-               class="code sev- "><tt><i>1235</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1235</i>                     <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l1236"
-               class="code sev- "><tt><i>1236</i>                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1236</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></tt>
             </div>
             <div id="l1237"
-               class="code sev- "><tt><i>1237</i>                     <span class="c1"># Fix the referenced fixture length</span></tt>
+               class="code sev- "><tt><i>1237</i>                     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1238"
-               class="code sev- "><tt><i>1238</i>                     <span class="n">v</span><span class="o">.</span><span class="n">theoretical_size</span> <span class="o">=</span> <span class="n">nb_params</span></tt>
+               class="code sev- "><tt><i>1238</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">v</span><span class="p">,),</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
             </div>
             <div id="l1239"
-               class="code sev- "><tt><i>1239</i>                     <span class="n">fixture_indices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></tt>
+               class="code sev- "><tt><i>1239</i> &nbsp;</tt>
             </div>
             <div id="l1240"
-               class="code sev- "><tt><i>1240</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1240</i>                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">):</span></tt>
             </div>
             <div id="l1241"
-               class="code sev- "><tt><i>1241</i>     <span class="k">elif</span> <span class="n">nb_params</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1241</i>                     <span class="c1"># Fix the referenced fixture length</span></tt>
             </div>
             <div id="l1242"
-               class="code sev- "><tt><i>1242</i>         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">argvalues</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1242</i>                     <span class="n">v</span><span class="o">.</span><span class="n">theoretical_size</span> <span class="o">=</span> <span class="n">nb_params</span></tt>
             </div>
             <div id="l1243"
-               class="code sev- "><tt><i>1243</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1243</i>                     <span class="n">fixture_indices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></tt>
             </div>
             <div id="l1244"
-               class="code sev- "><tt><i>1244</i>             <span class="c1"># A/ First analyze what is the case at hand</span></tt>
+               class="code sev- "><tt><i>1244</i> &nbsp;</tt>
             </div>
             <div id="l1245"
-               class="code sev- "><tt><i>1245</i>             <span class="n">_lazyvalue_used_as_tuple</span> <span class="o">=</span> <span class="kc">False</span></tt>
+               class="code sev- "><tt><i>1245</i>     <span class="k">elif</span> <span class="n">nb_params</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span></tt>
             </div>
             <div id="l1246"
-               class="code sev- "><tt><i>1246</i>             <span class="n">_fixtureref_used_as_tuple</span> <span class="o">=</span> <span class="kc">False</span></tt>
+               class="code sev- "><tt><i>1246</i>         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">argvalues</span><span class="p">):</span></tt>
             </div>
             <div id="l1247"
-               class="code sev- "><tt><i>1247</i>             <span class="k">if</span> <span class="n">is_lazy_value</span><span class="p">(</span><span class="n">v</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1247</i> &nbsp;</tt>
             </div>
             <div id="l1248"
-               class="code sev- "><tt><i>1248</i>                 <span class="n">_lazyvalue_used_as_tuple</span> <span class="o">=</span> <span class="kc">True</span></tt>
+               class="code sev- "><tt><i>1248</i>             <span class="c1"># A/ First analyze what is the case at hand</span></tt>
             </div>
             <div id="l1249"
-               class="code sev- "><tt><i>1249</i>             <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1249</i>             <span class="n">_lazyvalue_used_as_tuple</span> <span class="o">=</span> <span class="kc">False</span></tt>
             </div>
             <div id="l1250"
-               class="code sev- "><tt><i>1250</i>                 <span class="k">if</span> <span class="n">auto_refs</span> <span class="ow">and</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">v</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1250</i>             <span class="n">_fixtureref_used_as_tuple</span> <span class="o">=</span> <span class="kc">False</span></tt>
             </div>
             <div id="l1251"
-               class="code sev- "><tt><i>1251</i>                     <span class="c1"># auto create wrapper fixture_refs</span></tt>
+               class="code sev- "><tt><i>1251</i>             <span class="k">if</span> <span class="n">is_lazy_value</span><span class="p">(</span><span class="n">v</span><span class="p">):</span></tt>
             </div>
             <div id="l1252"
-               class="code sev- "><tt><i>1252</i>                     <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">fixture_ref</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1252</i>                 <span class="n">_lazyvalue_used_as_tuple</span> <span class="o">=</span> <span class="kc">True</span></tt>
             </div>
             <div id="l1253"
-               class="code sev- "><tt><i>1253</i>                     <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1253</i>             <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1254"
-               class="code sev- "><tt><i>1254</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></tt>
+               class="code sev- "><tt><i>1254</i>                 <span class="k">if</span> <span class="n">auto_refs</span> <span class="ow">and</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">v</span><span class="p">):</span></tt>
             </div>
             <div id="l1255"
-               class="code sev- "><tt><i>1255</i>                     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1255</i>                     <span class="c1"># auto create wrapper fixture_refs</span></tt>
             </div>
             <div id="l1256"
-               class="code sev- "><tt><i>1256</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">v</span><span class="p">,),</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
+               class="code sev- "><tt><i>1256</i>                     <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">fixture_ref</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></tt>
             </div>
             <div id="l1257"
-               class="code sev- "><tt><i>1257</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1257</i>                     <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l1258"
-               class="code sev- "><tt><i>1258</i>                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1258</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></tt>
             </div>
             <div id="l1259"
-               class="code sev- "><tt><i>1259</i>                     <span class="c1"># Fix the referenced fixture length</span></tt>
+               class="code sev- "><tt><i>1259</i>                     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1260"
-               class="code sev- "><tt><i>1260</i>                     <span class="n">v</span><span class="o">.</span><span class="n">theoretical_size</span> <span class="o">=</span> <span class="n">nb_params</span></tt>
+               class="code sev- "><tt><i>1260</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">v</span><span class="p">,),</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
             </div>
             <div id="l1261"
-               class="code sev- "><tt><i>1261</i>                     <span class="n">_fixtureref_used_as_tuple</span> <span class="o">=</span> <span class="kc">True</span></tt>
+               class="code sev- "><tt><i>1261</i> &nbsp;</tt>
             </div>
             <div id="l1262"
-               class="code sev- "><tt><i>1262</i>                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1262</i>                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">):</span></tt>
             </div>
             <div id="l1263"
-               class="code sev- "><tt><i>1263</i>                     <span class="c1"># same than above but it was in a pytest.param</span></tt>
+               class="code sev- "><tt><i>1263</i>                     <span class="c1"># Fix the referenced fixture length</span></tt>
             </div>
             <div id="l1264"
-               class="code sev- "><tt><i>1264</i>                     <span class="k">if</span> <span class="n">is_lazy_value</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span></tt>
+               class="code sev- "><tt><i>1264</i>                     <span class="n">v</span><span class="o">.</span><span class="n">theoretical_size</span> <span class="o">=</span> <span class="n">nb_params</span></tt>
             </div>
             <div id="l1265"
-               class="code sev- "><tt><i>1265</i>                         <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>1265</i>                     <span class="n">_fixtureref_used_as_tuple</span> <span class="o">=</span> <span class="kc">True</span></tt>
             </div>
             <div id="l1266"
-               class="code sev- "><tt><i>1266</i>                         <span class="n">_lazyvalue_used_as_tuple</span> <span class="o">=</span> <span class="kc">True</span></tt>
+               class="code sev- "><tt><i>1266</i>                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span></tt>
             </div>
             <div id="l1267"
-               class="code sev- "><tt><i>1267</i>                     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1267</i>                     <span class="c1"># same than above but it was in a pytest.param</span></tt>
             </div>
             <div id="l1268"
-               class="code sev- "><tt><i>1268</i>                         <span class="k">if</span> <span class="n">auto_refs</span> <span class="ow">and</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span></tt>
+               class="code sev- "><tt><i>1268</i>                     <span class="k">if</span> <span class="n">is_lazy_value</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span></tt>
             </div>
             <div id="l1269"
-               class="code sev- "><tt><i>1269</i>                             <span class="c1"># auto create wrapper fixture_refs</span></tt>
+               class="code sev- "><tt><i>1269</i>                         <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></tt>
             </div>
             <div id="l1270"
-               class="code sev- "><tt><i>1270</i>                             <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">fixture_ref</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]),)</span></tt>
+               class="code sev- "><tt><i>1270</i>                         <span class="n">_lazyvalue_used_as_tuple</span> <span class="o">=</span> <span class="kc">True</span></tt>
             </div>
             <div id="l1271"
-               class="code sev- "><tt><i>1271</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1271</i>                     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1272"
-               class="code sev- "><tt><i>1272</i>                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fixture_ref</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1272</i>                         <span class="k">if</span> <span class="n">auto_refs</span> <span class="ow">and</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span></tt>
             </div>
             <div id="l1273"
-               class="code sev- "><tt><i>1273</i>                             <span class="n">_fixtureref_used_as_tuple</span> <span class="o">=</span> <span class="kc">True</span></tt>
+               class="code sev- "><tt><i>1273</i>                             <span class="c1"># auto create wrapper fixture_refs</span></tt>
             </div>
             <div id="l1274"
-               class="code sev- "><tt><i>1274</i>                             <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>1274</i>                             <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">fixture_ref</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]),)</span></tt>
             </div>
             <div id="l1275"
-               class="code sev- "><tt><i>1275</i>                             <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1275</i> &nbsp;</tt>
             </div>
             <div id="l1276"
-               class="code sev- "><tt><i>1276</i>                                 <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></tt>
+               class="code sev- "><tt><i>1276</i>                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fixture_ref</span><span class="p">):</span></tt>
             </div>
             <div id="l1277"
-               class="code sev- "><tt><i>1277</i>                             <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1277</i>                             <span class="n">_fixtureref_used_as_tuple</span> <span class="o">=</span> <span class="kc">True</span></tt>
             </div>
             <div id="l1278"
-               class="code sev- "><tt><i>1278</i>                                 <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">v</span><span class="p">,),</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
+               class="code sev- "><tt><i>1278</i>                             <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></tt>
             </div>
             <div id="l1279"
-               class="code sev- "><tt><i>1279</i>                             <span class="c1"># Fix the referenced fixture length</span></tt>
+               class="code sev- "><tt><i>1279</i>                             <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l1280"
-               class="code sev- "><tt><i>1280</i>                             <span class="n">v</span><span class="o">.</span><span class="n">theoretical_size</span> <span class="o">=</span> <span class="n">nb_params</span></tt>
+               class="code sev- "><tt><i>1280</i>                                 <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></tt>
             </div>
             <div id="l1281"
-               class="code sev- "><tt><i>1281</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1281</i>                             <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1282"
-               class="code sev- "><tt><i>1282</i>             <span class="c1"># B/ Now process it</span></tt>
+               class="code sev- "><tt><i>1282</i>                                 <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">v</span><span class="p">,),</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
             </div>
             <div id="l1283"
-               class="code sev- "><tt><i>1283</i>             <span class="k">if</span> <span class="n">_lazyvalue_used_as_tuple</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1283</i>                             <span class="c1"># Fix the referenced fixture length</span></tt>
             </div>
             <div id="l1284"
-               class="code sev- "><tt><i>1284</i>                 <span class="c1"># --- A lazy value is used for several parameters at the same time ---</span></tt>
+               class="code sev- "><tt><i>1284</i>                             <span class="n">v</span><span class="o">.</span><span class="n">theoretical_size</span> <span class="o">=</span> <span class="n">nb_params</span></tt>
             </div>
             <div id="l1285"
                class="code sev- "><tt><i>1285</i> &nbsp;</tt>
             </div>
             <div id="l1286"
-               class="code sev- "><tt><i>1286</i>                 <span class="c1"># Since users have the possibility in the lazy value API to declare a custom id or custom marks,</span></tt>
+               class="code sev- "><tt><i>1286</i>             <span class="c1"># B/ Now process it</span></tt>
             </div>
             <div id="l1287"
-               class="code sev- "><tt><i>1287</i>                 <span class="c1"># we have to take these into account.</span></tt>
+               class="code sev- "><tt><i>1287</i>             <span class="k">if</span> <span class="n">_lazyvalue_used_as_tuple</span><span class="p">:</span></tt>
             </div>
             <div id="l1288"
-               class="code sev- "><tt><i>1288</i>                 <span class="c1"># MARKS:</span></tt>
+               class="code sev- "><tt><i>1288</i>                 <span class="c1"># --- A lazy value is used for several parameters at the same time ---</span></tt>
             </div>
             <div id="l1289"
-               class="code sev- "><tt><i>1289</i>                 <span class="c1"># (1) if there was a pytest.param around it, we have to merge the marks from the lazy value into it</span></tt>
+               class="code sev- "><tt><i>1289</i> &nbsp;</tt>
             </div>
             <div id="l1290"
-               class="code sev- "><tt><i>1290</i>                 <span class="c1"># (2) if there was no pytest.param around it and there are marks, we have to create the pytest.param</span></tt>
+               class="code sev- "><tt><i>1290</i>                 <span class="c1"># Since users have the possibility in the lazy value API to declare a custom id or custom marks,</span></tt>
             </div>
             <div id="l1291"
-               class="code sev- "><tt><i>1291</i>                 <span class="c1"># IDS:</span></tt>
+               class="code sev- "><tt><i>1291</i>                 <span class="c1"># we have to take these into account.</span></tt>
             </div>
             <div id="l1292"
-               class="code sev- "><tt><i>1292</i>                 <span class="c1"># As opposed to the case of nb_params=1, we can not let pytest generate the id as it would create a</span></tt>
+               class="code sev- "><tt><i>1292</i>                 <span class="c1"># MARKS:</span></tt>
             </div>
             <div id="l1293"
-               class="code sev- "><tt><i>1293</i>                 <span class="c1"># tuple of LazyTupleItem ids (e.g. &lt;id&gt;[0]-&lt;id&gt;[1]-...). So</span></tt>
+               class="code sev- "><tt><i>1293</i>                 <span class="c1"># (1) if there was a pytest.param around it, we have to merge the marks from the lazy value into it</span></tt>
             </div>
             <div id="l1294"
-               class="code sev- "><tt><i>1294</i>                 <span class="c1"># (1) if there is a custom id list or generator, do not care about this.</span></tt>
+               class="code sev- "><tt><i>1294</i>                 <span class="c1"># (2) if there was no pytest.param around it and there are marks, we have to create the pytest.param</span></tt>
             </div>
             <div id="l1295"
-               class="code sev- "><tt><i>1295</i>                 <span class="c1"># (2) if there is a pytest.param with a custom id, do not care about this</span></tt>
+               class="code sev- "><tt><i>1295</i>                 <span class="c1"># IDS:</span></tt>
             </div>
             <div id="l1296"
-               class="code sev- "><tt><i>1296</i>                 <span class="c1"># (3) if there is nothing OR if there is a pytest.param with no id, we should create a pytest.param with</span></tt>
+               class="code sev- "><tt><i>1296</i>                 <span class="c1"># As opposed to the case of nb_params=1, we can not let pytest generate the id as it would create a</span></tt>
             </div>
             <div id="l1297"
-               class="code sev- "><tt><i>1297</i>                 <span class="c1"># the id.</span></tt>
+               class="code sev- "><tt><i>1297</i>                 <span class="c1"># tuple of LazyTupleItem ids (e.g. &lt;id&gt;[0]-&lt;id&gt;[1]-...). So</span></tt>
             </div>
             <div id="l1298"
-               class="code sev- "><tt><i>1298</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1298</i>                 <span class="c1"># (1) if there is a custom id list or generator, do not care about this.</span></tt>
             </div>
             <div id="l1299"
-               class="code sev- "><tt><i>1299</i>                 <span class="c1"># in this particular case we have to modify the initial list</span></tt>
+               class="code sev- "><tt><i>1299</i>                 <span class="c1"># (2) if there is a pytest.param with a custom id, do not care about this</span></tt>
             </div>
             <div id="l1300"
-               class="code sev- "><tt><i>1300</i>                 <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_lazy_tuple</span><span class="p">(</span><span class="n">nb_params</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1300</i>                 <span class="c1"># (3) if there is nothing OR if there is a pytest.param with no id, we should create a pytest.param with</span></tt>
             </div>
             <div id="l1301"
-               class="code sev- "><tt><i>1301</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1301</i>                 <span class="c1"># the id.</span></tt>
             </div>
             <div id="l1302"
-               class="code sev- "><tt><i>1302</i>                 <span class="c1"># TUPLE usage: if the id is not provided elsewhere we HAVE to set an id to avoid &lt;id&gt;[0]-&lt;id&gt;[1]...</span></tt>
+               class="code sev- "><tt><i>1302</i> &nbsp;</tt>
             </div>
             <div id="l1303"
-               class="code sev- "><tt><i>1303</i>                 <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_custom_ids</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1303</i>                 <span class="c1"># in this particular case we have to modify the initial list</span></tt>
             </div>
             <div id="l1304"
-               class="code sev- "><tt><i>1304</i>                     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_pytest_param</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1304</i>                 <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_lazy_tuple</span><span class="p">(</span><span class="n">nb_params</span><span class="p">)</span></tt>
             </div>
             <div id="l1305"
-               class="code sev- "><tt><i>1305</i>                         <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1305</i> &nbsp;</tt>
             </div>
             <div id="l1306"
-               class="code sev- "><tt><i>1306</i>                             <span class="c1"># (on pytest 2 we cannot do it since pytest.param does not exist)</span></tt>
+               class="code sev- "><tt><i>1306</i>                 <span class="c1"># TUPLE usage: if the id is not provided elsewhere we HAVE to set an id to avoid &lt;id&gt;[0]-&lt;id&gt;[1]...</span></tt>
             </div>
             <div id="l1307"
-               class="code sev- "><tt><i>1307</i>                             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The custom id </span><span class="si">%r</span><span class="s2"> in `lazy_value` will be ignored as this version of pytest is too old&quot;</span></tt>
+               class="code sev- "><tt><i>1307</i>                 <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_custom_ids</span><span class="p">:</span></tt>
             </div>
             <div id="l1308"
-               class="code sev- "><tt><i>1308</i>                                  <span class="s2">&quot; to support `pytest.param`.&quot;</span> <span class="o">%</span> <span class="n">v</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1308</i>                     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_pytest_param</span><span class="p">:</span></tt>
             </div>
             <div id="l1309"
-               class="code sev- "><tt><i>1309</i>                         <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1309</i>                         <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l1310"
-               class="code sev- "><tt><i>1310</i>                             <span class="k">pass</span>  <span class="c1"># no warning, but no p_id update</span></tt>
+               class="code sev- "><tt><i>1310</i>                             <span class="c1"># (on pytest 2 we cannot do it since pytest.param does not exist)</span></tt>
             </div>
             <div id="l1311"
-               class="code sev- "><tt><i>1311</i>                     <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1311</i>                             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The custom id </span><span class="si">%r</span><span class="s2"> in `lazy_value` will be ignored as this version of pytest is too old&quot;</span></tt>
             </div>
             <div id="l1312"
-               class="code sev- "><tt><i>1312</i>                         <span class="c1"># update/create the pytest.param id on this value</span></tt>
+               class="code sev- "><tt><i>1312</i>                                  <span class="s2">&quot; to support `pytest.param`.&quot;</span> <span class="o">%</span> <span class="n">v</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span></tt>
             </div>
             <div id="l1313"
-               class="code sev- "><tt><i>1313</i>                         <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span></tt>
+               class="code sev- "><tt><i>1313</i>                         <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1314"
-               class="code sev- "><tt><i>1314</i>                         <span class="n">mod_lvid_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1314</i>                             <span class="k">pass</span>  <span class="c1"># no warning, but no p_id update</span></tt>
             </div>
             <div id="l1315"
-               class="code sev- "><tt><i>1315</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1315</i>                     <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1316"
-               class="code sev- "><tt><i>1316</i>                 <span class="c1"># handle marks</span></tt>
+               class="code sev- "><tt><i>1316</i>                         <span class="c1"># update/create the pytest.param id on this value</span></tt>
             </div>
             <div id="l1317"
-               class="code sev- "><tt><i>1317</i>                 <span class="n">_mks</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get_marks</span><span class="p">(</span><span class="n">as_decorators</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1317</i>                         <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span></tt>
             </div>
             <div id="l1318"
-               class="code sev- "><tt><i>1318</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_mks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1318</i>                         <span class="n">mod_lvid_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></tt>
             </div>
             <div id="l1319"
-               class="code sev- "><tt><i>1319</i>                     <span class="c1"># update/create the pytest.param marks on this value</span></tt>
+               class="code sev- "><tt><i>1319</i> &nbsp;</tt>
             </div>
             <div id="l1320"
-               class="code sev- "><tt><i>1320</i>                     <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">_mks</span><span class="p">)</span> <span class="k">if</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_mks</span></tt>
+               class="code sev- "><tt><i>1320</i>                 <span class="c1"># handle marks</span></tt>
             </div>
             <div id="l1321"
-               class="code sev- "><tt><i>1321</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1321</i>                 <span class="n">_mks</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get_marks</span><span class="p">(</span><span class="n">as_decorators</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l1322"
-               class="code sev- "><tt><i>1322</i>                 <span class="c1"># update the marked_argvalues</span></tt>
+               class="code sev- "><tt><i>1322</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_mks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1323"
-               class="code sev- "><tt><i>1323</i>                 <span class="c1"># - at least with the unpacked lazytuple if no pytest.param is there or needs to be created</span></tt>
+               class="code sev- "><tt><i>1323</i>                     <span class="c1"># update/create the pytest.param marks on this value</span></tt>
             </div>
             <div id="l1324"
-               class="code sev- "><tt><i>1324</i>                 <span class="c1"># - with a pytest.param if one is needed</span></tt>
+               class="code sev- "><tt><i>1324</i>                     <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">_mks</span><span class="p">)</span> <span class="k">if</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_mks</span></tt>
             </div>
             <div id="l1325"
-               class="code sev- "><tt><i>1325</i>                 <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1325</i> &nbsp;</tt>
             </div>
             <div id="l1326"
-               class="code sev- "><tt><i>1326</i>                     <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>1326</i>                 <span class="c1"># update the marked_argvalues</span></tt>
             </div>
             <div id="l1327"
-               class="code sev- "><tt><i>1327</i>                 <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1327</i>                 <span class="c1"># - at least with the unpacked lazytuple if no pytest.param is there or needs to be created</span></tt>
             </div>
             <div id="l1328"
-               class="code sev- "><tt><i>1328</i>                     <span class="c1"># note that here argvalues[i] IS a tuple-like so we do not create a tuple around it</span></tt>
+               class="code sev- "><tt><i>1328</i>                 <span class="c1"># - with a pytest.param if one is needed</span></tt>
             </div>
             <div id="l1329"
-               class="code sev- "><tt><i>1329</i>                     <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="p">())</span></tt>
+               class="code sev- "><tt><i>1329</i>                 <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l1330"
-               class="code sev- "><tt><i>1330</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1330</i>                     <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></tt>
             </div>
             <div id="l1331"
-               class="code sev- "><tt><i>1331</i>             <span class="k">elif</span> <span class="n">_fixtureref_used_as_tuple</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1331</i>                 <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1332"
-               class="code sev- "><tt><i>1332</i>                 <span class="c1"># a fixture ref is used for several parameters at the same time</span></tt>
+               class="code sev- "><tt><i>1332</i>                     <span class="c1"># note that here argvalues[i] IS a tuple-like so we do not create a tuple around it</span></tt>
             </div>
             <div id="l1333"
-               class="code sev- "><tt><i>1333</i>                 <span class="n">fixture_indices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></tt>
+               class="code sev- "><tt><i>1333</i>                     <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="p">())</span></tt>
             </div>
             <div id="l1334"
-               class="code sev- "><tt><i>1334</i>             <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1334</i> &nbsp;</tt>
             </div>
             <div id="l1335"
-               class="code sev- "><tt><i>1335</i>                 <span class="c1"># Tuple: check nb params for consistency</span></tt>
+               class="code sev- "><tt><i>1335</i>             <span class="k">elif</span> <span class="n">_fixtureref_used_as_tuple</span><span class="p">:</span></tt>
             </div>
             <div id="l1336"
-               class="code sev- "><tt><i>1336</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">argnames</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1336</i>                 <span class="c1"># a fixture ref is used for several parameters at the same time</span></tt>
             </div>
             <div id="l1337"
-               class="code sev- "><tt><i>1337</i>                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inconsistent number of values in pytest parametrize: </span><span class="si">%s</span><span class="s2"> items found while the &quot;</span></tt>
+               class="code sev- "><tt><i>1337</i>                 <span class="n">fixture_indices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></tt>
             </div>
             <div id="l1338"
-               class="code sev- "><tt><i>1338</i>                                      <span class="s2">&quot;number of parameters is </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">argnames</span><span class="p">),</span> <span class="n">v</span><span class="p">))</span></tt>
+               class="code sev- "><tt><i>1338</i>             <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1339"
-               class="code sev- "><tt><i>1339</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1339</i>                 <span class="c1"># Tuple: check nb params for consistency</span></tt>
             </div>
             <div id="l1340"
-               class="code sev- "><tt><i>1340</i>                 <span class="c1"># let&#39;s dig into the tuple to check if there are fixture_refs or lazy_values</span></tt>
+               class="code sev- "><tt><i>1340</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">argnames</span><span class="p">):</span></tt>
             </div>
             <div id="l1341"
-               class="code sev- "><tt><i>1341</i>                 <span class="n">lv_pos_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">_pval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_lazy_value</span><span class="p">(</span><span class="n">_pval</span><span class="p">)]</span></tt>
+               class="code sev- "><tt><i>1341</i>                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inconsistent number of values in pytest parametrize: </span><span class="si">%s</span><span class="s2"> items found while the &quot;</span></tt>
             </div>
             <div id="l1342"
-               class="code sev- "><tt><i>1342</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lv_pos_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1342</i>                                      <span class="s2">&quot;number of parameters is </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">argnames</span><span class="p">),</span> <span class="n">v</span><span class="p">))</span></tt>
             </div>
             <div id="l1343"
-               class="code sev- "><tt><i>1343</i>                     <span class="n">_mks</span> <span class="o">=</span> <span class="p">[</span><span class="n">mk</span> <span class="k">for</span> <span class="n">_lv</span> <span class="ow">in</span> <span class="n">lv_pos_list</span> <span class="k">for</span> <span class="n">mk</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="n">_lv</span><span class="p">]</span><span class="o">.</span><span class="n">get_marks</span><span class="p">(</span><span class="n">as_decorators</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span></tt>
+               class="code sev- "><tt><i>1343</i> &nbsp;</tt>
             </div>
             <div id="l1344"
-               class="code sev- "><tt><i>1344</i>                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_mks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1344</i>                 <span class="c1"># let&#39;s dig into the tuple to check if there are fixture_refs or lazy_values</span></tt>
             </div>
             <div id="l1345"
-               class="code sev- "><tt><i>1345</i>                         <span class="c1"># update/create the pytest.param marks on this value (global). (id not taken into account)</span></tt>
+               class="code sev- "><tt><i>1345</i>                 <span class="n">lv_pos_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">_pval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_lazy_value</span><span class="p">(</span><span class="n">_pval</span><span class="p">)]</span></tt>
             </div>
             <div id="l1346"
-               class="code sev- "><tt><i>1346</i>                         <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">_mks</span><span class="p">)</span> <span class="k">if</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">_mks</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1346</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lv_pos_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1347"
-               class="code sev- "><tt><i>1347</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="p">())</span></tt>
+               class="code sev- "><tt><i>1347</i>                     <span class="n">_mks</span> <span class="o">=</span> <span class="p">[</span><span class="n">mk</span> <span class="k">for</span> <span class="n">_lv</span> <span class="ow">in</span> <span class="n">lv_pos_list</span> <span class="k">for</span> <span class="n">mk</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="n">_lv</span><span class="p">]</span><span class="o">.</span><span class="n">get_marks</span><span class="p">(</span><span class="n">as_decorators</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span></tt>
             </div>
             <div id="l1348"
-               class="code sev- "><tt><i>1348</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1348</i>                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_mks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1349"
-               class="code sev- "><tt><i>1349</i>                 <span class="c1"># auto create fixtures</span></tt>
+               class="code sev- "><tt><i>1349</i>                         <span class="c1"># update/create the pytest.param marks on this value (global). (id not taken into account)</span></tt>
             </div>
             <div id="l1350"
-               class="code sev- "><tt><i>1350</i>                 <span class="k">if</span> <span class="n">auto_refs</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1350</i>                         <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">_mks</span><span class="p">)</span> <span class="k">if</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">_mks</span><span class="p">)</span></tt>
             </div>
             <div id="l1351"
-               class="code sev- "><tt><i>1351</i>                     <span class="n">autofix_pos_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">_pval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">_pval</span><span class="p">)]</span></tt>
+               class="code sev- "><tt><i>1351</i>                         <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="p">())</span></tt>
             </div>
             <div id="l1352"
-               class="code sev- "><tt><i>1352</i>                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">autofix_pos_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1352</i> &nbsp;</tt>
             </div>
             <div id="l1353"
-               class="code sev- "><tt><i>1353</i>                         <span class="c1"># there is at least one fixture without wrapping ref inside the tuple</span></tt>
+               class="code sev- "><tt><i>1353</i>                 <span class="c1"># auto create fixtures</span></tt>
             </div>
             <div id="l1354"
-               class="code sev- "><tt><i>1354</i>                         <span class="n">autov</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1354</i>                 <span class="k">if</span> <span class="n">auto_refs</span><span class="p">:</span></tt>
             </div>
             <div id="l1355"
-               class="code sev- "><tt><i>1355</i>                         <span class="k">for</span> <span class="n">_k</span> <span class="ow">in</span> <span class="n">autofix_pos_list</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1355</i>                     <span class="n">autofix_pos_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">_pval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">_pval</span><span class="p">)]</span></tt>
             </div>
             <div id="l1356"
-               class="code sev- "><tt><i>1356</i>                             <span class="n">autov</span><span class="p">[</span><span class="n">_k</span><span class="p">]</span> <span class="o">=</span> <span class="n">fixture_ref</span><span class="p">(</span><span class="n">autov</span><span class="p">[</span><span class="n">_k</span><span class="p">])</span></tt>
+               class="code sev- "><tt><i>1356</i>                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">autofix_pos_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1357"
-               class="code sev- "><tt><i>1357</i>                         <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">autov</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>1357</i>                         <span class="c1"># there is at least one fixture without wrapping ref inside the tuple</span></tt>
             </div>
             <div id="l1358"
-               class="code sev- "><tt><i>1358</i>                         <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1358</i>                         <span class="n">autov</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></tt>
             </div>
             <div id="l1359"
-               class="code sev- "><tt><i>1359</i>                             <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></tt>
+               class="code sev- "><tt><i>1359</i>                         <span class="k">for</span> <span class="n">_k</span> <span class="ow">in</span> <span class="n">autofix_pos_list</span><span class="p">:</span></tt>
             </div>
             <div id="l1360"
-               class="code sev- "><tt><i>1360</i>                         <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1360</i>                             <span class="n">autov</span><span class="p">[</span><span class="n">_k</span><span class="p">]</span> <span class="o">=</span> <span class="n">fixture_ref</span><span class="p">(</span><span class="n">autov</span><span class="p">[</span><span class="n">_k</span><span class="p">])</span></tt>
             </div>
             <div id="l1361"
-               class="code sev- "><tt><i>1361</i>                             <span class="c1"># note that here argvalues[i] IS a tuple-like so we do not create a tuple around it</span></tt>
+               class="code sev- "><tt><i>1361</i>                         <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">autov</span><span class="p">)</span></tt>
             </div>
             <div id="l1362"
-               class="code sev- "><tt><i>1362</i>                             <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="p">())</span></tt>
+               class="code sev- "><tt><i>1362</i>                         <span class="k">if</span> <span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
             </div>
             <div id="l1363"
-               class="code sev- "><tt><i>1363</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1363</i>                             <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></tt>
             </div>
             <div id="l1364"
-               class="code sev- "><tt><i>1364</i>                 <span class="n">fix_pos_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">_pval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_pval</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">)]</span></tt>
+               class="code sev- "><tt><i>1364</i>                         <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l1365"
-               class="code sev- "><tt><i>1365</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fix_pos_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>1365</i>                             <span class="c1"># note that here argvalues[i] IS a tuple-like so we do not create a tuple around it</span></tt>
             </div>
             <div id="l1366"
-               class="code sev- "><tt><i>1366</i>                     <span class="c1"># there is at least one fixture ref inside the tuple</span></tt>
+               class="code sev- "><tt><i>1366</i>                             <span class="n">marked_argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParameterSet</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">argvalues</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">p_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marks</span><span class="o">=</span><span class="n">p_marks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="p">())</span></tt>
             </div>
             <div id="l1367"
-               class="code sev- "><tt><i>1367</i>                     <span class="n">fixture_indices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">fix_pos_list</span><span class="p">))</span></tt>
+               class="code sev- "><tt><i>1367</i> &nbsp;</tt>
             </div>
             <div id="l1368"
-               class="code sev- "><tt><i>1368</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1368</i>                 <span class="n">fix_pos_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">_pval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_pval</span><span class="p">,</span> <span class="n">fixture_ref</span><span class="p">)]</span></tt>
             </div>
             <div id="l1369"
-               class="code sev- "><tt><i>1369</i>                 <span class="c1"># let&#39;s dig into the tuple</span></tt>
+               class="code sev- "><tt><i>1369</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fix_pos_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
             </div>
             <div id="l1370"
-               class="code sev- "><tt><i>1370</i>                 <span class="c1"># has_val_ref = any(isinstance(_pval, lazy_value) for _pval in v)</span></tt>
+               class="code sev- "><tt><i>1370</i>                     <span class="c1"># there is at least one fixture ref inside the tuple</span></tt>
             </div>
             <div id="l1371"
-               class="code sev- "><tt><i>1371</i>                 <span class="c1"># val_pos_list = [j for j, _pval in enumerate(v) if isinstance(_pval, lazy_value)]</span></tt>
+               class="code sev- "><tt><i>1371</i>                     <span class="n">fixture_indices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">fix_pos_list</span><span class="p">))</span></tt>
             </div>
             <div id="l1372"
-               class="code sev- "><tt><i>1372</i>                 <span class="c1"># if len(val_pos_list) &gt; 0:</span></tt>
+               class="code sev- "><tt><i>1372</i> &nbsp;</tt>
             </div>
             <div id="l1373"
-               class="code sev- "><tt><i>1373</i>                 <span class="c1">#     # there is at least one value ref inside the tuple</span></tt>
+               class="code sev- "><tt><i>1373</i>                 <span class="c1"># let&#39;s dig into the tuple</span></tt>
             </div>
             <div id="l1374"
-               class="code sev- "><tt><i>1374</i>                 <span class="c1">#     argvalues[i] = tuple_with_value_refs(v, theoreticalsize=nb_params, positions=val_pos_list)</span></tt>
+               class="code sev- "><tt><i>1374</i>                 <span class="c1"># has_val_ref = any(isinstance(_pval, lazy_value) for _pval in v)</span></tt>
             </div>
             <div id="l1375"
-               class="code sev- "><tt><i>1375</i> &nbsp;</tt>
+               class="code sev- "><tt><i>1375</i>                 <span class="c1"># val_pos_list = [j for j, _pval in enumerate(v) if isinstance(_pval, lazy_value)]</span></tt>
             </div>
             <div id="l1376"
-               class="code sev- "><tt><i>1376</i>     <span class="k">return</span> <span class="n">p_ids</span><span class="p">,</span> <span class="n">p_marks</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">fixture_indices</span><span class="p">,</span> <span class="n">mod_lvid_indices</span></tt>
+               class="code sev- "><tt><i>1376</i>                 <span class="c1"># if len(val_pos_list) &gt; 0:</span></tt>
+            </div>
+            <div id="l1377"
+               class="code sev- "><tt><i>1377</i>                 <span class="c1">#     # there is at least one value ref inside the tuple</span></tt>
+            </div>
+            <div id="l1378"
+               class="code sev- "><tt><i>1378</i>                 <span class="c1">#     argvalues[i] = tuple_with_value_refs(v, theoreticalsize=nb_params, positions=val_pos_list)</span></tt>
+            </div>
+            <div id="l1379"
+               class="code sev- "><tt><i>1379</i> &nbsp;</tt>
+            </div>
+            <div id="l1380"
+               class="code sev- "><tt><i>1380</i>     <span class="k">return</span> <span class="n">p_ids</span><span class="p">,</span> <span class="n">p_marks</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">fixture_indices</span><span class="p">,</span> <span class="n">mod_lvid_indices</span></tt>
             </div>
             
          </div>
