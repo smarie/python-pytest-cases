@@ -28,9 +28,9 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER
-from .common_pytest import get_pytest_nodeid, get_pytest_function_scopenum, is_function_node, get_param_names, \
-    get_param_argnames_as_list
+from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST7_OR_GREATER
+from .common_pytest import get_pytest_nodeid, get_pytest_function_scopeval, is_function_node, get_param_names, \
+    get_param_argnames_as_list, has_function_scope, set_callspec_arg_scope_to_function
 
 from .fixture_core1_unions import NOT_USED, USED, is_fixture_union_params, UnionFixtureAlternative
 
@@ -187,12 +187,22 @@ class FixtureClosureNode(object):
         items = self.gen_all_fixture_defs(drop_fake_fixtures=drop_fake_fixtures)
 
         # sort by scope as in pytest fixture closure creator (pytest did not do it in early versions, align with this)
-        if try_to_sort and PYTEST35_OR_GREATER:
-            f_scope = get_pytest_function_scopenum()
-            def sort_by_scope(kv_pair):  # noqa
-                fixture_name, fixture_defs = kv_pair
-                return fixture_defs[-1].scopenum if fixture_defs is not None else f_scope
-            items = sorted(list(items), key=sort_by_scope)
+        if try_to_sort:
+            if PYTEST7_OR_GREATER:
+                # Scope is an enum, values are in reversed order, and the field is _scope
+                f_scope = get_pytest_function_scopeval()
+                def sort_by_scope(kv_pair):
+                    fixture_name, fixture_defs = kv_pair
+                    return fixture_defs[-1]._scope if fixture_defs is not None else f_scope
+                items = sorted(list(items), key=sort_by_scope, reverse=True)
+
+            elif PYTEST35_OR_GREATER:
+                # scopes is a list, values are indices in the list, and the field is scopenum
+                f_scope = get_pytest_function_scopeval()
+                def sort_by_scope(kv_pair):  # noqa
+                    fixture_name, fixture_defs = kv_pair
+                    return fixture_defs[-1].scopenum if fixture_defs is not None else f_scope
+                items = sorted(list(items), key=sort_by_scope)
 
         return OrderedDict(items)
 
@@ -562,7 +572,7 @@ class SuperClosure(MutableSequence):
 
         # # also sort all partitions (note that we cannot rely on the order in all_fixture_defs when scopes are same!)
         # if LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
-        #     f_scope = get_pytest_function_scopenum()
+        #     f_scope = get_pytest_function_scopeval()
         #     for p in self.partitions:
         #         def sort_by_scope2(fixture_name):  # noqa
         #             fixture_defs = all_fixture_defs[fixture_name]
@@ -1031,14 +1041,13 @@ def _cleanup_calls_list(metafunc,
     # create ref lists of fixtures per scope
     _not_always_used_func_scoped = []
     # _not_always_used_other_scoped = []
-    _function_scope_num = get_pytest_function_scopenum()
     for fixture_name in fix_closure_tree.get_not_always_used():
         try:
             fixdef = metafunc._arg2fixturedefs[fixture_name]  # noqa
         except KeyError:
             continue  # dont raise any error here and let pytest say "not found" later
         else:
-            if fixdef[-1].scopenum == _function_scope_num:
+            if has_function_scope(fixdef[-1]):
                 _not_always_used_func_scoped.append(fixture_name)
             # else:
             #     _not_always_used_other_scoped.append(fixture_name)
@@ -1078,12 +1087,12 @@ def _cleanup_calls_list(metafunc,
                     # explicitly add it as discarded by creating a parameter value for it.
                     c.params[fixture_name] = NOT_USED
                     c.indices[fixture_name] = 1
-                    c._arg2scopenum[fixture_name] = _function_scope_num  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
+                    set_callspec_arg_scope_to_function(c, fixture_name)
                 else:
                     # explicitly add it as active
                     c.params[fixture_name] = USED
                     c.indices[fixture_name] = 0
-                    c._arg2scopenum[fixture_name] = _function_scope_num  # get_pytest_scopenum(fixdef[-1].scope)  # noqa
+                    set_callspec_arg_scope_to_function(c, fixture_name)
 
     # finally, if there are some session or module-scoped fixtures that
     # are used in *none* of the calls, they could be deactivated too
