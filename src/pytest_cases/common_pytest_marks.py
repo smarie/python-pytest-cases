@@ -147,7 +147,7 @@ def get_pytest_marks_on_function(f,
     except AttributeError:
         try:
             # old pytest < 3: marks are set as fields on the function object
-            # but they do not have a particulat type, their type is 'instance'...
+            # but they do not have a particular type, their type is 'instance'...
             mks = [v for v in vars(f).values() if str(v).startswith("<MarkInfo '")]
         except AttributeError:
             return []

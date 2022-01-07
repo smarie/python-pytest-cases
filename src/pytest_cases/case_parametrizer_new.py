@@ -814,8 +814,11 @@ def _extract_cases_from_module_or_class(module=None,                      # type
 
             if cls is not None:
                 if isinstance(cls.__dict__[m_name], (staticmethod, classmethod)):
-                    # nothing to do: no need to partialize a 'self' argument
-                    pass
+                    # no need to partialize a 'self' argument
+                    # BUT we'll need to recopy all marks from the holding class to the function
+                    # so let's partialize the function to get a safely editable copy of it
+                    new_m = functools.partial(m)
+
                 else:
                     # Make sure that there is at least one argument
                     try:
@@ -828,16 +831,17 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                             raise TypeError("case method is missing 'self' argument but is not static: %s" % m)
                     # partialize the function to get one without the 'self' argument
                     new_m = functools.partial(m, cls())
-                    # remember the class
-                    setattr(new_m, _HOST_CLS_ATTR, cls)
-                    # we have to recopy all metadata concerning the case function
-                    new_m.__name__ = m.__name__
-                    copy_case_info(m, new_m)
-                    copy_pytest_marks(m, new_m, override=True)
-                    # also recopy all marks from the holding class to the function
-                    copy_pytest_marks(cls, new_m, override=False)
-                    m = new_m
-                    del new_m
+
+                # Remember the host class. We'll later use this flag to remember that this is a partial.
+                setattr(new_m, _HOST_CLS_ATTR, cls)
+                # Recopy all metadata concerning the case function, since partial does not copy the __dict__ by default
+                new_m.__name__ = m.__name__
+                copy_case_info(m, new_m)
+                copy_pytest_marks(m, new_m, override=True)
+                m = new_m
+                del new_m
+                # Finally, propagate all marks from the holding case class to the case function
+                copy_pytest_marks(cls, m, override=False)
 
             if _case_param_factory is None:
                 # Nominal usage: put the case in the dictionary
