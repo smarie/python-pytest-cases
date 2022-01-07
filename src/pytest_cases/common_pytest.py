@@ -660,10 +660,15 @@ class MiniMetafunc(Metafunc):
         from .plugin import PYTEST_CONFIG  # late import to ensure config has been loaded by now
 
         self.config = PYTEST_CONFIG
-        if self.config is None:
-            # only raise if we are in pytest, otherwise silently skip
-            if pytest_is_running():
-                raise ValueError("Internal error - config has not been correctly loaded. Please report")
+
+        # self.config can be `None` if the same module is reloaded by another thread/process inside a test (parallelism)
+        # In that case, a priori we are outside the pytest main runner so we can silently ignore, this
+        # MetaFunc will not be used/read by anyone.
+        # See https://github.com/smarie/python-pytest-cases/issues/242
+        #
+        # if self.config is None:
+        #     if pytest_is_running():
+        #             raise ValueError("Internal error - config has not been correctly loaded. Please report")
 
         self.function = func
         self.definition = MiniFuncDef(func.__name__)
