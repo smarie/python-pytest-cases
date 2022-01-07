@@ -2,10 +2,20 @@
 #            + All contributors to <https://github.com/smarie/python-pyfields>
 #
 #  License: 3-clause BSD, <https://github.com/smarie/python-pyfields/blob/master/LICENSE>
+import pytest
+from distutils.version import LooseVersion
+
+import sys
+
 from pytest_cases import parametrize_with_cases
 from multiprocessing import Pool, Process
 
 from functools import partial
+
+
+PYTEST_VERSION = LooseVersion(pytest.__version__)
+PYTEST3_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.0.0')
+PY3 = sys.version_info >= (3,)
 
 
 class TestCases:
@@ -30,11 +40,17 @@ def test_f_xy(x, y):
     p = Process(target=partial(f), args=(x, y, True))
     p.start()
     p.join()
+    p.terminate()
 
-    # in a pool
-    pool = Pool(processes=2)
-    pool.starmap(partial(f), [(x, y, False), (x, y, True)])
+    if PY3:
+        # in a pool
+        pool = Pool(processes=2)
+        pool.starmap(partial(f), [(x, y, False), (x, y, True)])
+        pool.terminate()
 
 
 def test_synthesis(module_results_dct):
-    assert list(module_results_dct) == ["test_f_xy[A]", "test_f_xy[B]"]
+    if PYTEST3_OR_GREATER:
+        assert list(module_results_dct) == ["test_f_xy[A]", "test_f_xy[B]"]
+    else:
+        assert list(module_results_dct) == ['test_f_xy[A[0]-A[1]]', 'test_f_xy[B[0]-B[1]]']
