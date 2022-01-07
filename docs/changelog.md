@@ -2,6 +2,7 @@
 
 ### 3.6.8 - Bugfix: support for multiprocessing Pool
 
+ - Suppressed warnings in our own tests, to improve packaging maintenance. Fixed [#248](https://github.com/smarie/python-pytest-cases/issues/248)
  - Fixed bug where setting `ids` in `@parametrize` without setting explicitly `idgen=None` would raise a `ValueError`. Fixed [#238](https://github.com/smarie/python-pytest-cases/issues/238).
  - Fixed bug where case-holding class marks were not propagated to static methods and class methods. Fixed [#246](https://github.com/smarie/python-pytest-cases/issues/246) 
  - Fixed support for multiprocessing `Pool`. Fixes [#242](https://github.com/smarie/python-pytest-cases/issues/242)
