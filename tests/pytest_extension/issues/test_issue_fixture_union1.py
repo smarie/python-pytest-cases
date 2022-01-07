@@ -2,7 +2,7 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from distutils.version import LooseVersion
+import warnings
 
 import pytest
 
@@ -15,7 +15,10 @@ def a():
     return 1
 
 
-u = fixture_union("u", (a, a))
+with warnings.catch_warnings():
+    # ignore the warning about the two values being the same fixture.
+    warnings.simplefilter("ignore")
+    u = fixture_union("u", (a, a))
 
 
 def test_foo(u):

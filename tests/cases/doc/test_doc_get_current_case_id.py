@@ -1,3 +1,5 @@
+import pytest
+
 from pytest_cases import parametrize_with_cases, fixture, get_current_case_id
 
 
@@ -7,12 +9,14 @@ def data_b():
 
 @parametrize_with_cases("data", cases=data_b, prefix="data_")
 def test_lazy_val_case(data, request):
-    assert get_current_case_id(request, "data") == "b"
+    with pytest.warns(UserWarning):
+        assert get_current_case_id(request, "data") == "b"
 
 
 @parametrize_with_cases("data,data2", cases=data_b, prefix="data_")
 def test_lazy_val_case_2_args(data, data2, request):
-    assert get_current_case_id(request, ["data", "data2"]) == "b"
+    with pytest.warns(UserWarning):
+        assert get_current_case_id(request, ["data", "data2"]) == "b"
 
 
 @fixture
@@ -26,9 +30,11 @@ def data_a(a):
 
 @parametrize_with_cases("data", cases=data_a, prefix="data_")
 def test_fixture_case(data, request):
-    assert get_current_case_id(request.node, "data") == "a"
+    with pytest.warns(UserWarning):
+        assert get_current_case_id(request.node, "data") == "a"
 
 
 @parametrize_with_cases("data,data2", cases=data_a, prefix="data_")
 def test_fixture_case_2_args(data, data2, request):
-    assert get_current_case_id(request.node, "data,data2") == "a"
+    with pytest.warns(UserWarning):
+        assert get_current_case_id(request.node, "data,data2") == "a"

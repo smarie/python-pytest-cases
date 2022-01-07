@@ -2,6 +2,8 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+import warnings
+
 from copy import copy
 
 import pytest
@@ -21,7 +23,10 @@ def test_issue116(request):
     normal_closure.remove('a')
 
 
-b = fixture_union('b', [a, a])
+with warnings.catch_warnings():
+    # ignore the warning about the two values being the same fixture.
+    warnings.simplefilter("ignore")
+    b = fixture_union('b', [a, a])
 
 
 super_closure = None
