@@ -2306,7 +2306,7 @@
                class="code sev- "><tt><i>757</i>         <span class="c1"># default: use the new id style only when some keyword **args are provided and there are no fixture refs</span></tt>
             </div>
             <div id="l758"
-               class="code sev- "><tt><i>758</i>         <span class="n">idgen</span> <span class="o">=</span> <span class="n">AUTO</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">fixture_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span></tt>
+               class="code sev- "><tt><i>758</i>         <span class="n">idgen</span> <span class="o">=</span> <span class="n">AUTO</span> <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">fixture_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span></tt>
             </div>
             <div id="l759"
                class="code sev- "><tt><i>759</i> &nbsp;</tt>

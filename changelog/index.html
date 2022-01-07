@@ -310,6 +310,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#368-bugfix-support-for-multiprocessing-pool" class="md-nav__link">
+    3.6.8 - Bugfix: support for multiprocessing Pool
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#367-minor-improvements-and-preparing-for-pytest-7" class="md-nav__link">
     3.6.7 - Minor improvements and preparing for pytest 7
   </a>
@@ -1086,6 +1093,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#368-bugfix-support-for-multiprocessing-pool" class="md-nav__link">
+    3.6.8 - Bugfix: support for multiprocessing Pool
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#367-minor-improvements-and-preparing-for-pytest-7" class="md-nav__link">
     3.6.7 - Minor improvements and preparing for pytest 7
   </a>
@@ -1845,6 +1859,13 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="368-bugfix-support-for-multiprocessing-pool">3.6.8 - Bugfix: support for multiprocessing Pool<a class="headerlink" href="#368-bugfix-support-for-multiprocessing-pool" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Suppressed warnings in our own tests, to improve packaging maintenance. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/248">#248</a></li>
+<li>Fixed bug where setting <code>ids</code> in <code>@parametrize</code> without setting explicitly <code>idgen=None</code> would raise a <code>ValueError</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/238">#238</a>.</li>
+<li>Fixed bug where case-holding class marks were not propagated to static methods and class methods. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/246">#246</a> </li>
+<li>Fixed support for multiprocessing <code>Pool</code>. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/242">#242</a></li>
+</ul>
 <h3 id="367-minor-improvements-and-preparing-for-pytest-7">3.6.7 - Minor improvements and preparing for pytest 7<a class="headerlink" href="#367-minor-improvements-and-preparing-for-pytest-7" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Improved error message when a case function nested in a class has no <code>self</code> argument and is not static. Fixes <a href="https://github.com/smarie/python-pytest-cases/issues/243">#243</a></li>

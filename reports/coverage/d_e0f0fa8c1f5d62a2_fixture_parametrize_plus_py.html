@@ -816,7 +816,7 @@
     <p class="pln"><span class="n"><a id="t755" href="#t755">755</a></span><span class="t">    <span class="com"># idgen default</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t756" href="#t756">756</a></span><span class="t">    <span class="key">if</span> <span class="nam">idgen</span> <span class="key">is</span> <span class="nam">_IDGEN</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t757" href="#t757">757</a></span><span class="t">        <span class="com"># default: use the new id style only when some keyword **args are provided and there are no fixture refs</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t758" href="#t758">758</a></span><span class="t">        <span class="nam">idgen</span> <span class="op">=</span> <span class="nam">AUTO</span> <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">args</span><span class="op">)</span> <span class="op">></span> <span class="num">0</span> <span class="key">and</span> <span class="nam">len</span><span class="op">(</span><span class="nam">fixture_indices</span><span class="op">)</span> <span class="op">==</span> <span class="num">0</span> <span class="key">else</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t758" href="#t758">758</a></span><span class="t">        <span class="nam">idgen</span> <span class="op">=</span> <span class="nam">AUTO</span> <span class="key">if</span> <span class="op">(</span><span class="nam">len</span><span class="op">(</span><span class="nam">args</span><span class="op">)</span> <span class="op">></span> <span class="num">0</span> <span class="key">and</span> <span class="nam">len</span><span class="op">(</span><span class="nam">fixture_indices</span><span class="op">)</span> <span class="op">==</span> <span class="num">0</span> <span class="key">and</span> <span class="nam">ids</span> <span class="key">is</span> <span class="key">None</span><span class="op">)</span> <span class="key">else</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t759" href="#t759">759</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t760" href="#t760">760</a></span><span class="t">    <span class="key">if</span> <span class="nam">idgen</span> <span class="key">is</span> <span class="nam">AUTO</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t761" href="#t761">761</a></span><span class="t">        <span class="com"># note: we use a "trick" here with mini_idval to get the appropriate result (argname='', idx=v)</span>&nbsp;</span><span class="r"></span></p>
@@ -1444,7 +1444,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.2</a>,
-            created at 2022-01-03 09:03 +0000
+            created at 2022-01-07 14:45 +0000
         </p>
     </div>
 </footer>

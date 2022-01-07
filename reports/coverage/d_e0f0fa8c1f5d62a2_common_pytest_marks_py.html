@@ -208,7 +208,7 @@
     <p class="run"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">    <span class="key">except</span> <span class="nam">AttributeError</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">        <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t">            <span class="com"># old pytest &lt; 3: marks are set as fields on the function object</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">            <span class="com"># but they do not have a particulat type, their type is 'instance'...</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">            <span class="com"># but they do not have a particular type, their type is 'instance'...</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t">            <span class="nam">mks</span> <span class="op">=</span> <span class="op">[</span><span class="nam">v</span> <span class="key">for</span> <span class="nam">v</span> <span class="key">in</span> <span class="nam">vars</span><span class="op">(</span><span class="nam">f</span><span class="op">)</span><span class="op">.</span><span class="nam">values</span><span class="op">(</span><span class="op">)</span> <span class="key">if</span> <span class="nam">str</span><span class="op">(</span><span class="nam">v</span><span class="op">)</span><span class="op">.</span><span class="nam">startswith</span><span class="op">(</span><span class="str">"&lt;MarkInfo '"</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t">        <span class="key">except</span> <span class="nam">AttributeError</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t">            <span class="key">return</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
@@ -416,7 +416,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.2</a>,
-            created at 2022-01-03 09:03 +0000
+            created at 2022-01-07 14:45 +0000
         </p>
     </div>
 </footer>
