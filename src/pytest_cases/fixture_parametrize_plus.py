@@ -755,7 +755,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
     # idgen default
     if idgen is _IDGEN:
         # default: use the new id style only when some keyword **args are provided and there are no fixture refs
-        idgen = AUTO if len(args) > 0 and len(fixture_indices) == 0 else None
+        idgen = AUTO if (len(args) > 0 and len(fixture_indices) == 0 and ids is None) else None
 
     if idgen is AUTO:
         # note: we use a "trick" here with mini_idval to get the appropriate result (argname='', idx=v)
