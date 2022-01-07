@@ -1,5 +1,11 @@
 # Changelog
 
+### 3.6.8 - Bugfix: support for multiprocessing Pool
+
+ - Fixed bug where setting `ids` in `@parametrize` without setting explicitly `idgen=None` would raise a `ValueError`. Fixed [#238](https://github.com/smarie/python-pytest-cases/issues/238).
+ - Fixed bug where case-holding class marks were not propagated to static methods and class methods. Fixed [#246](https://github.com/smarie/python-pytest-cases/issues/246) 
+ - Fixed support for multiprocessing `Pool`. Fixes [#242](https://github.com/smarie/python-pytest-cases/issues/242)
+
 ### 3.6.7 - Minor improvements and preparing for pytest 7
 
  - Improved error message when a case function nested in a class has no `self` argument and is not static. Fixes [#243](https://github.com/smarie/python-pytest-cases/issues/243)
