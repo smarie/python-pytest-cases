@@ -550,14 +550,20 @@ class ProductParamAlternative(SingleParamAlternative):
 EMPTY_ID = "<pytest_cases_empty_id>"
 
 
+def _replace_list_contents(the_list, new_contents):
+    """Replaces the contents of a list"""
+    the_list.clear()
+    the_list.extend(new_contents)
+
+
 if has_pytest_param:
     def remove_empty_ids(callspec):
         # used by plugin.py to remove the EMPTY_ID from the callspecs
-        callspec._idlist = [c for c in callspec._idlist if not c.startswith(EMPTY_ID)]
+        _replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.startswith(EMPTY_ID)])
 else:
     def remove_empty_ids(callspec):
         # used by plugin.py to remove the EMPTY_ID from the callspecs
-        callspec._idlist = [c for c in callspec._idlist if not c.endswith(EMPTY_ID)]
+        _replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.endswith(EMPTY_ID)])
 
 
 # elif PYTEST421_OR_GREATER:
