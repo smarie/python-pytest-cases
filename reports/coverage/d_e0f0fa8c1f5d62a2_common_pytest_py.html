@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for src/pytest_cases/common_pytest.py: 79%</title>
+    <title>Coverage for src/pytest_cases/common_pytest.py: 80%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -13,7 +13,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>src/pytest_cases/common_pytest.py</b>:
-            <span class="pc_cov">79%</span>
+            <span class="pc_cov">80%</span>
         </h1>
         <div id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -45,8 +45,8 @@
         </div>
         <h2>
             <span class="text">306 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">246<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">60<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">252<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">54<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">59<span class="text"> excluded</span></button>
             <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">16<span class="text"> partial</span></button>
         </h2>
@@ -585,14 +585,14 @@
     <p class="pln"><span class="n"><a id="t524" href="#t524">524</a></span><span class="t">    <span class="com"># pytest 7+ : scopes is an enum</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t525" href="#t525">525</a></span><span class="t">    <span class="key">from</span> <span class="nam">_pytest</span><span class="op">.</span><span class="nam">scope</span> <span class="key">import</span> <span class="nam">Scope</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t526" href="#t526">526</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t527" href="#t527">527</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_pytest_function_scopeval</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t528" href="#t528">528</a></span><span class="t">        <span class="key">return</span> <span class="nam">Scope</span><span class="op">.</span><span class="nam">Function</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t527" href="#t527">527</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_pytest_function_scopeval</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t528" href="#t528">528</a></span><span class="t">        <span class="key">return</span> <span class="nam">Scope</span><span class="op">.</span><span class="nam">Function</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t529" href="#t529">529</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t530" href="#t530">530</a></span><span class="t">    <span class="key">def</span> <span class="nam">has_function_scope</span><span class="op">(</span><span class="nam">fixdef</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t531" href="#t531">531</a></span><span class="t">        <span class="key">return</span> <span class="nam">fixdef</span><span class="op">.</span><span class="nam">_scope</span> <span class="key">is</span> <span class="nam">Scope</span><span class="op">.</span><span class="nam">Function</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t530" href="#t530">530</a></span><span class="t">    <span class="key">def</span> <span class="nam">has_function_scope</span><span class="op">(</span><span class="nam">fixdef</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t531" href="#t531">531</a></span><span class="t">        <span class="key">return</span> <span class="nam">fixdef</span><span class="op">.</span><span class="nam">_scope</span> <span class="key">is</span> <span class="nam">Scope</span><span class="op">.</span><span class="nam">Function</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t532" href="#t532">532</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t533" href="#t533">533</a></span><span class="t">    <span class="key">def</span> <span class="nam">set_callspec_arg_scope_to_function</span><span class="op">(</span><span class="nam">callspec</span><span class="op">,</span> <span class="nam">arg_name</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t534" href="#t534">534</a></span><span class="t">        <span class="nam">callspec</span><span class="op">.</span><span class="nam">_arg2scope</span><span class="op">[</span><span class="nam">arg_name</span><span class="op">]</span> <span class="op">=</span> <span class="nam">Scope</span><span class="op">.</span><span class="nam">Function</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t533" href="#t533">533</a></span><span class="t">    <span class="key">def</span> <span class="nam">set_callspec_arg_scope_to_function</span><span class="op">(</span><span class="nam">callspec</span><span class="op">,</span> <span class="nam">arg_name</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t534" href="#t534">534</a></span><span class="t">        <span class="nam">callspec</span><span class="op">.</span><span class="nam">_arg2scope</span><span class="op">[</span><span class="nam">arg_name</span><span class="op">]</span> <span class="op">=</span> <span class="nam">Scope</span><span class="op">.</span><span class="nam">Function</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t535" href="#t535">535</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t536" href="#t536">536</a></span><span class="t"><span class="key">except</span> <span class="nam">ImportError</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t537" href="#t537">537</a></span><span class="t">    <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -997,8 +997,8 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.2</a>,
-            created at 2022-01-07 14:45 +0000
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.3.1</a>,
+            created at 2022-02-08 17:26 +0000
         </p>
     </div>
 </footer>

@@ -101,7 +101,7 @@
                class="code sev- "><tt><i>28</i> <span class="kn">from</span> <span class="nn">.common_mini_six</span> <span class="kn">import</span> <span class="n">string_types</span></tt>
             </div>
             <div id="l29"
-               class="code sev- "><tt><i>29</i> <span class="kn">from</span> <span class="nn">.common_others</span> <span class="kn">import</span> <span class="n">AUTO</span><span class="p">,</span> <span class="n">robust_isinstance</span></tt>
+               class="code sev- "><tt><i>29</i> <span class="kn">from</span> <span class="nn">.common_others</span> <span class="kn">import</span> <span class="n">AUTO</span><span class="p">,</span> <span class="n">robust_isinstance</span><span class="p">,</span> <span class="n">replace_list_contents</span></tt>
             </div>
             <div id="l30"
                class="code sev- "><tt><i>30</i> <span class="kn">from</span> <span class="nn">.common_pytest_marks</span> <span class="kn">import</span> <span class="n">has_pytest_param</span><span class="p">,</span> <span class="n">get_param_argnames_as_list</span></tt>
@@ -1700,7 +1700,7 @@
                class="code sev- "><tt><i>555</i>         <span class="c1"># used by plugin.py to remove the EMPTY_ID from the callspecs</span></tt>
             </div>
             <div id="l556"
-               class="code sev- "><tt><i>556</i>         <span class="n">callspec</span><span class="o">.</span><span class="n">_idlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">callspec</span><span class="o">.</span><span class="n">_idlist</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">EMPTY_ID</span><span class="p">)]</span></tt>
+               class="code sev- "><tt><i>556</i>         <span class="n">replace_list_contents</span><span class="p">(</span><span class="n">callspec</span><span class="o">.</span><span class="n">_idlist</span><span class="p">,</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">callspec</span><span class="o">.</span><span class="n">_idlist</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">EMPTY_ID</span><span class="p">)])</span></tt>
             </div>
             <div id="l557"
                class="code sev- "><tt><i>557</i> <span class="k">else</span><span class="p">:</span></tt>
@@ -1712,7 +1712,7 @@
                class="code sev- "><tt><i>559</i>         <span class="c1"># used by plugin.py to remove the EMPTY_ID from the callspecs</span></tt>
             </div>
             <div id="l560"
-               class="code sev- "><tt><i>560</i>         <span class="n">callspec</span><span class="o">.</span><span class="n">_idlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">callspec</span><span class="o">.</span><span class="n">_idlist</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">EMPTY_ID</span><span class="p">)]</span></tt>
+               class="code sev- "><tt><i>560</i>         <span class="n">replace_list_contents</span><span class="p">(</span><span class="n">callspec</span><span class="o">.</span><span class="n">_idlist</span><span class="p">,</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">callspec</span><span class="o">.</span><span class="n">_idlist</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">EMPTY_ID</span><span class="p">)])</span></tt>
             </div>
             <div id="l561"
                class="code sev- "><tt><i>561</i> &nbsp;</tt>

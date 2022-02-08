@@ -68,7 +68,7 @@
                class="code sev- "><tt><i>17</i> &nbsp;</tt>
             </div>
             <div id="l18"
-               class="code sev- "><tt><i>18</i> <span class="kn">from</span> <span class="nn">.common_mini_six</span> <span class="kn">import</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">PY3</span></tt>
+               class="code sev- "><tt><i>18</i> <span class="kn">from</span> <span class="nn">.common_mini_six</span> <span class="kn">import</span> <span class="n">string_types</span><span class="p">,</span> <span class="n">PY3</span><span class="p">,</span> <span class="n">PY34</span></tt>
             </div>
             <div id="l19"
                class="code sev- "><tt><i>19</i> &nbsp;</tt>
@@ -1758,6 +1758,42 @@
             </div>
             <div id="l575"
                class="code sev- "><tt><i>575</i>         <span class="k">return</span> <span class="n">new_name</span></tt>
+            </div>
+            <div id="l576"
+               class="code sev- "><tt><i>576</i> &nbsp;</tt>
+            </div>
+            <div id="l577"
+               class="code sev- "><tt><i>577</i> &nbsp;</tt>
+            </div>
+            <div id="l578"
+               class="code sev- "><tt><i>578</i> <span class="k">if</span> <span class="n">PY34</span><span class="p">:</span></tt>
+            </div>
+            <div id="l579"
+               class="code sev- "><tt><i>579</i>     <span class="k">def</span> <span class="nf">replace_list_contents</span><span class="p">(</span><span class="n">the_list</span><span class="p">,</span> <span class="n">new_contents</span><span class="p">):</span></tt>
+            </div>
+            <div id="l580"
+               class="code sev- "><tt><i>580</i>         <span class="sd">&quot;&quot;&quot;Replaces the contents of a list&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l581"
+               class="code sev- "><tt><i>581</i>         <span class="n">the_list</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></tt>
+            </div>
+            <div id="l582"
+               class="code sev- "><tt><i>582</i>         <span class="n">the_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_contents</span><span class="p">)</span></tt>
+            </div>
+            <div id="l583"
+               class="code sev- "><tt><i>583</i> <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l584"
+               class="code sev- "><tt><i>584</i>     <span class="k">def</span> <span class="nf">replace_list_contents</span><span class="p">(</span><span class="n">the_list</span><span class="p">,</span> <span class="n">new_contents</span><span class="p">):</span></tt>
+            </div>
+            <div id="l585"
+               class="code sev- "><tt><i>585</i>         <span class="sd">&quot;&quot;&quot;Replaces the contents of a list&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l586"
+               class="code sev- "><tt><i>586</i>         <span class="k">del</span> <span class="n">the_list</span><span class="p">[:]</span></tt>
+            </div>
+            <div id="l587"
+               class="code sev- "><tt><i>587</i>         <span class="n">the_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_contents</span><span class="p">)</span></tt>
             </div>
             
          </div>
