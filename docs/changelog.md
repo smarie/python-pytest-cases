@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.9 - Bugfix with pytest 7
+
+ - Fixed `FrozenInstanceError` when using `pytest 7.0.0`. Fixed [#251](https://github.com/smarie/python-pytest-cases/issues/251). [PR#253](https://github.com/smarie/python-pytest-cases/pull/253) by [jammer87](https://github.com/jammer87)
+
 ### 3.6.8 - Bugfix: support for multiprocessing Pool
 
  - Suppressed warnings in our own tests, to improve packaging maintenance. Fixed [#248](https://github.com/smarie/python-pytest-cases/issues/248)
