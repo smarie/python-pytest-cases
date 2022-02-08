@@ -15,7 +15,7 @@ try:
 except ImportError:
     pass
 
-from .common_mini_six import string_types, PY3
+from .common_mini_six import string_types, PY3, PY34
 
 
 def get_code_first_line(f):
@@ -573,3 +573,15 @@ def make_identifier(name  # type: str
         if re.match("^(?=\\d)", new_name):
             new_name = "_" + new_name
         return new_name
+
+
+if PY34:
+    def replace_list_contents(the_list, new_contents):
+        """Replaces the contents of a list"""
+        the_list.clear()
+        the_list.extend(new_contents)
+else:
+    def replace_list_contents(the_list, new_contents):
+        """Replaces the contents of a list"""
+        del the_list[:]
+        the_list.extend(new_contents)

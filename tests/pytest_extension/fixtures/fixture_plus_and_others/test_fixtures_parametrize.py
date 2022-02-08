@@ -77,13 +77,14 @@ else:
         print(myfix2)
 
 
-    def test_synthesis(module_results_dct):
+    def test_synthesis2(module_results_dct):
         """Use pytest-harvest to check that the list of executed tests is correct """
 
         assert list(module_results_dct) == ['test_one[one-one]',
                                             'test_one[one-two]',
                                             'test_one[two-one]',
                                             'test_one[two-two]',
+                                            'test_synthesis',
                                             'test_two[1-2-!0!]',
                                             'test_two[p_a-!0!]',
                                             'test_three[1-2-!0!-a]',

@@ -26,7 +26,7 @@ import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
 from .common_mini_six import string_types
-from .common_others import AUTO, robust_isinstance
+from .common_others import AUTO, robust_isinstance, replace_list_contents
 from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
@@ -553,11 +553,11 @@ EMPTY_ID = "<pytest_cases_empty_id>"
 if has_pytest_param:
     def remove_empty_ids(callspec):
         # used by plugin.py to remove the EMPTY_ID from the callspecs
-        callspec._idlist = [c for c in callspec._idlist if not c.startswith(EMPTY_ID)]
+        replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.startswith(EMPTY_ID)])
 else:
     def remove_empty_ids(callspec):
         # used by plugin.py to remove the EMPTY_ID from the callspecs
-        callspec._idlist = [c for c in callspec._idlist if not c.endswith(EMPTY_ID)]
+        replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.endswith(EMPTY_ID)])
 
 
 # elif PYTEST421_OR_GREATER:

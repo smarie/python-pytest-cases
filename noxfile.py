@@ -22,9 +22,11 @@ ENVS = {
     # (PY310, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 3.9 - put first to detect easy issues faster.
     (PY39, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY39, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     # python 3.8
     (PY38, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<5"}},
-    (PY38, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<6"}},
+    (PY38, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<6", "pytest-asyncio": DONT_INSTALL}},
+    (PY38, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     (PY38, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 2.7
     (PY27, "pytest2.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<3", "pytest-asyncio": DONT_INSTALL}},
@@ -35,16 +37,17 @@ ENVS = {
     (PY35, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<4", "pytest-asyncio": DONT_INSTALL}},
     (PY35, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<5", "pytest-asyncio": DONT_INSTALL}},
     (PY35, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<6"}},
-    (PY35, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": ""}},
     # python 3.6
     (PY36, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<4"}},
     (PY36, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<5"}},
     (PY36, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<6"}},
+    (PY36, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     (PY36, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 3.7
     (PY37, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<4"}},
     (PY37, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<5"}},
-    (PY37, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<6"}},
+    (PY37, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<6", "pytest-asyncio": DONT_INSTALL}},
+    (PY37, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     # IMPORTANT: this should be last so that the folder docs/reports is not deleted afterwards
     (PY37, "pytest-latest"): {"coverage": True, "pkg_specs": {"pip": ">19", "pytest": ""}}
 }
@@ -123,17 +126,20 @@ def tests(session: PowerSession, coverage, pkg_specs):
     # Fail if the assumed python version is not the actual one
     session.run2("python ci_tools/check_python_version.py %s" % session.python)
 
-    # install self so that it is recognized by pytest
-    session.run2("pip install -e . --no-deps")
-
     # check that it can be imported even from a different folder
-    session.run2(['python', '-c', '"import os; os.chdir(\'./docs/\'); import %s"' % pkg_name])
+    # session.run2(['python', '-c', '"import os; os.chdir(\'./docs/\'); import %s"' % pkg_name])
 
     # finally run all tests
     if not coverage:
+        # install self
+        session.run2("pip install . --no-deps")
+
         # simple: pytest only
         session.run2("python -m pytest --cache-clear -v tests/")
     else:
+        # install self in dev mode so that coverage works
+        session.run2("pip install -e . --no-deps")
+
         # coverage + junit html reports + badge generation
         session.install_reqs(phase="coverage",
                              phase_reqs=["coverage", "pytest-html", "genbadge[tests,coverage]"],
@@ -162,7 +168,7 @@ def flake8(session: PowerSession):
 
     session.install("-r", str(Folders.ci_tools / "flake8-requirements.txt"))
     session.install("genbadge[flake8]")
-    session.run2("pip install -e .[flake8]")
+    session.run2("pip install .")
 
     rm_folder(Folders.flake8_reports)
     Folders.flake8_reports.mkdir(parents=True, exist_ok=True)
