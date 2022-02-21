@@ -280,7 +280,7 @@ Note that `@parametrize_with_cases` collection and parameter creation steps are 
 
 ```python
 # Collect all cases
-cases_funs = get_all_cases(f, cases=cases, prefix=prefix, 
+cases_funs = get_all_cases(f, cases=cases, prefix=prefix,
                            glob=glob, has_tag=has_tag, filter=filter)
 
 # Transform the various functions found
@@ -335,7 +335,7 @@ Note that you can get the same contents directly by using the [`current_cases`](
 ### `get_all_cases`
 
 ```python
-def get_all_cases(parametrization_target: Callable,
+def get_all_cases(parametrization_target: Callable = None,
                   cases: Union[Callable, Type, ModuleRef] = None,
                   prefix: str = 'case_',
                   glob: str = None,
@@ -343,8 +343,19 @@ def get_all_cases(parametrization_target: Callable,
                   filter: Callable[[Callable], bool] = None
                   ) -> List[Callable]:
 ```
+Collect all cases as used with [`@parametrize_with_cases`](#parametrize_with_cases). See [`@parametrize_with_cases`](#parametrize_with_cases) for details on the parameters.
 
-Lists all desired cases for a given `parametrization_target` (a test function or a fixture). This function may be convenient for debugging purposes. See [`@parametrize_with_cases`](#parametrize_with_cases) for details on the parameters.
+This can be used to lists all desired cases for a given `parametrization_target` (a test function or a fixture) which may be convenient for debugging purposes.
+
+ - If `cases` is `AUTO`, `"."` or contains a string module reference, `parametrization_target` must be provided.
+
+```python
+# Without a parametrization target
+cases = get_all_cases(cases=[case_1, case_2, case_3], has_tag=["banana"])
+
+# With a parametrization target
+cases = get_all_cases(f, cases=".", has_tag=["banana"])
+```
 
 
 ### `get_parametrize_args`

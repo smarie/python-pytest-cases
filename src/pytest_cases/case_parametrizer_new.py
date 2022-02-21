@@ -205,19 +205,20 @@ def create_glob_name_filter(glob_str  # type: str
     return _glob_name_filter
 
 
-def get_all_cases(parametrization_target,  # type: Callable
-                  cases=None,              # type: Union[Callable, Type, ModuleRef]
-                  prefix=CASE_PREFIX_FUN,  # type: str
-                  glob=None,               # type: str
-                  has_tag=None,            # type: Union[str, Iterable[str]]
-                  filter=None              # type: Callable[[Callable], bool]  # noqa
+def get_all_cases(parametrization_target=None,  # type: Optional[Callable]
+                  cases=None,                   # type: Union[Callable, Type, ModuleRef]
+                  prefix=CASE_PREFIX_FUN,       # type: str
+                  glob=None,                    # type: str
+                  has_tag=None,                 # type: Union[str, Iterable[str]]
+                  filter=None                   # type: Callable[[Callable], bool]  # noqa
                   ):
     # type: (...) -> List[Callable]
     """
     Lists all desired cases for a given `parametrization_target` (a test function or a fixture). This function may be
     convenient for debugging purposes. See `@parametrize_with_cases` for details on the parameters.
 
-    :param parametrization_target: a test function
+    :param parametrization_target: a test function to get the module reference from. Required for cases that
+        rely on module reference.
     :param cases: a case function, a class containing cases, a module or a module name string (relative module
         names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module.
         `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
@@ -265,9 +266,23 @@ def get_all_cases(parametrization_target,  # type: Callable
 
         filters += (filter,)
 
+    # Validate that we have a parametrization target
+    if parametrize_with_cases is None:
+        if any(
+            c is AUTO
+            or c is THIS_MODULE
+            or (isinstance(c, str) and c.beginswith("."))
+            for c in cases
+        ):
+            raise ValueError(
+                "Cases beginning with '.' or using AUTO require a parametrization target,"
+                " please use `get_all_cases(target_func, cases=...)`"
+            )
+
     # parent package
-    caller_module_name = getattr(parametrization_target, '__module__', None)
-    parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
+    if parametrization_target is not None:
+        caller_module_name = getattr(parametrization_target, '__module__', None)
+        parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
 
     # start collecting all cases
     cases_funs = []
@@ -286,6 +301,7 @@ def get_all_cases(parametrization_target,  # type: Callable
             else:
                 raise ValueError("Unsupported case function: %r" % c)
         else:
+
             # module
             if c is AUTO:
                 # First try `test_<name>_cases.py` Then `case_<name>.py`
