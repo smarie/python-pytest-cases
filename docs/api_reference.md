@@ -257,8 +257,9 @@ CaseFilter(filter_function: Callable)
 ### `@parametrize_with_cases`
 
 ```python
+CaseType = Union[Callable, Type, ModuleRef]
 @parametrize_with_cases(argnames: str,
-                        cases: Union[Callable, Type, ModuleRef] = AUTO,
+                        cases: Union[CaseType, List[CaseType]] = AUTO,
                         prefix: str = 'case_',
                         glob: str = None,
                         has_tag: Union[str, Iterable[str]] = None,
@@ -274,7 +275,7 @@ A decorator for test functions or fixtures, to parametrize them based on test ca
 
 By default (`cases=AUTO`) the list of test cases is automatically drawn from the python module file named `test_<name>_cases.py` or if not found, `case_<name>.py`,  where `test_<name>` is the current module name.
 
-Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name; or a list of such elements. Note that both absolute and relative module names are suported.
+Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name; or a list of containing any mix of these elements. Note that both absolute and relative module names are supported.
 
 Note that `@parametrize_with_cases` collection and parameter creation steps are strictly equivalent to [`get_all_cases`](#get_all_cases) + [`get_parametrize_args`](#get_parametrize_args). This can be handy for debugging purposes.
 
@@ -335,8 +336,9 @@ Note that you can get the same contents directly by using the [`current_cases`](
 ### `get_all_cases`
 
 ```python
+CaseType = Union[Callable, Type, ModuleRef]
 def get_all_cases(parametrization_target: Callable,
-                  cases: Union[Callable, Type, ModuleRef] = None,
+                  cases: Union[CaseType, List[CaseType]] = None,
                   prefix: str = 'case_',
                   glob: str = None,
                   has_tag: Union[str, Iterable[str]] = None,

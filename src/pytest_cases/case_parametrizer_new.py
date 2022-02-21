@@ -56,6 +56,7 @@ try:
     from types import ModuleType  # noqa
 
     ModuleRef = Union[str, ModuleType, Literal[AUTO], Literal[THIS_MODULE]]  # noqa
+    CaseType = Union[Callable, Type, ModuleRef]
 
 except:  # noqa
     pass
@@ -65,7 +66,7 @@ _HOST_CLS_ATTR = '_pytestcases_host_cls'
 
 
 def parametrize_with_cases(argnames,                # type: Union[str, List[str], Tuple[str, ...]]
-                           cases=AUTO,              # type: Union[Callable, Type, ModuleRef]
+                           cases=AUTO,              # type: Union[CaseType, List[CaseType]]
                            prefix=CASE_PREFIX_FUN,  # type: str
                            glob=None,               # type: str
                            has_tag=None,            # type: Any
@@ -206,7 +207,7 @@ def create_glob_name_filter(glob_str  # type: str
 
 
 def get_all_cases(parametrization_target,  # type: Callable
-                  cases=None,              # type: Union[Callable, Type, ModuleRef]
+                  cases=None,              # type: Union[CaseType, List[CaseType]]
                   prefix=CASE_PREFIX_FUN,  # type: str
                   glob=None,               # type: str
                   has_tag=None,            # type: Union[str, Iterable[str]]
