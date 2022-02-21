@@ -347,7 +347,7 @@ Collect all cases as used with [`@parametrize_with_cases`](#parametrize_with_cas
 
 This can be used to lists all desired cases for a given `parametrization_target` (a test function or a fixture) which may be convenient for debugging purposes.
 
- - If `cases` is `AUTO`, `"."` or contains a string module reference, `parametrization_target` must be provided.
+ - If `cases` is `AUTO` or contains a string module reference, `parametrization_target` must be provided.
 
 ```python
 # Without a parametrization target

@@ -205,7 +205,7 @@ def create_glob_name_filter(glob_str  # type: str
     return _glob_name_filter
 
 
-def get_all_cases(parametrization_target=None,  # type: Optional[Callable]
+def get_all_cases(parametrization_target=None,  # type: Callable
                   cases=None,                   # type: Union[Callable, Type, ModuleRef]
                   prefix=CASE_PREFIX_FUN,       # type: str
                   glob=None,                    # type: str
@@ -266,14 +266,9 @@ def get_all_cases(parametrization_target=None,  # type: Optional[Callable]
 
         filters += (filter,)
 
-    # Validate that we have a parametrization target
+    # Validate that we have a parametrization target if required for retrieving cases
     if parametrize_with_cases is None:
-        if any(
-            c is AUTO
-            or c is THIS_MODULE
-            or (isinstance(c, str) and c.beginswith("."))
-            for c in cases
-        ):
+        if any(c is AUTO or c is THIS_MODULE or isinstance(c, str) for c in cases):
             raise ValueError(
                 "Cases beginning with '.' or using AUTO require a parametrization target,"
                 " please use `get_all_cases(target_func, cases=...)`"
@@ -301,7 +296,6 @@ def get_all_cases(parametrization_target=None,  # type: Optional[Callable]
             else:
                 raise ValueError("Unsupported case function: %r" % c)
         else:
-
             # module
             if c is AUTO:
                 # First try `test_<name>_cases.py` Then `case_<name>.py`
