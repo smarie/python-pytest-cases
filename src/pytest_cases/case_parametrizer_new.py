@@ -267,7 +267,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
         filters += (filter,)
 
     # Validate that we have a parametrization target if required for retrieving cases
-    if parametrize_with_cases is None:
+    if parametrization_target is None:
         if any(c is AUTO or c is THIS_MODULE or isinstance(c, str) for c in cases):
             raise ValueError(
                 "Cases beginning with '.' or using AUTO require a parametrization target,"
