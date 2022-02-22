@@ -1,7 +1,3 @@
-#  Authors: Sylvain MARIE <sylvain.marie@se.com>
-#            + All contributors to <https://github.com/smarie/python-pyfields>
-#
-#  License: 3-clause BSD, <https://github.com/smarie/python-pyfields/blob/master/LICENSE>
 from distutils.version import LooseVersion
 
 import pytest
