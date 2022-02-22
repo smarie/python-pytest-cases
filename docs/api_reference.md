@@ -258,6 +258,7 @@ CaseFilter(filter_function: Callable)
 
 ```python
 CaseType = Union[Callable, Type, ModuleRef]
+
 @parametrize_with_cases(argnames: str,
                         cases: Union[CaseType, List[CaseType]] = AUTO,
                         prefix: str = 'case_',
