@@ -37,7 +37,7 @@ from .case_funcs import matches_tag_query, is_case_function, is_case_class, CASE
 
 from .fixture_core1_unions import USED, NOT_USED
 from .fixture_core2 import CombinedFixtureParamValue, fixture
-from .fixture__creation import check_name_available, CHANGE
+from .fixture__creation import check_name_available, get_caller_module, CHANGE
 from .fixture_parametrize_plus import fixture_ref, _parametrize_plus, FixtureParamAlternative, ParamAlternative, \
     SingleParamAlternative, MultiParamAlternative, FixtureRefItem
 
@@ -266,18 +266,13 @@ def get_all_cases(parametrization_target=None,  # type: Callable
 
         filters += (filter,)
 
-    # Validate that we have a parametrization target if required for retrieving cases
-    if parametrization_target is None:
-        if any(c is AUTO or c is THIS_MODULE or isinstance(c, str) for c in cases):
-            raise ValueError(
-                "Cases beginning with '.' or using AUTO require a parametrization target,"
-                " please use `get_all_cases(target_func, cases=...)`"
-            )
-
     # parent package
-    if parametrization_target is not None:
+    if parametrization_target is None:
         caller_module_name = getattr(parametrization_target, '__module__', None)
-        parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
+    else:
+        caller_module_name = get_caller_module()
+
+    parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
 
     # start collecting all cases
     cases_funs = []

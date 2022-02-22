@@ -1,11 +1,10 @@
-#  Authors: Eddie Bergmane <eddiebergmanehs@gmail.com>
-#            + All contributors to <https://github.com/smarie/python-pyfields>
-#
-#  License: 3-clause BSD, <https://github.com/smarie/python-pyfields/blob/master/LICENSE>
-#
-#  Issue: https://github.com/smarie/python-pytest-cases/issues/258
-from pytest_cases import get_all_cases, case, parametrize_with_cases
+from pytest_cases import get_all_cases, case, parametrize_with_cases, parametrize
+import pytest
+from pytest_cases.case_parametrizer_new import AUTO
 
+
+# Test behaviour without a string module ref
+############################################
 
 @case(tags=["a", "banana"])
 def case_1():
@@ -60,3 +59,21 @@ def test_get_cases_without_parametrization_target():
     assert len(list(a_cases)) == 2
     assert len(list(b_cases)) == 2
     assert len(list(banana_cases)) == 2
+
+
+@parametrize("ref", ['.'])
+def test_get_all_cases_raises_with_module_case(ref):
+    with pytest.raises(ValueError, match="Cases beginning with"):
+        get_all_cases(cases=ref)
+
+
+# Test behaviour with string module ref
+#######################################
+def test_relative_import_cases_is_none_empty():
+    relative_import_cases = get_all_cases(cases=".cases")
+    assert len(relative_import_cases) == 2
+
+
+def test_auto_import_cases_is_non_empty():
+    auto_import_cases = get_all_cases(cases=AUTO)
+    assert len(auto_import_cases) == 2
