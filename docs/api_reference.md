@@ -338,6 +338,7 @@ Note that you can get the same contents directly by using the [`current_cases`](
 
 ```python
 CaseType = Union[Callable, Type, ModuleRef]
+
 def get_all_cases(parametrization_target: Callable,
                   cases: Union[CaseType, List[CaseType]] = None,
                   prefix: str = 'case_',
