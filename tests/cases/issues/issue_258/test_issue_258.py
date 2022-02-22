@@ -1,10 +1,6 @@
-from pytest_cases import get_all_cases, case, parametrize_with_cases, parametrize
-import pytest
-from pytest_cases.case_parametrizer_new import AUTO
+from pytest_cases import (AUTO, case, get_all_cases, parametrize,
+                          parametrize_with_cases)
 
-
-# Test behaviour without a string module ref
-############################################
 
 @case(tags=["a", "banana"])
 def case_1():
@@ -27,13 +23,13 @@ def case_4():
 
 
 all_cases = get_all_cases(cases=[case_1, case_2, case_3, case_4])
-
 a_cases = get_all_cases(cases=all_cases, has_tag="a")
 b_cases = get_all_cases(cases=all_cases, has_tag="b")
-
 banana_cases = get_all_cases(cases=a_cases + b_cases, has_tag=["banana"])
 
 
+# Test behaviour with explicit cases and no parametrization target
+##################################################################
 @parametrize_with_cases("word", cases=all_cases)
 def test_all(word):
     assert word in ["a", "a_banana", "b", "b_banana"]
@@ -54,26 +50,31 @@ def test_banana(word):
     assert "banana" in word
 
 
-def test_get_cases_without_parametrization_target():
-    assert len(list(all_cases)) == 4
-    assert len(list(a_cases)) == 2
-    assert len(list(b_cases)) == 2
-    assert len(list(banana_cases)) == 2
+# Test behaviour with string module ref and AUTO and no parametrization target
+##############################################################################
+def test_this_module_cases():
+    this_module_cases = get_all_cases(cases=".")
+    assert set(this_module_cases) == {case_1, case_2, case_3, case_4}
 
 
-@parametrize("ref", ['.'])
-def test_get_all_cases_raises_with_module_case(ref):
-    with pytest.raises(ValueError, match="Cases beginning with"):
-        get_all_cases(cases=ref)
-
-
-# Test behaviour with string module ref
-#######################################
-def test_relative_import_cases_is_none_empty():
+def test_relative_module_cases():
     relative_import_cases = get_all_cases(cases=".cases")
-    assert len(relative_import_cases) == 2
+    assert {"hello .", "hi ."} == {f() for f in relative_import_cases}
 
 
-def test_auto_import_cases_is_non_empty():
+def test_auto_cases():
     auto_import_cases = get_all_cases(cases=AUTO)
-    assert len(auto_import_cases) == 2
+    assert {"hello AUTO", "hi AUTO"} == {f() for f in auto_import_cases}
+
+
+# Test behaviour with an explicit module parametrization target
+###############################################################
+from tests.cases.issues.issue_258 import test_other
+def test_module_parametrization_auto():
+    cases_other_cases = get_all_cases(test_other, cases=AUTO)
+    assert {"hello cases_other", "hi cases_other"} == {f() for f in cases_other_cases}
+
+
+def test_module_parametrization_this_module():
+    test_other_cases = get_all_cases(test_other, cases='.')
+    assert {"hello test_other", "hi test_other"} == {f() for f in test_other_cases}
