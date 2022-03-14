@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.10 - bugfix for pytest 7.1
+
+ - Fixed `ImportError` when using `pytest 7.1`. Fixed [#264](https://github.com/smarie/python-pytest-cases/issues/264) and [pytest-dev#9762](https://github.com/pytest-dev/pytest/issues/9762).
+
 ### 3.6.9 - Bugfix with pytest 7
 
  - Fixed `FrozenInstanceError` when using `pytest 7.0.0`. Fixed [#251](https://github.com/smarie/python-pytest-cases/issues/251). [PR#253](https://github.com/smarie/python-pytest-cases/pull/253) by [jammer87](https://github.com/jammer87)
