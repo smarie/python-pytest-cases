@@ -42,6 +42,7 @@ PYTEST54_OR_GREATER = PYTEST_VERSION >= LooseVersion('5.4.0')
 PYTEST421_OR_GREATER = PYTEST_VERSION >= LooseVersion('4.2.1')
 PYTEST6_OR_GREATER = PYTEST_VERSION >= LooseVersion('6.0.0')
 PYTEST7_OR_GREATER = PYTEST_VERSION >= LooseVersion('7.0.0')
+PYTEST71_OR_GREATER = PYTEST_VERSION >= LooseVersion('7.1.0')
 
 
 def get_param_argnames_as_list(argnames):
@@ -188,7 +189,7 @@ def remove_pytest_mark(f, mark_name):
     if marks is not None:
         # pytest > 3.2.0
         new_marks = [m for m in marks if m.name != mark_name]
-        setattr(f, 'pytestmark', new_marks)
+        f.pytestmark = new_marks
     else:
         # older versions
         try:
