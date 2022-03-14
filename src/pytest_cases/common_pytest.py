@@ -30,7 +30,7 @@ from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER, PYTEST6_OR_GREATER, \
-    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER
+    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER, PYTEST71_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
@@ -554,22 +554,28 @@ except ImportError:
         callspec._arg2scopenum[arg_name] = get_pytest_function_scopeval()  # noqa
 
 
-from _pytest.python import _idval  # noqa
+if PYTEST71_OR_GREATER:
+    from _pytest.python import IdMaker  # noqa
 
-if PYTEST6_OR_GREATER:
-    _idval_kwargs = dict(idfn=None,
-                         nodeid=None,  # item is not used in pytest(>=6.0.0) nodeid is only used by idfn
-                         config=None  # if a config hook was available it would be used before this is called)
-                         )
-elif PYTEST38_OR_GREATER:
-    _idval_kwargs = dict(idfn=None,
-                         item=None,  # item is only used by idfn
-                         config=None  # if a config hook was available it would be used before this is called)
-                         )
+    _idval = IdMaker([], [], None, None, None, None, None)._idval
+    _idval_kwargs = dict()
 else:
-    _idval_kwargs = dict(idfn=None,
-                         # config=None  # if a config hook was available it would be used before this is called)
-                         )
+    from _pytest.python import _idval  # noqa
+
+    if PYTEST6_OR_GREATER:
+        _idval_kwargs = dict(idfn=None,
+                             nodeid=None,  # item is not used in pytest(>=6.0.0) nodeid is only used by idfn
+                             config=None  # if a config hook was available it would be used before this is called)
+                             )
+    elif PYTEST38_OR_GREATER:
+        _idval_kwargs = dict(idfn=None,
+                             item=None,  # item is only used by idfn
+                             config=None  # if a config hook was available it would be used before this is called)
+                             )
+    else:
+        _idval_kwargs = dict(idfn=None,
+                             # config=None  # if a config hook was available it would be used before this is called)
+                             )
 
 
 def mini_idval(
