@@ -191,6 +191,7 @@ class FixtureClosureNode(object):
             if PYTEST7_OR_GREATER:
                 # Scope is an enum, values are in reversed order, and the field is _scope
                 f_scope = get_pytest_function_scopeval()
+
                 def sort_by_scope(kv_pair):
                     fixture_name, fixture_defs = kv_pair
                     return fixture_defs[-1]._scope if fixture_defs is not None else f_scope

@@ -189,7 +189,7 @@ def remove_pytest_mark(f, mark_name):
     if marks is not None:
         # pytest > 3.2.0
         new_marks = [m for m in marks if m.name != mark_name]
-        setattr(f, 'pytestmark', new_marks)
+        f.pytestmark = new_marks
     else:
         # older versions
         try:
