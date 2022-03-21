@@ -1,7 +1,8 @@
 # Changelog
 
-### 3.6.11 - bugfix for pytest-xdist
+### 3.6.11 - bugfix for pytest-xdist and `get_all_cases` API improvement
 
+ - `get_all_cases` can now be called without `parametrization_target` (defaulting to the caller module), and with an explicit module object. Fixed [#258](https://github.com/smarie/python-pytest-cases/issues/258). PR [#260](https://github.com/smarie/python-pytest-cases/pull/260) by [@eddiebergman](https://github.com/eddiebergman).
  - Fixed `AttributeError`: module 'pytest_cases' has no attribute 'CasesCollectionWarning' when running `pytest-xdist` and at least one cases class is ignored because of `__init__` or `__new__`. Fixed [#249](https://github.com/smarie/python-pytest-cases/issues/249).
 
 ### 3.6.10 - bugfix for pytest 7.1
