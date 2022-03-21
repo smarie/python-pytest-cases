@@ -311,6 +311,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#3611-bugfix-for-pytest-xdist" class="md-nav__link">
+    3.6.11 - bugfix for pytest-xdist
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#3610-bugfix-for-pytest-71" class="md-nav__link">
     3.6.10 - bugfix for pytest 7.1
   </a>
@@ -1108,6 +1115,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#3611-bugfix-for-pytest-xdist" class="md-nav__link">
+    3.6.11 - bugfix for pytest-xdist
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#3610-bugfix-for-pytest-71" class="md-nav__link">
     3.6.10 - bugfix for pytest 7.1
   </a>
@@ -1889,6 +1903,10 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h3 id="3611-bugfix-for-pytest-xdist">3.6.11 - bugfix for pytest-xdist<a class="headerlink" href="#3611-bugfix-for-pytest-xdist" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed <code>AttributeError</code>: module 'pytest_cases' has no attribute 'CasesCollectionWarning' when running <code>pytest-xdist</code> and at least one cases class is ignored because of <code>__init__</code> or <code>__new__</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/249">#249</a>.</li>
+</ul>
 <h3 id="3610-bugfix-for-pytest-71">3.6.10 - bugfix for pytest 7.1<a class="headerlink" href="#3610-bugfix-for-pytest-71" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed <code>ImportError</code> when using <code>pytest 7.1</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/264">#264</a> and <a href="https://github.com/pytest-dev/pytest/issues/9762">pytest-dev#9762</a>.</li>
