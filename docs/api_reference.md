@@ -47,7 +47,7 @@ def case_hi():
  - `id`: the custom pytest id that should be used when this case is active. Replaces the deprecated `@case_name` decorator from v1. If no id is provided, the id is generated from case functions by removing their prefix, see [`@parametrize_with_cases(prefix='case_')`](#parametrize_with_cases).
 
  - `tags`: custom tags to be used for filtering in [`@parametrize_with_cases(has_tags)`](#parametrize_with_cases). Replaces the deprecated `@case_tags` and `@target` decorators.
- 
+
  - `marks`: optional pytest marks to add on the case. Note that decorating the function directly with the mark also works, and if marks are provided in both places they are merged.
 
 
@@ -280,7 +280,7 @@ Note that `@parametrize_with_cases` collection and parameter creation steps are 
 
 ```python
 # Collect all cases
-cases_funs = get_all_cases(f, cases=cases, prefix=prefix, 
+cases_funs = get_all_cases(f, cases=cases, prefix=prefix,
                            glob=glob, has_tag=has_tag, filter=filter)
 
 # Transform the various functions found
@@ -335,7 +335,7 @@ Note that you can get the same contents directly by using the [`current_cases`](
 ### `get_all_cases`
 
 ```python
-def get_all_cases(parametrization_target: Callable,
+def get_all_cases(parametrization_target: Callable = None,
                   cases: Union[Callable, Type, ModuleRef] = None,
                   prefix: str = 'case_',
                   glob: str = None,
@@ -343,8 +343,24 @@ def get_all_cases(parametrization_target: Callable,
                   filter: Callable[[Callable], bool] = None
                   ) -> List[Callable]:
 ```
+Collect all cases as used with [`@parametrize_with_cases`](#parametrize_with_cases). See [`@parametrize_with_cases`](#parametrize_with_cases) for more details on the parameters.
+This can be used to lists all desired cases for a given `parametrization_target` (a test function or a fixture) which may be convenient for debugging purposes.
 
-Lists all desired cases for a given `parametrization_target` (a test function or a fixture). This function may be convenient for debugging purposes. See [`@parametrize_with_cases`](#parametrize_with_cases) for details on the parameters.
+```python
+# Get the cases for f that are defined in the current file
+cases = get_all_cases(f, cases=".")
+
+# Get the cases from cases_xyz.py or test_xyz_cases.py
+import test.test_xyz
+xyz_cases = get_all_cases(test.test_xyz)
+
+# Can be used to filter explict cases, in which case no parametrization_target is needed
+filtered_cases = get_all_cases(cases=[case_1, case_2, case_3], has_tag=["banana"])
+```
+
+ - If using a `cases` argument that requires module information, such as `"."` `AUTO` or a relative module like `".xyz"`, the value of `parametrization_target` will be used to to determine the context.
+ If `None` or simply left empty, it will use the module from which `get_all_cases` was called.
+ You can pass an explicit module object or a function, in which case the module in which it's defined will be used.
 
 
 ### `get_parametrize_args`

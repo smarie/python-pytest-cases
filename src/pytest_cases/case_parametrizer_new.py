@@ -37,7 +37,7 @@ from .case_funcs import matches_tag_query, is_case_function, is_case_class, CASE
 
 from .fixture_core1_unions import USED, NOT_USED
 from .fixture_core2 import CombinedFixtureParamValue, fixture
-from .fixture__creation import check_name_available, CHANGE
+from .fixture__creation import check_name_available, get_caller_module, CHANGE
 from .fixture_parametrize_plus import fixture_ref, _parametrize_plus, FixtureParamAlternative, ParamAlternative, \
     SingleParamAlternative, MultiParamAlternative, FixtureRefItem
 
@@ -205,19 +205,20 @@ def create_glob_name_filter(glob_str  # type: str
     return _glob_name_filter
 
 
-def get_all_cases(parametrization_target,  # type: Callable
-                  cases=None,              # type: Union[Callable, Type, ModuleRef]
-                  prefix=CASE_PREFIX_FUN,  # type: str
-                  glob=None,               # type: str
-                  has_tag=None,            # type: Union[str, Iterable[str]]
-                  filter=None              # type: Callable[[Callable], bool]  # noqa
+def get_all_cases(parametrization_target=None,  # type: Callable
+                  cases=None,                   # type: Union[Callable, Type, ModuleRef]
+                  prefix=CASE_PREFIX_FUN,       # type: str
+                  glob=None,                    # type: str
+                  has_tag=None,                 # type: Union[str, Iterable[str]]
+                  filter=None                   # type: Callable[[Callable], bool]  # noqa
                   ):
     # type: (...) -> List[Callable]
     """
     Lists all desired cases for a given `parametrization_target` (a test function or a fixture). This function may be
     convenient for debugging purposes. See `@parametrize_with_cases` for details on the parameters.
 
-    :param parametrization_target: a test function
+    :param parametrization_target: either an explicit module object or a function or None. If it's a function, it will
+        use the module it is defined in. If None is given, it will just get the module it was called from.
     :param cases: a case function, a class containing cases, a module or a module name string (relative module
         names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module.
         `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
@@ -266,7 +267,16 @@ def get_all_cases(parametrization_target,  # type: Callable
         filters += (filter,)
 
     # parent package
-    caller_module_name = getattr(parametrization_target, '__module__', None)
+    if parametrization_target is None:
+        parametrization_target = get_caller_module()
+
+    if ismodule(parametrization_target):
+        caller_module_name = parametrization_target.__name__
+    elif callable(parametrization_target):
+        caller_module_name = getattr(parametrization_target, '__module__', None)
+    else:
+        raise ValueError("Can't handle parametrization_target=%s" % parametrization_target)
+
     parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
 
     # start collecting all cases
@@ -293,6 +303,7 @@ def get_all_cases(parametrization_target,  # type: Callable
 
             elif c is THIS_MODULE or c == '.':
                 c = caller_module_name
+
             new_cases = extract_cases_from_module(c, package_name=parent_pkg_name, case_fun_prefix=prefix)
             cases_funs += new_cases
 
@@ -635,31 +646,41 @@ def _get_fixture_cases(module_or_class  # type: Union[ModuleType, Type]
     return cache, imported_fixtures_list
 
 
-def import_default_cases_module(f):
+def import_default_cases_module(context):
     """
-    Implements the `module=AUTO` behaviour of `@parameterize_cases`: based on the decorated test function `f`,
-    it finds its containing module name "test_<module>.py" and then tries to import the python module
-    "test_<module>_cases.py".
+    Implements the `module=AUTO` behaviour of `@parameterize_cases`: based on the context
+    passed in. This can either a <module> object or a decorated test function in which
+    case it finds its containing module name "test_<module>.py" and then tries to import
+    the python module "test_<module>_cases.py".
 
-    If the module is not found it looks for the alternate file `cases_<module>.py`.
+    If "test_<module>_cases.py" module is not found it looks for the alternate
+    file `cases_<module>.py`.
 
-    :param f: the decorated test function
+    :param f: the decorated test function or a module
     :return:
     """
+    if ismodule(context):
+        module_name = context.__name__
+    elif hasattr(context, "__module__"):
+        module_name = context.__module__
+    else:
+        raise ValueError("Can't get module from context %s" % context)
+
     # First try `test_<name>_cases.py`
-    cases_module_name1 = "%s_cases" % f.__module__
+    cases_module_name1 = "%s_cases" % module_name
+
     try:
         cases_module = import_module(cases_module_name1)
     except ModuleNotFoundError:
         # Then try `case_<name>.py`
-        parts = f.__module__.split('.')
+        parts = module_name.split('.')
         assert parts[-1][0:5] == 'test_'
         cases_module_name2 = "%s.cases_%s" % ('.'.join(parts[:-1]), parts[-1][5:])
         try:
             cases_module = import_module(cases_module_name2)
         except ModuleNotFoundError:
             # Nothing worked
-            raise ValueError("Error importing test cases module to parametrize function %r: unable to import AUTO "
+            raise ValueError("Error importing test cases module to parametrize %r: unable to import AUTO "
                              "cases module %r nor %r. Maybe you wish to import cases from somewhere else ? In that case"
                              "please specify `cases=...`."
                              % (f, cases_module_name1, cases_module_name2))
