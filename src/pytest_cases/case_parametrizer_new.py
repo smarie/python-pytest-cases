@@ -683,6 +683,7 @@ class CasesCollectionWarning(UserWarning):
     """
     Warning emitted when pytest cases is not able to collect a file or symbol in a module.
     """
+    # Note: if we change this, then the symbol MUST be present in __init__ for import, see GH#249
     __module__ = "pytest_cases"
 
 
