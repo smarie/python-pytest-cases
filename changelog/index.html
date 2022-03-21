@@ -311,8 +311,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#3611-bugfix-for-pytest-xdist" class="md-nav__link">
-    3.6.11 - bugfix for pytest-xdist
+  <a href="#3611-bugfix-for-pytest-xdist-and-get_all_cases-api-improvement" class="md-nav__link">
+    3.6.11 - bugfix for pytest-xdist and get_all_cases API improvement
   </a>
   
 </li>
@@ -1115,8 +1115,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#3611-bugfix-for-pytest-xdist" class="md-nav__link">
-    3.6.11 - bugfix for pytest-xdist
+  <a href="#3611-bugfix-for-pytest-xdist-and-get_all_cases-api-improvement" class="md-nav__link">
+    3.6.11 - bugfix for pytest-xdist and get_all_cases API improvement
   </a>
   
 </li>
@@ -1903,8 +1903,9 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="3611-bugfix-for-pytest-xdist">3.6.11 - bugfix for pytest-xdist<a class="headerlink" href="#3611-bugfix-for-pytest-xdist" title="Permanent link">&para;</a></h3>
+<h3 id="3611-bugfix-for-pytest-xdist-and-get_all_cases-api-improvement">3.6.11 - bugfix for pytest-xdist and <code>get_all_cases</code> API improvement<a class="headerlink" href="#3611-bugfix-for-pytest-xdist-and-get_all_cases-api-improvement" title="Permanent link">&para;</a></h3>
 <ul>
+<li><code>get_all_cases</code> can now be called without <code>parametrization_target</code> (defaulting to the caller module), and with an explicit module object. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/258">#258</a>. PR <a href="https://github.com/smarie/python-pytest-cases/pull/260">#260</a> by <a href="https://github.com/eddiebergman">@eddiebergman</a>.</li>
 <li>Fixed <code>AttributeError</code>: module 'pytest_cases' has no attribute 'CasesCollectionWarning' when running <code>pytest-xdist</code> and at least one cases class is ignored because of <code>__init__</code> or <code>__new__</code>. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/249">#249</a>.</li>
 </ul>
 <h3 id="3610-bugfix-for-pytest-71">3.6.10 - bugfix for pytest 7.1<a class="headerlink" href="#3610-bugfix-for-pytest-71" title="Permanent link">&para;</a></h3>

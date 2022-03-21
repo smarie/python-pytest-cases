@@ -33,7 +33,7 @@ window.addEventListener('DOMContentLoaded', function () {
 </script>
    </head>
    <body>
-      <div id="masthead" class="sev-3"></div>
+      <div id="masthead" class="sev-1"></div>
       <div id="page">
          <p id="srclink">
             <a title="View full annotated source"
@@ -50,6 +50,24 @@ window.addEventListener('DOMContentLoaded', function () {
          <ul id="index">
          
          <li>
+            <a data-code="F821">
+               <span class="count sev-1">
+                  1
+               </span>
+               <strong>F821:</strong> undefined name 'f'
+               
+            </a>
+            <ul class="details">
+            <li>
+               
+               <a href="pytest_cases.case_parametrizer_new.source.html#l687">
+                  <tt><i>687</i>                              <span class="o">%</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">cases_module_name1</span><span class="p">,</span> <span class="n">cases_module_name2</span><span class="p">))</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+         
+         <li>
             <a data-code="S101">
                <span class="count sev-3">
                   4
@@ -60,23 +78,23 @@ window.addEventListener('DOMContentLoaded', function () {
             <ul class="details">
             <li>
                
-               <a href="pytest_cases.case_parametrizer_new.source.html#l202">
-                  <tt><i>202</i>         <span class="k">assert</span> <span class="n">case_fun_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></tt>
+               <a href="pytest_cases.case_parametrizer_new.source.html#l203">
+                  <tt><i>203</i>         <span class="k">assert</span> <span class="n">case_fun_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.case_parametrizer_new.source.html#l601">
-                  <tt><i>601</i>     <span class="k">assert</span> <span class="ow">not</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">orig_case</span><span class="p">)</span></tt>
+               <a href="pytest_cases.case_parametrizer_new.source.html#l613">
+                  <tt><i>613</i>     <span class="k">assert</span> <span class="ow">not</span> <span class="n">is_fixture</span><span class="p">(</span><span class="n">orig_case</span><span class="p">)</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.case_parametrizer_new.source.html#l602">
-                  <tt><i>602</i>     <span class="k">assert</span> <span class="n">orig_case</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="n">orig_name</span></tt>
+               <a href="pytest_cases.case_parametrizer_new.source.html#l614">
+                  <tt><i>614</i>     <span class="k">assert</span> <span class="n">orig_case</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="n">orig_name</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.case_parametrizer_new.source.html#l656">
-                  <tt><i>656</i>         <span class="k">assert</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;test_&#39;</span></tt>
+               <a href="pytest_cases.case_parametrizer_new.source.html#l678">
+                  <tt><i>678</i>         <span class="k">assert</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;test_&#39;</span></tt>
                </a>
             </li>
             </ul>
@@ -93,23 +111,23 @@ window.addEventListener('DOMContentLoaded', function () {
             <ul class="details">
             <li>
                
-               <a href="pytest_cases.case_parametrizer_new.source.html#l426">
-                  <tt><i>426</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; 1 lazy_value() with id </span><span class="si">%s</span><span class="s2"> and additional marks </span><span class="si">%s</span><span class="s2">&quot;</span></tt>
+               <a href="pytest_cases.case_parametrizer_new.source.html#l438">
+                  <tt><i>438</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; 1 lazy_value() with id </span><span class="si">%s</span><span class="s2"> and additional marks </span><span class="si">%s</span><span class="s2">&quot;</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.case_parametrizer_new.source.html#l459">
-                  <tt><i>459</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; fixture_ref(</span><span class="si">%r</span><span class="s2">) with marks </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">case_fun_str</span><span class="p">,</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">remaining_marks</span><span class="p">))</span></tt>
+               <a href="pytest_cases.case_parametrizer_new.source.html#l471">
+                  <tt><i>471</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; fixture_ref(</span><span class="si">%r</span><span class="s2">) with marks </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">case_fun_str</span><span class="p">,</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">remaining_marks</span><span class="p">))</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.case_parametrizer_new.source.html#l516">
-                  <tt><i>516</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; Reusing fixture </span><span class="si">%r</span><span class="s2"> and marks </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">qname</span><span class="p">(</span><span class="n">true_case_func</span><span class="p">),</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">marks</span><span class="p">))</span></tt>
+               <a href="pytest_cases.case_parametrizer_new.source.html#l528">
+                  <tt><i>528</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; Reusing fixture </span><span class="si">%r</span><span class="s2"> and marks </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">qname</span><span class="p">(</span><span class="n">true_case_func</span><span class="p">),</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">marks</span><span class="p">))</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.case_parametrizer_new.source.html#l556">
-                  <tt><i>556</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; Creating fixture </span><span class="si">%r</span><span class="s2"> in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">qname</span><span class="p">(</span><span class="n">true_case_func</span><span class="p">),</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">target_host</span><span class="p">))</span></tt>
+               <a href="pytest_cases.case_parametrizer_new.source.html#l568">
+                  <tt><i>568</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; Creating fixture </span><span class="si">%r</span><span class="s2"> in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">qname</span><span class="p">(</span><span class="n">true_case_func</span><span class="p">),</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">target_host</span><span class="p">))</span></tt>
                </a>
             </li>
             </ul>
