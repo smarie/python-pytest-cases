@@ -17,8 +17,10 @@ except ImportError:  # noqa
     from collections import Iterable
 
 try:
-    from typing import Union, Callable, List, Any, Sequence, Optional, Type, Tuple  # noqa
+    from typing import Union, Callable, List, Any, Sequence, Optional, Type, Tuple, TypeVar  # noqa
     from types import ModuleType  # noqa
+
+    T = TypeVar('T', bound=Union[Type, Callable])
 except ImportError:
     pass
 
@@ -624,6 +626,7 @@ def parametrize(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 hook=None,       # type: Callable[[Callable], Callable]
                 debug=False,     # type: bool
                 **args):
+    # type: (...) -> Callable[[T], T]
     """
     Equivalent to `@pytest.mark.parametrize` but also supports
 
@@ -733,6 +736,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                       hook=None,       # type: Callable[[Callable], Callable]
                       debug=False,     # type: bool
                       **args):
+    # type: (...) -> Tuple[Callable[[T], T], bool]
     """
 
     :return: a tuple (decorator, needs_inject) where needs_inject is True if decorator has signature (f, host)
@@ -790,6 +794,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
         else:
             # wrap the decorator to check if the test function has the parameters as arguments
             def _apply(test_func):
+                # type: (...) -> Callable[[T], T]
                 if not safe_isclass(test_func):
                     # a Function: raise a proper error message if improper use
                     s = signature(test_func)
@@ -923,6 +928,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
 
         # Then create the decorator per se
         def parametrize_plus_decorate(test_func, fixtures_dest):
+            # type: (...) -> Callable[[T], T]
             """
             A decorator that wraps the test function so that instead of receiving the parameter names, it receives the
             new fixture. All other decorations are unchanged.
