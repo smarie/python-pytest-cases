@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.12 - type hint fix
+
+ - Fixed type hint errors detected by `pyright`. Fixed [#270](https://github.com/smarie/python-pytest-cases/issues/270)
+
 ### 3.6.11 - bugfix for pytest-xdist and `get_all_cases` API improvement
 
  - `get_all_cases` can now be called without `parametrization_target` (defaulting to the caller module), and with an explicit module object. Fixed [#258](https://github.com/smarie/python-pytest-cases/issues/258). PR [#260](https://github.com/smarie/python-pytest-cases/pull/260) by [@eddiebergman](https://github.com/eddiebergman).
