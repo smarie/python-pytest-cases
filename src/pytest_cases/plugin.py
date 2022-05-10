@@ -640,12 +640,20 @@ class SuperClosure(MutableSequence):
             return
         else:
             if isinstance(i, slice):
-                if set(o) == set(ref):
+                new_set = set(o)
+                ref_set = set(ref)
+                if new_set == ref_set:
                     # a change is required in the order of fixtures. Ignore but continue
                     warn("WARNING: An attempt was made to reorder a super fixture closure with unions. This is not yet "
                          "supported since the partitions use subsets of the fixtures ; please report it so that we can "
                          "find a suitable solution for your need.")
                     return
+
+                added = new_set.difference(ref_set)
+                removed = ref_set.difference(new_set)
+                self.append_all(added)
+                self.remove_all(removed)
+                return
 
         # At least one change of fixture name is required: not supported, and reject as it is
         raise NotImplementedError("It is not possible to replace an element in a super fixture closure,"
@@ -695,6 +703,14 @@ class SuperClosure(MutableSequence):
         # Finally update self.fixture_defs so that the "list" view reflects the changes in self.tree
         self._update_fixture_defs()
 
+    def append_all(self, fixture_names):
+        """Append various fixture names to the closure"""
+        # appending is natively supported in our tree growing method
+        self.tree.build_closure(tuple(fixture_names))
+
+        # Finally update self.fixture_defs so that the "list" view reflects the changes in self.tree
+        self._update_fixture_defs()
+
     def remove(self, value):
         """
         Try to transparently support removal. Note: since the underlying structure is a tree,
@@ -705,6 +721,14 @@ class SuperClosure(MutableSequence):
         """
         # remove in the tree
         self.tree.remove_fixtures((value,))
+
+        # update fixture defs
+        self._update_fixture_defs()
+
+    def remove_all(self, values):
+        """Multiple `remove` operations at once."""
+        # remove in the tree
+        self.tree.remove_fixtures(tuple(values))
 
         # update fixture defs
         self._update_fixture_defs()

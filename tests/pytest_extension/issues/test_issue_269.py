@@ -40,6 +40,6 @@ def test_repeat(arg):
 def test_synthesis(module_results_dct):
     """Make sure that two tests were created."""
     assert list(module_results_dct) == [
-        "test_repeat-1-2",
-        "test_repeat-2-2"
+        "test_repeat[my_fix-1-2]",
+        "test_repeat[my_fix-2-2]"
     ]
