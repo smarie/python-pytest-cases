@@ -633,23 +633,47 @@ class SuperClosure(MutableSequence):
         #     full_replace = i == slice(None, None, None)
         # except:  # noqa
         #     full_replace = False
+
+        # Get the existing value(s) that we wish to replace
         ref = list(self)[i]
 
         if o == ref:
             # no change at all: of course we accept.
             return
-        else:
-            if isinstance(i, slice):
-                if set(o) == set(ref):
-                    # a change is required in the order of fixtures. Ignore but continue
-                    warn("WARNING: An attempt was made to reorder a super fixture closure with unions. This is not yet "
-                         "supported since the partitions use subsets of the fixtures ; please report it so that we can "
-                         "find a suitable solution for your need.")
-                    return
 
-        # At least one change of fixture name is required: not supported, and reject as it is
-        raise NotImplementedError("It is not possible to replace an element in a super fixture closure,"
-                                  "as the partitions inside it do not have the same size")
+        if not isinstance(i, slice):
+            # In-place change of a single item: let's be conservative and reject for now
+            # if i == 0:
+            #     self.remove(ref)
+            #     self.insert(0, o)
+            # elif i == len(self) - 1:
+            #     self.remove(ref)
+            #     self.append(o)
+            # else:
+            raise NotImplementedError("Replacing an element in a super fixture closure is not currently implemented. "
+                                      "Please report this issue to the `pytest-cases` project.")
+        else:
+            # Replacement of multiple items at once: support reordering (ignored) and removal (actually done)
+            new_set = set(o)
+            ref_set = set(ref)
+            if new_set == ref_set:
+                # A change is required in the order of fixtures. Ignore but continue
+                warn("WARNING: An attempt was made to reorder a super fixture closure with unions. This is not yet "
+                     "supported since the partitions use subsets of the fixtures ; please report it so that we can "
+                     "find a suitable solution for your need.")
+                return
+
+            added = new_set.difference(ref_set)
+            removed = ref_set.difference(new_set)
+            if len(added) == 0:
+                # Pure removal: ok.
+                self.remove_all(removed)
+                return
+            else:
+                # self.append_all(added)
+                # Rather be conservative for now
+                raise NotImplementedError("Adding elements to a super fixture closure with a slice is not currently"
+                                          "implemented. Please report this issue to the `pytest-cases` project.")
 
     def __delitem__(self, i):
         self.remove(self[i])
@@ -695,6 +719,14 @@ class SuperClosure(MutableSequence):
         # Finally update self.fixture_defs so that the "list" view reflects the changes in self.tree
         self._update_fixture_defs()
 
+    def append_all(self, fixture_names):
+        """Append various fixture names to the closure"""
+        # appending is natively supported in our tree growing method
+        self.tree.build_closure(tuple(fixture_names))
+
+        # Finally update self.fixture_defs so that the "list" view reflects the changes in self.tree
+        self._update_fixture_defs()
+
     def remove(self, value):
         """
         Try to transparently support removal. Note: since the underlying structure is a tree,
@@ -705,6 +737,14 @@ class SuperClosure(MutableSequence):
         """
         # remove in the tree
         self.tree.remove_fixtures((value,))
+
+        # update fixture defs
+        self._update_fixture_defs()
+
+    def remove_all(self, values):
+        """Multiple `remove` operations at once."""
+        # remove in the tree
+        self.tree.remove_fixtures(tuple(values))
 
         # update fixture defs
         self._update_fixture_defs()

@@ -2,6 +2,7 @@
 
 ### 3.6.12 - type hint fix
 
+ - Improved compatibility with other `pytest` plugins, in particular `pytest-repeat`, by support removal from fixture closure tree. Fixed [#269](https://github.com/smarie/python-pytest-cases/issues/269).
  - Fixed type hint errors detected by `pyright`. Fixed [#270](https://github.com/smarie/python-pytest-cases/issues/270)
 
 ### 3.6.11 - bugfix for pytest-xdist and `get_all_cases` API improvement
