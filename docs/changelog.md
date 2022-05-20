@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.13 - bugfix
+
+ - Fixed issue where a lazy value (for example a case function) was not resolved before being injected in a parametrized function, and was therefore appearing as a `_LazyValueCaseParamValue `. Fixed [#274](https://github.com/smarie/python-pytest-cases/issues/274)
+
 ### 3.6.12 - type hint fix
 
  - Improved compatibility with other `pytest` plugins, in particular `pytest-repeat`, by support removal from fixture closure tree. Fixed [#269](https://github.com/smarie/python-pytest-cases/issues/269).
