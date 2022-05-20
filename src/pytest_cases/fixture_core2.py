@@ -119,7 +119,7 @@ def _create_param_fixture(fixtures_dest,
         # create the fixture - set its name so that the optional hook can read it easily
         @with_signature("%s(request)" % argname)
         def __param_fixture(request):
-            return request.param
+            return get_lazy_args(request.param, request)
 
         if debug:
             print("Creating parametrized fixture %r returning %r" % (argname, argvalues))
