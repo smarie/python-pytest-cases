@@ -180,7 +180,7 @@
     <p class="pln"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t">        <span class="com"># create the fixture - set its name so that the optional hook can read it easily</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">        <span class="op">@</span><span class="nam">with_signature</span><span class="op">(</span><span class="str">"%s(request)"</span> <span class="op">%</span> <span class="nam">argname</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">        <span class="key">def</span> <span class="nam">__param_fixture</span><span class="op">(</span><span class="nam">request</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">            <span class="key">return</span> <span class="nam">request</span><span class="op">.</span><span class="nam">param</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">            <span class="key">return</span> <span class="nam">get_lazy_args</span><span class="op">(</span><span class="nam">request</span><span class="op">.</span><span class="nam">param</span><span class="op">,</span> <span class="nam">request</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">        <span class="key">if</span> <span class="nam">debug</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">            <span class="nam">print</span><span class="op">(</span><span class="str">"Creating parametrized fixture %r returning %r"</span> <span class="op">%</span> <span class="op">(</span><span class="nam">argname</span><span class="op">,</span> <span class="nam">argvalues</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -617,8 +617,8 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.3.2</a>,
-            created at 2022-05-12 10:17 +0000
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.3.3</a>,
+            created at 2022-05-20 16:10 +0000
         </p>
     </div>
 </footer>
