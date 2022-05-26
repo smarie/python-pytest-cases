@@ -478,7 +478,7 @@ class TestClass:
 def fixture_union(name: str,
                   fixtures: Iterable[Union[str, Callable]],
                   scope: str = "function",
-                  idstyle: Optional[str] = 'explicit',
+                  idstyle: Optional[str] = 'compact',
                   ids: Union[Callable, Iterable[str]] = None,
                   unpack_into: Iterable[str] = None,
                   autouse: bool = False,
