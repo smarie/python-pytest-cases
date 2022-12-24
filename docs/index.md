@@ -452,7 +452,7 @@ After starting to reuse cases in several test functions, you might end-up thinki
 
 That being said, **if you are certain that your tests do not modify your cases data**, there are several ways to solve this issue:
 
- - the easiest way is to **use fixtures with a broad scope**, as explained [above](#b-parametrizing-fixtures). However in some parametrization scenarii, `pytest` does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed everytime you run pytest, which might be cumbersome
+ - the easiest way is to **use fixtures with a broad scope**, as explained [above](#b-parametrizing-fixtures). However in some parametrization scenarii, `pytest` does not guarantee that the fixture will be setup only once for the whole session, even if it is a session-scoped fixture. Also the cases will be parsed every time you run pytest, which might be cumbersome
  
 ```python
 from pytest_cases import parametrize, parametrize_with_cases, fixture

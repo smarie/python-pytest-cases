@@ -95,7 +95,7 @@ def _fixture_product(fixtures_dest,
             fix_at_pos_i = f_names[i]
             if fix_at_pos_i is None:
                 # fixed value
-                # note: wouldnt it be almost as efficient but more readable to *always* call handle_lazy_args?
+                # note: wouldn't it be almost as efficient but more readable to *always* call handle_lazy_args?
                 yield get_lazy_args(fixtures_or_values[i], request) if has_lazy_vals else fixtures_or_values[i]
             else:
                 # fixture value
@@ -532,7 +532,7 @@ class ProductParamAlternative(SingleParamAlternative):
         return "P%sF" % self.alternative_index
 
     def get_alternative_id(self):
-        """Similar to SingleParamAlternative: create an id representing this tuple, since the fixture wont be
+        """Similar to SingleParamAlternative: create an id representing this tuple, since the fixture won't be
         parametrized"""
         if self.id is not None:
             # custom id from `@parametrize(ids=<callable_or_list>)`
@@ -662,7 +662,7 @@ def parametrize(argnames=None,   # type: Union[str, Tuple[str], List[str]]
     Finally, `pytest.param` is supported even when there are `fixture_ref` and `lazy_value`.
 
     An optional `hook` can be passed, to apply on each fixture function that is created during this call. The hook
-    function will be called everytime a fixture is about to be created. It will receive a  single argument (the
+    function will be called every time a fixture is about to be created. It will receive a  single argument (the
     function implementing the fixture) and should return the function to use. For example you can use `saved_fixture`
     from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
 
@@ -687,7 +687,7 @@ def parametrize(argnames=None,   # type: Union[str, Tuple[str], List[str]]
     :param scope: The scope of the union fixture to create if `fixture_ref`s are found in the argvalues. Otherwise same
         as in pytest.mark.parametrize.
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
@@ -776,7 +776,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
         ids = _gen_ids(argnames, argvalues, idgen)
 
     if len(fixture_indices) == 0:
-        # No fixture refernce: fallback to a standard pytest.mark.parametrize
+        # No fixture reference: fallback to a standard pytest.mark.parametrize
         if debug:
             print("No fixture reference found. Calling @pytest.mark.parametrize...")
             print(" - argnames: %s" % initial_argnames)
@@ -786,7 +786,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
         # handle infinite iterables like latest pytest, for convenience
         ids = resolve_ids(ids, marked_argvalues, full_resolve=False)
 
-        # no fixture reference: shortcut, do as usual (note that the hook wont be called since no fixture is created)
+        # no fixture reference: shortcut, do as usual (note that the hook won't be called since no fixture is created)
         _decorator = pytest.mark.parametrize(initial_argnames, marked_argvalues, indirect=indirect,
                                              ids=ids, scope=scope)
         if indirect:
@@ -978,7 +978,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                     f_fix_alt = _create_fixture_ref_alt(union_name=fixture_union_name, test_func=test_func, i=i)
                     fixture_alternatives.append(f_fix_alt)
                 else:
-                    # argvalues[i] is a tuple, some of them being fixture_ref. create a fixture refering to all of them
+                    # argvalues[i] is a tuple, some of them being fixture_ref. create a fixture referring to all of them
                     prod_fix_alt = _create_fixture_ref_product(fixtures_dest, union_name=fixture_union_name, i=i,
                                                                fixture_ref_positions=j_list,
                                                                test_func=test_func, hook=hook)

@@ -490,7 +490,7 @@ Fixed [#48](https://github.com/smarie/python-pytest-cases/issues/48).
 
 ### 1.9.0 - New `--with-reorder` commandline option
 
-New commandline option '--with-reorder' to change the reordering startegy currently in application. Fixes [#45](https://github.com/smarie/python-pytest-cases/issues/45).
+New commandline option '--with-reorder' to change the reordering strategy currently in application. Fixes [#45](https://github.com/smarie/python-pytest-cases/issues/45).
 
 The `--with-reorder` "skip" mode was not working correctly in presence of marks, fixed it. Fixed [#46](https://github.com/smarie/python-pytest-cases/issues/46).
 
@@ -562,7 +562,7 @@ Following [Sup3rGeo](https://github.com/Sup3rGeo)'s proposal, introduced two hel
 
 ### 1.4.2 - parametrized `@pytest_fixture_plus` minor bug fix
 
-`@pytest_fixture_plus` now correctly honors parameter id and marks overriden at single parameter level using `pytest.param`. Fixed [#30](https://github.com/smarie/python-pytest-cases/issues/30).
+`@pytest_fixture_plus` now correctly honors parameter id and marks overridden at single parameter level using `pytest.param`. Fixed [#30](https://github.com/smarie/python-pytest-cases/issues/30).
 
 ### 1.4.1 - parametrized `@pytest_fixture_plus` minor bug fix
 

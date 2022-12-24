@@ -90,7 +90,7 @@ def parametrize_with_cases(argnames,                # type: Union[str, List[str]
     `test_<name>_cases.py` or if not found, `cases_<name>.py`, where `test_<name>` is the current module name.
 
     Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name;
-    or a list of such elements. Note that both absolute and relative module names are suported.
+    or a list of such elements. Note that both absolute and relative module names are supported.
 
     Note that `@parametrize_with_cases` collection and parameter creation steps are strictly equivalent to
     `get_all_cases` + `get_parametrize_args`. This can be handy for debugging purposes.
@@ -469,7 +469,7 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         if debug:
             case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
             print("Case function %s > fixture_ref(%r) with marks %s" % (case_fun_str, fix_name, remaining_marks))
-        # return a lengh-1 tuple because there is a single case created
+        # return a length-1 tuple because there is a single case created
         return (make_marked_parameter_value((argvalues,), marks=remaining_marks) if remaining_marks else argvalues,)
 
 
@@ -963,7 +963,7 @@ def get_current_params(request_or_item):
             raise ValueError("Error: multiple values found for the same fixture parameter. Please report this issue")
         fixture_results_dict[fixture_name] = fixture_results_dct
 
-    # the remainder: fixtures that cant be found.
+    # the remainder: fixtures that can't be found.
     results_unknown_dict = dict()
     for function, results_list in results_known_fixtures_but_not_found.items():
         fixture_results_dct = dict(results_list)

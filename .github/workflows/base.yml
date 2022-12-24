@@ -71,7 +71,7 @@ jobs:
 
       # Share ./docs/reports so that they can be deployed with doc in next job
       - name: Share reports with other jobs
-        # if: matrix.nox_session == '...': not needed, if empty wont be shared
+        # if: matrix.nox_session == '...': not needed, if empty won't be shared
         uses: actions/upload-artifact@master
         with:
           name: reports_dir
