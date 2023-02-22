@@ -364,7 +364,7 @@ def make_test_ids_from_param_values(param_names,
         paramids = []
         for _idx, vv in enumerate(param_values):
             if len(vv) != nb_params:
-                raise ValueError("Inconsistent lenghts for parameter names and values: '%s' and '%s'"
+                raise ValueError("Inconsistent lengths for parameter names and values: '%s' and '%s'"
                                  "" % (param_names, vv))
             _id = mini_idvalset(param_names, vv, _idx)
             paramids.append(_id)

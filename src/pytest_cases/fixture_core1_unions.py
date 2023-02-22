@@ -286,7 +286,7 @@ def fixture_union(name,                # type: str
         fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
     :param autouse: as in pytest
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: other pytest fixture options. They might not be supported correctly.
@@ -364,7 +364,7 @@ def _fixture_union(fixtures_dest,
     :param unpack_into:
     :param autouse:
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param caller: a function to reference for error messages
@@ -468,7 +468,7 @@ def unpack_fixture(argnames,      # type: str
     :param in_cls: a boolean (default False). You may wish to turn this to `True` to use this function inside a class.
         If you do so, you **MUST** assign the output to variables in the class.
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :return: the created fixtures.
@@ -490,12 +490,12 @@ def _unpack_fixture(fixtures_dest,  # type: ModuleType
                     ):
     """
 
-    :param fixtures_dest: if this is `None` the fixtures wont be registered anywhere (just returned)
+    :param fixtures_dest: if this is `None` the fixtures won't be registered anywhere (just returned)
     :param argnames:
     :param fixture:
     :param in_cls: a boolean indicating if the `self` argument should be prepended.
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :return:

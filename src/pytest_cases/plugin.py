@@ -109,7 +109,7 @@ class FixtureClosureNode(object):
 
      - its `fixture_defs` is a {name: def} ordered dict containing all fixtures AND args that are required at this node
        (*before* a union is required). Note that some of them have def=None when the fixture manager has no definition
-       for them (same beahviour than in pytest). `get_all_fixture_names` and `get_all_fixture_defs` helper functions
+       for them (same behaviour than in pytest). `get_all_fixture_names` and `get_all_fixture_defs` helper functions
        allow to either return the full ordered list (equivalent to pytest `fixture_names`) or the dictionary of non-none
        definitions (equivalent to pytest `arg2fixturedefs`)
 
@@ -704,7 +704,7 @@ class SuperClosure(MutableSequence):
                 # remove those fixture definitions from all nodes in the tree
                 self.tree.remove_fixtures(closure_tree.fixture_defs.keys())
 
-                # finally prepend the defs at the beginning of the dictionnary in the first node
+                # finally prepend the defs at the beginning of the dictionary in the first node
                 self.tree.fixture_defs = OrderedDict(list(closure_tree.fixture_defs.items())
                                                      + list(self.tree.fixture_defs.items()))
 
@@ -1037,7 +1037,7 @@ class CallsReactor(object):
         # save the list and put back self as the _calls facade
         self._call_list = calls
         self.metafunc._calls = self
-        # forget about all parametrizations now - this wont happen again
+        # forget about all parametrizations now - this won't happen again
         self._pending = None
 
 
@@ -1054,7 +1054,7 @@ def get_calls_for_tree(metafunc,
     """
     pending_dct = pending_dct.copy()
     calls, nodes_used_by_calls = _process_node(metafunc, fix_closure_tree, pending_dct, [])
-    # for each call in calls, the node in nodes_used_by_calls is the coresponding tree leaf.
+    # for each call in calls, the node in nodes_used_by_calls is the corresponding tree leaf.
     _cleanup_calls_list(metafunc, fix_closure_tree, calls, nodes_used_by_calls, pending_dct)
     return calls
 
@@ -1143,7 +1143,7 @@ def _cleanup_calls_list(metafunc,
     #     _scopenum = metafunc._arg2fixturedefs[fixture_name][-1].scopenum
     #
     #     # check if there is at least one call that actually uses the fixture and is not skipped...
-    #     # this seems a bit "too much" !! > WONT FIX
+    #     # this seems a bit "too much" !! > WON'T FIX
     #     used = False
     #     for i in range(nb_calls):
     #         c, n = calls[i], nodes[i]
@@ -1383,7 +1383,7 @@ def _process_node(metafunc,
                     child_node = current_node.children[child_indices[0]]
                     child_pending = pending.copy()
 
-                    # place the childs parameter in the first position if it is in the list
+                    # place the children parameter in the first position if it is in the list
                     # not needed anymore - already automatic
                     # try:
                     #     child_pending.move_to_end(child_alternative, last=False)

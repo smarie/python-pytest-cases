@@ -358,7 +358,7 @@ cases = get_all_cases(f, cases=".")
 import test.test_xyz
 xyz_cases = get_all_cases(test.test_xyz)
 
-# Can be used to filter explict cases, in which case no parametrization_target is needed
+# Can be used to filter explicit cases, in which case no parametrization_target is needed
 filtered_cases = get_all_cases(cases=[case_1, case_2, case_3], has_tag=["banana"])
 ```
 
@@ -413,7 +413,7 @@ As a consequence it does not support the `params` and `ids` arguments anymore.
  - **autouse**: if True, the fixture func is activated for all tests that can see it.  If False (the default) then an explicitreference is needed to activate the fixture.
  - **name**: the name of the fixture. This defaults to the name of the decorated function. Note: If a fixture is used in the same module in which it is defined, the function name of the fixture will be shadowed by the function arg that requests the fixture; one wayto resolve this is to name the decorated function ``fixture_<fixturename>`` and then use ``@pytest.fixture(name='<fixturename>')``.
  - **unpack_into**: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See [`unpack_fixture`](#unpack_fixture) for details.
- - **hook**: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+ - **hook**: an optional hook to apply to each fixture function that is created during this call. The hook function will be called every time a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
  - **kwargs**: other keyword arguments for `@pytest.fixture`
 
 ### `unpack_fixture`
@@ -468,7 +468,7 @@ class TestClass:
  - **argnames**: same as `@pytest.mark.parametrize` `argnames`.
  - **fixture**: a fixture name string or a fixture symbol. If a fixture symbol is provided, the created fixtures will have the same scope. If a name is provided, they will have scope='function'. Note that in practice the performance loss resulting from using `function` rather than a higher scope is negligible since the created fixtures' body is a one-liner.
  - **in_cls**: a boolean (default `False`). You may wish to turn this to `True` to use this function inside a class. If you do so, you **MUST** assign the output to variables in the class.
- - **hook**: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+ - **hook**: an optional hook to apply to each fixture function that is created during this call. The hook function will be called every time a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
 
 **Outputs:** the created fixtures.
 
@@ -510,7 +510,7 @@ leads to very explicit ids: `<union>/<idx>/<alternative>`. See `UnionFixtureAlte
  - `unpack_into`: an optional iterable of names, or string containing coma-separated names, for additional fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
  - `ids`: as in pytest. The default value returns the correct fixture
  - `autouse`: as in pytest
- - `hook`: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+ - `hook`: an optional hook to apply to each fixture function that is created during this call. The hook function will be called every time a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
  - `kwargs`: other pytest fixture options. They might not be supported correctly.
 
 **Outputs:** the new fixture. Note: you do not need to capture that output in a symbol, since the fixture is automatically registered in your module. However if you decide to do so make sure that you use the same name.
@@ -555,7 +555,7 @@ def test_uses_param2(arg1, arg2, fixture_uses_param2):
  - `autouse`: see fixture `autouse`
  - `ids`: same as `@pytest.mark.parametrize` `ids`
  - `scope`: see fixture `scope`    
- - `hook`: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+ - `hook`: an optional hook to apply to each fixture function that is created during this call. The hook function will be called every time a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
  - `kwargs`: any other argument for the created 'fixtures'
 
 ### `param_fixture`
@@ -602,7 +602,7 @@ Both `fixture_ref` and `lazy_value` can be used to represent a single argvalue, 
 
 Finally, `pytest.param` is supported even when there are `fixture_ref` and `lazy_value`. 
 
-Here as for all functions above, an optional `hook` can be passed, to apply on each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+Here as for all functions above, an optional `hook` can be passed, to apply on each fixture function that is created during this call. The hook function will be called every time a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
 
 **Parameters**
 
@@ -622,7 +622,7 @@ Here as for all functions above, an optional `hook` can be passed, to apply on e
         
  - `scope`: The scope of the union fixture to create if `fixture_ref`s are found in the argvalues. Otherwise same as in `pytest.mark.parametrize`.
    
- - `hook`: an optional hook to apply to each fixture function that is created during this call. The hook function will be called everytime a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
+ - `hook`: an optional hook to apply to each fixture function that is created during this call. The hook function will be called every time a fixture is about to be created. It will receive a single argument (the function implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
         
  - `debug`: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
 

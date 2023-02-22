@@ -272,7 +272,7 @@ Another consequence of using [`fixture_ref`](./api_reference.md#fixture_ref) is 
 
 ## passing a `hook`
 
-As per version `1.14`, all the above functions now support passing a `hook` argument. This argument should be a callable. It will be called everytime a fixture is about to be created by `pytest_cases` on your behalf. The fixture function is passed as the argument of the hook, and the hook should return it as the result.
+As per version `1.14`, all the above functions now support passing a `hook` argument. This argument should be a callable. It will be called every time a fixture is about to be created by `pytest_cases` on your behalf. The fixture function is passed as the argument of the hook, and the hook should return it as the result.
 
 You can use this fixture to better understand which fixtures are created behind the scenes, and also to decorate the fixture functions before they are created. For example you can use `hook=saved_fixture` (from [`pytest-harvest`](https://smarie.github.io/python-pytest-harvest/)) in order to save the created fixtures in the fixture store.  
 

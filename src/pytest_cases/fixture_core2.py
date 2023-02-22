@@ -65,7 +65,7 @@ def param_fixture(argname,           # type: str
     :param ids: see fixture `ids`
     :param scope: see fixture `scope`
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
@@ -172,7 +172,7 @@ def param_fixtures(argnames,          # type: str
     :param ids: same as `@pytest.mark.parametrize` `ids`
     :param scope: see fixture `scope`
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)
@@ -313,7 +313,7 @@ def fixture(scope="function",        # type: str
     :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional
         fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: other keyword arguments for `@pytest.fixture`
@@ -383,7 +383,7 @@ def _decorate_fixture_plus(fixture_func,
     :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional
         fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.
     :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function
-        will be called everytime a fixture is about to be created. It will receive a single argument (the function
+        will be called every time a fixture is about to be created. It will receive a single argument (the function
         implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from
         `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.
     :param kwargs: other keyword arguments for `@pytest.fixture`
@@ -470,7 +470,7 @@ def _decorate_fixture_plus(fixture_func,
             if marks is not None:
                 final_values[i] = make_marked_parameter_value((final_values[i],), marks=marks)
     else:
-        # Multiple @parametrize: since pytest does not support several, we merge them with "apparence" of several
+        # Multiple @parametrize: since pytest does not support several, we merge them with "appearance" of several
         # --equivalent id
         final_ids = combine_ids(product(*params_ids))
         # --merge all values, we'll unpack them in the wrapper below
