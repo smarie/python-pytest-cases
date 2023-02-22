@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.6.14 - bugfix
+
+ - Fixed issue with `get_all_cases`: default value for `cases` was wrong. Fixes [#290](https://github.com/smarie/python-pytest-cases/issues/290)
+
 ### 3.6.13 - bugfix
 
  - Fixed issue where a lazy value (for example a case function) was not resolved before being injected in a parametrized function, and was therefore appearing as a `_LazyValueCaseParamValue `. Fixed [#274](https://github.com/smarie/python-pytest-cases/issues/274)
