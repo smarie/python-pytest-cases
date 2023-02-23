@@ -29,11 +29,9 @@ ENVS = {
     (PY38, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     (PY38, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 2.7
-    (PY27, "pytest2.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<3", "pytest-asyncio": DONT_INSTALL}},
     (PY27, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<4", "pytest-asyncio": DONT_INSTALL}},
     (PY27, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<5", "pytest-asyncio": DONT_INSTALL}},
     # python 3.5
-    (PY35, "pytest2.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<3", "pytest-asyncio": DONT_INSTALL}},
     (PY35, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<4", "pytest-asyncio": DONT_INSTALL}},
     (PY35, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<5", "pytest-asyncio": DONT_INSTALL}},
     (PY35, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<6"}},
