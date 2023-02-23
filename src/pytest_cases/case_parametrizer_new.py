@@ -207,7 +207,7 @@ def create_glob_name_filter(glob_str  # type: str
 
 
 def get_all_cases(parametrization_target=None,  # type: Callable
-                  cases=None,                   # type: Union[CaseType, List[CaseType]]
+                  cases=AUTO,                   # type: Union[CaseType, List[CaseType]]
                   prefix=CASE_PREFIX_FUN,       # type: str
                   glob=None,                    # type: str
                   has_tag=None,                 # type: Union[str, Iterable[str]]
@@ -675,7 +675,7 @@ def import_default_cases_module(test_module_name):
             # Nothing worked
             raise ValueError("Error importing test cases module to parametrize %r: unable to import AUTO "
                              "cases module %r nor %r. Maybe you wish to import cases from somewhere else ? In that case"
-                             "please specify `cases=...`."
+                             " please specify `cases=...`."
                              % (test_module_name, cases_module_name1, cases_module_name2))
 
     return cases_module

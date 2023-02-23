@@ -62,8 +62,12 @@ def test_relative_module_cases():
     assert {"hello .", "hi ."} == {f() for f in relative_import_cases}
 
 
-def test_auto_cases():
-    auto_import_cases = get_all_cases(cases=AUTO)
+@parametrize("explicit", (True, False))
+def test_auto_cases(explicit):
+    if explicit:
+        auto_import_cases = get_all_cases(cases=AUTO)
+    else:
+        auto_import_cases = get_all_cases()
     assert {"hello AUTO", "hi AUTO"} == {f() for f in auto_import_cases}
 
 
