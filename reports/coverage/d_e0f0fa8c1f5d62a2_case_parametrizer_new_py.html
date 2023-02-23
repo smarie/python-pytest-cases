@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_e0f0fa8c1f5d62a2_common_mini_six_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.4.1</a>,
-            created at 2022-06-08 20:28 +0000
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v7.2.0</a>,
+            created at 2023-02-23 12:56 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -174,7 +174,7 @@
     <p class="pln"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t"><span class="str">    `test_&lt;name>_cases.py` or if not found, `cases_&lt;name>.py`, where `test_&lt;name>` is the current module name.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t"><span class="str">    Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name;</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t"><span class="str">    or a list of such elements. Note that both absolute and relative module names are suported.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t"><span class="str">    or a list of such elements. Note that both absolute and relative module names are supported.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t"><span class="str">    Note that `@parametrize_with_cases` collection and parameter creation steps are strictly equivalent to</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t"><span class="str">    `get_all_cases` + `get_parametrize_args`. This can be handy for debugging purposes.</span>&nbsp;</span><span class="r"></span></p>
@@ -291,7 +291,7 @@
     <p class="pln"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t209" href="#t209">209</a></span><span class="t"><span class="key">def</span> <span class="nam">get_all_cases</span><span class="op">(</span><span class="nam">parametrization_target</span><span class="op">=</span><span class="key">None</span><span class="op">,</span>  <span class="com"># type: Callable</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t">                  <span class="nam">cases</span><span class="op">=</span><span class="key">None</span><span class="op">,</span>                   <span class="com"># type: Union[CaseType, List[CaseType]]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t">                  <span class="nam">cases</span><span class="op">=</span><span class="nam">AUTO</span><span class="op">,</span>                   <span class="com"># type: Union[CaseType, List[CaseType]]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t">                  <span class="nam">prefix</span><span class="op">=</span><span class="nam">CASE_PREFIX_FUN</span><span class="op">,</span>       <span class="com"># type: str</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t">                  <span class="nam">glob</span><span class="op">=</span><span class="key">None</span><span class="op">,</span>                    <span class="com"># type: str</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t">                  <span class="nam">has_tag</span><span class="op">=</span><span class="key">None</span><span class="op">,</span>                 <span class="com"># type: Union[str, Iterable[str]]</span>&nbsp;</span><span class="r"></span></p>
@@ -553,7 +553,7 @@
     <p class="run"><span class="n"><a id="t469" href="#t469">469</a></span><span class="t">        <span class="key">if</span> <span class="nam">debug</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t470" href="#t470">470</a></span><span class="t">            <span class="nam">case_fun_str</span> <span class="op">=</span> <span class="nam">qname</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">.</span><span class="nam">func</span> <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">case_fun</span><span class="op">,</span> <span class="nam">functools</span><span class="op">.</span><span class="nam">partial</span><span class="op">)</span> <span class="key">else</span> <span class="nam">case_fun</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t471" href="#t471">471</a></span><span class="t">            <span class="nam">print</span><span class="op">(</span><span class="str">"Case function %s > fixture_ref(%r) with marks %s"</span> <span class="op">%</span> <span class="op">(</span><span class="nam">case_fun_str</span><span class="op">,</span> <span class="nam">fix_name</span><span class="op">,</span> <span class="nam">remaining_marks</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t472" href="#t472">472</a></span><span class="t">        <span class="com"># return a lengh-1 tuple because there is a single case created</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t472" href="#t472">472</a></span><span class="t">        <span class="com"># return a length-1 tuple because there is a single case created</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t473" href="#t473">473</a></span><span class="t">        <span class="key">return</span> <span class="op">(</span><span class="nam">make_marked_parameter_value</span><span class="op">(</span><span class="op">(</span><span class="nam">argvalues</span><span class="op">,</span><span class="op">)</span><span class="op">,</span> <span class="nam">marks</span><span class="op">=</span><span class="nam">remaining_marks</span><span class="op">)</span> <span class="key">if</span> <span class="nam">remaining_marks</span> <span class="key">else</span> <span class="nam">argvalues</span><span class="op">,</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t474" href="#t474">474</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t475" href="#t475">475</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -759,7 +759,7 @@
     <p class="pln"><span class="n"><a id="t675" href="#t675">675</a></span><span class="t">            <span class="com"># Nothing worked</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t676" href="#t676">676</a></span><span class="t">            <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">"Error importing test cases module to parametrize %r: unable to import AUTO "</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t677" href="#t677">677</a></span><span class="t">                             <span class="str">"cases module %r nor %r. Maybe you wish to import cases from somewhere else ? In that case"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t678" href="#t678">678</a></span><span class="t">                             <span class="str">"please specify `cases=...`."</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t678" href="#t678">678</a></span><span class="t">                             <span class="str">" please specify `cases=...`."</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t679" href="#t679">679</a></span><span class="t">                             <span class="op">%</span> <span class="op">(</span><span class="nam">test_module_name</span><span class="op">,</span> <span class="nam">cases_module_name1</span><span class="op">,</span> <span class="nam">cases_module_name2</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t680" href="#t680">680</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t681" href="#t681">681</a></span><span class="t">    <span class="key">return</span> <span class="nam">cases_module</span>&nbsp;</span><span class="r"></span></p>
@@ -1047,7 +1047,7 @@
     <p class="mis show_mis"><span class="n"><a id="t963" href="#t963">963</a></span><span class="t">            <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">"Error: multiple values found for the same fixture parameter. Please report this issue"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t964" href="#t964">964</a></span><span class="t">        <span class="nam">fixture_results_dict</span><span class="op">[</span><span class="nam">fixture_name</span><span class="op">]</span> <span class="op">=</span> <span class="nam">fixture_results_dct</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t965" href="#t965">965</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t966" href="#t966">966</a></span><span class="t">    <span class="com"># the remainder: fixtures that cant be found.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t966" href="#t966">966</a></span><span class="t">    <span class="com"># the remainder: fixtures that can't be found.</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t967" href="#t967">967</a></span><span class="t">    <span class="nam">results_unknown_dict</span> <span class="op">=</span> <span class="nam">dict</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t968" href="#t968">968</a></span><span class="t">    <span class="key">for</span> <span class="nam">function</span><span class="op">,</span> <span class="nam">results_list</span> <span class="key">in</span> <span class="nam">results_known_fixtures_but_not_found</span><span class="op">.</span><span class="nam">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t969" href="#t969">969</a></span><span class="t">        <span class="nam">fixture_results_dct</span> <span class="op">=</span> <span class="nam">dict</span><span class="op">(</span><span class="nam">results_list</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -1412,8 +1412,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_e0f0fa8c1f5d62a2_common_mini_six_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.4.1</a>,
-            created at 2022-06-08 20:28 +0000
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v7.2.0</a>,
+            created at 2023-02-23 12:56 +0000
         </p>
     </div>
 </footer>

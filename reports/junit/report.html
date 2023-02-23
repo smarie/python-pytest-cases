@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <title>Test Report</title>
+    <title>report.html</title>
     <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
   <body onLoad="init()">
     <script>/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -70,9 +70,19 @@ function hideExtras(colresultElem) {
 }
 
 function showFilters() {
+    let visibleString = getQueryParameter('visible') || 'all';
+    visibleString = visibleString.toLowerCase();
+    const checkedItems = visibleString.split(',');
+
     const filterItems = document.getElementsByClassName('filter');
-    for (let i = 0; i < filterItems.length; i++)
+    for (let i = 0; i < filterItems.length; i++) {
         filterItems[i].hidden = false;
+
+        if (visibleString != 'all') {
+            filterItems[i].checked = checkedItems.includes(filterItems[i].getAttribute('data-test-result'));
+            filterTable(filterItems[i]);
+        }
+    }
 }
 
 function addCollapse() {
@@ -243,7 +253,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
 }
 </script>
     <h1>report.html</h1>
-    <p>Report generated on 08-Jun-2022 at 20:28:33 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.1.1</p>
+    <p>Report generated on 23-Feb-2023 at 12:56:53 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
     <h2>Environment</h2>
     <table id="environment">
       <tr>
@@ -254,19 +264,19 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <td>/usr/lib/jvm/temurin-11-jdk-amd64</td></tr>
       <tr>
         <td>Packages</td>
-        <td>{"pluggy": "1.0.0", "py": "1.11.0", "pytest": "7.1.2"}</td></tr>
+        <td>{"pluggy": "1.0.0", "pytest": "7.2.1"}</td></tr>
       <tr>
         <td>Platform</td>
-        <td>Linux-5.13.0-1025-azure-x86_64-with-debian-bullseye-sid</td></tr>
+        <td>Linux-5.15.0-1033-azure-x86_64-with-debian-bookworm-sid</td></tr>
       <tr>
         <td>Plugins</td>
-        <td>{"asyncio": "0.18.3", "cases": "0.1.dev1+g112ca87", "harvest": "1.10.3", "html": "3.1.1", "metadata": "2.0.1", "steps": "1.8.0"}</td></tr>
+        <td>{"asyncio": "0.20.3", "cases": "0.1.dev1+gd333414", "harvest": "1.10.4", "html": "3.2.0", "metadata": "2.0.4", "steps": "1.8.0"}</td></tr>
       <tr>
         <td>Python</td>
-        <td>3.7.13</td></tr></table>
+        <td>3.7.16</td></tr></table>
     <h2>Summary</h2>
-    <p>1353 tests ran in 7.98 seconds. </p>
-    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">1353 passed</span>, <input checked="true" class="filter" data-test-result="skipped" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">116 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <p>1354 tests ran in 10.74 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">1354 passed</span>, <input checked="true" class="filter" data-test-result="skipped" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">116 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
     <h2>Results</h2>
     <table id="results-table">
       <thead id="results-table-head">
@@ -1114,7 +1124,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="extra" colspan="4">
             <div class="log">(&#x27;/home/runner/work/python-pytest-cases/python-pytest-cases/tests/cases/issues/test_issue_211.py&#x27;, 31, &#x27;Skipped: joe skipped&#x27;)<br/> ------------------------------Captured stdout call------------------------------ <br/>joe
-Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f8546f054d0&gt;, params={&#x27;name&#x27;: &#x27;joe&#x27;})
+Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f46fdfc14d0&gt;, params={&#x27;name&#x27;: &#x27;joe&#x27;})
 <br/></div></td></tr></tbody>
       <tbody class="skipped results-table-row">
         <tr>
@@ -2042,8 +2052,8 @@ Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f854
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>{&#x27;data&#x27;: Case(id=&#x27;a&#x27;, func=&lt;function case_a at 0x7f8547509170&gt;, params={&#x27;nb&#x27;: 1}), &#x27;my_fixture&#x27;: {&#x27;foo&#x27;: Case(id=&#x27;a&#x27;, func=&lt;function case_a at 0x7f8547509170&gt;, params={&#x27;nb&#x27;: 1})}}
-(&#x27;a&#x27;, &lt;function case_a at 0x7f8547509170&gt;)
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>{&#x27;data&#x27;: Case(id=&#x27;a&#x27;, func=&lt;function case_a at 0x7f46fe617c20&gt;, params={&#x27;nb&#x27;: 1}), &#x27;my_fixture&#x27;: {&#x27;foo&#x27;: Case(id=&#x27;a&#x27;, func=&lt;function case_a at 0x7f46fe617c20&gt;, params={&#x27;nb&#x27;: 1})}}
+(&#x27;a&#x27;, &lt;function case_a at 0x7f46fe617c20&gt;)
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -2272,7 +2282,7 @@ Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f854
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/cases/doc/test_get_current_cases.py::test_local_cases[b-custom_id-b-custom_id]</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.05</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -3892,7 +3902,7 @@ Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f854
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/cases/doc/test_get_current_cases.py::test_separate_cases_file_with_fix[a-custom_id-a-a_fixture-b-custom_id-b-custom_id]</td>
-          <td class="col-duration">0.03</td>
+          <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -7192,7 +7202,7 @@ Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f854
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>alice
-Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f8546f054d0&gt;, params={&#x27;name&#x27;: &#x27;alice&#x27;})
+Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f46fdfc14d0&gt;, params={&#x27;name&#x27;: &#x27;alice&#x27;})
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -7203,7 +7213,7 @@ Case(id=&#x27;widget&#x27;, func=&lt;function MyClassName.case_widget at 0x7f854
         <tr>
           <td class="extra" colspan="4">
             <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>foo
-Case(id=&#x27;foo&#x27;, func=&lt;function MyClassName.case_foo at 0x7f8546f05560&gt;, params={})
+Case(id=&#x27;foo&#x27;, func=&lt;function MyClassName.case_foo at 0x7f46fdfc1560&gt;, params={})
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -7285,7 +7295,7 @@ Case(id=&#x27;foo&#x27;, func=&lt;function MyClassName.case_foo at 0x7f8546f0556
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>&lt;tests.cases.issues.test_issue_238.Person object at 0x7f8546eadb10&gt;
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>&lt;tests.cases.issues.test_issue_238.Person object at 0x7f46fe310d50&gt;
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -7295,13 +7305,13 @@ Case(id=&#x27;foo&#x27;, func=&lt;function MyClassName.case_foo at 0x7f8546f0556
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>&lt;tests.cases.issues.test_issue_238.Person object at 0x7f8546eadc10&gt;
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>&lt;tests.cases.issues.test_issue_238.Person object at 0x7f46fe0693d0&gt;
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/cases/issues/test_issue_242.py::test_f_xy[A]</td>
-          <td class="col-duration">0.11</td>
+          <td class="col-duration">0.12</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -7606,7 +7616,16 @@ Case(id=&#x27;foo&#x27;, func=&lt;function MyClassName.case_foo at 0x7f8546f0556
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
-          <td class="col-name">tests/cases/issues/issue_258/test_issue_258.py::test_auto_cases</td>
+          <td class="col-name">tests/cases/issues/issue_258/test_issue_258.py::test_auto_cases[True]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/cases/issues/issue_258/test_issue_258.py::test_auto_cases[False]</td>
           <td class="col-duration">0.00</td>
           <td class="col-links"></td></tr>
         <tr>
@@ -11573,7 +11592,7 @@ b3
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/pytest_extension/issues/test_issue_so_76.py::test_synthesis</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -11636,7 +11655,7 @@ b3
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/pytest_extension/meta/test_all.py::test_run_all_tests[session_optim]</td>
-          <td class="col-duration">0.09</td>
+          <td class="col-duration">0.13</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -11660,27 +11679,21 @@ def pytest_configure(config):
 Testing that running pytest on file session_optim.py with config file /home/runner/work/python-pytest-cases/python-pytest-cases/tests/pytest_extension/meta/raw/session_optim/conf.py results in {&#x27;passed&#x27;: 10, &#x27;skipped&#x27;: 0, &#x27;failed&#x27;: 0}.
 For debug, temp dir is: /tmp/pytest-of-runner/pytest-0/test_run_all_tests0
 ============================= test session starts ==============================
-platform linux -- Python 3.7.13, pytest-7.1.2, pluggy-1.0.0
+platform linux -- Python 3.7.16, pytest-7.2.1, pluggy-1.0.0
 rootdir: /tmp/pytest-of-runner/pytest-0/test_run_all_tests0
-plugins: metadata-2.0.1, html-3.1.1, harvest-1.10.3, steps-1.8.0, asyncio-0.18.3, cases-0.1.dev1+g112ca87
-asyncio: mode=legacy
+plugins: metadata-2.0.4, cases-0.1.dev1+gd333414, steps-1.8.0, harvest-1.10.4, html-3.2.0, asyncio-0.20.3
+asyncio: mode=strict
 collected 10 items
 
 test_run_all_tests.py ..........                                         [100%]
 
-=============================== warnings summary ===============================
-../../../../home/runner/work/python-pytest-cases/python-pytest-cases/.nox/tests-3-7-env-pytest-latest/lib/python3.7/site-packages/pytest_asyncio/plugin.py:191
-  /home/runner/work/python-pytest-cases/python-pytest-cases/.nox/tests-3-7-env-pytest-latest/lib/python3.7/site-packages/pytest_asyncio/plugin.py:191: DeprecationWarning: The &#x27;asyncio_mode&#x27; default value will change to &#x27;strict&#x27; in future, please explicitly use &#x27;asyncio_mode=strict&#x27; or &#x27;asyncio_mode=auto&#x27; in pytest configuration file.
-    config.issue_config_time_warning(LEGACY_MODE, stacklevel=2)
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================== 10 passed, 1 warning in 0.03s =========================
+============================== 10 passed in 0.04s ==============================
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/pytest_extension/meta/test_all.py::test_run_all_tests[reorder_skip]</td>
-          <td class="col-duration">0.07</td>
+          <td class="col-duration">0.10</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -11688,21 +11701,15 @@ test_run_all_tests.py ..........                                         [100%]
 Testing that running pytest on file reorder_skip.py with config file /home/runner/work/python-pytest-cases/python-pytest-cases/tests/pytest_extension/meta/raw/reorder_skip/conf.py results in {&#x27;passed&#x27;: 3, &#x27;skipped&#x27;: 0, &#x27;failed&#x27;: 0}.
 For debug, temp dir is: /tmp/pytest-of-runner/pytest-0/test_run_all_tests1
 ============================= test session starts ==============================
-platform linux -- Python 3.7.13, pytest-7.1.2, pluggy-1.0.0
+platform linux -- Python 3.7.16, pytest-7.2.1, pluggy-1.0.0
 rootdir: /tmp/pytest-of-runner/pytest-0/test_run_all_tests1
-plugins: metadata-2.0.1, html-3.1.1, harvest-1.10.3, steps-1.8.0, asyncio-0.18.3, cases-0.1.dev1+g112ca87
-asyncio: mode=legacy
+plugins: metadata-2.0.4, cases-0.1.dev1+gd333414, steps-1.8.0, harvest-1.10.4, html-3.2.0, asyncio-0.20.3
+asyncio: mode=strict
 collected 4 items / 1 deselected / 3 selected
 
 test_run_all_tests.py ...                                                [100%]
 
-=============================== warnings summary ===============================
-../../../../home/runner/work/python-pytest-cases/python-pytest-cases/.nox/tests-3-7-env-pytest-latest/lib/python3.7/site-packages/pytest_asyncio/plugin.py:191
-  /home/runner/work/python-pytest-cases/python-pytest-cases/.nox/tests-3-7-env-pytest-latest/lib/python3.7/site-packages/pytest_asyncio/plugin.py:191: DeprecationWarning: The &#x27;asyncio_mode&#x27; default value will change to &#x27;strict&#x27; in future, please explicitly use &#x27;asyncio_mode=strict&#x27; or &#x27;asyncio_mode=auto&#x27; in pytest configuration file.
-    config.issue_config_time_warning(LEGACY_MODE, stacklevel=2)
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-================== 3 passed, 1 deselected, 1 warning in 0.02s ==================
+======================= 3 passed, 1 deselected in 0.02s ========================
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13440,7 +13447,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.17534194487386945
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.6420032232729914
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13450,7 +13457,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.6249639689069797
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.7804656660197226
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13460,7 +13467,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.928806885498243
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.7228755501935482
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13470,7 +13477,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.5201194525280531
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.7689986646975778
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13480,7 +13487,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.19913445035479305
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.26525393566848554
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13490,7 +13497,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.16033898958757142
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.5591886543178842
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13500,7 +13507,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.9221564690820893
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.2441927352555262
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13510,7 +13517,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.4902462024161428
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.9585173012088073
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13520,7 +13527,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.8542712267777031
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.19889366585370205
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13530,7 +13537,7 @@ reprovision created: flavor1 vlan
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.6436089868856267
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>0.26177283492008685
 <br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -13773,7 +13780,7 @@ setting up dataset B
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">tests/pytest_extension/parametrize_plus/test_so2_simplified.py::test_databases[data_from_datasetA-idx=2]</td>
-          <td class="col-duration">0.04</td>
+          <td class="col-duration">0.06</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">

@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_e0f0fa8c1f5d62a2_fixture_parametrize_plus_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.4.1</a>,
-            created at 2022-06-08 20:28 +0000
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v7.2.0</a>,
+            created at 2023-02-23 12:56 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -149,7 +149,7 @@
     <p class="pln"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t"><span class="str">    :param ids: see fixture `ids`</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t"><span class="str">    :param scope: see fixture `scope`</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t"><span class="str">    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t"><span class="str">        will be called everytime a fixture is about to be created. It will receive a single argument (the function</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t"><span class="str">        will be called every time a fixture is about to be created. It will receive a single argument (the function</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t"><span class="str">        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t"><span class="str">        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t"><span class="str">    :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)</span>&nbsp;</span><span class="r"></span></p>
@@ -256,7 +256,7 @@
     <p class="pln"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t"><span class="str">    :param ids: same as `@pytest.mark.parametrize` `ids`</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t"><span class="str">    :param scope: see fixture `scope`</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="str">    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t"><span class="str">        will be called everytime a fixture is about to be created. It will receive a single argument (the function</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t"><span class="str">        will be called every time a fixture is about to be created. It will receive a single argument (the function</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t"><span class="str">        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t"><span class="str">        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t"><span class="str">    :param debug: print debug messages on stdout to analyze fixture creation (use pytest -s to see them)</span>&nbsp;</span><span class="r"></span></p>
@@ -397,7 +397,7 @@
     <p class="pln"><span class="n"><a id="t313" href="#t313">313</a></span><span class="t"><span class="str">    :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t314" href="#t314">314</a></span><span class="t"><span class="str">        fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t315" href="#t315">315</a></span><span class="t"><span class="str">    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t316" href="#t316">316</a></span><span class="t"><span class="str">        will be called everytime a fixture is about to be created. It will receive a single argument (the function</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t316" href="#t316">316</a></span><span class="t"><span class="str">        will be called every time a fixture is about to be created. It will receive a single argument (the function</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t317" href="#t317">317</a></span><span class="t"><span class="str">        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t318" href="#t318">318</a></span><span class="t"><span class="str">        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t319" href="#t319">319</a></span><span class="t"><span class="str">    :param kwargs: other keyword arguments for `@pytest.fixture`</span>&nbsp;</span><span class="r"></span></p>
@@ -467,7 +467,7 @@
     <p class="pln"><span class="n"><a id="t383" href="#t383">383</a></span><span class="t"><span class="str">    :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t384" href="#t384">384</a></span><span class="t"><span class="str">        fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t385" href="#t385">385</a></span><span class="t"><span class="str">    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t386" href="#t386">386</a></span><span class="t"><span class="str">        will be called everytime a fixture is about to be created. It will receive a single argument (the function</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t386" href="#t386">386</a></span><span class="t"><span class="str">        will be called every time a fixture is about to be created. It will receive a single argument (the function</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t387" href="#t387">387</a></span><span class="t"><span class="str">        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t388" href="#t388">388</a></span><span class="t"><span class="str">        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t389" href="#t389">389</a></span><span class="t"><span class="str">    :param kwargs: other keyword arguments for `@pytest.fixture`</span>&nbsp;</span><span class="r"></span></p>
@@ -554,7 +554,7 @@
     <p class="run"><span class="n"><a id="t470" href="#t470">470</a></span><span class="t">            <span class="key">if</span> <span class="nam">marks</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t471" href="#t471">471</a></span><span class="t">                <span class="nam">final_values</span><span class="op">[</span><span class="nam">i</span><span class="op">]</span> <span class="op">=</span> <span class="nam">make_marked_parameter_value</span><span class="op">(</span><span class="op">(</span><span class="nam">final_values</span><span class="op">[</span><span class="nam">i</span><span class="op">]</span><span class="op">,</span><span class="op">)</span><span class="op">,</span> <span class="nam">marks</span><span class="op">=</span><span class="nam">marks</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t472" href="#t472">472</a></span><span class="t">    <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t473" href="#t473">473</a></span><span class="t">        <span class="com"># Multiple @parametrize: since pytest does not support several, we merge them with "apparence" of several</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t473" href="#t473">473</a></span><span class="t">        <span class="com"># Multiple @parametrize: since pytest does not support several, we merge them with "appearance" of several</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t474" href="#t474">474</a></span><span class="t">        <span class="com"># --equivalent id</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t475" href="#t475">475</a></span><span class="t">        <span class="nam">final_ids</span> <span class="op">=</span> <span class="nam">combine_ids</span><span class="op">(</span><span class="nam">product</span><span class="op">(</span><span class="op">*</span><span class="nam">params_ids</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t476" href="#t476">476</a></span><span class="t">        <span class="com"># --merge all values, we'll unpack them in the wrapper below</span>&nbsp;</span><span class="r"></span></p>
@@ -644,8 +644,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_e0f0fa8c1f5d62a2_fixture_parametrize_plus_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.4.1</a>,
-            created at 2022-06-08 20:28 +0000
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v7.2.0</a>,
+            created at 2023-02-23 12:56 +0000
         </p>
     </div>
 </footer>

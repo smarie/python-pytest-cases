@@ -164,7 +164,7 @@
                class="code sev- "><tt><i>49</i>     <span class="k">def</span> <span class="nf">pytest_fixture</span><span class="p">(</span><span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
             </div>
             <div id="l50"
-               class="code sev- "><tt><i>50</i>         <span class="sd">&quot;&quot;&quot;Generator-aware pytest.fixture decorator for legacy pytest versions&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>50</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator-aware pytest.fixture decorator for legacy pytest versions&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l51"
                class="code sev- "><tt><i>51</i>         <span class="k">def</span> <span class="nf">_decorate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
@@ -221,7 +221,7 @@
                class="code sev- "><tt><i>68</i> <span class="k">def</span> <span class="nf">pytest_is_running</span><span class="p">():</span></tt>
             </div>
             <div id="l69"
-               class="code sev- "><tt><i>69</i>     <span class="sd">&quot;&quot;&quot;Return True if the current process is a pytest run</span></tt>
+               class="code sev- "><tt><i>69</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if the current process is a pytest run</span></tt>
             </div>
             <div id="l70"
                class="code sev- "><tt><i>70</i> &nbsp;</tt>
@@ -281,7 +281,7 @@
                class="code sev- "><tt><i>88</i>                <span class="p">):</span></tt>
             </div>
             <div id="l89"
-               class="code sev- "><tt><i>89</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>89</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l90"
                class="code sev- "><tt><i>90</i> <span class="sd">    Returns True if the provided function is a fixture</span></tt>
@@ -326,7 +326,7 @@
                class="code sev- "><tt><i>103</i> <span class="k">def</span> <span class="nf">list_all_fixtures_in</span><span class="p">(</span><span class="n">cls_or_module</span><span class="p">,</span> <span class="n">return_names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recurse_to_module</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span></tt>
             </div>
             <div id="l104"
-               class="code sev- "><tt><i>104</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>104</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l105"
                class="code sev- "><tt><i>105</i> <span class="sd">    Returns a list containing all fixture names (or symbols if `return_names=False`)</span></tt>
@@ -407,7 +407,7 @@
                class="code sev- "><tt><i>130</i>     <span class="c1"># type: (...) -&gt; bool</span></tt>
             </div>
             <div id="l131"
-               class="code sev- "><tt><i>131</i>     <span class="sd">&quot;&quot;&quot;Ignore any exception via isinstance on Python 3.&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>131</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ignore any exception via isinstance on Python 3.&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l132"
                class="code sev- "><tt><i>132</i>     <span class="k">try</span><span class="p">:</span></tt>
@@ -437,7 +437,7 @@
                class="code sev- "><tt><i>140</i>     <span class="c1"># type: (...) -&gt; bool</span></tt>
             </div>
             <div id="l141"
-               class="code sev- "><tt><i>141</i>     <span class="sd">&quot;&quot;&quot;Ignore any exception via isinstance&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>141</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ignore any exception via isinstance&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l142"
                class="code sev- "><tt><i>142</i>     <span class="k">try</span><span class="p">:</span></tt>
@@ -464,7 +464,7 @@
                class="code sev- "><tt><i>149</i>                       <span class="p">):</span></tt>
             </div>
             <div id="l150"
-               class="code sev- "><tt><i>150</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>150</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l151"
                class="code sev- "><tt><i>151</i> <span class="sd">    Raises a ValueError if the provided fixture function is not a fixture.</span></tt>
@@ -503,7 +503,7 @@
                class="code sev- "><tt><i>162</i>                      <span class="p">):</span></tt>
             </div>
             <div id="l163"
-               class="code sev- "><tt><i>163</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>163</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l164"
                class="code sev- "><tt><i>164</i> <span class="sd">    Internal utility to retrieve the fixture name corresponding to the given fixture function.</span></tt>
@@ -605,7 +605,7 @@
                class="code sev- "><tt><i>196</i> <span class="k">def</span> <span class="nf">get_fixture_scope</span><span class="p">(</span><span class="n">fixture_fun</span><span class="p">):</span></tt>
             </div>
             <div id="l197"
-               class="code sev- "><tt><i>197</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>197</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l198"
                class="code sev- "><tt><i>198</i> <span class="sd">    Internal utility to retrieve the fixture scope corresponding to the given fixture function .</span></tt>
@@ -680,7 +680,7 @@
                class="code sev- "><tt><i>221</i> <span class="k">def</span> <span class="nf">get_parametrization_markers</span><span class="p">(</span><span class="n">fnode</span><span class="p">):</span></tt>
             </div>
             <div id="l222"
-               class="code sev- "><tt><i>222</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>222</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l223"
                class="code sev- "><tt><i>223</i> <span class="sd">    Returns the parametrization marks on a pytest Function node.</span></tt>
@@ -716,7 +716,7 @@
                class="code sev- "><tt><i>233</i> <span class="k">def</span> <span class="nf">get_param_names</span><span class="p">(</span><span class="n">fnode</span><span class="p">):</span></tt>
             </div>
             <div id="l234"
-               class="code sev- "><tt><i>234</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>234</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l235"
                class="code sev- "><tt><i>235</i> <span class="sd">    Returns a list of parameter names for the given pytest Function node.</span></tt>
@@ -767,7 +767,7 @@
                class="code sev- "><tt><i>250</i> <span class="k">def</span> <span class="nf">combine_ids</span><span class="p">(</span><span class="n">paramid_tuples</span><span class="p">):</span></tt>
             </div>
             <div id="l251"
-               class="code sev- "><tt><i>251</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>251</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l252"
                class="code sev- "><tt><i>252</i> <span class="sd">    Receives a list of tuples containing ids for each parameterset.</span></tt>
@@ -803,7 +803,7 @@
                class="code sev- "><tt><i>262</i> <span class="k">def</span> <span class="nf">make_test_ids</span><span class="p">(</span><span class="n">global_ids</span><span class="p">,</span> <span class="n">id_marks</span><span class="p">,</span> <span class="n">argnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">argvalues</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precomputed_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span></tt>
             </div>
             <div id="l263"
-               class="code sev- "><tt><i>263</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>263</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l264"
                class="code sev- "><tt><i>264</i> <span class="sd">    Creates the proper id for each test based on (higher precedence first)</span></tt>
@@ -926,7 +926,7 @@
                class="code sev- "><tt><i>303</i>     <span class="c1"># type: (...) -&gt; Union[List[str], Callable]</span></tt>
             </div>
             <div id="l304"
-               class="code sev- "><tt><i>304</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>304</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l305"
                class="code sev- "><tt><i>305</i> <span class="sd">    Resolves the `ids` argument of a parametrized fixture.</span></tt>
@@ -1046,7 +1046,7 @@
                class="code sev- "><tt><i>343</i>                                     <span class="p">):</span></tt>
             </div>
             <div id="l344"
-               class="code sev- "><tt><i>344</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>344</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l345"
                class="code sev- "><tt><i>345</i> <span class="sd">    Replicates pytest behaviour to generate the ids when there are several parameters in a single `parametrize.</span></tt>
@@ -1115,7 +1115,7 @@
                class="code sev- "><tt><i>366</i>             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nb_params</span><span class="p">:</span></tt>
             </div>
             <div id="l367"
-               class="code sev- "><tt><i>367</i>                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inconsistent lenghts for parameter names and values: &#39;</span><span class="si">%s</span><span class="s2">&#39; and &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span></tt>
+               class="code sev- "><tt><i>367</i>                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inconsistent lengths for parameter names and values: &#39;</span><span class="si">%s</span><span class="s2">&#39; and &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span></tt>
             </div>
             <div id="l368"
                class="code sev- "><tt><i>368</i>                                  <span class="s2">&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="n">vv</span><span class="p">))</span></tt>
@@ -1241,7 +1241,7 @@
                class="code sev- "><tt><i>408</i> <span class="k">def</span> <span class="nf">extract_parameterset_info</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">check_nb</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
             </div>
             <div id="l409"
-               class="code sev- "><tt><i>409</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>409</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l410"
                class="code sev- "><tt><i>410</i> &nbsp;</tt>
@@ -1328,7 +1328,7 @@
                class="code sev- "><tt><i>437</i> <span class="k">def</span> <span class="nf">extract_pset_info_single</span><span class="p">(</span><span class="n">nbnames</span><span class="p">,</span> <span class="n">argvalue</span><span class="p">):</span></tt>
             </div>
             <div id="l438"
-               class="code sev- "><tt><i>438</i>     <span class="sd">&quot;&quot;&quot;Return id, marks, value&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>438</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return id, marks, value&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l439"
                class="code sev- "><tt><i>439</i>     <span class="k">if</span> <span class="n">is_marked_parameter_value</span><span class="p">(</span><span class="n">argvalue</span><span class="p">):</span></tt>
@@ -1400,7 +1400,7 @@
                class="code sev- "><tt><i>461</i>     <span class="k">def</span> <span class="nf">get_marked_parameter_values</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">nbargs</span><span class="p">):</span></tt>
             </div>
             <div id="l462"
-               class="code sev- "><tt><i>462</i>         <span class="sd">&quot;&quot;&quot;This always returns a tuple. nbargs is useful for pytest2 compatibility &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>462</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;This always returns a tuple. nbargs is useful for pytest2 compatibility &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l463"
                class="code sev- "><tt><i>463</i>         <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">values</span></tt>
@@ -1439,7 +1439,7 @@
                class="code sev- "><tt><i>474</i>                      <span class="n">marks</span><span class="p">):</span></tt>
             </div>
             <div id="l475"
-               class="code sev- "><tt><i>475</i>         <span class="sd">&quot;&quot;&quot; Dummy function (not a class) used only by `parametrize` &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>475</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; Dummy function (not a class) used only by `parametrize` &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l476"
                class="code sev- "><tt><i>476</i>         <span class="k">if</span> <span class="nb">id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
@@ -1508,7 +1508,7 @@
                class="code sev- "><tt><i>497</i>     <span class="k">def</span> <span class="nf">get_marked_parameter_values</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">nbargs</span><span class="p">):</span></tt>
             </div>
             <div id="l498"
-               class="code sev- "><tt><i>498</i>         <span class="sd">&quot;&quot;&quot;Returns a tuple containing the values&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>498</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a tuple containing the values&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l499"
                class="code sev- "><tt><i>499</i> &nbsp;</tt>
@@ -1772,7 +1772,7 @@
                class="code sev- "><tt><i>585</i> <span class="p">):</span></tt>
             </div>
             <div id="l586"
-               class="code sev- "><tt><i>586</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>586</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l587"
                class="code sev- "><tt><i>587</i> <span class="sd">    A simplified version of idval where idfn, item and config do not need to be passed.</span></tt>
@@ -1808,7 +1808,7 @@
                class="code sev- "><tt><i>597</i> <span class="k">def</span> <span class="nf">mini_idvalset</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span></tt>
             </div>
             <div id="l598"
-               class="code sev- "><tt><i>598</i>     <span class="sd">&quot;&quot;&quot; mimic _pytest.python._idvalset but can handle lazyvalues used for tuples or args</span></tt>
+               class="code sev- "><tt><i>598</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot; mimic _pytest.python._idvalset but can handle lazyvalues used for tuples or args</span></tt>
             </div>
             <div id="l599"
                class="code sev- "><tt><i>599</i> &nbsp;</tt>
@@ -1868,7 +1868,7 @@
                class="code sev- "><tt><i>617</i>     <span class="k">def</span> <span class="nf">num_mock_patch_args</span><span class="p">(</span><span class="n">function</span><span class="p">):</span></tt>
             </div>
             <div id="l618"
-               class="code sev- "><tt><i>618</i>         <span class="sd">&quot;&quot;&quot; return number of arguments used up by mock arguments (if any) &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>618</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; return number of arguments used up by mock arguments (if any) &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l619"
                class="code sev- "><tt><i>619</i>         <span class="n">patchings</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="s2">&quot;patchings&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></tt>
@@ -1910,7 +1910,7 @@
                class="code sev- "><tt><i>631</i>     <span class="k">def</span> <span class="nf">getfuncargnames</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span></tt>
             </div>
             <div id="l632"
-               class="code sev- "><tt><i>632</i>         <span class="sd">&quot;&quot;&quot;Returns the names of a function&#39;s mandatory arguments.&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>632</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the names of a function&#39;s mandatory arguments.&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l633"
                class="code sev- "><tt><i>633</i>         <span class="n">parameters</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">function</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span></tt>
@@ -2132,7 +2132,7 @@
                class="code sev- "><tt><i>705</i>     <span class="k">def</span> <span class="nf">update_callspecs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l706"
-               class="code sev- "><tt><i>706</i>         <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>706</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l707"
                class="code sev- "><tt><i>707</i> &nbsp;</tt>
@@ -2225,7 +2225,7 @@
                class="code sev- "><tt><i>736</i> <span class="k">def</span> <span class="nf">add_fixture_params</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">new_names</span><span class="p">):</span></tt>
             </div>
             <div id="l737"
-               class="code sev- "><tt><i>737</i>     <span class="sd">&quot;&quot;&quot;Creates a wrapper of the given function with additional arguments&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>737</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a wrapper of the given function with additional arguments&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l738"
                class="code sev- "><tt><i>738</i> &nbsp;</tt>
@@ -2339,7 +2339,7 @@
                class="code sev- "><tt><i>771</i> <span class="k">def</span> <span class="nf">get_callspecs</span><span class="p">(</span><span class="n">func</span><span class="p">):</span></tt>
             </div>
             <div id="l772"
-               class="code sev- "><tt><i>772</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>772</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l773"
                class="code sev- "><tt><i>773</i> <span class="sd">    Returns a list of pytest CallSpec objects corresponding to calls that should be made for this parametrized function.</span></tt>
@@ -2381,7 +2381,7 @@
                class="code sev- "><tt><i>785</i> <span class="k">def</span> <span class="nf">cart_product_pytest</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">):</span></tt>
             </div>
             <div id="l786"
-               class="code sev- "><tt><i>786</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>786</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l787"
                class="code sev- "><tt><i>787</i> <span class="sd">     - do NOT use `itertools.product` as it fails to handle MarkDecorators</span></tt>
@@ -2576,7 +2576,7 @@
                class="code sev- "><tt><i>850</i> <span class="k">def</span> <span class="nf">inject_host</span><span class="p">(</span><span class="n">apply_decorator</span><span class="p">):</span></tt>
             </div>
             <div id="l851"
-               class="code sev- "><tt><i>851</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>851</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l852"
                class="code sev- "><tt><i>852</i> <span class="sd">    A decorator for function with signature `apply_decorator(f, host)`, in order to inject &#39;host&#39;, the host of f.</span></tt>
@@ -2816,7 +2816,7 @@
                class="code sev- "><tt><i>930</i> <span class="k">def</span> <span class="nf">get_pytest_request_and_item</span><span class="p">(</span><span class="n">request_or_item</span><span class="p">):</span></tt>
             </div>
             <div id="l931"
-               class="code sev- "><tt><i>931</i>     <span class="sd">&quot;&quot;&quot;Return the `request` and `item` (node) from whatever is provided&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>931</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the `request` and `item` (node) from whatever is provided&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l932"
                class="code sev- "><tt><i>932</i>     <span class="k">try</span><span class="p">:</span></tt>

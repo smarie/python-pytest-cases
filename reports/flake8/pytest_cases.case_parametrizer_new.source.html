@@ -260,7 +260,7 @@
                class="code sev- "><tt><i>81</i>     <span class="c1"># type: (...) -&gt; Callable[[Callable], Callable]</span></tt>
             </div>
             <div id="l82"
-               class="code sev- "><tt><i>82</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>82</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l83"
                class="code sev- "><tt><i>83</i> <span class="sd">    A decorator for test functions or fixtures, to parametrize them based on test cases. It works similarly to</span></tt>
@@ -293,7 +293,7 @@
                class="code sev- "><tt><i>92</i> <span class="sd">    Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name;</span></tt>
             </div>
             <div id="l93"
-               class="code sev- "><tt><i>93</i> <span class="sd">    or a list of such elements. Note that both absolute and relative module names are suported.</span></tt>
+               class="code sev- "><tt><i>93</i> <span class="sd">    or a list of such elements. Note that both absolute and relative module names are supported.</span></tt>
             </div>
             <div id="l94"
                class="code sev- "><tt><i>94</i> &nbsp;</tt>
@@ -434,7 +434,7 @@
                class="code sev- "><tt><i>139</i>     <span class="k">def</span> <span class="nf">_apply_parametrization</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">host_class_or_module</span><span class="p">):</span></tt>
             </div>
             <div id="l140"
-               class="code sev- "><tt><i>140</i>         <span class="sd">&quot;&quot;&quot; execute parametrization of test function or fixture `f` &quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>140</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; execute parametrization of test function or fixture `f` &quot;&quot;&quot;</span></tt>
             </div>
             <div id="l141"
                class="code sev- "><tt><i>141</i> &nbsp;</tt>
@@ -542,7 +542,7 @@
                class="code sev- "><tt><i>175</i>                             <span class="p">):</span></tt>
             </div>
             <div id="l176"
-               class="code sev- "><tt><i>176</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>176</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l177"
                class="code sev- "><tt><i>177</i> &nbsp;</tt>
@@ -578,7 +578,7 @@
                class="code sev- "><tt><i>187</i>                             <span class="p">):</span></tt>
             </div>
             <div id="l188"
-               class="code sev- "><tt><i>188</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>188</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l189"
                class="code sev- "><tt><i>189</i> <span class="sd">    Creates a glob-like matcher for the name of case functions</span></tt>
@@ -653,7 +653,7 @@
                class="code sev- "><tt><i>209</i> <span class="k">def</span> <span class="nf">get_all_cases</span><span class="p">(</span><span class="n">parametrization_target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Callable</span></tt>
             </div>
             <div id="l210"
-               class="code sev- "><tt><i>210</i>                   <span class="n">cases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>                   <span class="c1"># type: Union[CaseType, List[CaseType]]</span></tt>
+               class="code sev- "><tt><i>210</i>                   <span class="n">cases</span><span class="o">=</span><span class="n">AUTO</span><span class="p">,</span>                   <span class="c1"># type: Union[CaseType, List[CaseType]]</span></tt>
             </div>
             <div id="l211"
                class="code sev- "><tt><i>211</i>                   <span class="n">prefix</span><span class="o">=</span><span class="n">CASE_PREFIX_FUN</span><span class="p">,</span>       <span class="c1"># type: str</span></tt>
@@ -674,7 +674,7 @@
                class="code sev- "><tt><i>216</i>     <span class="c1"># type: (...) -&gt; List[Callable]</span></tt>
             </div>
             <div id="l217"
-               class="code sev- "><tt><i>217</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>217</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l218"
                class="code sev- "><tt><i>218</i> <span class="sd">    Lists all desired cases for a given `parametrization_target` (a test function or a fixture). This function may be</span></tt>
@@ -995,7 +995,7 @@
                class="code sev- "><tt><i>323</i>     <span class="c1"># type: (...) -&gt; List[CaseParamValue]</span></tt>
             </div>
             <div id="l324"
-               class="code sev- "><tt><i>324</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>324</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l325"
                class="code sev- "><tt><i>325</i> <span class="sd">    Transforms a list of cases (obtained from `get_all_cases`) into a list of argvalues for `@parametrize`.</span></tt>
@@ -1067,7 +1067,7 @@
                class="code sev- "><tt><i>347</i> <span class="k">class</span> <span class="nc">CaseParamValue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
             </div>
             <div id="l348"
-               class="code sev- "><tt><i>348</i>     <span class="sd">&quot;&quot;&quot;Common class for lazy values and fixture refs created from cases&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>348</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Common class for lazy values and fixture refs created from cases&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l349"
                class="code sev- "><tt><i>349</i>     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span></tt>
@@ -1100,7 +1100,7 @@
                class="code sev- "><tt><i>358</i> <span class="k">class</span> <span class="nc">_LazyValueCaseParamValue</span><span class="p">(</span><span class="n">LazyValue</span><span class="p">,</span> <span class="n">CaseParamValue</span><span class="p">):</span></tt>
             </div>
             <div id="l359"
-               class="code sev- "><tt><i>359</i>     <span class="sd">&quot;&quot;&quot;A case that does not require any fixture is transformed into a `lazy_value` parameter</span></tt>
+               class="code sev- "><tt><i>359</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;A case that does not require any fixture is transformed into a `lazy_value` parameter</span></tt>
             </div>
             <div id="l360"
                class="code sev- "><tt><i>360</i> <span class="sd">    when passed to @parametrize.</span></tt>
@@ -1151,7 +1151,7 @@
                class="code sev- "><tt><i>375</i> <span class="k">class</span> <span class="nc">_LazyTupleCaseParamValue</span><span class="p">(</span><span class="n">LazyTuple</span><span class="p">,</span> <span class="n">CaseParamValue</span><span class="p">):</span></tt>
             </div>
             <div id="l376"
-               class="code sev- "><tt><i>376</i>     <span class="sd">&quot;&quot;&quot;A case representing a tuple&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>376</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;A case representing a tuple&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l377"
                class="code sev- "><tt><i>377</i> &nbsp;</tt>
@@ -1181,7 +1181,7 @@
                class="code sev- "><tt><i>385</i> <span class="k">class</span> <span class="nc">_FixtureRefCaseParamValue</span><span class="p">(</span><span class="n">fixture_ref</span><span class="p">,</span> <span class="n">CaseParamValue</span><span class="p">):</span></tt>
             </div>
             <div id="l386"
-               class="code sev- "><tt><i>386</i>     <span class="sd">&quot;&quot;&quot;A case that requires at least a fixture is transformed into a `fixture_ref` parameter</span></tt>
+               class="code sev- "><tt><i>386</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;A case that requires at least a fixture is transformed into a `fixture_ref` parameter</span></tt>
             </div>
             <div id="l387"
                class="code sev- "><tt><i>387</i> <span class="sd">    when passed to @parametrize&quot;&quot;&quot;</span></tt>
@@ -1247,7 +1247,7 @@
                class="code sev- "><tt><i>407</i>     <span class="c1"># type: (...) -&gt; Tuple[CaseParamValue, ...]</span></tt>
             </div>
             <div id="l408"
-               class="code sev- "><tt><i>408</i>     <span class="sd">&quot;&quot;&quot;Transform a single case into one or several `lazy_value`(s) or a `fixture_ref` to be used in `@parametrize`</span></tt>
+               class="code sev- "><tt><i>408</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform a single case into one or several `lazy_value`(s) or a `fixture_ref` to be used in `@parametrize`</span></tt>
             </div>
             <div id="l409"
                class="code sev- "><tt><i>409</i> &nbsp;</tt>
@@ -1457,7 +1457,7 @@
                </ul><tt><i>471</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Case function </span><span class="si">%s</span><span class="s2"> &gt; fixture_ref(</span><span class="si">%r</span><span class="s2">) with marks </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">case_fun_str</span><span class="p">,</span> <span class="n">fix_name</span><span class="p">,</span> <span class="n">remaining_marks</span><span class="p">))</span></tt>
             </div>
             <div id="l472"
-               class="code sev- "><tt><i>472</i>         <span class="c1"># return a lengh-1 tuple because there is a single case created</span></tt>
+               class="code sev- "><tt><i>472</i>         <span class="c1"># return a length-1 tuple because there is a single case created</span></tt>
             </div>
             <div id="l473"
                class="code sev- "><tt><i>473</i>         <span class="k">return</span> <span class="p">(</span><span class="n">make_marked_parameter_value</span><span class="p">((</span><span class="n">argvalues</span><span class="p">,),</span> <span class="n">marks</span><span class="o">=</span><span class="n">remaining_marks</span><span class="p">)</span> <span class="k">if</span> <span class="n">remaining_marks</span> <span class="k">else</span> <span class="n">argvalues</span><span class="p">,)</span></tt>
@@ -1496,7 +1496,7 @@
                class="code sev- "><tt><i>484</i>     <span class="c1"># type: (...) -&gt; Tuple[str, Tuple[Mark]]</span></tt>
             </div>
             <div id="l485"
-               class="code sev- "><tt><i>485</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>485</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l486"
                class="code sev- "><tt><i>486</i> <span class="sd">    When case functions require fixtures, we want to rely on pytest to inject everything. Therefore</span></tt>
@@ -1940,7 +1940,7 @@
                class="code sev- "><tt><i>620</i>                        <span class="p">):</span></tt>
             </div>
             <div id="l621"
-               class="code sev- "><tt><i>621</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>621</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l622"
                class="code sev- "><tt><i>622</i> <span class="sd">    Returns our &#39;storage unit&#39; in a module or class, used to remember the fixtures created from case functions.</span></tt>
@@ -2030,7 +2030,7 @@
                class="code sev- "><tt><i>650</i> <span class="k">def</span> <span class="nf">import_default_cases_module</span><span class="p">(</span><span class="n">test_module_name</span><span class="p">):</span></tt>
             </div>
             <div id="l651"
-               class="code sev- "><tt><i>651</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>651</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l652"
                class="code sev- "><tt><i>652</i> <span class="sd">    Implements the `module=AUTO` behaviour of `@parameterize_cases`.</span></tt>
@@ -2120,7 +2120,7 @@
                class="code sev- "><tt><i>677</i>                              <span class="s2">&quot;cases module </span><span class="si">%r</span><span class="s2"> nor </span><span class="si">%r</span><span class="s2">. Maybe you wish to import cases from somewhere else ? In that case&quot;</span></tt>
             </div>
             <div id="l678"
-               class="code sev- "><tt><i>678</i>                              <span class="s2">&quot;please specify `cases=...`.&quot;</span></tt>
+               class="code sev- "><tt><i>678</i>                              <span class="s2">&quot; please specify `cases=...`.&quot;</span></tt>
             </div>
             <div id="l679"
                class="code sev- "><tt><i>679</i>                              <span class="o">%</span> <span class="p">(</span><span class="n">test_module_name</span><span class="p">,</span> <span class="n">cases_module_name1</span><span class="p">,</span> <span class="n">cases_module_name2</span><span class="p">))</span></tt>
@@ -2177,7 +2177,7 @@
                class="code sev- "><tt><i>696</i> <span class="k">class</span> <span class="nc">CasesCollectionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span></tt>
             </div>
             <div id="l697"
-               class="code sev- "><tt><i>697</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>697</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l698"
                class="code sev- "><tt><i>698</i> <span class="sd">    Warning emitted when pytest cases is not able to collect a file or symbol in a module.</span></tt>
@@ -2216,7 +2216,7 @@
                class="code sev- "><tt><i>709</i>     <span class="c1"># type: (...) -&gt; List[Callable]</span></tt>
             </div>
             <div id="l710"
-               class="code sev- "><tt><i>710</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>710</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l711"
                class="code sev- "><tt><i>711</i> &nbsp;</tt>
@@ -2342,7 +2342,7 @@
                class="code sev- "><tt><i>751</i>     <span class="c1"># type: (...) -&gt; List[Callable]</span></tt>
             </div>
             <div id="l752"
-               class="code sev- "><tt><i>752</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>752</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l753"
                class="code sev- "><tt><i>753</i> <span class="sd">    Internal method used to create a list of case functions for all cases available from the given module.</span></tt>
@@ -2417,7 +2417,7 @@
                class="code sev- "><tt><i>776</i>                                         <span class="p">):</span></tt>
             </div>
             <div id="l777"
-               class="code sev- "><tt><i>777</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>777</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l778"
                class="code sev- "><tt><i>778</i> &nbsp;</tt>
@@ -2720,7 +2720,7 @@
                class="code sev- "><tt><i>877</i> <span class="k">def</span> <span class="nf">get_current_params</span><span class="p">(</span><span class="n">request_or_item</span><span class="p">):</span></tt>
             </div>
             <div id="l878"
-               class="code sev- "><tt><i>878</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>878</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l879"
                class="code sev- "><tt><i>879</i> <span class="sd">    Returns a dictionary containing all parameters for the currently active `pytest` item.</span></tt>
@@ -2984,7 +2984,7 @@
                class="code sev- "><tt><i>965</i> &nbsp;</tt>
             </div>
             <div id="l966"
-               class="code sev- "><tt><i>966</i>     <span class="c1"># the remainder: fixtures that cant be found.</span></tt>
+               class="code sev- "><tt><i>966</i>     <span class="c1"># the remainder: fixtures that can&#39;t be found.</span></tt>
             </div>
             <div id="l967"
                class="code sev- "><tt><i>967</i>     <span class="n">results_unknown_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></tt>
@@ -3020,7 +3020,7 @@
                class="code sev- "><tt><i>977</i> <span class="k">def</span> <span class="nf">_is_same_parametrized_target</span><span class="p">(</span><span class="n">parametrized</span><span class="p">,</span> <span class="n">test_fun</span><span class="p">):</span></tt>
             </div>
             <div id="l978"
-               class="code sev- "><tt><i>978</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>978</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l979"
                class="code sev- "><tt><i>979</i> &nbsp;</tt>
@@ -3050,7 +3050,7 @@
                class="code sev- "><tt><i>987</i> <span class="k">def</span> <span class="nf">_find_fixture_name</span><span class="p">(</span><span class="n">parametrized</span><span class="p">):</span></tt>
             </div>
             <div id="l988"
-               class="code sev- "><tt><i>988</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>988</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l989"
                class="code sev- "><tt><i>989</i> <span class="sd">    Finds the actual fixture symbol whose implementation is this function.</span></tt>
@@ -3095,7 +3095,7 @@
                class="code sev- "><tt><i>1002</i> <span class="k">def</span> <span class="nf">get_current_param</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">argname_or_fixturename</span><span class="p">,</span> <span class="n">mp_fix_to_args</span><span class="p">):</span></tt>
             </div>
             <div id="l1003"
-               class="code sev- "><tt><i>1003</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>1003</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l1004"
                class="code sev- "><tt><i>1004</i> <span class="sd">    This function&#39;s primary role is to unpack the various parameter values (instances of `ParamAlternative`) created by</span></tt>
@@ -3230,7 +3230,7 @@
                class="code sev- "><tt><i>1047</i> <span class="k">def</span> <span class="nf">get_current_cases</span><span class="p">(</span><span class="n">request_or_item</span><span class="p">):</span></tt>
             </div>
             <div id="l1048"
-               class="code sev- "><tt><i>1048</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>1048</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l1049"
                class="code sev- "><tt><i>1049</i> <span class="sd">    Returns a dictionary containing all case parameters for the currently active `pytest` item.</span></tt>
@@ -3602,7 +3602,7 @@
                class="code sev- "><tt><i>1171</i>                         <span class="p">):</span></tt>
             </div>
             <div id="l1172"
-               class="code sev- "><tt><i>1172</i>     <span class="sd">&quot;&quot;&quot; DEPRECATED - use `get_current_cases` instead</span></tt>
+               class="code sev- "><tt><i>1172</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot; DEPRECATED - use `get_current_cases` instead</span></tt>
             </div>
             <div id="l1173"
                class="code sev- "><tt><i>1173</i> <span class="sd">    A helper function to return the current case id for a given `pytest` item (available in some hooks) or `request`</span></tt>
