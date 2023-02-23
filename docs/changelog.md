@@ -1,7 +1,9 @@
 # Changelog
 
-### 3.6.14 - bugfix
+### 3.6.14 - bugfixes
 
+ - Fixed `AttributeError` issue in `is_case_function` when an inspected symbol is a parametrized type hint
+   without `__name__`. Fixes [#287](https://github.com/smarie/python-pytest-cases/issues/287)
  - Fixed issue with `get_all_cases`: default value for `cases` was wrong. Fixes [#290](https://github.com/smarie/python-pytest-cases/issues/290)
 
 ### 3.6.13 - bugfix
