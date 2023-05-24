@@ -1,3 +1,4 @@
+import argparse
 from itertools import product
 from json import dumps
 import logging
@@ -50,11 +51,13 @@ ENVS = {
     (PY37, "pytest-latest"): {"coverage": True, "pkg_specs": {"pip": ">19", "pytest": ""}}
 }
 
+
 # set the default activated sessions, minimal for CI
-nox.options.sessions = ["tests", "flake8"]  # , "docs", "gh_pages"
+nox.options.sessions = ["tests", "flake8", "docs"]  # , "docs", "gh_pages"
+nox.options.error_on_missing_interpreters = True
 nox.options.reuse_existing_virtualenvs = True  # this can be done using -r
 # if platform.system() == "Windows":  >> always use this for better control
-nox.options.default_venv_backend = "conda"
+nox.options.default_venv_backend = "virtualenv"
 # os.environ["NO_COLOR"] = "True"  # nox.options.nocolor = True does not work
 # nox.options.verbose = True
 
@@ -116,10 +119,10 @@ def tests(session: PowerSession, coverage, pkg_specs):
 
     # list all (conda list alone does not work correctly on github actions)
     # session.run2("conda list")
-    conda_prefix = Path(session.bin)
-    if conda_prefix.name == "bin":
-        conda_prefix = conda_prefix.parent
-    session.run2("conda list", env={"CONDA_PREFIX": str(conda_prefix), "CONDA_DEFAULT_ENV": session.get_session_id()})
+    # conda_prefix = Path(session.bin)
+    # if conda_prefix.name == "bin":
+    #     conda_prefix = conda_prefix.parent
+    # session.run2("conda list", env={"CONDA_PREFIX": str(conda_prefix), "CONDA_DEFAULT_ENV": session.get_session_id()})
 
     # Fail if the assumed python version is not the actual one
     session.run2("python ci_tools/check_python_version.py %s" % session.python)
@@ -160,7 +163,7 @@ def tests(session: PowerSession, coverage, pkg_specs):
         session.run2("genbadge coverage -i %s -o %s" % (Folders.coverage_xml, Folders.coverage_badge))
 
 
-@power_session(python=PY38, logsdir=Folders.runlogs)
+@power_session(python=PY39, logsdir=Folders.runlogs)
 def flake8(session: PowerSession):
     """Launch flake8 qualimetry."""
 
@@ -182,7 +185,7 @@ def flake8(session: PowerSession):
     rm_file(Folders.flake8_intermediate_file)
 
 
-@power_session(python=[PY37])
+@power_session(python=[PY39])
 def docs(session: PowerSession):
     """Generates the doc and serves it on a local http server. Pass '-- build' to build statically instead."""
 
@@ -195,11 +198,11 @@ def docs(session: PowerSession):
         session.run2("mkdocs serve")
 
 
-@power_session(python=[PY37])
+@power_session(python=[PY39])
 def publish(session: PowerSession):
     """Deploy the docs+reports on github pages. Note: this rebuilds the docs"""
 
-    session.install_reqs(phase="mkdocs", phase_reqs=["mkdocs-material", "mkdocs", "pymdown-extensions", "pygments"])
+    session.install_reqs(phase="publish", phase_reqs=["mkdocs-material", "mkdocs", "pymdown-extensions", "pygments"])
 
     # possibly rebuild the docs in a static way (mkdocs serve does not build locally)
     session.run2("mkdocs build")
@@ -220,7 +223,7 @@ def publish(session: PowerSession):
     # session.run2('codecov -t %s -f %s' % (codecov_token, Folders.coverage_xml))
 
 
-@power_session(python=[PY37])
+@power_session(python=[PY39])
 def release(session: PowerSession):
     """Create a release on github corresponding to the latest tag"""
 
@@ -281,19 +284,36 @@ def gha_list(session):
 
     # see https://stackoverflow.com/q/66747359/7262247
 
+    # The options
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--session", help="The nox base session name")
+    parser.add_argument(
+        "-v",
+        "--with_version",
+        action="store_true",
+        default=False,
+        help="Return a list of lists where the first element is the python version and the second the nox session.",
+    )
+    additional_args = parser.parse_args(session.posargs)
+
     # get the desired base session to generate the list for
-    if len(session.posargs) != 1:
-        raise ValueError("This session has a mandatory argument: <base_session_name>")
-    session_func = globals()[session.posargs[0]]
+    session_func = globals()[additional_args.session]
 
     # list all sessions for this base session
     try:
         session_func.parametrize
     except AttributeError:
-        sessions_list = ["%s-%s" % (session_func.__name__, py) for py in session_func.python]
+        if additional_args.with_version:
+            sessions_list = [{"python": py, "session": "%s-%s" % (session_func.__name__, py)} for py in session_func.python]
+        else:
+            sessions_list = ["%s-%s" % (session_func.__name__, py) for py in session_func.python]
     else:
-        sessions_list = ["%s-%s(%s)" % (session_func.__name__, py, param)
-                         for py, param in product(session_func.python, session_func.parametrize)]
+        if additional_args.with_version:
+            sessions_list = [{"python": py, "session": "%s-%s(%s)" % (session_func.__name__, py, param)}
+                             for py, param in product(session_func.python, session_func.parametrize)]
+        else:
+            sessions_list = ["%s-%s(%s)" % (session_func.__name__, py, param)
+                             for py, param in product(session_func.python, session_func.parametrize)]
 
     # print the list so that it can be caught by GHA.
     # Note that json.dumps is optional since this is a list of string.

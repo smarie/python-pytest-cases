@@ -1,3 +1,4 @@
+import re
 from itertools import product
 
 import asyncio
@@ -21,7 +22,7 @@ from nox.sessions import Session
 nox_logger = logging.getLogger("nox")
 
 
-PY27, PY35, PY36, PY37, PY38, PY39, PY310 = "2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"
+PY27, PY35, PY36, PY37, PY38, PY39, PY310, PY311, PY312 = "2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"  # noqa
 DONT_INSTALL = "dont_install"
 
 
@@ -232,7 +233,7 @@ class PowerSession(Session):
         # use the provided versions dictionary to update the versions
         if versions_dct is None:
             versions_dct = dict()
-        pkgs = [pkg + versions_dct.get(pkg, "") for pkg in pkgs if versions_dct.get(pkg, "") != DONT_INSTALL]
+        pkgs = [pkg + _get_suffix(pkg, versions_dct) for pkg in pkgs if versions_dct.get(pkg, "") != DONT_INSTALL]
 
         # install on conda... if the session uses conda backend
         if not isinstance(self.virtualenv, nox.virtualenv.CondaEnv):
@@ -321,7 +322,10 @@ def read_pyproject_toml():
         nox_logger.debug("\nA `pyproject.toml` file exists. Loading it.")
         pyproject = toml.load("pyproject.toml")
         requires = pyproject['build-system']['requires']
-        conda_pkgs = pyproject['tool']['conda']['conda_packages']
+        try:
+            conda_pkgs = pyproject['tool']['conda']['conda_packages']
+        except KeyError:
+            conda_pkgs = dict()
         return requires, conda_pkgs
     else:
         raise FileNotFoundError("No `pyproject.toml` file exists. No dependency will be installed ...")
@@ -596,6 +600,16 @@ def nox_session_with_grid(python = None,
 
 
 # ----------- other goodies
+
+
+def _get_suffix(pkg, versions_dct):
+    res = re.split('<|=|>|;', pkg.strip())
+    prefix = ""
+    suffix = versions_dct.get(res[0], "")
+    if len(res) > 1 and len(suffix) > 0:
+        prefix = ","
+
+    return prefix + suffix
 
 
 def rm_file(folder: Union[str, Path]
