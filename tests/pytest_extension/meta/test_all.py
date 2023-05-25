@@ -6,6 +6,7 @@ import re
 from os.path import join, dirname, isdir, exists
 
 import pytest
+from pytest import __version__
 from pytest_cases.common_mini_six import string_types
 
 # Make the list of all tests that we will have to execute (each in an independent pytest runner)
@@ -19,6 +20,11 @@ META_REGEX = re.compile(
 # )(?P<asserts_dct>.*)(
 # END META)
 .*""")
+
+# Certain tests may use arguments that change name depending on the version
+# of pytest. Here we provide a lookup table to correct the argument
+# { <latest-pytest-arg> : { <major-version> : <major-version-arg> }}
+PYTEST_ARG_LOOKUP = {"--strict-markers": {"3": "--strict"}}
 
 
 @pytest.mark.parametrize('test_to_run', test_files, ids=str)
@@ -165,4 +171,6 @@ def get_pytest_prepare_config(dynamic=False):
 
 
 def process_cmdargs(cmdargs):
-    return shlex.split(cmdargs)
+    # Some provide arguments may need to be converted to their corresponding
+    # spelling depending on the pytest version.
+    return [PYTEST_ARG_LOOKUP.get(x, {}).get(__version__[0], x) for x in shlex.split(cmdargs)]
