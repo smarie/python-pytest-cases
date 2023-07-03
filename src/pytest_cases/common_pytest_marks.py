@@ -5,7 +5,7 @@
 import itertools
 
 import warnings
-from distutils.version import LooseVersion
+from looseversion import LooseVersion
 
 try:  # python 3.3+
     from inspect import signature

@@ -1,4 +1,4 @@
-from distutils.version import LooseVersion
+from looseversion import LooseVersion
 
 import pytest
 from pytest_cases import parametrize_with_cases
