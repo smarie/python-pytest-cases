@@ -559,8 +559,9 @@ def get_or_create_case_fixture(case_id,                # type: str
 
     # If the fixture will be injected in a conftest, make sure its name
     # is unique. Include also its scope to avoid conflicts. See #311.
-    if target_host.__name__ == 'conftest':
-        case_id = 'conftest_' + case_id + '_with_scope_' + scope
+    if 'conftest' in target_host.__name__:
+        extra = target_host.__name__.replace('.', '_')
+        case_id = extra + '_' + case_id + '_with_scope_' + scope
 
     def name_changer(name, i):
         return name + '_' * i
