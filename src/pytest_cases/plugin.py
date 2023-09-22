@@ -572,7 +572,7 @@ class SuperClosure(MutableSequence):
         all_fixture_defs = self.tree.get_all_fixture_defs(drop_fake_fixtures=False, try_to_sort=True)
 
         # # also sort all partitions (note that we cannot rely on the order in all_fixture_defs when scopes are same!)
-        # if LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
+        # if Version(pytest.__version__) >= Version('3.5.0'):
         #     f_scope = get_pytest_function_scopeval()
         #     for p in self.partitions:
         #         def sort_by_scope2(fixture_name):  # noqa

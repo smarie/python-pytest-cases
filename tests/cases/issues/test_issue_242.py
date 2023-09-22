@@ -1,5 +1,5 @@
 import pytest
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 import sys
 
@@ -9,8 +9,8 @@ from multiprocessing import Pool, Process
 from functools import partial
 
 
-PYTEST_VERSION = LooseVersion(pytest.__version__)
-PYTEST3_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.0.0')
+PYTEST_VERSION = Version(pytest.__version__)
+PYTEST3_OR_GREATER = PYTEST_VERSION >= Version('3.0.0')
 PY3 = sys.version_info >= (3,)
 
 
