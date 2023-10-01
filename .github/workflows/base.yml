@@ -65,15 +65,17 @@ jobs:
         with:
           python-version: ${{ matrix.nox_session.python }}
           architecture: x64
+          allow-build: info
+          cache-build: true
 
       - name: echo python dir
-        run: echo "${{ steps.set-py.output.python-path }}"
+        run: echo "${{ steps.set-py.outputs.python-path }}"
 
       - name: echo parent dir
-        run: echo $(dirname "${{ steps.set-py.output.python-path }}")
+        run: echo $(dirname "${{ steps.set-py.outputs.python-path }}")
 
       - name: Add python to PATH
-        run: export PATH="${{ steps.set-py.output.python-path }}:$PATH"
+        run: export PATH="${{ steps.set-py.outputs.python-path }}:$PATH"
 
       - name: Install python 3.9 for nox
         uses: actions/setup-python@v4
