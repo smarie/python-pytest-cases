@@ -72,7 +72,7 @@ jobs:
         run: |
              echo "${{ steps.set-py.outputs.python-path }}"
              echo $(dirname "${{ steps.set-py.outputs.python-path }}")
-             pypardir = $(dirname "${{ steps.set-py.outputs.python-path }}")
+             pypardir=$(dirname "${{ steps.set-py.outputs.python-path }}")
              echo $pypardir
              export PATH="$pypardir:$PATH"
 
