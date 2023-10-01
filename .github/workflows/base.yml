@@ -61,9 +61,19 @@ jobs:
 
       - name: Install python ${{ matrix.nox_session.python }} for tests
         uses: MatteoH2O1999/setup-python@v1  # actions/setup-python@v4
+        id: set-py
         with:
           python-version: ${{ matrix.nox_session.python }}
           architecture: x64
+
+      - name: echo python dir
+        run: echo "${{ steps.set-py.output.python-path }}"
+
+      - name: echo parent dir
+        run: echo $(dirname "${{ steps.set-py.output.python-path }}")
+
+      - name: Add python to PATH
+        run: export PATH="${{ steps.set-py.output.python-path }}:$PATH"
 
       - name: Install python 3.9 for nox
         uses: actions/setup-python@v4
