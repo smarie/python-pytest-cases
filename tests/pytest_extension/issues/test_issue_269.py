@@ -6,7 +6,7 @@
 # def __my_repeat_step_number(request):
 #     return request.param
 #
-# 
+#
 # def has_patched_parametrize(metafunc):
 #     """Check that our patched MetaFunc.parametrize method is the one in use."""
 #     try:
