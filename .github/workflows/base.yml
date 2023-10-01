@@ -68,14 +68,13 @@ jobs:
           allow-build: info
           cache-build: true
 
-      - name: echo python dir
-        run: echo "${{ steps.set-py.outputs.python-path }}"
-
-      - name: echo parent dir
-        run: echo $(dirname "${{ steps.set-py.outputs.python-path }}")
-
       - name: Add python to PATH
-        run: export PATH="${{ steps.set-py.outputs.python-path }}:$PATH"
+        run: |
+             echo "${{ steps.set-py.outputs.python-path }}"
+             echo $(dirname "${{ steps.set-py.outputs.python-path }}")
+             pypardir = $(dirname "${{ steps.set-py.outputs.python-path }}")
+             echo $pypardir
+             export PATH="$pypardir:$PATH"
 
       - name: Install python 3.9 for nox
         uses: actions/setup-python@v4
