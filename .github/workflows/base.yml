@@ -75,6 +75,10 @@ jobs:
              pypardir=$(dirname "${{ steps.set-py.outputs.python-path }}")
              echo $pypardir
              export PATH="$pypardir:$PATH"
+             where python
+             python --version
+             python3 --version
+             python3.5 --version
 
       - name: Install python 3.9 for nox
         uses: actions/setup-python@v4
