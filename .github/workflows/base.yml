@@ -100,7 +100,7 @@ jobs:
         shell: python
 
       - name: Test virtualenv
-        run: python -m virtualenv footmpdir -p python3.5
+        run: python -m virtualenv footmpdir -p python3.5 -v
 
       - name: Run nox session ${{ matrix.nox_session.session }}
         run: nox -s "${{ matrix.nox_session.session }}" -v
