@@ -99,8 +99,11 @@ jobs:
           print(shutil.which('python3.5'))
         shell: python
 
+      - name: Test virtualenv
+        run: python -m virtualenv footmpdir -p python3.5
+
       - name: Run nox session ${{ matrix.nox_session.session }}
-        run: nox -s "${{ matrix.nox_session.session }}"
+        run: nox -s "${{ matrix.nox_session.session }}" -v
 
       # Share ./docs/reports so that they can be deployed with doc in next job
       - name: Share reports with other jobs
