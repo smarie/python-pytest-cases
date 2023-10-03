@@ -68,17 +68,17 @@ jobs:
           allow-build: info
           cache-build: true
 
-      - name: Add python to PATH
-        run: |
-             echo "${{ steps.set-py.outputs.python-path }}"
-             echo $(dirname "${{ steps.set-py.outputs.python-path }}")
-             pypardir=$(dirname "${{ steps.set-py.outputs.python-path }}")
-             echo $pypardir
-             export PATH="$pypardir:$PATH"
-             where python
-             python --version
-             python3 --version
-             python3.5 --version
+#      - name: Add python to PATH
+#        run: |
+#             echo "${{ steps.set-py.outputs.python-path }}"
+#             echo $(dirname "${{ steps.set-py.outputs.python-path }}")
+#             pypardir=$(dirname "${{ steps.set-py.outputs.python-path }}")
+#             echo $pypardir
+#             export PATH="$pypardir:$PATH"
+#             where python
+#             python --version
+#             python3 --version
+#             python3.5 --version
 
       - name: Install python 3.9 for nox
         uses: actions/setup-python@v4
@@ -88,6 +88,16 @@ jobs:
 
       - name: Install noxfile requirements
         run: pip install -r noxfile-requirements.txt
+
+      - run: |
+          import os
+          import shutil
+          print('\n'.join(os.environ['PATH'].split(os.pathsep)))
+          print('-----------------------')
+          print(shutil.which('python'))
+          print(shutil.which('python3'))
+          print(shutil.which('python3.5'))
+        shell: python
 
       - name: Run nox session ${{ matrix.nox_session.session }}
         run: nox -s "${{ matrix.nox_session.session }}"
