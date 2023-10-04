@@ -31,3 +31,20 @@ def _decorate_fixture_plus_generator_pep380(fixture_func, new_sig, map_arguments
 
     return wrapped_fixture_func
 
+def _parametrize_plus_decorate_generator_pep380(
+    test_func,
+    new_sig,
+    fixture_union_name,
+    replace_paramfixture_with_values
+):
+    @wraps(test_func, new_sig=new_sig)
+    def wrapped_test_func(*args, **kwargs):  # noqa
+        if kwargs.get(fixture_union_name, None) is NOT_USED:
+            # TODO why this ? it is probably useless: this fixture
+            #  is private and will never end up in another union
+            yield NOT_USED
+        else:
+            replace_paramfixture_with_values(kwargs)
+            yield from test_func(*args, **kwargs)
+
+    return wrapped_test_func
