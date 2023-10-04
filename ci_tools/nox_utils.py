@@ -1,42 +1,47 @@
-from itertools import product
-
 import asyncio
-from collections import namedtuple
-from inspect import signature, isfunction
 import logging
-from pathlib import Path
+import os
+import re
 import shutil
 import subprocess
 import sys
-import os
-
-from typing import Sequence, Dict, Union, Iterable, Mapping, Any, IO, Tuple, Optional, List
-
-from makefun import wraps, remove_signature_parameters, add_signature_parameters
+from collections import namedtuple
+from inspect import isfunction, signature
+from itertools import product
+from pathlib import Path
+from typing import IO, Any, Dict, Iterable, Mapping, Optional, Sequence, Tuple, Union
 
 import nox
+from makefun import add_signature_parameters, remove_signature_parameters, wraps
 from nox.sessions import Session
-
 
 nox_logger = logging.getLogger("nox")
 
 
-PY27, PY35, PY36, PY37, PY38, PY39, PY310 = "2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"
+PY27 = "2.7"
+PY35 = "3.5"
+PY36 = "3.6"
+PY37 = "3.7"
+PY38 = "3.8"
+PY39 = "3.9"
+PY310 = "3.10"
+PY311 = "3.11"
+PY312 = "3.12"
 DONT_INSTALL = "dont_install"
 
 
 def power_session(
-        func=None,
-        envs=None,
-        grid_param_name="env",
-        python=None,
-        py=None,
-        reuse_venv=None,
-        name=None,
-        venv_backend=None,
-        venv_params=None,
-        logsdir=None,
-        **kwargs
+    func=None,
+    envs=None,
+    grid_param_name="env",
+    python=None,
+    py=None,
+    reuse_venv=None,
+    name=None,
+    venv_backend=None,
+    venv_params=None,
+    logsdir=None,
+    **kwargs
 ):
     """A nox.session on steroids
 
@@ -59,25 +64,34 @@ def power_session(
     if func is not None:
         return power_session()(func)
     else:
-        def combined_decorator(f):
-            # replace Session with PowerSession
-            f = with_power_session(f)
 
+        def combined_decorator(f):
             # open a log file for the session, use it to stream the commands stdout and stderrs,
             # and possibly inject the log file in the session function
             if logsdir is not None:
                 f = with_logfile(logs_dir=logsdir)(f)
 
+            # replace Session with PowerSession before it is passed to `with_logfile`
+            f = with_power_session(f)
+
             # decorate with @nox.session and possibly @nox.parametrize to create the grid
-            return nox_session_with_grid(python=python, py=py, envs=envs, reuse_venv=reuse_venv, name=name,
-                                         grid_param_name=grid_param_name, venv_backend=venv_backend,
-                                         venv_params=venv_params, **kwargs)(f)
+            return nox_session_with_grid(
+                python=python,
+                py=py,
+                envs=envs,
+                reuse_venv=reuse_venv,
+                name=name,
+                grid_param_name=grid_param_name,
+                venv_backend=venv_backend,
+                venv_params=venv_params,
+                **kwargs
+            )(f)
 
         return combined_decorator
 
 
 def with_power_session(f=None):
-    """ A decorator to patch the session objects in order to add all methods from Session2"""
+    """A decorator to patch the session objects in order to add all methods from Session2"""
 
     if f is not None:
         return with_power_session()(f)
@@ -86,7 +100,7 @@ def with_power_session(f=None):
         @wraps(f)
         def _f_wrapper(**kwargs):
             # patch the session arg
-            PowerSession.patch(kwargs['session'])
+            PowerSession.patch(kwargs["session"])
 
             # finally execute the session
             return f(**kwargs)
@@ -103,10 +117,7 @@ class PowerSession(Session):
 
     # ------------ commandline runners -----------
 
-    def run2(self,
-             command: Union[Iterable[str], str],
-             logfile: Union[bool, str, Path] = True,
-             **kwargs):
+    def run2(self, command: Union[Iterable[str], str], logfile: Union[bool, str, Path] = True, **kwargs):
         """
         An improvement of session.run that is able to
 
@@ -119,14 +130,11 @@ class PowerSession(Session):
         :return:
         """
         if isinstance(command, str):
-            command = command.split(' ')
+            command = command.split(" ")
 
         self.run(*command, logfile=logfile, **kwargs)
 
-    def run_multi(self,
-                  cmds: str,
-                  logfile: Union[bool, str, Path] = True,
-                  **kwargs):
+    def run_multi(self, cmds: str, logfile: Union[bool, str, Path] = True, **kwargs):
         """
         An improvement of session.run that is able to
 
@@ -144,16 +152,16 @@ class PowerSession(Session):
     # ------------ requirements installers -----------
 
     def install_reqs(
-            self,
-            # pre wired phases
-            setup=False,
-            install=False,
-            tests=False,
-            extras=(),
-            # custom phase
-            phase=None,
-            phase_reqs=None,
-            versions_dct=None
+        self,
+        # pre wired phases
+        setup=False,
+        install=False,
+        tests=False,
+        extras=(),
+        # custom phase
+        phase=None,
+        phase_reqs=None,
+        versions_dct=None,
     ):
         """
         A high-level helper to install requirements from the various project files
@@ -195,47 +203,77 @@ class PowerSession(Session):
         # Read requirements from pyproject.toml
         toml_setup_reqs, toml_use_conda_for = read_pyproject_toml()
         if setup:
-            self.install_any("pyproject.toml#build-system", toml_setup_reqs,
-                             use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
+            self.install_any(
+                "pyproject.toml#build-system",
+                toml_setup_reqs,
+                use_conda_for=toml_use_conda_for,
+                versions_dct=versions_dct,
+            )
 
         # Read test requirements from setup.cfg
         setup_cfg = read_setuptools_cfg()
         if setup:
-            self.install_any("setup.cfg#setup_requires", setup_cfg.setup_requires,
-                             use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
+            self.install_any(
+                "setup.cfg#setup_requires",
+                setup_cfg.setup_requires,
+                use_conda_for=toml_use_conda_for,
+                versions_dct=versions_dct,
+            )
         if install:
-            self.install_any("setup.cfg#install_requires", setup_cfg.install_requires,
-                             use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
+            self.install_any(
+                "setup.cfg#install_requires",
+                setup_cfg.install_requires,
+                use_conda_for=toml_use_conda_for,
+                versions_dct=versions_dct,
+            )
         if tests:
-            self.install_any("setup.cfg#tests_requires", setup_cfg.tests_requires,
-                             use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
+            self.install_any(
+                "setup.cfg#tests_requires",
+                setup_cfg.tests_requires,
+                use_conda_for=toml_use_conda_for,
+                versions_dct=versions_dct,
+            )
 
         for extra in extras:
-            self.install_any("setup.cfg#extras_require#%s" % extra, setup_cfg.extras_require[extra],
-                             use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
+            self.install_any(
+                "setup.cfg#extras_require#%s" % extra,
+                setup_cfg.extras_require[extra],
+                use_conda_for=toml_use_conda_for,
+                versions_dct=versions_dct,
+            )
 
         if phase is not None:
-            self.install_any(phase, phase_reqs, use_conda_for=toml_use_conda_for, versions_dct=versions_dct)
+            self.install_any(
+                phase,
+                phase_reqs,
+                use_conda_for=toml_use_conda_for,
+                versions_dct=versions_dct,
+            )
 
-    def install_any(self,
-                    phase_name: str,
-                    pkgs: Sequence[str],
-                    use_conda_for: Sequence[str] = (),
-                    versions_dct: Dict[str, str] = None,
-                    logfile: Union[bool, str, Path] = True,
-                    ):
+    def uses_conda(self):
+        return isinstance(self.virtualenv, nox.virtualenv.CondaEnv)
+
+    def install_any(
+        self,
+        phase_name: str,
+        pkgs: Sequence[str],
+        use_conda_for: Sequence[str] = (),
+        versions_dct: Dict[str, str] = None,
+        logfile: Union[bool, str, Path] = True,
+    ):
         """Install the `pkgs` provided with `session.install(*pkgs)`, except for those present in `use_conda_for`"""
 
-        nox_logger.debug("\nAbout to install *%s* requirements: %s.\n "
-                         "Conda pkgs are %s" % (phase_name, pkgs, use_conda_for))
+        nox_logger.debug(
+            "\nAbout to install *%s* requirements: %s.\n " "Conda pkgs are %s" % (phase_name, pkgs, use_conda_for)
+        )
 
         # use the provided versions dictionary to update the versions
         if versions_dct is None:
             versions_dct = dict()
-        pkgs = [pkg + versions_dct.get(pkg, "") for pkg in pkgs if versions_dct.get(pkg, "") != DONT_INSTALL]
+        pkgs = [pkg + _get_suffix(pkg, versions_dct) for pkg in pkgs if versions_dct.get(pkg, "") != DONT_INSTALL]
 
         # install on conda... if the session uses conda backend
-        if not isinstance(self.virtualenv, nox.virtualenv.CondaEnv):
+        if not self.uses_conda():
             conda_pkgs = []
         else:
             conda_pkgs = [pkg_req for pkg_req in pkgs if any(get_req_pkg_name(pkg_req) == c for c in use_conda_for)]
@@ -250,11 +288,7 @@ class PowerSession(Session):
             nox_logger.info("[%s] Installing requirements with pip: %s" % (phase_name, pip_pkgs))
             self.install2(*pip_pkgs, logfile=logfile)
 
-    def conda_install2(self,
-                       *conda_pkgs,
-                       logfile: Union[bool, str, Path] = True,
-                       **kwargs
-                       ):
+    def conda_install2(self, *conda_pkgs, logfile: Union[bool, str, Path] = True, **kwargs):
         """
         Same as session.conda_install() but with support for `logfile`.
 
@@ -264,11 +298,7 @@ class PowerSession(Session):
         """
         return self.conda_install(*conda_pkgs, logfile=logfile, **kwargs)
 
-    def install2(self,
-                 *pip_pkgs,
-                 logfile: Union[bool, str, Path] = True,
-                 **kwargs
-                 ):
+    def install2(self, *pip_pkgs, logfile: Union[bool, str, Path] = True, **kwargs):
         """
         Same as session.install() but with support for `logfile`.
 
@@ -280,7 +310,10 @@ class PowerSession(Session):
 
     def get_session_id(self):
         """Return the session id"""
-        return Path(self.bin).name
+        if self.uses_conda():
+            return Path(self.bin).name
+        else:
+            return Path(self.bin).parent.name
 
     @classmethod
     def is_power_session(cls, session: Session):
@@ -318,16 +351,23 @@ def read_pyproject_toml():
     """
     if os.path.exists("pyproject.toml"):
         import toml
+
         nox_logger.debug("\nA `pyproject.toml` file exists. Loading it.")
         pyproject = toml.load("pyproject.toml")
-        requires = pyproject['build-system']['requires']
-        conda_pkgs = pyproject['tool']['conda']['conda_packages']
+        requires = pyproject["build-system"]["requires"]
+        try:
+            conda_pkgs = pyproject["tool"]["conda"]["conda_packages"]
+        except KeyError:
+            conda_pkgs = dict()
         return requires, conda_pkgs
     else:
         raise FileNotFoundError("No `pyproject.toml` file exists. No dependency will be installed ...")
 
 
-SetupCfg = namedtuple('SetupCfg', ('setup_requires', 'install_requires', 'tests_requires', 'extras_require'))
+SetupCfg = namedtuple(
+    "SetupCfg",
+    ("setup_requires", "install_requires", "tests_requires", "extras_require"),
+)
 
 
 def read_setuptools_cfg():
@@ -336,12 +376,15 @@ def read_setuptools_cfg():
     """
     # see https://stackoverflow.com/a/30679041/7262247
     from setuptools import Distribution
+
     dist = Distribution()
     dist.parse_config_files()
-    return SetupCfg(setup_requires=dist.setup_requires,
-                    install_requires=dist.install_requires,
-                    tests_requires=dist.tests_require,
-                    extras_require=dist.extras_require)
+    return SetupCfg(
+        setup_requires=dist.setup_requires,
+        install_requires=dist.install_requires,
+        tests_requires=dist.tests_require,
+        extras_require=dist.extras_require,
+    )
 
 
 def get_req_pkg_name(r):
@@ -351,17 +394,18 @@ def get_req_pkg_name(r):
     "funcsigs;python<'3.5'" will return "funcsigs"
     "pytest>=3" will return "pytest"
     """
-    return r.replace('<', '=').replace('>', '=').replace(';', '=').split("=")[0]
+    return r.replace("<", "=").replace(">", "=").replace(";", "=").split("=")[0]
 
 
 # ------------- log related
 
 
-def with_logfile(logs_dir: Path,
-                 logfile_arg: str = "logfile",
-                 logfile_handler_arg: str = "logfilehandler"
-                 ):
-    """ A decorator to inject a logfile"""
+def with_logfile(
+    logs_dir: Path,
+    logfile_arg: str = "logfile",
+    logfile_handler_arg: str = "logfilehandler",
+):
+    """A decorator to inject a logfile"""
 
     def _decorator(f):
         # check the signature of f
@@ -379,7 +423,7 @@ def with_logfile(logs_dir: Path,
         @wraps(f, new_sig=new_sig)
         def _f_wrapper(**kwargs):
             # find the session arg
-            session = kwargs['session']  # type: Session
+            session = kwargs["session"]  # type: Session
 
             # add file handler to logger
             logfile = logs_dir / ("%s.log" % PowerSession.get_session_id(session))
@@ -418,8 +462,7 @@ def with_logfile(logs_dir: Path,
     return _decorator
 
 
-def log_to_file(file_path: Union[str, Path]
-                ):
+def log_to_file(file_path: Union[str, Path]):
     """
     Closes and removes all file handlers from the nox logger,
     and add a new one to the provided file path
@@ -431,7 +474,7 @@ def log_to_file(file_path: Union[str, Path]
         if isinstance(h, logging.FileHandler):
             h.close()
             nox_logger.removeHandler(h)
-    fh = logging.FileHandler(str(file_path), mode='w')
+    fh = logging.FileHandler(str(file_path), mode="w")
     nox_logger.addHandler(fh)
     return fh
 
@@ -469,16 +512,18 @@ def remove_file_logger():
 
 # ------------ environment grid / parametrization related
 
-def nox_session_with_grid(python = None,
-                          py = None,
-                          envs: Mapping[str, Mapping[str, Any]] = None,
-                          reuse_venv: Optional[bool] = None,
-                          name: Optional[str] = None,
-                          venv_backend: Any = None,
-                          venv_params: Any = None,
-                          grid_param_name: str = None,
-                          **kwargs
-                          ):
+
+def nox_session_with_grid(
+    python=None,
+    py=None,
+    envs: Mapping[str, Mapping[str, Any]] = None,
+    reuse_venv: Optional[bool] = None,
+    name: Optional[str] = None,
+    venv_backend: Any = None,
+    venv_params: Any = None,
+    grid_param_name: str = None,
+    **kwargs
+):
     """
     Since nox is not yet capable to define a build matrix with python and parameters mixed in the same parametrize
     this implements it with a dirty hack.
@@ -490,13 +535,22 @@ def nox_session_with_grid(python = None,
     """
     if envs is None:
         # Fast track default to @nox.session
-        return nox.session(python=python, py=py, reuse_venv=reuse_venv, name=name, venv_backend=venv_backend,
-                           venv_params=venv_params, **kwargs)
+        return nox.session(
+            python=python,
+            py=py,
+            reuse_venv=reuse_venv,
+            name=name,
+            venv_backend=venv_backend,
+            venv_params=venv_params,
+            **kwargs
+        )
     else:
         # Current limitation : session param names can be 'python' or 'py' only
         if py is not None or python is not None:
-            raise ValueError("`python` session argument can not be provided both directly and through the "
-                             "`env` with `session_param_names`")
+            raise ValueError(
+                "`python` session argument can not be provided both directly and through the "
+                "`env` with `session_param_names`"
+            )
 
     # First examine the env and collect the parameter values for python
     all_python = []
@@ -530,8 +584,10 @@ def nox_session_with_grid(python = None,
             env_contents_names = set(env_params.keys())
         else:
             if env_contents_names != set(env_params.keys()):
-                raise ValueError("Environment %r parameters %r does not match parameters in the first environment: %r"
-                                 % (env_id, env_contents_names, set(env_params.keys())))
+                raise ValueError(
+                    "Environment %r parameters %r does not match parameters in the first environment: %r"
+                    % (env_id, env_contents_names, set(env_params.keys()))
+                )
 
     if has_parameter and not grid_param_name:
         raise ValueError("You must provide a grid parameter name when the env keys are tuples.")
@@ -541,7 +597,7 @@ def nox_session_with_grid(python = None,
         for pyv, _param in product(all_python, all_params):
             if (pyv, _param) not in envs:
                 # create a dummy folder to avoid creating a useless venv ?
-                env_dir = Path(".nox") / ("%s-%s-%s-%s" % (s_name, pyv.replace('.', '-'), grid_param_name, _param))
+                env_dir = Path(".nox") / ("%s-%s-%s-%s" % (s_name, pyv.replace(".", "-"), grid_param_name, _param))
                 env_dir.mkdir(parents=True, exist_ok=True)
 
         # check the signature of f
@@ -564,7 +620,7 @@ def nox_session_with_grid(python = None,
         @wraps(f, new_sig=new_sig)
         def _f_wrapper(**kwargs):
             # find the session arg
-            session = kwargs['session']    # type: Session
+            session = kwargs["session"]  # type: Session
 
             # get the versions to use for this environment
             try:
@@ -576,7 +632,8 @@ def nox_session_with_grid(python = None,
             except KeyError:
                 # Skip this session, it is a dummy one
                 nox_logger.warning(
-                    "Skipping configuration, this is not supported in python version %r" % session.python)
+                    "Skipping configuration, this is not supported in python version %r" % session.python
+                )
                 return
 
             # inject the parameters in the args:
@@ -588,8 +645,13 @@ def nox_session_with_grid(python = None,
         if has_parameter:
             _f_wrapper = nox.parametrize(grid_param_name, all_params)(_f_wrapper)
 
-        _f_wrapper = nox.session(python=all_python, reuse_venv=reuse_venv, name=name,
-                                 venv_backend=venv_backend, venv_params=venv_params)(_f_wrapper)
+        _f_wrapper = nox.session(
+            python=all_python,
+            reuse_venv=reuse_venv,
+            name=name,
+            venv_backend=venv_backend,
+            venv_params=venv_params,
+        )(_f_wrapper)
         return _f_wrapper
 
     return _decorator
@@ -598,8 +660,17 @@ def nox_session_with_grid(python = None,
 # ----------- other goodies
 
 
-def rm_file(folder: Union[str, Path]
-            ):
+def _get_suffix(pkg, versions_dct):
+    res = re.split("<|=|>|;", pkg.strip())
+    prefix = ""
+    suffix = versions_dct.get(res[0], "")
+    if len(res) > 1 and len(suffix) > 0:
+        prefix = ","
+
+    return prefix + suffix
+
+
+def rm_file(folder: Union[str, Path]):
     """Since on windows Path.unlink throws permission error sometimes, os.remove is preferred."""
     if isinstance(folder, str):
         folder = Path(folder)
@@ -609,8 +680,7 @@ def rm_file(folder: Union[str, Path]
         # Folders.site.unlink()  --> possible PermissionError
 
 
-def rm_folder(folder: Union[str, Path]
-              ):
+def rm_folder(folder: Union[str, Path]):
     """Since on windows Path.unlink throws permission error sometimes, shutil is preferred."""
     if isinstance(folder, str):
         folder = Path(folder)
@@ -624,6 +694,7 @@ def rm_folder(folder: Union[str, Path]
 
 
 import nox.popen as nox_popen_module
+
 orig_nox_popen = nox_popen_module.popen
 
 
@@ -707,20 +778,44 @@ def patched_popen(
 
             # define the async coroutines
             async def async_popen():
-                process = await asyncio.create_subprocess_exec(*args, env=env, stdout=asyncio.subprocess.PIPE,
-                                                               stderr=asyncio.subprocess.PIPE, **kwargs)
+                process = await asyncio.create_subprocess_exec(
+                    *args, env=env, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, **kwargs
+                )
 
                 # bind the out and err streams - see https://stackoverflow.com/a/59041913/7262247
                 # to mimic nox behaviour we only use a single capturing list
                 outlines = []
-                await asyncio.wait([
-                    # process out is only redirected to STDOUT if not silent
-                    _read_stream(process.stdout, lambda l: tee(l, sinklist=outlines, sinkstream=log_file_stream,
-                                                               quiet=silent, verbosepipe=sys.stdout)),
-                    # process err is always redirected to STDOUT (quiet=False) with a specific label
-                    _read_stream(process.stderr, lambda l: tee(l, sinklist=outlines, sinkstream=log_file_stream,
-                                                               quiet=False, verbosepipe=sys.stdout, label="ERR:"))
-                ])
+                await asyncio.wait(
+                    [
+                        asyncio.create_task(
+                            # process out is only redirected to STDOUT if not silent
+                            _read_stream(
+                                process.stdout,
+                                lambda l: tee(
+                                    l,
+                                    sinklist=outlines,
+                                    sinkstream=log_file_stream,
+                                    quiet=silent,
+                                    verbosepipe=sys.stdout,
+                                ),
+                            )
+                        ),
+                        # process err is always redirected to STDOUT (quiet=False) with a specific label
+                        asyncio.create_task(
+                            _read_stream(
+                                process.stderr,
+                                lambda l: tee(
+                                    l,
+                                    sinklist=outlines,
+                                    sinkstream=log_file_stream,
+                                    quiet=False,
+                                    verbosepipe=sys.stdout,
+                                    label="ERR:",
+                                ),
+                            ),
+                        ),
+                    ]
+                )
                 return_code = await process.wait()  # make sur the process has ended and retrieve its return code
                 return return_code, outlines
 
@@ -763,7 +858,7 @@ def tee(linebytes, sinklist, sinkstream, verbosepipe, quiet, label=""):
 
     append it to the sink, and if quiet=False, write it to pipe too.
     """
-    line = linebytes.decode('utf-8').rstrip()
+    line = linebytes.decode("utf-8").rstrip()
 
     if sinklist is not None:
         sinklist.append(line)
@@ -781,13 +876,14 @@ def patch_popen():
     nox_popen_module.popen = patched_popen
 
     from nox.command import popen
+
     if popen is not patched_popen:
         nox.command.popen = patched_popen
 
     # change event loop on windows
     # see https://stackoverflow.com/a/44639711/7262247
     # and https://docs.python.org/3/library/asyncio-platforms.html#subprocess-support-on-windows
-    if 'win32' in sys.platform:
+    if "win32" in sys.platform:
         # Windows specific event-loop policy & cmd
         asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
         # cmds = [['C:/Windows/system32/HOSTNAME.EXE']]
