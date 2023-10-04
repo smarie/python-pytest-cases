@@ -3,30 +3,31 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 
-# contains syntax illegal before PEP492 "Coroutines with async and await syntax"
+# contains syntax illegal before PEP380 'Syntax for Delegating to a Subgenerator'
 
 from makefun import wraps
 from .fixture_core1_unions import is_used_request, NOT_USED
 
 
-def _ignore_unused_coroutine_pep492(fixture_func, new_sig, func_needs_request):
+def _ignore_unused_generator_pep380(fixture_func, new_sig, func_needs_request):
     @wraps(fixture_func, new_sig=new_sig)
-    async def wrapped_fixture_func(*args, **kwargs):
+    def wrapped_fixture_func(*args, **kwargs):
         request = kwargs['request'] if func_needs_request else kwargs.pop('request')
         if is_used_request(request):
-            return await fixture_func(*args, **kwargs)
+            yield from fixture_func(*args, **kwargs)
         else:
-            return NOT_USED
+            yield NOT_USED
 
     return wrapped_fixture_func
 
-def _decorate_fixture_plus_coroutine_pep492(fixture_func, new_sig, map_arguments):
+def _decorate_fixture_plus_generator_pep380(fixture_func, new_sig, map_arguments):
     @wraps(fixture_func, new_sig=new_sig)
-    async def wrapped_fixture_func(*_args, **_kwargs):
+    def wrapped_fixture_func(*_args, **_kwargs):
         if not is_used_request(_kwargs['request']):
-            return NOT_USED
+            yield NOT_USED
         else:
             _args, _kwargs = map_arguments(*_args, **_kwargs)
-            return await fixture_func(*_args, **_kwargs)
+            yield from fixture_func(*_args, **_kwargs)
 
     return wrapped_fixture_func
+
