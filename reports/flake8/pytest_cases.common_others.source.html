@@ -296,7 +296,7 @@
                class="code sev- "><tt><i>93</i> &nbsp;</tt>
             </div>
             <div id="l94"
-               class="code sev- "><tt><i>94</i>     <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">expected_e</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>94</i>     <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">expected_e</span><span class="p">):</span></tt>
             </div>
             <div id="l95"
                class="code sev- "><tt><i>95</i>         <span class="k">return</span> <span class="ne">BaseException</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">expected_e</span></tt>
@@ -860,7 +860,7 @@
                class="code sev- "><tt><i>281</i>         <span class="c1"># note that for the two above cases callable(f) returns False !</span></tt>
             </div>
             <div id="l282"
-               class="code sev- "><tt><i>282</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">PY3</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethoddescriptor</span><span class="p">(</span><span class="n">f</span><span class="p">)):</span></tt>
+               class="code sev- "><tt><i>282</i>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">PY3</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethoddescriptor</span><span class="p">(</span><span class="n">f</span><span class="p">)):</span></tt>
             </div>
             <div id="l283"
                class="code sev- "><tt><i>283</i>             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`f` is not a callable !&quot;</span><span class="p">)</span></tt>
