@@ -12,11 +12,24 @@ from decopatch import function_decorator, DECORATED
 from makefun import with_signature, add_signature_parameters, remove_signature_parameters, wraps
 
 import pytest
+import sys
 
 try:  # python 3.3+
     from inspect import signature, Parameter
 except ImportError:
     from funcsigs import signature, Parameter  # noqa
+
+try: # native coroutines, python 3.5+
+    from inspect import iscoroutinefunction
+except ImportError:
+    def iscoroutinefunction(obj):
+        return False
+
+try: # native async generators, python 3.6+
+    from inspect import isasyncgenfunction
+except ImportError:
+    def isasyncgenfunction(obj):
+        return False
 
 try:  # type hints, python 3+
     from typing import Callable, Union, Any, List, Iterable, Sequence  # noqa
@@ -528,7 +541,27 @@ def _decorate_fixture_plus(fixture_func,
         return _args, _kwargs
 
     # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
-    if not isgeneratorfunction(fixture_func):
+    if isgeneratorfunction(fixture_func)and sys.version_info >= 3.6:
+            from .fixture_core_pep525 import _decorate_fixture_plus_asyncgen_pep525
+            wrapped_fixture_func = _decorate_fixture_plus_asyncgen_pep525(fixture_func, new_sig, _map_arguments)
+    elif isgeneratorfunction(fixture_func) and sys.version_info >= 3.5:
+            from .fixture_core_pep492 import _decorate_fixture_plus_coroutine_pep492
+            wrapped_fixture_func = _decorate_fixture_plus_coroutine_pep492(fixture_func, new_sig, _map_arguments)
+    elif isgeneratorfunction(fixture_func):
+        # generator function (with a yield statement)
+        if sys.version_info >= 3.3:
+            from .fixture_core_pep380 import _decorate_fixture_plus_generator_pep380
+            wrapped_fixture_func = _decorate_fixture_plus_generator_pep380(fixture_func, new_sig, _map_arguments)
+        else:
+            @wraps(fixture_func, new_sig=new_sig)
+            def wrapped_fixture_func(*_args, **_kwargs):
+                if not is_used_request(_kwargs['request']):
+                    yield NOT_USED
+                else:
+                    _args, _kwargs = _map_arguments(*_args, **_kwargs)
+                    for res in fixture_func(*_args, **_kwargs):
+                        yield res
+    else:
         # normal function with return statement
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*_args, **_kwargs):
@@ -537,17 +570,6 @@ def _decorate_fixture_plus(fixture_func,
             else:
                 _args, _kwargs = _map_arguments(*_args, **_kwargs)
                 return fixture_func(*_args, **_kwargs)
-
-    else:
-        # generator function (with a yield statement)
-        @wraps(fixture_func, new_sig=new_sig)
-        def wrapped_fixture_func(*_args, **_kwargs):
-            if not is_used_request(_kwargs['request']):
-                yield NOT_USED
-            else:
-                _args, _kwargs = _map_arguments(*_args, **_kwargs)
-                for res in fixture_func(*_args, **_kwargs):
-                    yield res
 
     # transform the created wrapper into a fixture
     _make_fix = pytest_fixture(scope=scope, params=final_values, autouse=autouse, hook=hook, ids=final_ids, **kwargs)

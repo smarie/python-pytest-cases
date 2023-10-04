@@ -10,11 +10,25 @@ from warnings import warn
 from makefun import with_signature, add_signature_parameters, wraps
 
 import pytest
+import sys
 
 try:  # python 3.3+
     from inspect import signature, Parameter
 except ImportError:
     from funcsigs import signature, Parameter  # noqa
+
+try: # native coroutines, python 3.5+
+    from inspect import iscoroutinefunction
+except ImportError:
+    def iscoroutinefunction(obj):
+        return False
+
+try: # native async generators, python 3.6+
+    from inspect import isasyncgenfunction
+except ImportError:
+    def isasyncgenfunction(obj):
+        return False
+
 
 try:  # type hints, python 3+
     from typing import Callable, Union, Optional, Any, List, Iterable, Sequence  # noqa
@@ -224,7 +238,27 @@ def ignore_unused(fixture_func):
     else:
         new_sig = old_sig
 
-    if not isgeneratorfunction(fixture_func):
+    if isasyncgenfunction(fixture_func) and sys.version_info >= (3.6):
+        from .fixture_core_pep525 import _ignore_unused_asyncgen_pep525
+        wrapped_fixture_func = _ignore_unused_asyncgen_pep525(fixture_func, new_sig, func_needs_request)
+    elif iscoroutinefunction(fixture_func) and sys.version_info >= (3.5):
+        from .fixture_core_pep492 import _ignore_unused_coroutine_pep492
+        wrapped_fixture_func = _ignore_unused_coroutine_pep492(fixture_func, new_sig, func_needs_request)
+    elif isgeneratorfunction(fixture_func):
+        if sys.version_info >= (3, 3):
+            from .fixture_core_pep380 import _ignore_unused_generator_pep380
+            wrapped_fixture_func = _ignore_unused_generator_pep380(fixture_func, new_sig, func_needs_request)
+        else:
+        # generator function (with a yield statement)
+            @wraps(fixture_func, new_sig=new_sig)
+            def wrapped_fixture_func(*args, **kwargs):
+                request = kwargs['request'] if func_needs_request else kwargs.pop('request')
+                if is_used_request(request):
+                    for res in fixture_func(*args, **kwargs):
+                        yield res
+                else:
+                    yield NOT_USED
+    else:
         # normal function with return statement
         @wraps(fixture_func, new_sig=new_sig)
         def wrapped_fixture_func(*args, **kwargs):
@@ -233,17 +267,6 @@ def ignore_unused(fixture_func):
                 return fixture_func(*args, **kwargs)
             else:
                 return NOT_USED
-
-    else:
-        # generator function (with a yield statement)
-        @wraps(fixture_func, new_sig=new_sig)
-        def wrapped_fixture_func(*args, **kwargs):
-            request = kwargs['request'] if func_needs_request else kwargs.pop('request')
-            if is_used_request(request):
-                for res in fixture_func(*args, **kwargs):
-                    yield res
-            else:
-                yield NOT_USED
 
     return wrapped_fixture_func
 
