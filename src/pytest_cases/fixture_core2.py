@@ -541,15 +541,15 @@ def _decorate_fixture_plus(fixture_func,
         return _args, _kwargs
 
     # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
-    if isgeneratorfunction(fixture_func)and sys.version_info >= 3.6:
+    if isasyncgenfunction(fixture_func)and sys.version_info >= (3, 6):
             from .pep525 import _decorate_fixture_plus_asyncgen_pep525
             wrapped_fixture_func = _decorate_fixture_plus_asyncgen_pep525(fixture_func, new_sig, _map_arguments)
-    elif isgeneratorfunction(fixture_func) and sys.version_info >= 3.5:
+    elif iscoroutinefunction(fixture_func) and sys.version_info >= (3, 5):
             from .pep492 import _decorate_fixture_plus_coroutine_pep492
             wrapped_fixture_func = _decorate_fixture_plus_coroutine_pep492(fixture_func, new_sig, _map_arguments)
     elif isgeneratorfunction(fixture_func):
         # generator function (with a yield statement)
-        if sys.version_info >= 3.3:
+        if sys.version_info >= (3, 3):
             from .pep380 import _decorate_fixture_plus_generator_pep380
             wrapped_fixture_func = _decorate_fixture_plus_generator_pep380(fixture_func, new_sig, _map_arguments)
         else:

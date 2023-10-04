@@ -1073,17 +1073,17 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 return kwargs
 
 
-            if isgeneratorfunction(test_func)and sys.version_info >= 3.6:
+            if isasyncgenfunction(test_func)and sys.version_info >= (3, 6):
                 from .pep525 import _parametrize_plus_decorate_asyncgen_pep525
                 wrapped_test_func = _parametrize_plus_decorate_asyncgen_pep525(test_func, new_sig, fixture_union_name,
                                                                                replace_paramfixture_with_values)
-            elif isgeneratorfunction(test_func) and sys.version_info >= 3.5:
+            elif iscoroutinefunction(test_func) and sys.version_info >= (3, 5):
                 from .pep492 import _parametrize_plus_decorate_coroutine_pep492
                 wrapped_test_func = _parametrize_plus_decorate_coroutine_pep492(test_func, new_sig, fixture_union_name,
                                                                                replace_paramfixture_with_values)
             elif isgeneratorfunction(test_func):
                 # generator function (with a yield statement)
-                if sys.version_info >= 3.3:
+                if sys.version_info >= (3, 3):
                     from .pep380 import _parametrize_plus_decorate_generator_pep380
                     wrapped_test_func = _parametrize_plus_decorate_generator_pep380(test_func, new_sig,
                                                                                     fixture_union_name,

@@ -238,10 +238,10 @@ def ignore_unused(fixture_func):
     else:
         new_sig = old_sig
 
-    if isasyncgenfunction(fixture_func) and sys.version_info >= (3.6):
+    if isasyncgenfunction(fixture_func) and sys.version_info >= (3, 6):
         from .pep525 import _ignore_unused_asyncgen_pep525
         wrapped_fixture_func = _ignore_unused_asyncgen_pep525(fixture_func, new_sig, func_needs_request)
-    elif iscoroutinefunction(fixture_func) and sys.version_info >= (3.5):
+    elif iscoroutinefunction(fixture_func) and sys.version_info >= (3, 5):
         from .pep492 import _ignore_unused_coroutine_pep492
         wrapped_fixture_func = _ignore_unused_coroutine_pep492(fixture_func, new_sig, func_needs_request)
     elif isgeneratorfunction(fixture_func):
