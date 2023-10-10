@@ -76,7 +76,7 @@ jobs:
 
       - name: pin virtualenv==20.15.1 in old python versions
         # pinned to keep compatibility with old versions, see https://github.com/MatteoH2O1999/setup-python/issues/28#issuecomment-1745613621
-        if: contains(fromJson('["2.7", "3.5", "3.6"]'), ${{ matrix.nox_session.python }})
+        if: contains(fromJson('["2.7", "3.5", "3.6"]'), matrix.nox_session.python )
         run: sed -i "s/virtualenv/virtualenv==20.15.1/g" noxfile-requirements.txt
 
       - name: Install noxfile requirements
