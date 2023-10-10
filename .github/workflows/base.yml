@@ -74,6 +74,9 @@ jobs:
           python-version: 3.12
           architecture: x64
 
+      - name: Update virtualenv cache
+        run: virtualenv --upgrade-embed-wheels
+
       - name: Install noxfile requirements
         run: pip install -r noxfile-requirements.txt
 
