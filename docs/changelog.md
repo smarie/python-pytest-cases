@@ -1,5 +1,12 @@
 # Changelog
 
+### 3.7.0 - python 3.12
+
+ - Added official support for Python 3.10, 3.11 and 3.12. Fixes [#314](https://github.com/smarie/python-pytest-cases/issues/314)
+ - Fixed `ModuleNotFoundError: distutils` on Python 3.12 thanks to `packaging`. PR
+   [#312](https://github.com/smarie/python-pytest-cases/pull/312) by [@jayqi](https://github.com/jayqi). 
+ - Internal: switched to virtualenv backend.
+
 ### 3.6.14 - bugfixes
 
  - Fixed `AttributeError` issue in `is_case_function` when an inspected symbol is a parametrized type hint
