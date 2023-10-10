@@ -1,4 +1,5 @@
-virtualenv==20.15.1  # pinned to keep compatibility with old versions, see https://github.com/MatteoH2O1999/setup-python/issues/28#issuecomment-1745613621
+virtualenv;python_version>="3.7"  # Use latest virtualen in latest python versions.
+virtualenv==20.15.1;python_version<"3.7"  # pinned to keep compatibility with old versions, see https://github.com/MatteoH2O1999/setup-python/issues/28#issuecomment-1745613621
 nox
 toml
 makefun
