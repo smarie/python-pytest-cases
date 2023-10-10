@@ -68,10 +68,10 @@ jobs:
           allow-build: info
           cache-build: true
 
-      - name: Install python 3.11 for nox
+      - name: Install python 3.12 for nox
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: 3.12
           architecture: x64
 
       - name: Install noxfile requirements
