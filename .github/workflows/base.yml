@@ -68,11 +68,16 @@ jobs:
           allow-build: info
           cache-build: true
 
-      - name: Install python 3.9 for nox
+      - name: Install python 3.12 for nox
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.12
           architecture: x64
+
+      - name: pin virtualenv==20.15.1 in old python versions
+        # pinned to keep compatibility with old versions, see https://github.com/MatteoH2O1999/setup-python/issues/28#issuecomment-1745613621
+        if: contains(fromJson('["2.7", "3.5", "3.6"]'), matrix.nox_session.python )
+        run: sed -i "s/virtualenv/virtualenv==20.15.1/g" noxfile-requirements.txt
 
       - name: Install noxfile requirements
         run: pip install -r noxfile-requirements.txt

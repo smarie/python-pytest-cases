@@ -10,7 +10,7 @@ import sys
 # add parent folder to python path so that we can import noxfile_utils.py
 # note that you need to "pip install -r noxfile-requiterements.txt" for this file to work.
 sys.path.append(str(Path(__file__).parent / "ci_tools"))
-from nox_utils import PY27, PY37, PY36, PY35, PY38, PY39, PY310, power_session, rm_folder, rm_file, PowerSession, DONT_INSTALL  # noqa
+from nox_utils import PY27, PY37, PY36, PY35, PY38, PY39, PY310, PY311, PY312, power_session, rm_folder, rm_file, PowerSession, DONT_INSTALL  # noqa
 
 
 pkg_name = "pytest_cases"
@@ -19,8 +19,9 @@ gh_repo = "python-pytest-cases"
 
 
 ENVS = {
-    # python 3.10 is not available on conda yet
-    # (PY310, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY312, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY311, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY310, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 3.9 - put first to detect easy issues faster.
     (PY39, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     (PY39, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},

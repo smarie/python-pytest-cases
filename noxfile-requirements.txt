@@ -1,4 +1,4 @@
-virtualenv==20.15.1  # pinned to keep compatibility with old versions, see https://github.com/MatteoH2O1999/setup-python/issues/28#issuecomment-1745613621
+virtualenv
 nox
 toml
 makefun

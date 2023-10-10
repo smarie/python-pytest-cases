@@ -8,14 +8,3 @@ build-backend = "setuptools.build_meta"
 
 # pip: no ! does not work in old python 2.7 and not recommended here
 # https://setuptools.readthedocs.io/en/latest/userguide/quickstart.html#basic-use
-
-[tool.conda]
-# Declare that the following packages should be installed with conda instead of pip
-# Note: this includes packages declared everywhere, here and in setup.cfg
-conda_packages = [
-    "setuptools",
-    "wheel",
-    "pip",
-    # "pytest",
-]
-# pytest: not with conda ! does not work in old python 2.7 and 3.5
