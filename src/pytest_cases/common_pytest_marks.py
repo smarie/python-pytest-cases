@@ -5,7 +5,7 @@
 import itertools
 
 import warnings
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 try:  # python 3.3+
     from inspect import signature
@@ -27,22 +27,22 @@ except ImportError:
 from .common_mini_six import string_types
 
 
-PYTEST_VERSION = LooseVersion(pytest.__version__)
-PYTEST3_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.0.0')
-PYTEST32_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.2.0')
-PYTEST33_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.3.0')
-PYTEST34_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.4.0')
-PYTEST35_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.5.0')
-PYTEST361_36X = LooseVersion('3.6.0') < PYTEST_VERSION < LooseVersion('3.7.0')
-PYTEST37_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.7.0')
-PYTEST38_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.8.0')
-PYTEST46_OR_GREATER = PYTEST_VERSION >= LooseVersion('4.6.0')
-PYTEST53_OR_GREATER = PYTEST_VERSION >= LooseVersion('5.3.0')
-PYTEST54_OR_GREATER = PYTEST_VERSION >= LooseVersion('5.4.0')
-PYTEST421_OR_GREATER = PYTEST_VERSION >= LooseVersion('4.2.1')
-PYTEST6_OR_GREATER = PYTEST_VERSION >= LooseVersion('6.0.0')
-PYTEST7_OR_GREATER = PYTEST_VERSION >= LooseVersion('7.0.0')
-PYTEST71_OR_GREATER = PYTEST_VERSION >= LooseVersion('7.1.0')
+PYTEST_VERSION = Version(pytest.__version__)
+PYTEST3_OR_GREATER = PYTEST_VERSION >= Version('3.0.0')
+PYTEST32_OR_GREATER = PYTEST_VERSION >= Version('3.2.0')
+PYTEST33_OR_GREATER = PYTEST_VERSION >= Version('3.3.0')
+PYTEST34_OR_GREATER = PYTEST_VERSION >= Version('3.4.0')
+PYTEST35_OR_GREATER = PYTEST_VERSION >= Version('3.5.0')
+PYTEST361_36X = Version('3.6.0') < PYTEST_VERSION < Version('3.7.0')
+PYTEST37_OR_GREATER = PYTEST_VERSION >= Version('3.7.0')
+PYTEST38_OR_GREATER = PYTEST_VERSION >= Version('3.8.0')
+PYTEST46_OR_GREATER = PYTEST_VERSION >= Version('4.6.0')
+PYTEST53_OR_GREATER = PYTEST_VERSION >= Version('5.3.0')
+PYTEST54_OR_GREATER = PYTEST_VERSION >= Version('5.4.0')
+PYTEST421_OR_GREATER = PYTEST_VERSION >= Version('4.2.1')
+PYTEST6_OR_GREATER = PYTEST_VERSION >= Version('6.0.0')
+PYTEST7_OR_GREATER = PYTEST_VERSION >= Version('7.0.0')
+PYTEST71_OR_GREATER = PYTEST_VERSION >= Version('7.1.0')
 
 
 def get_param_argnames_as_list(argnames):
