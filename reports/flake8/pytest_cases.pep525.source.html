@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>pytest_cases/pep525.py - flake8 annotated source</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+      <div id="masthead" class="sev-2"></div>
+      <div id="page">
+         <h1>
+            <a href="pytest_cases.pep525.report.html">
+               <img src="back.svg" alt="&#x2B05;">
+               pytest_cases/pep525.py source
+            </a>
+         </h1>
+
+         <div id="doc">
+            <div id="l1"
+               class="code sev- "><tt><i>1</i> <span class="c1"># Authors: Sylvain MARIE &lt;sylvain.marie@se.com&gt;</span></tt>
+            </div>
+            <div id="l2"
+               class="code sev- "><tt><i>2</i> <span class="c1">#          + All contributors to &lt;https://github.com/smarie/python-pytest-cases&gt;</span></tt>
+            </div>
+            <div id="l3"
+               class="code sev- "><tt><i>3</i> <span class="c1">#</span></tt>
+            </div>
+            <div id="l4"
+               class="code sev- "><tt><i>4</i> <span class="c1"># License: 3-clause BSD, &lt;https://github.com/smarie/python-pytest-cases/blob/master/LICENSE&gt;</span></tt>
+            </div>
+            <div id="l5"
+               class="code sev- "><tt><i>5</i> &nbsp;</tt>
+            </div>
+            <div id="l6"
+               class="code sev- "><tt><i>6</i> <span class="c1"># contains syntax illegal before PEP525 &quot;Asynchronous Generators&quot;</span></tt>
+            </div>
+            <div id="l7"
+               class="code sev- "><tt><i>7</i> &nbsp;</tt>
+            </div>
+            <div id="l8"
+               class="code sev- "><tt><i>8</i> <span class="kn">from</span> <span class="nn">makefun</span> <span class="kn">import</span> <span class="n">wraps</span></tt>
+            </div>
+            <div id="l9"
+               class="code sev- "><tt><i>9</i> <span class="kn">from</span> <span class="nn">.fixture_core1_unions</span> <span class="kn">import</span> <span class="n">is_used_request</span><span class="p">,</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l10"
+               class="code sev- "><tt><i>10</i> &nbsp;</tt>
+            </div>
+            <div id="l11"
+               class="code sev- "><tt><i>11</i> &nbsp;</tt>
+            </div>
+            <div id="l12"
+               class="code sev- "><tt><i>12</i> <span class="k">def</span> <span class="nf">_ignore_unused_asyncgen_pep525</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">func_needs_request</span><span class="p">):</span></tt>
+            </div>
+            <div id="l13"
+               class="code sev- "><tt><i>13</i>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
+            </div>
+            <div id="l14"
+               class="code sev- "><tt><i>14</i>     <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l15"
+               class="code sev- "><tt><i>15</i>         <span class="n">request</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">func_needs_request</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l16"
+               class="code sev- "><tt><i>16</i>         <span class="k">if</span> <span class="n">is_used_request</span><span class="p">(</span><span class="n">request</span><span class="p">):</span></tt>
+            </div>
+            <div id="l17"
+               class="code sev- "><tt><i>17</i>             <span class="k">async</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l18"
+               class="code sev- "><tt><i>18</i>                 <span class="k">yield</span> <span class="n">res</span></tt>
+            </div>
+            <div id="l19"
+               class="code sev- "><tt><i>19</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l20"
+               class="code sev- "><tt><i>20</i>             <span class="k">yield</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l21"
+               class="code sev- "><tt><i>21</i> &nbsp;</tt>
+            </div>
+            <div id="l22"
+               class="code sev- "><tt><i>22</i>     <span class="k">return</span> <span class="n">wrapped_fixture_func</span></tt>
+            </div>
+            <div id="l23"
+               class="code sev- "><tt><i>23</i> &nbsp;</tt>
+            </div>
+            <div id="l24"
+               class="code sev-2  le">
+               <ul class="violations">
+               
+                  <li>
+                     <span class="count sev-2">
+                        E302
+                     </span>
+                     Expected 2 blank lines, found 1</li>
+               
+               </ul><tt><i>24</i> <span class="k">def</span> <span class="nf">_decorate_fixture_plus_asyncgen_pep525</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">map_arguments</span><span class="p">):</span></tt>
+            </div>
+            <div id="l25"
+               class="code sev- "><tt><i>25</i>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
+            </div>
+            <div id="l26"
+               class="code sev- "><tt><i>26</i>     <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l27"
+               class="code sev- "><tt><i>27</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_used_request</span><span class="p">(</span><span class="n">_kwargs</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">]):</span></tt>
+            </div>
+            <div id="l28"
+               class="code sev- "><tt><i>28</i>             <span class="k">yield</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l29"
+               class="code sev- "><tt><i>29</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l30"
+               class="code sev- "><tt><i>30</i>             <span class="n">_args</span><span class="p">,</span> <span class="n">_kwargs</span> <span class="o">=</span> <span class="n">map_arguments</span><span class="p">(</span><span class="o">*</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">)</span></tt>
+            </div>
+            <div id="l31"
+               class="code sev- "><tt><i>31</i>             <span class="k">async</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l32"
+               class="code sev- "><tt><i>32</i>                 <span class="k">yield</span> <span class="n">res</span></tt>
+            </div>
+            <div id="l33"
+               class="code sev- "><tt><i>33</i> &nbsp;</tt>
+            </div>
+            <div id="l34"
+               class="code sev- "><tt><i>34</i>     <span class="k">return</span> <span class="n">wrapped_fixture_func</span></tt>
+            </div>
+            <div id="l35"
+               class="code sev- "><tt><i>35</i> &nbsp;</tt>
+            </div>
+            <div id="l36"
+               class="code sev-2  le">
+               <ul class="violations">
+               
+                  <li>
+                     <span class="count sev-2">
+                        E302
+                     </span>
+                     Expected 2 blank lines, found 1</li>
+               
+               </ul><tt><i>36</i> <span class="k">def</span> <span class="nf">_parametrize_plus_decorate_asyncgen_pep525</span><span class="p">(</span></tt>
+            </div>
+            <div id="l37"
+               class="code sev- "><tt><i>37</i>     <span class="n">test_func</span><span class="p">,</span></tt>
+            </div>
+            <div id="l38"
+               class="code sev- "><tt><i>38</i>     <span class="n">new_sig</span><span class="p">,</span></tt>
+            </div>
+            <div id="l39"
+               class="code sev- "><tt><i>39</i>     <span class="n">fixture_union_name</span><span class="p">,</span></tt>
+            </div>
+            <div id="l40"
+               class="code sev- "><tt><i>40</i>     <span class="n">replace_paramfixture_with_values</span></tt>
+            </div>
+            <div id="l41"
+               class="code sev- "><tt><i>41</i> <span class="p">):</span></tt>
+            </div>
+            <div id="l42"
+               class="code sev- "><tt><i>42</i>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">test_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
+            </div>
+            <div id="l43"
+               class="code sev- "><tt><i>43</i>     <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_test_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l44"
+               class="code sev- "><tt><i>44</i>         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fixture_union_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">NOT_USED</span><span class="p">:</span></tt>
+            </div>
+            <div id="l45"
+               class="code sev- "><tt><i>45</i>             <span class="c1"># TODO why this ? it is probably useless: this fixture</span></tt>
+            </div>
+            <div id="l46"
+               class="code sev- "><tt><i>46</i>             <span class="c1">#  is private and will never end up in another union</span></tt>
+            </div>
+            <div id="l47"
+               class="code sev- "><tt><i>47</i>             <span class="k">yield</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l48"
+               class="code sev- "><tt><i>48</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l49"
+               class="code sev- "><tt><i>49</i>             <span class="n">replace_paramfixture_with_values</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></tt>
+            </div>
+            <div id="l50"
+               class="code sev- "><tt><i>50</i>             <span class="k">async</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">test_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l51"
+               class="code sev- "><tt><i>51</i>                 <span class="k">yield</span> <span class="n">res</span></tt>
+            </div>
+            <div id="l52"
+               class="code sev- "><tt><i>52</i> &nbsp;</tt>
+            </div>
+            <div id="l53"
+               class="code sev- "><tt><i>53</i>     <span class="k">return</span> <span class="n">wrapped_test_func</span></tt>
+            </div>
+            
+         </div>
+      </div>
+   </body>
+</html>

@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>pytest_cases/fixture_core1_unions.py - flake8 annotated source</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+      <div id="masthead" class="sev-2"></div>
+      <div id="page">
+         <h1>
+            <a href="pytest_cases.fixture_core1_unions.report.html">
+               <img src="back.svg" alt="&#x2B05;">
+               pytest_cases/fixture_core1_unions.py source
+            </a>
+         </h1>
+
+         <div id="doc">
+            <div id="l1"
+               class="code sev- "><tt><i>1</i> <span class="c1"># Authors: Sylvain MARIE &lt;sylvain.marie@se.com&gt;</span></tt>
+            </div>
+            <div id="l2"
+               class="code sev- "><tt><i>2</i> <span class="c1">#          + All contributors to &lt;https://github.com/smarie/python-pytest-cases&gt;</span></tt>
+            </div>
+            <div id="l3"
+               class="code sev- "><tt><i>3</i> <span class="c1">#</span></tt>
+            </div>
+            <div id="l4"
+               class="code sev- "><tt><i>4</i> <span class="c1"># License: 3-clause BSD, &lt;https://github.com/smarie/python-pytest-cases/blob/master/LICENSE&gt;</span></tt>
+            </div>
+            <div id="l5"
+               class="code sev- "><tt><i>5</i> <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span></tt>
+            </div>
+            <div id="l6"
+               class="code sev- "><tt><i>6</i> &nbsp;</tt>
+            </div>
+            <div id="l7"
+               class="code sev- "><tt><i>7</i> <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isgeneratorfunction</span></tt>
+            </div>
+            <div id="l8"
+               class="code sev- "><tt><i>8</i> <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span></tt>
+            </div>
+            <div id="l9"
+               class="code sev- "><tt><i>9</i> &nbsp;</tt>
+            </div>
+            <div id="l10"
+               class="code sev- "><tt><i>10</i> <span class="kn">from</span> <span class="nn">makefun</span> <span class="kn">import</span> <span class="n">with_signature</span><span class="p">,</span> <span class="n">add_signature_parameters</span><span class="p">,</span> <span class="n">wraps</span></tt>
+            </div>
+            <div id="l11"
+               class="code sev- "><tt><i>11</i> &nbsp;</tt>
+            </div>
+            <div id="l12"
+               class="code sev- "><tt><i>12</i> <span class="kn">import</span> <span class="nn">pytest</span></tt>
+            </div>
+            <div id="l13"
+               class="code sev- "><tt><i>13</i> <span class="kn">import</span> <span class="nn">sys</span></tt>
+            </div>
+            <div id="l14"
+               class="code sev- "><tt><i>14</i> &nbsp;</tt>
+            </div>
+            <div id="l15"
+               class="code sev- "><tt><i>15</i> <span class="k">try</span><span class="p">:</span>  <span class="c1"># python 3.3+</span></tt>
+            </div>
+            <div id="l16"
+               class="code sev- "><tt><i>16</i>     <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span><span class="p">,</span> <span class="n">Parameter</span></tt>
+            </div>
+            <div id="l17"
+               class="code sev- "><tt><i>17</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l18"
+               class="code sev- "><tt><i>18</i>     <span class="kn">from</span> <span class="nn">funcsigs</span> <span class="kn">import</span> <span class="n">signature</span><span class="p">,</span> <span class="n">Parameter</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l19"
+               class="code sev- "><tt><i>19</i> &nbsp;</tt>
+            </div>
+            <div id="l20"
+               class="code sev-2  le">
+               <ul class="violations">
+               
+                  <li>
+                     <span class="count sev-2">
+                        E261
+                     </span>
+                     At least two spaces before inline comment</li>
+               
+               </ul><tt><i>20</i> <span class="k">try</span><span class="p">:</span> <span class="c1"># native coroutines, python 3.5+</span></tt>
+            </div>
+            <div id="l21"
+               class="code sev- "><tt><i>21</i>     <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">iscoroutinefunction</span></tt>
+            </div>
+            <div id="l22"
+               class="code sev- "><tt><i>22</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l23"
+               class="code sev- "><tt><i>23</i>     <span class="k">def</span> <span class="nf">iscoroutinefunction</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span></tt>
+            </div>
+            <div id="l24"
+               class="code sev- "><tt><i>24</i>         <span class="k">return</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l25"
+               class="code sev- "><tt><i>25</i> &nbsp;</tt>
+            </div>
+            <div id="l26"
+               class="code sev-2  le">
+               <ul class="violations">
+               
+                  <li>
+                     <span class="count sev-2">
+                        E261
+                     </span>
+                     At least two spaces before inline comment</li>
+               
+               </ul><tt><i>26</i> <span class="k">try</span><span class="p">:</span> <span class="c1"># native async generators, python 3.6+</span></tt>
+            </div>
+            <div id="l27"
+               class="code sev- "><tt><i>27</i>     <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isasyncgenfunction</span></tt>
+            </div>
+            <div id="l28"
+               class="code sev- "><tt><i>28</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l29"
+               class="code sev- "><tt><i>29</i>     <span class="k">def</span> <span class="nf">isasyncgenfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span></tt>
+            </div>
+            <div id="l30"
+               class="code sev- "><tt><i>30</i>         <span class="k">return</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l31"
+               class="code sev- "><tt><i>31</i> &nbsp;</tt>
+            </div>
+            <div id="l32"
+               class="code sev- "><tt><i>32</i> &nbsp;</tt>
+            </div>
+            <div id="l33"
+               class="code sev- "><tt><i>33</i> <span class="k">try</span><span class="p">:</span>  <span class="c1"># type hints, python 3+</span></tt>
+            </div>
+            <div id="l34"
+               class="code sev- "><tt><i>34</i>     <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l35"
+               class="code sev- "><tt><i>35</i>     <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l36"
+               class="code sev- "><tt><i>36</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l37"
+               class="code sev- "><tt><i>37</i>     <span class="k">pass</span></tt>
+            </div>
+            <div id="l38"
+               class="code sev- "><tt><i>38</i> &nbsp;</tt>
+            </div>
+            <div id="l39"
+               class="code sev- "><tt><i>39</i> <span class="kn">from</span> <span class="nn">.common_mini_six</span> <span class="kn">import</span> <span class="n">string_types</span></tt>
+            </div>
+            <div id="l40"
+               class="code sev- "><tt><i>40</i> <span class="kn">from</span> <span class="nn">.common_pytest</span> <span class="kn">import</span> <span class="n">get_fixture_name</span><span class="p">,</span> <span class="n">is_marked_parameter_value</span><span class="p">,</span> <span class="n">get_marked_parameter_values</span><span class="p">,</span> <span class="n">pytest_fixture</span><span class="p">,</span> \</tt>
+            </div>
+            <div id="l41"
+               class="code sev- "><tt><i>41</i>     <span class="n">extract_parameterset_info</span><span class="p">,</span> <span class="n">get_param_argnames_as_list</span><span class="p">,</span> <span class="n">get_fixture_scope</span><span class="p">,</span> <span class="n">resolve_ids</span></tt>
+            </div>
+            <div id="l42"
+               class="code sev- "><tt><i>42</i> <span class="kn">from</span> <span class="nn">.fixture__creation</span> <span class="kn">import</span> <span class="n">get_caller_module</span><span class="p">,</span> <span class="n">check_name_available</span><span class="p">,</span> <span class="n">WARN</span></tt>
+            </div>
+            <div id="l43"
+               class="code sev- "><tt><i>43</i> &nbsp;</tt>
+            </div>
+            <div id="l44"
+               class="code sev- "><tt><i>44</i> &nbsp;</tt>
+            </div>
+            <div id="l45"
+               class="code sev- "><tt><i>45</i> <span class="k">class</span> <span class="nc">_NotUsed</span><span class="p">:</span></tt>
+            </div>
+            <div id="l46"
+               class="code sev- "><tt><i>46</i>     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l47"
+               class="code sev- "><tt><i>47</i>         <span class="k">return</span> <span class="s2">&quot;pytest_cases.NOT_USED&quot;</span></tt>
+            </div>
+            <div id="l48"
+               class="code sev- "><tt><i>48</i> &nbsp;</tt>
+            </div>
+            <div id="l49"
+               class="code sev- "><tt><i>49</i> &nbsp;</tt>
+            </div>
+            <div id="l50"
+               class="code sev- "><tt><i>50</i> <span class="k">class</span> <span class="nc">_Used</span><span class="p">:</span></tt>
+            </div>
+            <div id="l51"
+               class="code sev- "><tt><i>51</i>     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l52"
+               class="code sev- "><tt><i>52</i>         <span class="k">return</span> <span class="s2">&quot;pytest_cases.USED&quot;</span></tt>
+            </div>
+            <div id="l53"
+               class="code sev- "><tt><i>53</i> &nbsp;</tt>
+            </div>
+            <div id="l54"
+               class="code sev- "><tt><i>54</i> &nbsp;</tt>
+            </div>
+            <div id="l55"
+               class="code sev- "><tt><i>55</i> <span class="n">NOT_USED</span> <span class="o">=</span> <span class="n">_NotUsed</span><span class="p">()</span></tt>
+            </div>
+            <div id="l56"
+               class="code sev- "><tt><i>56</i> <span class="sd">&quot;&quot;&quot;Object representing a fixture value when the fixture is not used&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l57"
+               class="code sev- "><tt><i>57</i> &nbsp;</tt>
+            </div>
+            <div id="l58"
+               class="code sev- "><tt><i>58</i> &nbsp;</tt>
+            </div>
+            <div id="l59"
+               class="code sev- "><tt><i>59</i> <span class="n">USED</span> <span class="o">=</span> <span class="n">_Used</span><span class="p">()</span></tt>
+            </div>
+            <div id="l60"
+               class="code sev- "><tt><i>60</i> <span class="sd">&quot;&quot;&quot;Object representing a fixture value when the fixture is used&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l61"
+               class="code sev- "><tt><i>61</i> &nbsp;</tt>
+            </div>
+            <div id="l62"
+               class="code sev- "><tt><i>62</i> &nbsp;</tt>
+            </div>
+            <div id="l63"
+               class="code sev- "><tt><i>63</i> <span class="k">class</span> <span class="nc">UnionIdMakers</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
+            </div>
+            <div id="l64"
+               class="code sev- "><tt><i>64</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l65"
+               class="code sev- "><tt><i>65</i> <span class="sd">    The enum defining all possible id styles for union fixture parameters (&quot;alternatives&quot;)</span></tt>
+            </div>
+            <div id="l66"
+               class="code sev- "><tt><i>66</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l67"
+               class="code sev- "><tt><i>67</i>     <span class="nd">@classmethod</span></tt>
+            </div>
+            <div id="l68"
+               class="code sev- "><tt><i>68</i>     <span class="k">def</span> <span class="nf">nostyle</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span></tt>
+            </div>
+            <div id="l69"
+               class="code sev- "><tt><i>69</i>                 <span class="n">param</span>  <span class="c1"># type: UnionFixtureAlternative</span></tt>
+            </div>
+            <div id="l70"
+               class="code sev- "><tt><i>70</i>                 <span class="p">):</span></tt>
+            </div>
+            <div id="l71"
+               class="code sev- "><tt><i>71</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; ids are &lt;fixture_name&gt; &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l72"
+               class="code sev- "><tt><i>72</i>         <span class="k">return</span> <span class="n">param</span><span class="o">.</span><span class="n">get_alternative_id</span><span class="p">()</span></tt>
+            </div>
+            <div id="l73"
+               class="code sev- "><tt><i>73</i> &nbsp;</tt>
+            </div>
+            <div id="l74"
+               class="code sev- "><tt><i>74</i>     <span class="nd">@classmethod</span></tt>
+            </div>
+            <div id="l75"
+               class="code sev- "><tt><i>75</i>     <span class="k">def</span> <span class="nf">compact</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span></tt>
+            </div>
+            <div id="l76"
+               class="code sev- "><tt><i>76</i>                 <span class="n">param</span>  <span class="c1"># type: UnionFixtureAlternative</span></tt>
+            </div>
+            <div id="l77"
+               class="code sev- "><tt><i>77</i>                 <span class="p">):</span></tt>
+            </div>
+            <div id="l78"
+               class="code sev- "><tt><i>78</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; ids are /&lt;fixture_name&gt; &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l79"
+               class="code sev- "><tt><i>79</i>         <span class="k">return</span> <span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">get_alternative_id</span><span class="p">(),)</span></tt>
+            </div>
+            <div id="l80"
+               class="code sev- "><tt><i>80</i> &nbsp;</tt>
+            </div>
+            <div id="l81"
+               class="code sev- "><tt><i>81</i>     <span class="nd">@classmethod</span></tt>
+            </div>
+            <div id="l82"
+               class="code sev- "><tt><i>82</i>     <span class="k">def</span> <span class="nf">explicit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span></tt>
+            </div>
+            <div id="l83"
+               class="code sev- "><tt><i>83</i>                  <span class="n">param</span>  <span class="c1"># type: UnionFixtureAlternative</span></tt>
+            </div>
+            <div id="l84"
+               class="code sev- "><tt><i>84</i>                  <span class="p">):</span></tt>
+            </div>
+            <div id="l85"
+               class="code sev- "><tt><i>85</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; ids are &lt;union_name&gt;/&lt;fixture_name&gt; &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l86"
+               class="code sev- "><tt><i>86</i>         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">get_union_id</span><span class="p">(),</span> <span class="n">param</span><span class="o">.</span><span class="n">get_alternative_id</span><span class="p">())</span></tt>
+            </div>
+            <div id="l87"
+               class="code sev- "><tt><i>87</i> &nbsp;</tt>
+            </div>
+            <div id="l88"
+               class="code sev- "><tt><i>88</i>     <span class="nd">@classmethod</span></tt>
+            </div>
+            <div id="l89"
+               class="code sev- "><tt><i>89</i>     <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">style</span>  <span class="c1"># type: Union[str, Callable]</span></tt>
+            </div>
+            <div id="l90"
+               class="code sev- "><tt><i>90</i>             <span class="p">):</span></tt>
+            </div>
+            <div id="l91"
+               class="code sev- "><tt><i>91</i>         <span class="c1"># type: (...) -&gt; Callable[[UnionFixtureAlternative], str]</span></tt>
+            </div>
+            <div id="l92"
+               class="code sev- "><tt><i>92</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l93"
+               class="code sev- "><tt><i>93</i> <span class="sd">        Returns a function that one can use as the `ids` argument in parametrize, applying the given id style.</span></tt>
+            </div>
+            <div id="l94"
+               class="code sev- "><tt><i>94</i> <span class="sd">        See https://github.com/smarie/python-pytest-cases/issues/41</span></tt>
+            </div>
+            <div id="l95"
+               class="code sev- "><tt><i>95</i> &nbsp;</tt>
+            </div>
+            <div id="l96"
+               class="code sev- "><tt><i>96</i> <span class="sd">        :param style:</span></tt>
+            </div>
+            <div id="l97"
+               class="code sev- "><tt><i>97</i> <span class="sd">        :return:</span></tt>
+            </div>
+            <div id="l98"
+               class="code sev- "><tt><i>98</i> <span class="sd">        &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l99"
+               class="code sev- "><tt><i>99</i>         <span class="k">if</span> <span class="n">style</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
+            </div>
+            <div id="l100"
+               class="code sev- "><tt><i>100</i>             <span class="c1"># return one of the styles from the class</span></tt>
+            </div>
+            <div id="l101"
+               class="code sev- "><tt><i>101</i>             <span class="n">style</span> <span class="o">=</span> <span class="n">style</span> <span class="ow">or</span> <span class="s1">&#39;nostyle&#39;</span></tt>
+            </div>
+            <div id="l102"
+               class="code sev- "><tt><i>102</i>             <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l103"
+               class="code sev- "><tt><i>103</i>                 <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span></tt>
+            </div>
+            <div id="l104"
+               class="code sev- "><tt><i>104</i>             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l105"
+               class="code sev- "><tt><i>105</i>                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown style: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">style</span><span class="p">)</span></tt>
+            </div>
+            <div id="l106"
+               class="code sev- "><tt><i>106</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l107"
+               class="code sev- "><tt><i>107</i>             <span class="c1"># assume a callable: return it directly</span></tt>
+            </div>
+            <div id="l108"
+               class="code sev- "><tt><i>108</i>             <span class="k">return</span> <span class="n">style</span></tt>
+            </div>
+            <div id="l109"
+               class="code sev- "><tt><i>109</i> &nbsp;</tt>
+            </div>
+            <div id="l110"
+               class="code sev- "><tt><i>110</i> &nbsp;</tt>
+            </div>
+            <div id="l111"
+               class="code sev- "><tt><i>111</i> <span class="k">class</span> <span class="nc">UnionFixtureAlternative</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
+            </div>
+            <div id="l112"
+               class="code sev- "><tt><i>112</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines an &quot;alternative&quot;, used to parametrize a fixture union&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l113"
+               class="code sev- "><tt><i>113</i>     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;union_name&#39;</span><span class="p">,</span> <span class="s1">&#39;alternative_name&#39;</span><span class="p">,</span> <span class="s1">&#39;alternative_index&#39;</span></tt>
+            </div>
+            <div id="l114"
+               class="code sev- "><tt><i>114</i> &nbsp;</tt>
+            </div>
+            <div id="l115"
+               class="code sev- "><tt><i>115</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+            </div>
+            <div id="l116"
+               class="code sev- "><tt><i>116</i>                  <span class="n">union_name</span><span class="p">,</span>        <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l117"
+               class="code sev- "><tt><i>117</i>                  <span class="n">alternative_name</span><span class="p">,</span>  <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l118"
+               class="code sev- "><tt><i>118</i>                  <span class="n">alternative_index</span>  <span class="c1"># type: int</span></tt>
+            </div>
+            <div id="l119"
+               class="code sev- "><tt><i>119</i>                  <span class="p">):</span></tt>
+            </div>
+            <div id="l120"
+               class="code sev- "><tt><i>120</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l121"
+               class="code sev- "><tt><i>121</i> &nbsp;</tt>
+            </div>
+            <div id="l122"
+               class="code sev- "><tt><i>122</i> <span class="sd">        :param union_name: the name of the union fixture</span></tt>
+            </div>
+            <div id="l123"
+               class="code sev- "><tt><i>123</i> <span class="sd">        :param alternative_name: the name of the fixture that will be used by the union fixture when this alternative</span></tt>
+            </div>
+            <div id="l124"
+               class="code sev- "><tt><i>124</i> <span class="sd">            is active</span></tt>
+            </div>
+            <div id="l125"
+               class="code sev- "><tt><i>125</i> <span class="sd">        :param alternative_index: the index of the alternative, used for ids generation</span></tt>
+            </div>
+            <div id="l126"
+               class="code sev- "><tt><i>126</i> <span class="sd">        &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l127"
+               class="code sev- "><tt><i>127</i>         <span class="bp">self</span><span class="o">.</span><span class="n">union_name</span> <span class="o">=</span> <span class="n">union_name</span></tt>
+            </div>
+            <div id="l128"
+               class="code sev- "><tt><i>128</i>         <span class="bp">self</span><span class="o">.</span><span class="n">alternative_name</span> <span class="o">=</span> <span class="n">alternative_name</span></tt>
+            </div>
+            <div id="l129"
+               class="code sev- "><tt><i>129</i>         <span class="bp">self</span><span class="o">.</span><span class="n">alternative_index</span> <span class="o">=</span> <span class="n">alternative_index</span></tt>
+            </div>
+            <div id="l130"
+               class="code sev- "><tt><i>130</i> &nbsp;</tt>
+            </div>
+            <div id="l131"
+               class="code sev- "><tt><i>131</i>     <span class="k">def</span> <span class="nf">get_union_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l132"
+               class="code sev- "><tt><i>132</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used by the id makers&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l133"
+               class="code sev- "><tt><i>133</i>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">union_name</span></tt>
+            </div>
+            <div id="l134"
+               class="code sev- "><tt><i>134</i> &nbsp;</tt>
+            </div>
+            <div id="l135"
+               class="code sev- "><tt><i>135</i>     <span class="k">def</span> <span class="nf">get_alternative_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l136"
+               class="code sev- "><tt><i>136</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used by the id makers&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l137"
+               class="code sev- "><tt><i>137</i>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alternative_index</span></tt>
+            </div>
+            <div id="l138"
+               class="code sev- "><tt><i>138</i> &nbsp;</tt>
+            </div>
+            <div id="l139"
+               class="code sev- "><tt><i>139</i>     <span class="k">def</span> <span class="nf">get_alternative_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l140"
+               class="code sev- "><tt><i>140</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used by the id makers to get the minimal (no style) id. Defaults to the alternative name&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l141"
+               class="code sev- "><tt><i>141</i>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alternative_name</span></tt>
+            </div>
+            <div id="l142"
+               class="code sev- "><tt><i>142</i> &nbsp;</tt>
+            </div>
+            <div id="l143"
+               class="code sev- "><tt><i>143</i>     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l144"
+               class="code sev- "><tt><i>144</i>         <span class="c1"># This string representation can be used as an id if you pass `ids=str` to fixture_union for example</span></tt>
+            </div>
+            <div id="l145"
+               class="code sev- "><tt><i>145</i>         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_union_id</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alternative_idx</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alternative_id</span><span class="p">())</span></tt>
+            </div>
+            <div id="l146"
+               class="code sev- "><tt><i>146</i> &nbsp;</tt>
+            </div>
+            <div id="l147"
+               class="code sev- "><tt><i>147</i>     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l148"
+               class="code sev- "><tt><i>148</i>         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(union_name=</span><span class="si">%s</span><span class="s2">, alternative_index=</span><span class="si">%s</span><span class="s2">, alternative_name=</span><span class="si">%s</span><span class="s2">)&quot;</span> \</tt>
+            </div>
+            <div id="l149"
+               class="code sev- "><tt><i>149</i>                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">union_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alternative_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alternative_name</span><span class="p">)</span></tt>
+            </div>
+            <div id="l150"
+               class="code sev- "><tt><i>150</i> &nbsp;</tt>
+            </div>
+            <div id="l151"
+               class="code sev- "><tt><i>151</i>     <span class="nd">@staticmethod</span></tt>
+            </div>
+            <div id="l152"
+               class="code sev- "><tt><i>152</i>     <span class="k">def</span> <span class="nf">to_list_of_fixture_names</span><span class="p">(</span><span class="n">alternatives_lst</span>  <span class="c1"># type: List[UnionFixtureAlternative]</span></tt>
+            </div>
+            <div id="l153"
+               class="code sev- "><tt><i>153</i>                                  <span class="p">):</span></tt>
+            </div>
+            <div id="l154"
+               class="code sev- "><tt><i>154</i>         <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span></tt>
+            </div>
+            <div id="l155"
+               class="code sev- "><tt><i>155</i>         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">alternatives_lst</span><span class="p">:</span></tt>
+            </div>
+            <div id="l156"
+               class="code sev- "><tt><i>156</i>             <span class="k">if</span> <span class="n">is_marked_parameter_value</span><span class="p">(</span><span class="n">f</span><span class="p">):</span></tt>
+            </div>
+            <div id="l157"
+               class="code sev- "><tt><i>157</i>                 <span class="n">f</span> <span class="o">=</span> <span class="n">get_marked_parameter_values</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">nbargs</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></tt>
+            </div>
+            <div id="l158"
+               class="code sev- "><tt><i>158</i>             <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">alternative_name</span><span class="p">)</span></tt>
+            </div>
+            <div id="l159"
+               class="code sev- "><tt><i>159</i>         <span class="k">return</span> <span class="n">res</span></tt>
+            </div>
+            <div id="l160"
+               class="code sev- "><tt><i>160</i> &nbsp;</tt>
+            </div>
+            <div id="l161"
+               class="code sev- "><tt><i>161</i> &nbsp;</tt>
+            </div>
+            <div id="l162"
+               class="code sev- "><tt><i>162</i> <span class="k">class</span> <span class="nc">InvalidParamsList</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span></tt>
+            </div>
+            <div id="l163"
+               class="code sev- "><tt><i>163</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l164"
+               class="code sev- "><tt><i>164</i> <span class="sd">    Exception raised when users attempt to provide a non-iterable `argvalues` in pytest parametrize.</span></tt>
+            </div>
+            <div id="l165"
+               class="code sev- "><tt><i>165</i> <span class="sd">    See https://docs.pytest.org/en/latest/reference.html#pytest-mark-parametrize-ref</span></tt>
+            </div>
+            <div id="l166"
+               class="code sev- "><tt><i>166</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l167"
+               class="code sev- "><tt><i>167</i>     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;params&#39;</span><span class="p">,</span></tt>
+            </div>
+            <div id="l168"
+               class="code sev- "><tt><i>168</i> &nbsp;</tt>
+            </div>
+            <div id="l169"
+               class="code sev- "><tt><i>169</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span></tt>
+            </div>
+            <div id="l170"
+               class="code sev- "><tt><i>170</i>         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span></tt>
+            </div>
+            <div id="l171"
+               class="code sev- "><tt><i>171</i> &nbsp;</tt>
+            </div>
+            <div id="l172"
+               class="code sev- "><tt><i>172</i>     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+            </div>
+            <div id="l173"
+               class="code sev- "><tt><i>173</i>         <span class="k">return</span> <span class="s2">&quot;Invalid parameters list (`argvalues`) in pytest parametrize. `list(argvalues)` returned an error. &quot;</span> \</tt>
+            </div>
+            <div id="l174"
+               class="code sev- "><tt><i>174</i>                <span class="s2">&quot;Please make sure that `argvalues` is a list, tuple or iterable : </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span></tt>
+            </div>
+            <div id="l175"
+               class="code sev- "><tt><i>175</i> &nbsp;</tt>
+            </div>
+            <div id="l176"
+               class="code sev- "><tt><i>176</i> &nbsp;</tt>
+            </div>
+            <div id="l177"
+               class="code sev- "><tt><i>177</i> <span class="k">def</span> <span class="nf">is_fixture_union_params</span><span class="p">(</span><span class="n">params</span><span class="p">):</span></tt>
+            </div>
+            <div id="l178"
+               class="code sev- "><tt><i>178</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l179"
+               class="code sev- "><tt><i>179</i> <span class="sd">    Internal helper to quickly check if a bunch of parameters correspond to a union fixture.</span></tt>
+            </div>
+            <div id="l180"
+               class="code sev- "><tt><i>180</i> &nbsp;</tt>
+            </div>
+            <div id="l181"
+               class="code sev- "><tt><i>181</i> <span class="sd">    Note: unfortunately `pytest` transform all params to a list when a @pytest.fixture is created,</span></tt>
+            </div>
+            <div id="l182"
+               class="code sev- "><tt><i>182</i> <span class="sd">    so we can not pass a subclass of list to do the trick, we really have to work on the list elements.</span></tt>
+            </div>
+            <div id="l183"
+               class="code sev- "><tt><i>183</i> <span class="sd">    :param params:</span></tt>
+            </div>
+            <div id="l184"
+               class="code sev- "><tt><i>184</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l185"
+               class="code sev- "><tt><i>185</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l186"
+               class="code sev- "><tt><i>186</i>     <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l187"
+               class="code sev- "><tt><i>187</i>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span></tt>
+            </div>
+            <div id="l188"
+               class="code sev- "><tt><i>188</i>             <span class="k">return</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l189"
+               class="code sev- "><tt><i>189</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l190"
+               class="code sev- "><tt><i>190</i>             <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="s1">&#39;__module__&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;pytest_cases&#39;</span><span class="p">):</span></tt>
+            </div>
+            <div id="l191"
+               class="code sev- "><tt><i>191</i>                 <span class="c1"># a value_ref_tuple or another proxy object created somewhere in our code, not a list</span></tt>
+            </div>
+            <div id="l192"
+               class="code sev- "><tt><i>192</i>                 <span class="k">return</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l193"
+               class="code sev- "><tt><i>193</i>             <span class="n">p0</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></tt>
+            </div>
+            <div id="l194"
+               class="code sev- "><tt><i>194</i>             <span class="k">if</span> <span class="n">is_marked_parameter_value</span><span class="p">(</span><span class="n">p0</span><span class="p">):</span></tt>
+            </div>
+            <div id="l195"
+               class="code sev- "><tt><i>195</i>                 <span class="n">p0</span> <span class="o">=</span> <span class="n">get_marked_parameter_values</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">nbargs</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></tt>
+            </div>
+            <div id="l196"
+               class="code sev- "><tt><i>196</i>             <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">UnionFixtureAlternative</span><span class="p">)</span></tt>
+            </div>
+            <div id="l197"
+               class="code sev- "><tt><i>197</i>     <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa</span></tt>
+            </div>
+            <div id="l198"
+               class="code sev- "><tt><i>198</i>         <span class="c1"># be conservative</span></tt>
+            </div>
+            <div id="l199"
+               class="code sev- "><tt><i>199</i>         <span class="c1"># an iterable or the like - we do not use such things when we cope with fixture_refs and unions</span></tt>
+            </div>
+            <div id="l200"
+               class="code sev- "><tt><i>200</i>         <span class="k">return</span> <span class="kc">False</span></tt>
+            </div>
+            <div id="l201"
+               class="code sev- "><tt><i>201</i> &nbsp;</tt>
+            </div>
+            <div id="l202"
+               class="code sev- "><tt><i>202</i> &nbsp;</tt>
+            </div>
+            <div id="l203"
+               class="code sev- "><tt><i>203</i> <span class="k">def</span> <span class="nf">is_used_request</span><span class="p">(</span><span class="n">request</span><span class="p">):</span></tt>
+            </div>
+            <div id="l204"
+               class="code sev- "><tt><i>204</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l205"
+               class="code sev- "><tt><i>205</i> <span class="sd">    Internal helper to check if a given request for fixture is active or not.</span></tt>
+            </div>
+            <div id="l206"
+               class="code sev- "><tt><i>206</i> <span class="sd">    Inactive fixtures happen when a fixture is not used in the current branch of a UNION fixture.</span></tt>
+            </div>
+            <div id="l207"
+               class="code sev- "><tt><i>207</i> &nbsp;</tt>
+            </div>
+            <div id="l208"
+               class="code sev- "><tt><i>208</i> <span class="sd">    All fixtures that need to be union-compliant have to be decorated with `@ignore_unused`</span></tt>
+            </div>
+            <div id="l209"
+               class="code sev- "><tt><i>209</i> &nbsp;</tt>
+            </div>
+            <div id="l210"
+               class="code sev- "><tt><i>210</i> <span class="sd">    :param request:</span></tt>
+            </div>
+            <div id="l211"
+               class="code sev- "><tt><i>211</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l212"
+               class="code sev- "><tt><i>212</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l213"
+               class="code sev- "><tt><i>213</i>     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;param&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l214"
+               class="code sev- "><tt><i>214</i> &nbsp;</tt>
+            </div>
+            <div id="l215"
+               class="code sev- "><tt><i>215</i> &nbsp;</tt>
+            </div>
+            <div id="l216"
+               class="code sev- "><tt><i>216</i> <span class="k">def</span> <span class="nf">ignore_unused</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">):</span></tt>
+            </div>
+            <div id="l217"
+               class="code sev- "><tt><i>217</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l218"
+               class="code sev- "><tt><i>218</i> <span class="sd">    A decorator for fixture functions so that they are compliant with fixture unions.</span></tt>
+            </div>
+            <div id="l219"
+               class="code sev- "><tt><i>219</i> <span class="sd">    It</span></tt>
+            </div>
+            <div id="l220"
+               class="code sev- "><tt><i>220</i> &nbsp;</tt>
+            </div>
+            <div id="l221"
+               class="code sev- "><tt><i>221</i> <span class="sd">     - adds the `request` fixture dependency to their signature if needed</span></tt>
+            </div>
+            <div id="l222"
+               class="code sev- "><tt><i>222</i> <span class="sd">     - filters the calls based on presence of the `NOT_USED` token in the request params.</span></tt>
+            </div>
+            <div id="l223"
+               class="code sev- "><tt><i>223</i> &nbsp;</tt>
+            </div>
+            <div id="l224"
+               class="code sev- "><tt><i>224</i> <span class="sd">    IMPORTANT: even if &#39;params&#39; is not in kwargs, the fixture can be used in a fixture union and therefore a param</span></tt>
+            </div>
+            <div id="l225"
+               class="code sev- "><tt><i>225</i> <span class="sd">    *will* be received on some calls (and the fixture will be called several times - only once for real) - we have to</span></tt>
+            </div>
+            <div id="l226"
+               class="code sev- "><tt><i>226</i> <span class="sd">    handle the NOT_USED.</span></tt>
+            </div>
+            <div id="l227"
+               class="code sev- "><tt><i>227</i> &nbsp;</tt>
+            </div>
+            <div id="l228"
+               class="code sev- "><tt><i>228</i> <span class="sd">    :param fixture_func:</span></tt>
+            </div>
+            <div id="l229"
+               class="code sev- "><tt><i>229</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l230"
+               class="code sev- "><tt><i>230</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l231"
+               class="code sev- "><tt><i>231</i>     <span class="n">old_sig</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">)</span></tt>
+            </div>
+            <div id="l232"
+               class="code sev- "><tt><i>232</i> &nbsp;</tt>
+            </div>
+            <div id="l233"
+               class="code sev- "><tt><i>233</i>     <span class="c1"># add request if needed</span></tt>
+            </div>
+            <div id="l234"
+               class="code sev- "><tt><i>234</i>     <span class="n">func_needs_request</span> <span class="o">=</span> <span class="s1">&#39;request&#39;</span> <span class="ow">in</span> <span class="n">old_sig</span><span class="o">.</span><span class="n">parameters</span></tt>
+            </div>
+            <div id="l235"
+               class="code sev- "><tt><i>235</i>     <span class="k">if</span> <span class="ow">not</span> <span class="n">func_needs_request</span><span class="p">:</span></tt>
+            </div>
+            <div id="l236"
+               class="code sev- "><tt><i>236</i>         <span class="c1"># Add it last so that `self` argument in class functions remains the first</span></tt>
+            </div>
+            <div id="l237"
+               class="code sev- "><tt><i>237</i>         <span class="n">new_sig</span> <span class="o">=</span> <span class="n">add_signature_parameters</span><span class="p">(</span><span class="n">old_sig</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">))</span></tt>
+            </div>
+            <div id="l238"
+               class="code sev- "><tt><i>238</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l239"
+               class="code sev- "><tt><i>239</i>         <span class="n">new_sig</span> <span class="o">=</span> <span class="n">old_sig</span></tt>
+            </div>
+            <div id="l240"
+               class="code sev- "><tt><i>240</i> &nbsp;</tt>
+            </div>
+            <div id="l241"
+               class="code sev- "><tt><i>241</i>     <span class="k">if</span> <span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span></tt>
+            </div>
+            <div id="l242"
+               class="code sev- "><tt><i>242</i>         <span class="kn">from</span> <span class="nn">.pep525</span> <span class="kn">import</span> <span class="n">_ignore_unused_asyncgen_pep525</span></tt>
+            </div>
+            <div id="l243"
+               class="code sev- "><tt><i>243</i>         <span class="n">wrapped_fixture_func</span> <span class="o">=</span> <span class="n">_ignore_unused_asyncgen_pep525</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">func_needs_request</span><span class="p">)</span></tt>
+            </div>
+            <div id="l244"
+               class="code sev- "><tt><i>244</i>     <span class="k">elif</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span></tt>
+            </div>
+            <div id="l245"
+               class="code sev- "><tt><i>245</i>         <span class="kn">from</span> <span class="nn">.pep492</span> <span class="kn">import</span> <span class="n">_ignore_unused_coroutine_pep492</span></tt>
+            </div>
+            <div id="l246"
+               class="code sev- "><tt><i>246</i>         <span class="n">wrapped_fixture_func</span> <span class="o">=</span> <span class="n">_ignore_unused_coroutine_pep492</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">func_needs_request</span><span class="p">)</span></tt>
+            </div>
+            <div id="l247"
+               class="code sev- "><tt><i>247</i>     <span class="k">elif</span> <span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">):</span></tt>
+            </div>
+            <div id="l248"
+               class="code sev- "><tt><i>248</i>         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span></tt>
+            </div>
+            <div id="l249"
+               class="code sev- "><tt><i>249</i>             <span class="kn">from</span> <span class="nn">.pep380</span> <span class="kn">import</span> <span class="n">_ignore_unused_generator_pep380</span></tt>
+            </div>
+            <div id="l250"
+               class="code sev- "><tt><i>250</i>             <span class="n">wrapped_fixture_func</span> <span class="o">=</span> <span class="n">_ignore_unused_generator_pep380</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">func_needs_request</span><span class="p">)</span></tt>
+            </div>
+            <div id="l251"
+               class="code sev- "><tt><i>251</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l252"
+               class="code sev-2  le">
+               <ul class="violations">
+               
+                  <li>
+                     <span class="count sev-2">
+                        E115
+                     </span>
+                     Expected an indented block (comment)</li>
+               
+               </ul><tt><i>252</i>         <span class="c1"># generator function (with a yield statement)</span></tt>
+            </div>
+            <div id="l253"
+               class="code sev- "><tt><i>253</i>             <span class="nd">@wraps</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
+            </div>
+            <div id="l254"
+               class="code sev- "><tt><i>254</i>             <span class="k">def</span> <span class="nf">wrapped_fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l255"
+               class="code sev- "><tt><i>255</i>                 <span class="n">request</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">func_needs_request</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l256"
+               class="code sev- "><tt><i>256</i>                 <span class="k">if</span> <span class="n">is_used_request</span><span class="p">(</span><span class="n">request</span><span class="p">):</span></tt>
+            </div>
+            <div id="l257"
+               class="code sev- "><tt><i>257</i>                     <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l258"
+               class="code sev- "><tt><i>258</i>                         <span class="k">yield</span> <span class="n">res</span></tt>
+            </div>
+            <div id="l259"
+               class="code sev- "><tt><i>259</i>                 <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l260"
+               class="code sev- "><tt><i>260</i>                     <span class="k">yield</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l261"
+               class="code sev- "><tt><i>261</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l262"
+               class="code sev- "><tt><i>262</i>         <span class="c1"># normal function with return statement</span></tt>
+            </div>
+            <div id="l263"
+               class="code sev- "><tt><i>263</i>         <span class="nd">@wraps</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
+            </div>
+            <div id="l264"
+               class="code sev- "><tt><i>264</i>         <span class="k">def</span> <span class="nf">wrapped_fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l265"
+               class="code sev- "><tt><i>265</i>             <span class="n">request</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">func_needs_request</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l266"
+               class="code sev- "><tt><i>266</i>             <span class="k">if</span> <span class="n">is_used_request</span><span class="p">(</span><span class="n">request</span><span class="p">):</span></tt>
+            </div>
+            <div id="l267"
+               class="code sev- "><tt><i>267</i>                 <span class="k">return</span> <span class="n">fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></tt>
+            </div>
+            <div id="l268"
+               class="code sev- "><tt><i>268</i>             <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l269"
+               class="code sev- "><tt><i>269</i>                 <span class="k">return</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l270"
+               class="code sev- "><tt><i>270</i> &nbsp;</tt>
+            </div>
+            <div id="l271"
+               class="code sev- "><tt><i>271</i>     <span class="k">return</span> <span class="n">wrapped_fixture_func</span></tt>
+            </div>
+            <div id="l272"
+               class="code sev- "><tt><i>272</i> &nbsp;</tt>
+            </div>
+            <div id="l273"
+               class="code sev- "><tt><i>273</i> &nbsp;</tt>
+            </div>
+            <div id="l274"
+               class="code sev- "><tt><i>274</i> <span class="k">def</span> <span class="nf">fixture_union</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>                <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l275"
+               class="code sev- "><tt><i>275</i>                   <span class="n">fixtures</span><span class="p">,</span>            <span class="c1"># type: Iterable[Union[str, Callable]]</span></tt>
+            </div>
+            <div id="l276"
+               class="code sev- "><tt><i>276</i>                   <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">,</span>    <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l277"
+               class="code sev- "><tt><i>277</i>                   <span class="n">idstyle</span><span class="o">=</span><span class="s1">&#39;compact&#39;</span><span class="p">,</span>   <span class="c1"># type: Optional[Union[str, Callable]]</span></tt>
+            </div>
+            <div id="l278"
+               class="code sev- "><tt><i>278</i>                   <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>            <span class="c1"># type: Union[Callable, Iterable[str]]</span></tt>
+            </div>
+            <div id="l279"
+               class="code sev- "><tt><i>279</i>                   <span class="n">unpack_into</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>    <span class="c1"># type: Iterable[str]</span></tt>
+            </div>
+            <div id="l280"
+               class="code sev- "><tt><i>280</i>                   <span class="n">autouse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>       <span class="c1"># type: bool</span></tt>
+            </div>
+            <div id="l281"
+               class="code sev- "><tt><i>281</i>                   <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>           <span class="c1"># type: Callable[[Callable], Callable]</span></tt>
+            </div>
+            <div id="l282"
+               class="code sev- "><tt><i>282</i>                   <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l283"
+               class="code sev- "><tt><i>283</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l284"
+               class="code sev- "><tt><i>284</i> <span class="sd">    Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically</span></tt>
+            </div>
+            <div id="l285"
+               class="code sev- "><tt><i>285</i> <span class="sd">    registered into the callers&#39; module, but you may wish to assign it to a variable for convenience. In that case</span></tt>
+            </div>
+            <div id="l286"
+               class="code sev- "><tt><i>286</i> <span class="sd">    make sure that you use the same name, e.g. `a = fixture_union(&#39;a&#39;, [&#39;b&#39;, &#39;c&#39;])`</span></tt>
+            </div>
+            <div id="l287"
+               class="code sev- "><tt><i>287</i> &nbsp;</tt>
+            </div>
+            <div id="l288"
+               class="code sev- "><tt><i>288</i> <span class="sd">    The style of test ids corresponding to the union alternatives can be changed with `idstyle`. Three values are</span></tt>
+            </div>
+            <div id="l289"
+               class="code sev- "><tt><i>289</i> <span class="sd">    allowed:</span></tt>
+            </div>
+            <div id="l290"
+               class="code sev- "><tt><i>290</i> &nbsp;</tt>
+            </div>
+            <div id="l291"
+               class="code sev- "><tt><i>291</i> <span class="sd">     - `&#39;explicit&#39;` favors readability with names as `&lt;union&gt;/&lt;alternative&gt;`,</span></tt>
+            </div>
+            <div id="l292"
+               class="code sev- "><tt><i>292</i> <span class="sd">     - `&#39;compact&#39;` (default) adds a small mark so that at least one sees which parameters are union alternatives and</span></tt>
+            </div>
+            <div id="l293"
+               class="code sev- "><tt><i>293</i> <span class="sd">        which others are normal parameters: `/&lt;alternative&gt;`</span></tt>
+            </div>
+            <div id="l294"
+               class="code sev- "><tt><i>294</i> <span class="sd">     - `None` or `&#39;nostyle&#39;` provides minimalistic ids : `&lt;alternative&gt;`</span></tt>
+            </div>
+            <div id="l295"
+               class="code sev- "><tt><i>295</i> &nbsp;</tt>
+            </div>
+            <div id="l296"
+               class="code sev- "><tt><i>296</i> <span class="sd">    See `UnionIdMakers` class for details.</span></tt>
+            </div>
+            <div id="l297"
+               class="code sev- "><tt><i>297</i> &nbsp;</tt>
+            </div>
+            <div id="l298"
+               class="code sev- "><tt><i>298</i> <span class="sd">    You can also pass a callable `idstyle` that will receive instances of `UnionFixtureAlternative`. For example `str`</span></tt>
+            </div>
+            <div id="l299"
+               class="code sev- "><tt><i>299</i> <span class="sd">    leads to very explicit ids: `&lt;union&gt;/&lt;idx&gt;/&lt;alternative&gt;`. See `UnionFixtureAlternative` class for details.</span></tt>
+            </div>
+            <div id="l300"
+               class="code sev- "><tt><i>300</i> &nbsp;</tt>
+            </div>
+            <div id="l301"
+               class="code sev- "><tt><i>301</i> <span class="sd">    :param name: the name of the fixture to create</span></tt>
+            </div>
+            <div id="l302"
+               class="code sev- "><tt><i>302</i> <span class="sd">    :param fixtures: an array-like containing fixture names and/or fixture symbols</span></tt>
+            </div>
+            <div id="l303"
+               class="code sev- "><tt><i>303</i> <span class="sd">    :param scope: the scope of the union. Since the union depends on the sub-fixtures, it should be smaller than the</span></tt>
+            </div>
+            <div id="l304"
+               class="code sev- "><tt><i>304</i> <span class="sd">        smallest scope of fixtures referenced.</span></tt>
+            </div>
+            <div id="l305"
+               class="code sev- "><tt><i>305</i> <span class="sd">    :param idstyle: The style of test ids corresponding to the union alternatives. One of `&#39;explicit&#39;`, `&#39;compact&#39;`,</span></tt>
+            </div>
+            <div id="l306"
+               class="code sev- "><tt><i>306</i> <span class="sd">        `&#39;nostyle&#39;`/`None`, or a callable (e.g. `str`) that will receive instances of `UnionFixtureAlternative`.</span></tt>
+            </div>
+            <div id="l307"
+               class="code sev- "><tt><i>307</i> <span class="sd">    :param ids: as in pytest. The default value returns the correct fixture</span></tt>
+            </div>
+            <div id="l308"
+               class="code sev- "><tt><i>308</i> <span class="sd">    :param unpack_into: an optional iterable of names, or string containing coma-separated names, for additional</span></tt>
+            </div>
+            <div id="l309"
+               class="code sev- "><tt><i>309</i> <span class="sd">        fixtures to create to represent parts of this fixture. See `unpack_fixture` for details.</span></tt>
+            </div>
+            <div id="l310"
+               class="code sev- "><tt><i>310</i> <span class="sd">    :param autouse: as in pytest</span></tt>
+            </div>
+            <div id="l311"
+               class="code sev- "><tt><i>311</i> <span class="sd">    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function</span></tt>
+            </div>
+            <div id="l312"
+               class="code sev- "><tt><i>312</i> <span class="sd">        will be called every time a fixture is about to be created. It will receive a single argument (the function</span></tt>
+            </div>
+            <div id="l313"
+               class="code sev- "><tt><i>313</i> <span class="sd">        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from</span></tt>
+            </div>
+            <div id="l314"
+               class="code sev- "><tt><i>314</i> <span class="sd">        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.</span></tt>
+            </div>
+            <div id="l315"
+               class="code sev- "><tt><i>315</i> <span class="sd">    :param kwargs: other pytest fixture options. They might not be supported correctly.</span></tt>
+            </div>
+            <div id="l316"
+               class="code sev- "><tt><i>316</i> <span class="sd">    :return: the new fixture. Note: you do not need to capture that output in a symbol, since the fixture is</span></tt>
+            </div>
+            <div id="l317"
+               class="code sev- "><tt><i>317</i> <span class="sd">        automatically registered in your module. However if you decide to do so make sure that you use the same name.</span></tt>
+            </div>
+            <div id="l318"
+               class="code sev- "><tt><i>318</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l319"
+               class="code sev- "><tt><i>319</i>     <span class="c1"># grab the caller module, so that we can later create the fixture directly inside it</span></tt>
+            </div>
+            <div id="l320"
+               class="code sev- "><tt><i>320</i>     <span class="n">caller_module</span> <span class="o">=</span> <span class="n">get_caller_module</span><span class="p">()</span></tt>
+            </div>
+            <div id="l321"
+               class="code sev- "><tt><i>321</i> &nbsp;</tt>
+            </div>
+            <div id="l322"
+               class="code sev- "><tt><i>322</i>     <span class="c1"># test the `fixtures` argument to avoid common mistakes</span></tt>
+            </div>
+            <div id="l323"
+               class="code sev- "><tt><i>323</i>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fixtures</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span></tt>
+            </div>
+            <div id="l324"
+               class="code sev- "><tt><i>324</i>         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;fixture_union: the `fixtures` argument should be a tuple, set or list&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l325"
+               class="code sev- "><tt><i>325</i> &nbsp;</tt>
+            </div>
+            <div id="l326"
+               class="code sev- "><tt><i>326</i>     <span class="c1"># unpack the pytest.param marks</span></tt>
+            </div>
+            <div id="l327"
+               class="code sev- "><tt><i>327</i>     <span class="n">custom_pids</span><span class="p">,</span> <span class="n">p_marks</span><span class="p">,</span> <span class="n">fixtures</span> <span class="o">=</span> <span class="n">extract_parameterset_info</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="p">),</span> <span class="n">fixtures</span><span class="p">)</span></tt>
+            </div>
+            <div id="l328"
+               class="code sev- "><tt><i>328</i> &nbsp;</tt>
+            </div>
+            <div id="l329"
+               class="code sev- "><tt><i>329</i>     <span class="c1"># get all required fixture names</span></tt>
+            </div>
+            <div id="l330"
+               class="code sev- "><tt><i>330</i>     <span class="n">f_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_fixture_name</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fixtures</span><span class="p">]</span></tt>
+            </div>
+            <div id="l331"
+               class="code sev- "><tt><i>331</i> &nbsp;</tt>
+            </div>
+            <div id="l332"
+               class="code sev- "><tt><i>332</i>     <span class="c1"># create all alternatives and reapply the marks on them</span></tt>
+            </div>
+            <div id="l333"
+               class="code sev- "><tt><i>333</i>     <span class="n">fix_alternatives</span> <span class="o">=</span> <span class="p">[]</span></tt>
+            </div>
+            <div id="l334"
+               class="code sev- "><tt><i>334</i>     <span class="n">f_names_args</span> <span class="o">=</span> <span class="p">[]</span></tt>
+            </div>
+            <div id="l335"
+               class="code sev- "><tt><i>335</i>     <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">_mark</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">f_names</span><span class="p">,</span> <span class="n">custom_pids</span><span class="p">,</span> <span class="n">p_marks</span><span class="p">)):</span></tt>
+            </div>
+            <div id="l336"
+               class="code sev- "><tt><i>336</i>         <span class="c1"># create the alternative object</span></tt>
+            </div>
+            <div id="l337"
+               class="code sev- "><tt><i>337</i>         <span class="n">alternative</span> <span class="o">=</span> <span class="n">UnionFixtureAlternative</span><span class="p">(</span><span class="n">union_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alternative_name</span><span class="o">=</span><span class="n">_name</span><span class="p">,</span> <span class="n">alternative_index</span><span class="o">=</span><span class="n">_idx</span><span class="p">)</span></tt>
+            </div>
+            <div id="l338"
+               class="code sev- "><tt><i>338</i> &nbsp;</tt>
+            </div>
+            <div id="l339"
+               class="code sev- "><tt><i>339</i>         <span class="c1"># remove duplicates in the fixture arguments: each is required only once by the union fixture to create</span></tt>
+            </div>
+            <div id="l340"
+               class="code sev- "><tt><i>340</i>         <span class="k">if</span> <span class="n">_name</span> <span class="ow">in</span> <span class="n">f_names_args</span><span class="p">:</span></tt>
+            </div>
+            <div id="l341"
+               class="code sev- "><tt><i>341</i>             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Creating a fixture union </span><span class="si">%r</span><span class="s2"> where two alternatives are the same fixture </span><span class="si">%r</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_name</span><span class="p">))</span></tt>
+            </div>
+            <div id="l342"
+               class="code sev- "><tt><i>342</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l343"
+               class="code sev- "><tt><i>343</i>             <span class="n">f_names_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_name</span><span class="p">)</span></tt>
+            </div>
+            <div id="l344"
+               class="code sev- "><tt><i>344</i> &nbsp;</tt>
+            </div>
+            <div id="l345"
+               class="code sev- "><tt><i>345</i>         <span class="c1"># reapply the marks</span></tt>
+            </div>
+            <div id="l346"
+               class="code sev- "><tt><i>346</i>         <span class="k">if</span> <span class="n">_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">_mark</span> <span class="ow">or</span> <span class="p">())</span> <span class="o">!=</span> <span class="p">():</span></tt>
+            </div>
+            <div id="l347"
+               class="code sev- "><tt><i>347</i>             <span class="n">alternative</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">param</span><span class="p">(</span><span class="n">alternative</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">marks</span><span class="o">=</span><span class="n">_mark</span> <span class="ow">or</span> <span class="p">())</span></tt>
+            </div>
+            <div id="l348"
+               class="code sev- "><tt><i>348</i>         <span class="n">fix_alternatives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alternative</span><span class="p">)</span></tt>
+            </div>
+            <div id="l349"
+               class="code sev- "><tt><i>349</i> &nbsp;</tt>
+            </div>
+            <div id="l350"
+               class="code sev- "><tt><i>350</i>     <span class="n">union_fix</span> <span class="o">=</span> <span class="n">_fixture_union</span><span class="p">(</span><span class="n">caller_module</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span></tt>
+            </div>
+            <div id="l351"
+               class="code sev- "><tt><i>351</i>                                <span class="n">fix_alternatives</span><span class="o">=</span><span class="n">fix_alternatives</span><span class="p">,</span> <span class="n">unique_fix_alt_names</span><span class="o">=</span><span class="n">f_names_args</span><span class="p">,</span></tt>
+            </div>
+            <div id="l352"
+               class="code sev- "><tt><i>352</i>                                <span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">idstyle</span><span class="o">=</span><span class="n">idstyle</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="n">autouse</span><span class="o">=</span><span class="n">autouse</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="n">hook</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></tt>
+            </div>
+            <div id="l353"
+               class="code sev- "><tt><i>353</i> &nbsp;</tt>
+            </div>
+            <div id="l354"
+               class="code sev- "><tt><i>354</i>     <span class="c1"># if unpacking is requested, do it here</span></tt>
+            </div>
+            <div id="l355"
+               class="code sev- "><tt><i>355</i>     <span class="k">if</span> <span class="n">unpack_into</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l356"
+               class="code sev- "><tt><i>356</i>         <span class="c1"># Note: we can&#39;t expose the `in_cls` argument as we would not be able to output both the union and the</span></tt>
+            </div>
+            <div id="l357"
+               class="code sev- "><tt><i>357</i>         <span class="c1"># unpacked fixtures. However there is a simple workaround for this scenario of unpacking a union inside a class:</span></tt>
+            </div>
+            <div id="l358"
+               class="code sev- "><tt><i>358</i>         <span class="c1"># call unpack_fixture separately.</span></tt>
+            </div>
+            <div id="l359"
+               class="code sev- "><tt><i>359</i>         <span class="n">_make_unpack_fixture</span><span class="p">(</span><span class="n">caller_module</span><span class="p">,</span> <span class="n">argnames</span><span class="o">=</span><span class="n">unpack_into</span><span class="p">,</span> <span class="n">fixture</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="n">hook</span><span class="p">,</span> <span class="n">in_cls</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+            </div>
+            <div id="l360"
+               class="code sev- "><tt><i>360</i> &nbsp;</tt>
+            </div>
+            <div id="l361"
+               class="code sev- "><tt><i>361</i>     <span class="k">return</span> <span class="n">union_fix</span></tt>
+            </div>
+            <div id="l362"
+               class="code sev- "><tt><i>362</i> &nbsp;</tt>
+            </div>
+            <div id="l363"
+               class="code sev- "><tt><i>363</i> &nbsp;</tt>
+            </div>
+            <div id="l364"
+               class="code sev- "><tt><i>364</i> <span class="k">def</span> <span class="nf">_fixture_union</span><span class="p">(</span><span class="n">fixtures_dest</span><span class="p">,</span></tt>
+            </div>
+            <div id="l365"
+               class="code sev- "><tt><i>365</i>                    <span class="n">name</span><span class="p">,</span>                  <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l366"
+               class="code sev- "><tt><i>366</i>                    <span class="n">fix_alternatives</span><span class="p">,</span>      <span class="c1"># type: Sequence[UnionFixtureAlternative]</span></tt>
+            </div>
+            <div id="l367"
+               class="code sev- "><tt><i>367</i>                    <span class="n">unique_fix_alt_names</span><span class="p">,</span>  <span class="c1"># type: List[str]</span></tt>
+            </div>
+            <div id="l368"
+               class="code sev- "><tt><i>368</i>                    <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">,</span>      <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l369"
+               class="code sev- "><tt><i>369</i>                    <span class="n">idstyle</span><span class="o">=</span><span class="s2">&quot;compact&quot;</span><span class="p">,</span>     <span class="c1"># type: Optional[Union[str, Callable]]</span></tt>
+            </div>
+            <div id="l370"
+               class="code sev- "><tt><i>370</i>                    <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>              <span class="c1"># type: Union[Callable, Iterable[str]]</span></tt>
+            </div>
+            <div id="l371"
+               class="code sev- "><tt><i>371</i>                    <span class="n">autouse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>         <span class="c1"># type: bool</span></tt>
+            </div>
+            <div id="l372"
+               class="code sev- "><tt><i>372</i>                    <span class="n">hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>             <span class="c1"># type: Callable[[Callable], Callable]</span></tt>
+            </div>
+            <div id="l373"
+               class="code sev- "><tt><i>373</i>                    <span class="n">caller</span><span class="o">=</span><span class="n">fixture_union</span><span class="p">,</span>  <span class="c1"># type: Callable</span></tt>
+            </div>
+            <div id="l374"
+               class="code sev- "><tt><i>374</i>                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l375"
+               class="code sev- "><tt><i>375</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l376"
+               class="code sev- "><tt><i>376</i> <span class="sd">    Internal implementation for fixture_union.</span></tt>
+            </div>
+            <div id="l377"
+               class="code sev- "><tt><i>377</i> <span class="sd">    The &quot;alternatives&quot; have to be created beforehand, by the caller. This allows `fixture_union` and `parametrize`</span></tt>
+            </div>
+            <div id="l378"
+               class="code sev- "><tt><i>378</i> <span class="sd">    to use the same implementation while `parametrize` uses customized &quot;alternatives&quot; containing more information.</span></tt>
+            </div>
+            <div id="l379"
+               class="code sev- "><tt><i>379</i> &nbsp;</tt>
+            </div>
+            <div id="l380"
+               class="code sev- "><tt><i>380</i> <span class="sd">    :param fixtures_dest:</span></tt>
+            </div>
+            <div id="l381"
+               class="code sev- "><tt><i>381</i> <span class="sd">    :param name:</span></tt>
+            </div>
+            <div id="l382"
+               class="code sev- "><tt><i>382</i> <span class="sd">    :param fix_alternatives:</span></tt>
+            </div>
+            <div id="l383"
+               class="code sev- "><tt><i>383</i> <span class="sd">    :param unique_fix_alt_names:</span></tt>
+            </div>
+            <div id="l384"
+               class="code sev- "><tt><i>384</i> <span class="sd">    :param idstyle:</span></tt>
+            </div>
+            <div id="l385"
+               class="code sev- "><tt><i>385</i> <span class="sd">    :param scope:</span></tt>
+            </div>
+            <div id="l386"
+               class="code sev- "><tt><i>386</i> <span class="sd">    :param ids:</span></tt>
+            </div>
+            <div id="l387"
+               class="code sev- "><tt><i>387</i> <span class="sd">    :param unpack_into:</span></tt>
+            </div>
+            <div id="l388"
+               class="code sev- "><tt><i>388</i> <span class="sd">    :param autouse:</span></tt>
+            </div>
+            <div id="l389"
+               class="code sev- "><tt><i>389</i> <span class="sd">    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function</span></tt>
+            </div>
+            <div id="l390"
+               class="code sev- "><tt><i>390</i> <span class="sd">        will be called every time a fixture is about to be created. It will receive a single argument (the function</span></tt>
+            </div>
+            <div id="l391"
+               class="code sev- "><tt><i>391</i> <span class="sd">        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from</span></tt>
+            </div>
+            <div id="l392"
+               class="code sev- "><tt><i>392</i> <span class="sd">        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.</span></tt>
+            </div>
+            <div id="l393"
+               class="code sev- "><tt><i>393</i> <span class="sd">    :param caller: a function to reference for error messages</span></tt>
+            </div>
+            <div id="l394"
+               class="code sev- "><tt><i>394</i> <span class="sd">    :param kwargs:</span></tt>
+            </div>
+            <div id="l395"
+               class="code sev- "><tt><i>395</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l396"
+               class="code sev- "><tt><i>396</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l397"
+               class="code sev- "><tt><i>397</i>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fix_alternatives</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span></tt>
+            </div>
+            <div id="l398"
+               class="code sev- "><tt><i>398</i>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Empty fixture unions are not permitted&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l399"
+               class="code sev- "><tt><i>399</i> &nbsp;</tt>
+            </div>
+            <div id="l400"
+               class="code sev- "><tt><i>400</i>     <span class="c1"># then generate the body of our union fixture. It will require all of its dependent fixtures and receive as</span></tt>
+            </div>
+            <div id="l401"
+               class="code sev- "><tt><i>401</i>     <span class="c1"># a parameter the name of the fixture to use</span></tt>
+            </div>
+            <div id="l402"
+               class="code sev- "><tt><i>402</i>     <span class="nd">@with_signature</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">, request)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unique_fix_alt_names</span><span class="p">)))</span></tt>
+            </div>
+            <div id="l403"
+               class="code sev- "><tt><i>403</i>     <span class="k">def</span> <span class="nf">_new_fixture</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">all_fixtures</span><span class="p">):</span></tt>
+            </div>
+            <div id="l404"
+               class="code sev- "><tt><i>404</i>         <span class="c1"># ignore the &quot;not used&quot; marks, like in @ignore_unused</span></tt>
+            </div>
+            <div id="l405"
+               class="code sev- "><tt><i>405</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_used_request</span><span class="p">(</span><span class="n">request</span><span class="p">):</span></tt>
+            </div>
+            <div id="l406"
+               class="code sev- "><tt><i>406</i>             <span class="k">return</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l407"
+               class="code sev- "><tt><i>407</i>         <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l408"
+               class="code sev- "><tt><i>408</i>             <span class="n">_alternative</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span></tt>
+            </div>
+            <div id="l409"
+               class="code sev- "><tt><i>409</i>             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_alternative</span><span class="p">,</span> <span class="n">UnionFixtureAlternative</span><span class="p">):</span></tt>
+            </div>
+            <div id="l410"
+               class="code sev- "><tt><i>410</i>                 <span class="n">fixture_to_use</span> <span class="o">=</span> <span class="n">_alternative</span><span class="o">.</span><span class="n">alternative_name</span></tt>
+            </div>
+            <div id="l411"
+               class="code sev- "><tt><i>411</i>                 <span class="k">return</span> <span class="n">all_fixtures</span><span class="p">[</span><span class="n">fixture_to_use</span><span class="p">]</span></tt>
+            </div>
+            <div id="l412"
+               class="code sev- "><tt><i>412</i>             <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l413"
+               class="code sev- "><tt><i>413</i>                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Union Fixture </span><span class="si">%s</span><span class="s2"> received invalid parameter type: </span><span class="si">%s</span><span class="s2">. Please report this issue.&quot;</span></tt>
+            </div>
+            <div id="l414"
+               class="code sev- "><tt><i>414</i>                                 <span class="s2">&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_alternative</span><span class="o">.</span><span class="vm">__class__</span><span class="p">))</span></tt>
+            </div>
+            <div id="l415"
+               class="code sev- "><tt><i>415</i> &nbsp;</tt>
+            </div>
+            <div id="l416"
+               class="code sev- "><tt><i>416</i>     <span class="k">if</span> <span class="n">ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l417"
+               class="code sev- "><tt><i>417</i>         <span class="n">ids</span> <span class="o">=</span> <span class="n">UnionIdMakers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">idstyle</span><span class="p">)</span></tt>
+            </div>
+            <div id="l418"
+               class="code sev- "><tt><i>418</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l419"
+               class="code sev- "><tt><i>419</i>         <span class="c1"># resolve possibly infinite generators of ids here</span></tt>
+            </div>
+            <div id="l420"
+               class="code sev- "><tt><i>420</i>         <span class="n">ids</span> <span class="o">=</span> <span class="n">resolve_ids</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">fix_alternatives</span><span class="p">,</span> <span class="n">full_resolve</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+            </div>
+            <div id="l421"
+               class="code sev- "><tt><i>421</i> &nbsp;</tt>
+            </div>
+            <div id="l422"
+               class="code sev- "><tt><i>422</i>     <span class="c1"># finally create the fixture per se.</span></tt>
+            </div>
+            <div id="l423"
+               class="code sev- "><tt><i>423</i>     <span class="n">_make_fix</span> <span class="o">=</span> <span class="n">pytest_fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span> <span class="ow">or</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">fix_alternatives</span><span class="p">,</span> <span class="n">autouse</span><span class="o">=</span><span class="n">autouse</span><span class="p">,</span></tt>
+            </div>
+            <div id="l424"
+               class="code sev- "><tt><i>424</i>                                <span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="n">hook</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></tt>
+            </div>
+            <div id="l425"
+               class="code sev- "><tt><i>425</i>     <span class="n">new_union_fix</span> <span class="o">=</span> <span class="n">_make_fix</span><span class="p">(</span><span class="n">_new_fixture</span><span class="p">)</span></tt>
+            </div>
+            <div id="l426"
+               class="code sev- "><tt><i>426</i> &nbsp;</tt>
+            </div>
+            <div id="l427"
+               class="code sev- "><tt><i>427</i>     <span class="c1"># Dynamically add fixture to caller&#39;s module as explained in https://github.com/pytest-dev/pytest/issues/2424</span></tt>
+            </div>
+            <div id="l428"
+               class="code sev- "><tt><i>428</i>     <span class="n">check_name_available</span><span class="p">(</span><span class="n">fixtures_dest</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">if_name_exists</span><span class="o">=</span><span class="n">WARN</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span></tt>
+            </div>
+            <div id="l429"
+               class="code sev- "><tt><i>429</i>     <span class="nb">setattr</span><span class="p">(</span><span class="n">fixtures_dest</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">new_union_fix</span><span class="p">)</span></tt>
+            </div>
+            <div id="l430"
+               class="code sev- "><tt><i>430</i> &nbsp;</tt>
+            </div>
+            <div id="l431"
+               class="code sev- "><tt><i>431</i>     <span class="k">return</span> <span class="n">new_union_fix</span></tt>
+            </div>
+            <div id="l432"
+               class="code sev- "><tt><i>432</i> &nbsp;</tt>
+            </div>
+            <div id="l433"
+               class="code sev- "><tt><i>433</i> &nbsp;</tt>
+            </div>
+            <div id="l434"
+               class="code sev- "><tt><i>434</i> <span class="n">_make_fixture_union</span> <span class="o">=</span> <span class="n">_fixture_union</span></tt>
+            </div>
+            <div id="l435"
+               class="code sev- "><tt><i>435</i> <span class="sd">&quot;&quot;&quot;A readable alias for callers not using the returned symbol&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l436"
+               class="code sev- "><tt><i>436</i> &nbsp;</tt>
+            </div>
+            <div id="l437"
+               class="code sev- "><tt><i>437</i> &nbsp;</tt>
+            </div>
+            <div id="l438"
+               class="code sev- "><tt><i>438</i> <span class="k">def</span> <span class="nf">unpack_fixture</span><span class="p">(</span><span class="n">argnames</span><span class="p">,</span>      <span class="c1"># type: str</span></tt>
+            </div>
+            <div id="l439"
+               class="code sev- "><tt><i>439</i>                    <span class="n">fixture</span><span class="p">,</span>       <span class="c1"># type: Union[str, Callable]</span></tt>
+            </div>
+            <div id="l440"
+               class="code sev- "><tt><i>440</i>                    <span class="n">in_cls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># type: bool</span></tt>
+            </div>
+            <div id="l441"
+               class="code sev- "><tt><i>441</i>                    <span class="n">hook</span><span class="o">=</span><span class="kc">None</span>      <span class="c1"># type: Callable[[Callable], Callable]</span></tt>
+            </div>
+            <div id="l442"
+               class="code sev- "><tt><i>442</i>                    <span class="p">):</span></tt>
+            </div>
+            <div id="l443"
+               class="code sev- "><tt><i>443</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l444"
+               class="code sev- "><tt><i>444</i> <span class="sd">    Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to</span></tt>
+            </div>
+            <div id="l445"
+               class="code sev- "><tt><i>445</i> <span class="sd">    elements unpacked from `fixture` in order. For example if `fixture` is a tuple of length 2, `argnames=&quot;a,b&quot;` will</span></tt>
+            </div>
+            <div id="l446"
+               class="code sev- "><tt><i>446</i> <span class="sd">    create two fixtures containing the first and second element respectively.</span></tt>
+            </div>
+            <div id="l447"
+               class="code sev- "><tt><i>447</i> &nbsp;</tt>
+            </div>
+            <div id="l448"
+               class="code sev- "><tt><i>448</i> <span class="sd">    The created fixtures are automatically registered into the callers&#39; module, but you may wish to assign them to</span></tt>
+            </div>
+            <div id="l449"
+               class="code sev- "><tt><i>449</i> <span class="sd">    variables for convenience. In that case make sure that you use the same names,</span></tt>
+            </div>
+            <div id="l450"
+               class="code sev- "><tt><i>450</i> <span class="sd">    e.g. `a, b = unpack_fixture(&#39;a,b&#39;, &#39;c&#39;)`.</span></tt>
+            </div>
+            <div id="l451"
+               class="code sev- "><tt><i>451</i> &nbsp;</tt>
+            </div>
+            <div id="l452"
+               class="code sev- "><tt><i>452</i> <span class="sd">    ```python</span></tt>
+            </div>
+            <div id="l453"
+               class="code sev- "><tt><i>453</i> <span class="sd">    import pytest</span></tt>
+            </div>
+            <div id="l454"
+               class="code sev- "><tt><i>454</i> <span class="sd">    from pytest_cases import unpack_fixture, fixture</span></tt>
+            </div>
+            <div id="l455"
+               class="code sev- "><tt><i>455</i> &nbsp;</tt>
+            </div>
+            <div id="l456"
+               class="code sev- "><tt><i>456</i> <span class="sd">    @fixture</span></tt>
+            </div>
+            <div id="l457"
+               class="code sev- "><tt><i>457</i> <span class="sd">    @pytest.mark.parametrize(&quot;o&quot;, [&#39;hello&#39;, &#39;world&#39;])</span></tt>
+            </div>
+            <div id="l458"
+               class="code sev- "><tt><i>458</i> <span class="sd">    def c(o):</span></tt>
+            </div>
+            <div id="l459"
+               class="code sev- "><tt><i>459</i> <span class="sd">        return o, o[0]</span></tt>
+            </div>
+            <div id="l460"
+               class="code sev- "><tt><i>460</i> &nbsp;</tt>
+            </div>
+            <div id="l461"
+               class="code sev- "><tt><i>461</i> <span class="sd">    a, b = unpack_fixture(&quot;a,b&quot;, c)</span></tt>
+            </div>
+            <div id="l462"
+               class="code sev- "><tt><i>462</i> &nbsp;</tt>
+            </div>
+            <div id="l463"
+               class="code sev- "><tt><i>463</i> <span class="sd">    def test_function(a, b):</span></tt>
+            </div>
+            <div id="l464"
+               class="code sev- "><tt><i>464</i> <span class="sd">        assert a[0] == b</span></tt>
+            </div>
+            <div id="l465"
+               class="code sev- "><tt><i>465</i> <span class="sd">    ```</span></tt>
+            </div>
+            <div id="l466"
+               class="code sev- "><tt><i>466</i> &nbsp;</tt>
+            </div>
+            <div id="l467"
+               class="code sev- "><tt><i>467</i> <span class="sd">    You can also use this function inside a class with `in_cls=True`. In that case you MUST assign the output of the</span></tt>
+            </div>
+            <div id="l468"
+               class="code sev- "><tt><i>468</i> <span class="sd">    function to variables, as the created fixtures won&#39;t be registered with the encompassing module.</span></tt>
+            </div>
+            <div id="l469"
+               class="code sev- "><tt><i>469</i> &nbsp;</tt>
+            </div>
+            <div id="l470"
+               class="code sev- "><tt><i>470</i> <span class="sd">    ```python</span></tt>
+            </div>
+            <div id="l471"
+               class="code sev- "><tt><i>471</i> <span class="sd">    import pytest</span></tt>
+            </div>
+            <div id="l472"
+               class="code sev- "><tt><i>472</i> <span class="sd">    from pytest_cases import unpack_fixture, fixture</span></tt>
+            </div>
+            <div id="l473"
+               class="code sev- "><tt><i>473</i> &nbsp;</tt>
+            </div>
+            <div id="l474"
+               class="code sev- "><tt><i>474</i> <span class="sd">    @fixture</span></tt>
+            </div>
+            <div id="l475"
+               class="code sev- "><tt><i>475</i> <span class="sd">    @pytest.mark.parametrize(&quot;o&quot;, [&#39;hello&#39;, &#39;world&#39;])</span></tt>
+            </div>
+            <div id="l476"
+               class="code sev- "><tt><i>476</i> <span class="sd">    def c(o):</span></tt>
+            </div>
+            <div id="l477"
+               class="code sev- "><tt><i>477</i> <span class="sd">        return o, o[0]</span></tt>
+            </div>
+            <div id="l478"
+               class="code sev- "><tt><i>478</i> &nbsp;</tt>
+            </div>
+            <div id="l479"
+               class="code sev- "><tt><i>479</i> <span class="sd">    class TestClass:</span></tt>
+            </div>
+            <div id="l480"
+               class="code sev- "><tt><i>480</i> <span class="sd">        a, b = unpack_fixture(&quot;a,b&quot;, c, in_cls=True)</span></tt>
+            </div>
+            <div id="l481"
+               class="code sev- "><tt><i>481</i> &nbsp;</tt>
+            </div>
+            <div id="l482"
+               class="code sev- "><tt><i>482</i> <span class="sd">        def test_function(self, a, b):</span></tt>
+            </div>
+            <div id="l483"
+               class="code sev- "><tt><i>483</i> <span class="sd">            assert a[0] == b</span></tt>
+            </div>
+            <div id="l484"
+               class="code sev- "><tt><i>484</i> <span class="sd">    ```</span></tt>
+            </div>
+            <div id="l485"
+               class="code sev- "><tt><i>485</i> &nbsp;</tt>
+            </div>
+            <div id="l486"
+               class="code sev- "><tt><i>486</i> <span class="sd">    :param argnames: same as `@pytest.mark.parametrize` `argnames`.</span></tt>
+            </div>
+            <div id="l487"
+               class="code sev- "><tt><i>487</i> <span class="sd">    :param fixture: a fixture name string or a fixture symbol. If a fixture symbol is provided, the created fixtures</span></tt>
+            </div>
+            <div id="l488"
+               class="code sev- "><tt><i>488</i> <span class="sd">        will have the same scope. If a name is provided, they will have scope=&#39;function&#39;. Note that in practice the</span></tt>
+            </div>
+            <div id="l489"
+               class="code sev- "><tt><i>489</i> <span class="sd">        performance loss resulting from using `function` rather than a higher scope is negligible since the created</span></tt>
+            </div>
+            <div id="l490"
+               class="code sev- "><tt><i>490</i> <span class="sd">        fixtures&#39; body is a one-liner.</span></tt>
+            </div>
+            <div id="l491"
+               class="code sev- "><tt><i>491</i> <span class="sd">    :param in_cls: a boolean (default False). You may wish to turn this to `True` to use this function inside a class.</span></tt>
+            </div>
+            <div id="l492"
+               class="code sev- "><tt><i>492</i> <span class="sd">        If you do so, you **MUST** assign the output to variables in the class.</span></tt>
+            </div>
+            <div id="l493"
+               class="code sev- "><tt><i>493</i> <span class="sd">    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function</span></tt>
+            </div>
+            <div id="l494"
+               class="code sev- "><tt><i>494</i> <span class="sd">        will be called every time a fixture is about to be created. It will receive a single argument (the function</span></tt>
+            </div>
+            <div id="l495"
+               class="code sev- "><tt><i>495</i> <span class="sd">        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from</span></tt>
+            </div>
+            <div id="l496"
+               class="code sev- "><tt><i>496</i> <span class="sd">        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.</span></tt>
+            </div>
+            <div id="l497"
+               class="code sev- "><tt><i>497</i> <span class="sd">    :return: the created fixtures.</span></tt>
+            </div>
+            <div id="l498"
+               class="code sev- "><tt><i>498</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l499"
+               class="code sev- "><tt><i>499</i>     <span class="k">if</span> <span class="n">in_cls</span><span class="p">:</span></tt>
+            </div>
+            <div id="l500"
+               class="code sev- "><tt><i>500</i>         <span class="c1"># the user needs to capture the outputs of the function in symbols in the class</span></tt>
+            </div>
+            <div id="l501"
+               class="code sev- "><tt><i>501</i>         <span class="n">caller_module</span> <span class="o">=</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l502"
+               class="code sev- "><tt><i>502</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l503"
+               class="code sev- "><tt><i>503</i>         <span class="c1"># get the caller module to create the symbols in it. Assigning outputs is optional</span></tt>
+            </div>
+            <div id="l504"
+               class="code sev- "><tt><i>504</i>         <span class="n">caller_module</span> <span class="o">=</span> <span class="n">get_caller_module</span><span class="p">()</span></tt>
+            </div>
+            <div id="l505"
+               class="code sev- "><tt><i>505</i>     <span class="k">return</span> <span class="n">_unpack_fixture</span><span class="p">(</span><span class="n">caller_module</span><span class="p">,</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">fixture</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="n">hook</span><span class="p">,</span> <span class="n">in_cls</span><span class="o">=</span><span class="n">in_cls</span><span class="p">)</span></tt>
+            </div>
+            <div id="l506"
+               class="code sev- "><tt><i>506</i> &nbsp;</tt>
+            </div>
+            <div id="l507"
+               class="code sev- "><tt><i>507</i> &nbsp;</tt>
+            </div>
+            <div id="l508"
+               class="code sev- "><tt><i>508</i> <span class="k">def</span> <span class="nf">_unpack_fixture</span><span class="p">(</span><span class="n">fixtures_dest</span><span class="p">,</span>  <span class="c1"># type: ModuleType</span></tt>
+            </div>
+            <div id="l509"
+               class="code sev- "><tt><i>509</i>                     <span class="n">argnames</span><span class="p">,</span>       <span class="c1"># type: Union[str, Iterable[str]]</span></tt>
+            </div>
+            <div id="l510"
+               class="code sev- "><tt><i>510</i>                     <span class="n">fixture</span><span class="p">,</span>        <span class="c1"># type: Union[str, Callable]</span></tt>
+            </div>
+            <div id="l511"
+               class="code sev- "><tt><i>511</i>                     <span class="n">in_cls</span><span class="p">,</span>         <span class="c1"># type: bool</span></tt>
+            </div>
+            <div id="l512"
+               class="code sev- "><tt><i>512</i>                     <span class="n">hook</span>            <span class="c1"># type: Callable[[Callable], Callable]</span></tt>
+            </div>
+            <div id="l513"
+               class="code sev- "><tt><i>513</i>                     <span class="p">):</span></tt>
+            </div>
+            <div id="l514"
+               class="code sev- "><tt><i>514</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l515"
+               class="code sev- "><tt><i>515</i> &nbsp;</tt>
+            </div>
+            <div id="l516"
+               class="code sev- "><tt><i>516</i> <span class="sd">    :param fixtures_dest: if this is `None` the fixtures won&#39;t be registered anywhere (just returned)</span></tt>
+            </div>
+            <div id="l517"
+               class="code sev- "><tt><i>517</i> <span class="sd">    :param argnames:</span></tt>
+            </div>
+            <div id="l518"
+               class="code sev- "><tt><i>518</i> <span class="sd">    :param fixture:</span></tt>
+            </div>
+            <div id="l519"
+               class="code sev- "><tt><i>519</i> <span class="sd">    :param in_cls: a boolean indicating if the `self` argument should be prepended.</span></tt>
+            </div>
+            <div id="l520"
+               class="code sev- "><tt><i>520</i> <span class="sd">    :param hook: an optional hook to apply to each fixture function that is created during this call. The hook function</span></tt>
+            </div>
+            <div id="l521"
+               class="code sev- "><tt><i>521</i> <span class="sd">        will be called every time a fixture is about to be created. It will receive a single argument (the function</span></tt>
+            </div>
+            <div id="l522"
+               class="code sev- "><tt><i>522</i> <span class="sd">        implementing the fixture) and should return the function to use. For example you can use `saved_fixture` from</span></tt>
+            </div>
+            <div id="l523"
+               class="code sev- "><tt><i>523</i> <span class="sd">        `pytest-harvest` as a hook in order to save all such created fixtures in the fixture store.</span></tt>
+            </div>
+            <div id="l524"
+               class="code sev- "><tt><i>524</i> <span class="sd">    :return:</span></tt>
+            </div>
+            <div id="l525"
+               class="code sev- "><tt><i>525</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l526"
+               class="code sev- "><tt><i>526</i>     <span class="c1"># unpack fixture names to create if needed</span></tt>
+            </div>
+            <div id="l527"
+               class="code sev- "><tt><i>527</i>     <span class="n">argnames_lst</span> <span class="o">=</span> <span class="n">get_param_argnames_as_list</span><span class="p">(</span><span class="n">argnames</span><span class="p">)</span></tt>
+            </div>
+            <div id="l528"
+               class="code sev- "><tt><i>528</i> &nbsp;</tt>
+            </div>
+            <div id="l529"
+               class="code sev- "><tt><i>529</i>     <span class="c1"># possibly get the source fixture name if the fixture symbol was provided</span></tt>
+            </div>
+            <div id="l530"
+               class="code sev- "><tt><i>530</i>     <span class="n">source_f_name</span> <span class="o">=</span> <span class="n">get_fixture_name</span><span class="p">(</span><span class="n">fixture</span><span class="p">)</span></tt>
+            </div>
+            <div id="l531"
+               class="code sev- "><tt><i>531</i>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fixture</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span></tt>
+            </div>
+            <div id="l532"
+               class="code sev- "><tt><i>532</i>         <span class="n">scope</span> <span class="o">=</span> <span class="n">get_fixture_scope</span><span class="p">(</span><span class="n">fixture</span><span class="p">)</span></tt>
+            </div>
+            <div id="l533"
+               class="code sev- "><tt><i>533</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l534"
+               class="code sev- "><tt><i>534</i>         <span class="c1"># we dont have a clue about the real scope, so lets use function scope</span></tt>
+            </div>
+            <div id="l535"
+               class="code sev- "><tt><i>535</i>         <span class="n">scope</span> <span class="o">=</span> <span class="s1">&#39;function&#39;</span></tt>
+            </div>
+            <div id="l536"
+               class="code sev- "><tt><i>536</i> &nbsp;</tt>
+            </div>
+            <div id="l537"
+               class="code sev- "><tt><i>537</i>     <span class="c1"># finally create the sub-fixtures</span></tt>
+            </div>
+            <div id="l538"
+               class="code sev- "><tt><i>538</i>     <span class="n">created_fixtures</span> <span class="o">=</span> <span class="p">[]</span></tt>
+            </div>
+            <div id="l539"
+               class="code sev- "><tt><i>539</i> &nbsp;</tt>
+            </div>
+            <div id="l540"
+               class="code sev- "><tt><i>540</i>     <span class="c1"># we&#39;ll need to create their signature</span></tt>
+            </div>
+            <div id="l541"
+               class="code sev- "><tt><i>541</i>     <span class="k">if</span> <span class="n">in_cls</span><span class="p">:</span></tt>
+            </div>
+            <div id="l542"
+               class="code sev- "><tt><i>542</i>         <span class="n">_sig</span> <span class="o">=</span> <span class="s2">&quot;(self, </span><span class="si">%s</span><span class="s2">, request)&quot;</span> <span class="o">%</span> <span class="n">source_f_name</span></tt>
+            </div>
+            <div id="l543"
+               class="code sev- "><tt><i>543</i>     <span class="k">else</span><span class="p">:</span></tt>
+            </div>
+            <div id="l544"
+               class="code sev- "><tt><i>544</i>         <span class="n">_sig</span> <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">, request)&quot;</span> <span class="o">%</span> <span class="n">source_f_name</span></tt>
+            </div>
+            <div id="l545"
+               class="code sev- "><tt><i>545</i> &nbsp;</tt>
+            </div>
+            <div id="l546"
+               class="code sev- "><tt><i>546</i>     <span class="k">for</span> <span class="n">value_idx</span><span class="p">,</span> <span class="n">argname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">argnames_lst</span><span class="p">):</span></tt>
+            </div>
+            <div id="l547"
+               class="code sev- "><tt><i>547</i>         <span class="c1"># create the fixture</span></tt>
+            </div>
+            <div id="l548"
+               class="code sev- "><tt><i>548</i>         <span class="c1"># To fix late binding issue with `value_idx` we add an extra layer of scope: a factory function</span></tt>
+            </div>
+            <div id="l549"
+               class="code sev- "><tt><i>549</i>         <span class="c1"># See https://stackoverflow.com/questions/3431676/creating-functions-in-a-loop</span></tt>
+            </div>
+            <div id="l550"
+               class="code sev- "><tt><i>550</i>         <span class="k">def</span> <span class="nf">_create_fixture</span><span class="p">(</span><span class="n">_value_idx</span><span class="p">):</span></tt>
+            </div>
+            <div id="l551"
+               class="code sev- "><tt><i>551</i>             <span class="c1"># no need to autouse=True: this fixture does not bring any added value in terms of setup.</span></tt>
+            </div>
+            <div id="l552"
+               class="code sev- "><tt><i>552</i>             <span class="nd">@pytest_fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">argname</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">autouse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hook</span><span class="o">=</span><span class="n">hook</span><span class="p">)</span></tt>
+            </div>
+            <div id="l553"
+               class="code sev- "><tt><i>553</i>             <span class="nd">@with_signature</span><span class="p">(</span><span class="n">argname</span> <span class="o">+</span> <span class="n">_sig</span><span class="p">)</span></tt>
+            </div>
+            <div id="l554"
+               class="code sev- "><tt><i>554</i>             <span class="k">def</span> <span class="nf">_param_fixture</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l555"
+               class="code sev- "><tt><i>555</i>                 <span class="c1"># ignore the &quot;not used&quot; marks, like in @ignore_unused</span></tt>
+            </div>
+            <div id="l556"
+               class="code sev- "><tt><i>556</i>                 <span class="k">if</span> <span class="ow">not</span> <span class="n">is_used_request</span><span class="p">(</span><span class="n">request</span><span class="p">):</span></tt>
+            </div>
+            <div id="l557"
+               class="code sev- "><tt><i>557</i>                     <span class="k">return</span> <span class="n">NOT_USED</span></tt>
+            </div>
+            <div id="l558"
+               class="code sev- "><tt><i>558</i>                 <span class="c1"># get the required fixture&#39;s value (the tuple to unpack)</span></tt>
+            </div>
+            <div id="l559"
+               class="code sev- "><tt><i>559</i>                 <span class="n">source_fixture_value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">source_f_name</span><span class="p">)</span></tt>
+            </div>
+            <div id="l560"
+               class="code sev- "><tt><i>560</i>                 <span class="c1"># unpack: get the item at the right position.</span></tt>
+            </div>
+            <div id="l561"
+               class="code sev- "><tt><i>561</i>                 <span class="k">return</span> <span class="n">source_fixture_value</span><span class="p">[</span><span class="n">_value_idx</span><span class="p">]</span></tt>
+            </div>
+            <div id="l562"
+               class="code sev- "><tt><i>562</i> &nbsp;</tt>
+            </div>
+            <div id="l563"
+               class="code sev- "><tt><i>563</i>             <span class="k">return</span> <span class="n">_param_fixture</span></tt>
+            </div>
+            <div id="l564"
+               class="code sev- "><tt><i>564</i> &nbsp;</tt>
+            </div>
+            <div id="l565"
+               class="code sev- "><tt><i>565</i>         <span class="c1"># create it</span></tt>
+            </div>
+            <div id="l566"
+               class="code sev- "><tt><i>566</i>         <span class="n">fix</span> <span class="o">=</span> <span class="n">_create_fixture</span><span class="p">(</span><span class="n">value_idx</span><span class="p">)</span></tt>
+            </div>
+            <div id="l567"
+               class="code sev- "><tt><i>567</i> &nbsp;</tt>
+            </div>
+            <div id="l568"
+               class="code sev- "><tt><i>568</i>         <span class="k">if</span> <span class="n">fixtures_dest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span></tt>
+            </div>
+            <div id="l569"
+               class="code sev- "><tt><i>569</i>             <span class="c1"># add to module</span></tt>
+            </div>
+            <div id="l570"
+               class="code sev- "><tt><i>570</i>             <span class="n">check_name_available</span><span class="p">(</span><span class="n">fixtures_dest</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">if_name_exists</span><span class="o">=</span><span class="n">WARN</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">unpack_fixture</span><span class="p">)</span></tt>
+            </div>
+            <div id="l571"
+               class="code sev- "><tt><i>571</i>             <span class="nb">setattr</span><span class="p">(</span><span class="n">fixtures_dest</span><span class="p">,</span> <span class="n">argname</span><span class="p">,</span> <span class="n">fix</span><span class="p">)</span></tt>
+            </div>
+            <div id="l572"
+               class="code sev- "><tt><i>572</i> &nbsp;</tt>
+            </div>
+            <div id="l573"
+               class="code sev- "><tt><i>573</i>         <span class="c1"># collect to return the whole list eventually</span></tt>
+            </div>
+            <div id="l574"
+               class="code sev- "><tt><i>574</i>         <span class="n">created_fixtures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fix</span><span class="p">)</span></tt>
+            </div>
+            <div id="l575"
+               class="code sev- "><tt><i>575</i> &nbsp;</tt>
+            </div>
+            <div id="l576"
+               class="code sev- "><tt><i>576</i>     <span class="k">return</span> <span class="n">created_fixtures</span></tt>
+            </div>
+            <div id="l577"
+               class="code sev- "><tt><i>577</i> &nbsp;</tt>
+            </div>
+            <div id="l578"
+               class="code sev- "><tt><i>578</i> &nbsp;</tt>
+            </div>
+            <div id="l579"
+               class="code sev- "><tt><i>579</i> <span class="n">_make_unpack_fixture</span> <span class="o">=</span> <span class="n">_unpack_fixture</span></tt>
+            </div>
+            <div id="l580"
+               class="code sev- "><tt><i>580</i> <span class="sd">&quot;&quot;&quot;A readable alias for callers not using the returned symbol&quot;&quot;&quot;</span></tt>
+            </div>
+            
+         </div>
+      </div>
+   </body>
+</html>

@@ -33,7 +33,7 @@ window.addEventListener('DOMContentLoaded', function () {
 </script>
    </head>
    <body>
-      <div id="masthead" class="sev-3"></div>
+      <div id="masthead" class="sev-2"></div>
       <div id="page">
          <p id="srclink">
             <a title="View full annotated source"
@@ -50,6 +50,70 @@ window.addEventListener('DOMContentLoaded', function () {
          <ul id="index">
          
          <li>
+            <a data-code="E117">
+               <span class="count sev-2">
+                  2
+               </span>
+               <strong>E117:</strong> over-indented
+               
+            </a>
+            <ul class="details">
+            <li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l545">
+                  <tt><i>545</i>             <span class="kn">from</span> <span class="nn">.pep525</span> <span class="kn">import</span> <span class="n">_decorate_fixture_plus_asyncgen_pep525</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l548">
+                  <tt><i>548</i>             <span class="kn">from</span> <span class="nn">.pep492</span> <span class="kn">import</span> <span class="n">_decorate_fixture_plus_coroutine_pep492</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+         
+         <li>
+            <a data-code="E261">
+               <span class="count sev-2">
+                  2
+               </span>
+               <strong>E261:</strong> at least two spaces before inline comment
+               
+            </a>
+            <ul class="details">
+            <li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l22">
+                  <tt><i>22</i> <span class="k">try</span><span class="p">:</span> <span class="c1"># native coroutines, python 3.5+</span></tt>
+               </a>
+            </li><li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l28">
+                  <tt><i>28</i> <span class="k">try</span><span class="p">:</span> <span class="c1"># native async generators, python 3.6+</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+         
+         <li>
+            <a data-code="E225">
+               <span class="count sev-2">
+                  1
+               </span>
+               <strong>E225:</strong> missing whitespace around operator
+               
+            </a>
+            <ul class="details">
+            <li>
+               
+               <a href="pytest_cases.fixture_core2.source.html#l544">
+                  <tt><i>544</i>     <span class="k">if</span> <span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">)</span><span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+         
+         <li>
             <a data-code="T001">
                <span class="count sev-3">
                   4
@@ -60,23 +124,23 @@ window.addEventListener('DOMContentLoaded', function () {
             <ul class="details">
             <li>
                
-               <a href="pytest_cases.fixture_core2.source.html#l115">
-                  <tt><i>115</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating unparametrized fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="n">argvalue_to_return</span><span class="p">))</span></tt>
+               <a href="pytest_cases.fixture_core2.source.html#l128">
+                  <tt><i>128</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating unparametrized fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="n">argvalue_to_return</span><span class="p">))</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.fixture_core2.source.html#l125">
-                  <tt><i>125</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating parametrized fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">))</span></tt>
+               <a href="pytest_cases.fixture_core2.source.html#l138">
+                  <tt><i>138</i>             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating parametrized fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">argname</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">))</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.fixture_core2.source.html#l215">
-                  <tt><i>215</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating parametrized &#39;root&#39; fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">root_fixture_name</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">))</span></tt>
+               <a href="pytest_cases.fixture_core2.source.html#l228">
+                  <tt><i>228</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating parametrized &#39;root&#39; fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">root_fixture_name</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">))</span></tt>
                </a>
             </li><li>
                
-               <a href="pytest_cases.fixture_core2.source.html#l234">
-                  <tt><i>234</i>                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating nonparametrized &#39;view&#39; fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">[</span><span class="si">%s</span><span class="s2">]&quot;</span></tt>
+               <a href="pytest_cases.fixture_core2.source.html#l247">
+                  <tt><i>247</i>                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating nonparametrized &#39;view&#39; fixture </span><span class="si">%r</span><span class="s2"> returning </span><span class="si">%r</span><span class="s2">[</span><span class="si">%s</span><span class="s2">]&quot;</span></tt>
                </a>
             </li>
             </ul>
