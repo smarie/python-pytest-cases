@@ -292,28 +292,24 @@ def markinfos_to_markdecorators(marks,                # type: Iterable[Mark]
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             for m in marks:
-                # create a dummy new MarkDecorator named "MarkDecorator" for reference
-                md = pytest.mark.MarkDecorator()
-
                 if PYTEST3_OR_GREATER:
-                    if isinstance(m, type(md)):
+                    if isinstance(m, MarkDecorator):
                         # already a decorator, we can use it
                         marks_mod.append(m)
                     else:
-                        md.mark = m
+                        md = MarkDecorator(m)
                         marks_mod.append(md)
                 else:
+                    # create a dummy new MarkDecorator named "MarkDecorator" for reference
+                    md = MarkDecorator()
                     # always recreate one, type comparison does not work (all generic stuff)
                     md.name = m.name
-                    # md.markname = m.name
+
                     if function_marks:
                         md.args = m.args  # a mark on a function does not include the function in the args
                     else:
                         md.args = m.args[:-1]  # not a function: the value is in the args, remove it
                     md.kwargs = m.kwargs
-
-                    # markinfodecorator = getattr(pytest.mark, markinfo.name)
-                    # markinfodecorator(*markinfo.args)
 
                     marks_mod.append(md)
 
