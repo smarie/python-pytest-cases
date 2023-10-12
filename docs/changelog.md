@@ -1,5 +1,21 @@
 # Changelog
 
+### 3.8.0 - async, generators and strict-markers 
+
+ - `@fixture` and `@parametrize` are now async and generator aware. Fixes
+   [#286](https://github.com/smarie/python-pytest-cases/issues/286). PR
+   [#301](https://github.com/smarie/python-pytest-cases/pull/301) by [jgersti](https://github.com/jgersti).
+ - Fixed error with `pytest` `--strict-markers`. Fixes
+   [#283](https://github.com/smarie/python-pytest-cases/issues/283). PR
+   [#300](https://github.com/smarie/python-pytest-cases/pull/300) by [chrsmcgrr](https://github.com/chrsmcgrr).
+
+### 3.7.0 - python 3.12
+
+ - Added official support for Python 3.10, 3.11 and 3.12. Fixes [#314](https://github.com/smarie/python-pytest-cases/issues/314)
+ - Fixed `ModuleNotFoundError: distutils` on Python 3.12 thanks to `packaging`. PR
+   [#312](https://github.com/smarie/python-pytest-cases/pull/312) by [@jayqi](https://github.com/jayqi). 
+ - Internal: switched to virtualenv backend.
+
 ### 3.6.14 - bugfixes
 
  - Fixed `AttributeError` issue in `is_case_function` when an inspected symbol is a parametrized type hint

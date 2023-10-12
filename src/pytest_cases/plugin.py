@@ -572,7 +572,7 @@ class SuperClosure(MutableSequence):
         all_fixture_defs = self.tree.get_all_fixture_defs(drop_fake_fixtures=False, try_to_sort=True)
 
         # # also sort all partitions (note that we cannot rely on the order in all_fixture_defs when scopes are same!)
-        # if LooseVersion(pytest.__version__) >= LooseVersion('3.5.0'):
+        # if Version(pytest.__version__) >= Version('3.5.0'):
         #     f_scope = get_pytest_function_scopeval()
         #     for p in self.partitions:
         #         def sort_by_scope2(fixture_name):  # noqa
@@ -851,8 +851,8 @@ def create_super_closure(fm,
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_generate_tests(metafunc):
     """
-    We use this hook to replace the 'partial' function of `metafunc` with our own below, before it is called by pytest
-    Note we could do it in a static way in pytest_sessionstart or plugin init hook but
+    We use this hook to replace the 'parametrize' function of `metafunc` with our own below, before it is called
+    by pytest. Note we could do it in a static way in pytest_sessionstart or plugin init hook but
     that way we can still access the original method using metafunc.__class__.parametrize
     """
     # override the parametrize method.
@@ -907,6 +907,9 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
         if not isinstance(metafunc._calls, CallsReactor):  # noqa
             # first call: should be an empty list
             if len(metafunc._calls) > 0:  # noqa
+                # If this happens, it is most probably because another plugin has called 'parametrize' before our hook
+                # plugin.py/pytest_generate_tests has replaced it with this function. It can be due to a regression
+                # in pluggy too, see https://github.com/smarie/python-pytest-cases/issues/302
                 raise ValueError("This should not happen - please file an issue")
             metafunc._calls = CallsReactor(metafunc)
         calls_reactor = metafunc._calls  # noqa

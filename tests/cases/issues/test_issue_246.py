@@ -1,10 +1,10 @@
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 import pytest
 from pytest_cases import parametrize_with_cases
 
-PYTEST_VERSION = LooseVersion(pytest.__version__)
-PYTEST3_OR_GREATER = PYTEST_VERSION >= LooseVersion('3.0.0')
+PYTEST_VERSION = Version(pytest.__version__)
+PYTEST3_OR_GREATER = PYTEST_VERSION >= Version('3.0.0')
 
 if PYTEST3_OR_GREATER:
     @pytest.mark.foo

@@ -31,13 +31,17 @@ def pytest_ignore_collect(path, config):
     :param config:
     :return:
     """
+    ignore_globs = []
+
+    if sys.version_info < (3, 6):
+        ignore_globs += ['**/*py36*.py']
     if sys.version_info < (3, 5):
-        ignore_globs = ['**/*py35*.py']
-        if any(
-                fnmatch.fnmatch(six.text_type(path), six.text_type(glob))
-                for glob in ignore_globs
-        ):
-            return True
+        ignore_globs += ['**/*py35*.py']
+    if any(
+            fnmatch.fnmatch(six.text_type(path), six.text_type(glob))
+            for glob in ignore_globs
+    ):
+        return True
 
 
 # @pytest.hookimpl(trylast=True)
