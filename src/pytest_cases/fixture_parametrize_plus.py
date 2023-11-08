@@ -316,7 +316,7 @@ class SingleParamAlternative(ParamAlternative):
                i,                  # type: int
                argvalue,           # type: Any
                id,                 # type: Union[str, Callable]
-               scope='function',   # type: str
+               scope=None,         # type: str
                hook=None,          # type: Callable
                debug=False         # type: bool
                ):
@@ -427,7 +427,7 @@ class MultiParamAlternative(ParamAlternative):
                to_i,              # type: int
                argvalues,         # type: Any
                ids,               # type: Union[Sequence[str], Callable]
-               scope='function',  # type: str
+               scope="function",  # type: str
                hook=None,         # type: Callable
                debug=False        # type: bool
                ):
@@ -876,7 +876,8 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 return SingleParamAlternative.create(new_fixture_host=fh, test_func=test_func,
                                                      param_union_name=union_name, argnames=argnames, i=i,
                                                      argvalue=marked_argvalues[i], id=_id,
-                                                     scope=scope, hook=hook, debug=debug)
+                                                     scope=scope or "function",
+                                                     hook=hook, debug=debug)
             else:
                 # If an explicit list of ids was provided, slice it. Otherwise the provided callable will be used later
                 _ids = ids[from_i:to_i] if explicit_ids_to_use else ids
@@ -884,7 +885,8 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 return MultiParamAlternative.create(new_fixture_host=fh, test_func=test_func,
                                                     param_union_name=union_name, argnames=argnames, from_i=from_i,
                                                     to_i=to_i, argvalues=marked_argvalues[from_i:to_i], ids=_ids,
-                                                    scope=scope, hook=hook, debug=debug)
+                                                    scope=scope or "function",
+                                                    hook=hook, debug=debug)
 
 
         def _create_fixture_ref_alt(union_name, test_func, i):  # noqa
