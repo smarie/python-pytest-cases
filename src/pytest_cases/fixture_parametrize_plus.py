@@ -876,7 +876,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 return SingleParamAlternative.create(new_fixture_host=fh, test_func=test_func,
                                                      param_union_name=union_name, argnames=argnames, i=i,
                                                      argvalue=marked_argvalues[i], id=_id,
-                                                     scope=scope or "function",
+                                                     scope="function" if scope is None else scope,
                                                      hook=hook, debug=debug)
             else:
                 # If an explicit list of ids was provided, slice it. Otherwise the provided callable will be used later
@@ -885,7 +885,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 return MultiParamAlternative.create(new_fixture_host=fh, test_func=test_func,
                                                     param_union_name=union_name, argnames=argnames, from_i=from_i,
                                                     to_i=to_i, argvalues=marked_argvalues[from_i:to_i], ids=_ids,
-                                                    scope=scope or "function",
+                                                    scope="function" if scope is None else scope,
                                                     hook=hook, debug=debug)
 
 
