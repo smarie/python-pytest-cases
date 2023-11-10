@@ -1,5 +1,7 @@
 # Changelog
 
+### 3.8.1 - bugfixes
+
  - Fixed `ScopeMismatch` with parametrized cases in non-trivial test
    trees. `scope` is now correctly handled for (i) `fixture` cases, and
    (ii) fixtures defined in `conftest.py` files at any depth. Fixes
