@@ -316,6 +316,7 @@ class SingleParamAlternative(ParamAlternative):
                i,                  # type: int
                argvalue,           # type: Any
                id,                 # type: Union[str, Callable]
+               scope=None,         # type: str
                hook=None,          # type: Callable
                debug=False         # type: bool
                ):
@@ -362,7 +363,7 @@ class SingleParamAlternative(ParamAlternative):
 
         # Create the fixture. IMPORTANT auto_simplify=True : we create a NON-parametrized fixture.
         _create_param_fixture(new_fixture_host, argname=p_fix_name, argvalues=(argvalue,),
-                              hook=hook, auto_simplify=True, debug=debug)
+                              scope=scope, hook=hook, auto_simplify=True, debug=debug)
 
         # Create the alternative
         argvals = (argvalue,) if nb_params == 1 else argvalue
@@ -426,6 +427,7 @@ class MultiParamAlternative(ParamAlternative):
                to_i,              # type: int
                argvalues,         # type: Any
                ids,               # type: Union[Sequence[str], Callable]
+               scope="function",  # type: str
                hook=None,         # type: Callable
                debug=False        # type: bool
                ):
@@ -493,8 +495,8 @@ class MultiParamAlternative(ParamAlternative):
                 else:
                     ids = [mini_idvalset(argnames, vals, i) for i, vals in enumerate(unmarked_argvalues)]
 
-        _create_param_fixture(new_fixture_host, argname=p_fix_name, argvalues=argvalues, ids=ids, hook=hook,
-                              debug=debug)
+        _create_param_fixture(new_fixture_host, argname=p_fix_name, argvalues=argvalues, ids=ids,
+                              scope=scope, hook=hook, debug=debug)
 
         # Create the corresponding alternative
         # note: as opposed to SingleParamAlternative, no need to move the custom id/marks to the ParamAlternative
@@ -874,6 +876,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 return SingleParamAlternative.create(new_fixture_host=fh, test_func=test_func,
                                                      param_union_name=union_name, argnames=argnames, i=i,
                                                      argvalue=marked_argvalues[i], id=_id,
+                                                     scope="function" if scope is None else scope,
                                                      hook=hook, debug=debug)
             else:
                 # If an explicit list of ids was provided, slice it. Otherwise the provided callable will be used later
@@ -882,6 +885,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 return MultiParamAlternative.create(new_fixture_host=fh, test_func=test_func,
                                                     param_union_name=union_name, argnames=argnames, from_i=from_i,
                                                     to_i=to_i, argvalues=marked_argvalues[from_i:to_i], ids=_ids,
+                                                    scope="function" if scope is None else scope,
                                                     hook=hook, debug=debug)
 
 

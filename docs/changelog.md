@@ -1,5 +1,13 @@
 # Changelog
 
+### 3.8.1 - bugfixes
+
+ - Fixed `ScopeMismatch` with parametrized cases in non-trivial test
+   trees. `scope` is now correctly handled for (i) `fixture` cases, and
+   (ii) fixtures defined in `conftest.py` files at any depth. Fixes
+   [#311](https://github.com/smarie/python-pytest-cases/issues/311). PR
+   [#317](https://github.com/smarie/python-pytest-cases/pull/317) by [@michele-riva](https://github.com/michele-riva).
+
 ### 3.8.0 - async, generators and strict-markers 
 
  - `@fixture` and `@parametrize` are now async and generator aware. Fixes

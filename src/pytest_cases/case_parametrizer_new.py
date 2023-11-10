@@ -557,6 +557,21 @@ def get_or_create_case_fixture(case_id,                # type: str
             # Fix the problem with  "case_foo(foo)" leading to the generated fixture having the same name
             existing_fixture_names += fixtures_in_cases_module
 
+    # If the fixture will be injected in a conftest, make sure its name
+    # is unique. Include also its scope to avoid conflicts. See #311.
+    # Notice target_host.__name__ may just be 'conftest' when tests
+    # are simple modules or a more complicated fully qualified name
+    # when the test suite is a package (i.e., with __init__.py). For
+    # example, target_host.__name__ would be 'tests.conftest' when
+    # executing tests from within 'base' in the following tree:
+    # base/
+    #    tests/
+    #       __init__.py
+    #       conftest.py
+    if 'conftest' in target_host.__name__:
+        extra = target_host.__name__.replace('.', '_')
+        case_id = extra + '_' + case_id + '_with_scope_' + scope
+
     def name_changer(name, i):
         return name + '_' * i
 
