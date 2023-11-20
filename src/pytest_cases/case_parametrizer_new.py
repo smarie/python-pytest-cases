@@ -299,6 +299,17 @@ def get_all_cases(parametrization_target=None,  # type: Callable
         else:
             # module
             if c is AUTO:
+                # Make sure we're in a test_<xxx>.py-like module.
+                # We cannot accept AUTO cases in, e.g., conftest.py
+                # as we don't know what to look for. We complain here
+                # rather than raising AttributeError in the call to
+                # import_default_cases_module. See #309.
+                if not caller_module_name.split('.')[-1].startswith('test_'):
+                    raise ValueError(
+                        'Cannot use AUTO cases in file "%s". AUTO cases are '
+                        'only allowed in files whose name starts with "test_" '
+                        % caller_module_name
+                        )
                 # First try `test_<name>_cases.py` Then `cases_<name>.py`
                 c = import_default_cases_module(caller_module_name)
 
