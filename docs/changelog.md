@@ -1,5 +1,7 @@
 # Changelog
 
+### 3.8.2 (in progress) - bugfixes
+
  - Corrected API documentation (and comments) for the second file-name
    pattern for `AUTO`-cases lookup (`cases_<name>.py` instead of
    `case_<name>.py`). PR [#320](https://github.com/smarie/python-pytest-cases/pull/320)
