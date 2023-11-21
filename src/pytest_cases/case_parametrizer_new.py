@@ -306,7 +306,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
                 # import_default_cases_module. See #309.
                 if not caller_module_name.split('.')[-1].startswith('test_'):
                     raise ValueError(
-                        'Cannot use AUTO cases in file "%s". AUTO cases are '
+                        'Cannot use `cases=AUTO` in file "%s". `cases=AUTO` is '
                         'only allowed in files whose name starts with "test_" '
                         % caller_module_name
                         )
