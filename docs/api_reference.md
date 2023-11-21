@@ -274,7 +274,7 @@ CaseType = Union[Callable, Type, ModuleRef]
 
 A decorator for test functions or fixtures, to parametrize them based on test cases. It works similarly to [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/parametrize.html): argnames represent a coma-separated string of arguments to inject in the decorated test function or fixture. The argument values (`argvalues` in [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/parametrize.html)) are collected from the various case functions found according to `cases`, and injected as lazy values so that the case functions are called just before the test or fixture is executed.
 
-By default (`cases=AUTO`) the list of test cases is automatically drawn from the python module file named `test_<name>_cases.py` or if not found, `case_<name>.py`,  where `test_<name>` is the current module name.
+By default (`cases=AUTO`) the list of test cases is automatically drawn from the python module file named `test_<name>_cases.py` or if not found, `cases_<name>.py`,  where `test_<name>` is the current module name.
 
 Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name; or a list containing any mix of these elements. Note that both absolute and relative module names are supported.
 
@@ -293,7 +293,7 @@ argvalues = get_parametrize_args(host_class_or_module_of_f, cases_funs)
 
  - `argnames`: same than in `@pytest.mark.parametrize`
  
- - `cases`: a case function, a class containing cases, a module object or a module name string (relative module names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module. `AUTO` (default) means that the module named `test_<name>_cases.py` or if not found, `case_<name>.py`, will be loaded, where `test_<name>.py` is the module file of the decorated function. When a module is listed, all of its functions matching the `prefix`, `filter` and `has_tag` are selected, including those functions nested in classes following naming pattern `*Case*`. Nested subclasses are taken into account, as long as they follow the `*Case*` naming pattern. When classes are explicitly provided in the list, they can have any name and do not need to follow this `*Case*` pattern.
+ - `cases`: a case function, a class containing cases, a module object or a module name string (relative module names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module. `AUTO` (default) means that the module named `test_<name>_cases.py` or if not found, `cases_<name>.py`, will be loaded, where `test_<name>.py` is the module file of the decorated function. When a module is listed, all of its functions matching the `prefix`, `filter` and `has_tag` are selected, including those functions nested in classes following naming pattern `*Case*`. Nested subclasses are taken into account, as long as they follow the `*Case*` naming pattern. When classes are explicitly provided in the list, they can have any name and do not need to follow this `*Case*` pattern.
 
  - `prefix`: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to denote different kind of cases, for example 'data_', 'algo_', 'user_', etc.
 
