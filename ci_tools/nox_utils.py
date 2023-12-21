@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import re
+from shlex import split
 import shutil
 import subprocess
 import sys
@@ -130,7 +131,7 @@ class PowerSession(Session):
         :return:
         """
         if isinstance(command, str):
-            command = command.split(" ")
+            command = split(command)
 
         self.run(*command, logfile=logfile, **kwargs)
 
