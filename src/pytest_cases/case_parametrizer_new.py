@@ -106,7 +106,7 @@ def parametrize_with_cases(argnames,                # type: Union[str, List[str]
     :param argnames: same than in @pytest.mark.parametrize
     :param cases: a case function, a class containing cases, a module object or a module name string (relative module
         names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module.
-        `AUTO` (default) means that the module named `test_<name>_cases.py` or if not found, `case_<name>.py`, will be
+        `AUTO` (default) means that the module named `test_<name>_cases.py` or if not found, `cases_<name>.py`, will be
         loaded, where `test_<name>.py` is the module file of the decorated function. When a module is listed, all of
         its functions matching the `prefix`, `filter` and `has_tag` are selected, including those functions nested in
         classes following naming pattern `*Case*`. Nested subclasses are taken into account, as long as they follow the
@@ -224,7 +224,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
         names accepted). Or a list of such items. You may use `THIS_MODULE` or `'.'` to include current module.
         `AUTO` (default) means that the module named `test_<name>_cases.py` will be loaded, where `test_<name>.py` is
         the module file of the decorated function. `AUTO2` allows you to use the alternative naming scheme
-        `case_<name>.py`. When a module is listed, all of its functions matching the `prefix`, `filter` and `has_tag`
+        `cases_<name>.py`. When a module is listed, all of its functions matching the `prefix`, `filter` and `has_tag`
         are selected, including those functions nested in classes following naming pattern `*Case*`. When classes are
         explicitly provided in the list, they can have any name and do not need to follow this `*Case*` pattern.
     :param prefix: the prefix for case functions. Default is 'case_' but you might wish to use different prefixes to
@@ -299,7 +299,18 @@ def get_all_cases(parametrization_target=None,  # type: Callable
         else:
             # module
             if c is AUTO:
-                # First try `test_<name>_cases.py` Then `case_<name>.py`
+                # Make sure we're in a test_<xxx>.py-like module.
+                # We cannot accept AUTO cases in, e.g., conftest.py
+                # as we don't know what to look for. We complain here
+                # rather than raising AssertionError in the call to
+                # import_default_cases_module. See #309.
+                if not caller_module_name.split('.')[-1].startswith('test_'):
+                    raise ValueError(
+                        'Cannot use `cases=AUTO` in file "%s". `cases=AUTO` is '
+                        'only allowed in files whose name starts with "test_" '
+                        % caller_module_name
+                        )
+                # First try `test_<name>_cases.py` Then `cases_<name>.py`
                 c = import_default_cases_module(caller_module_name)
 
             elif c is THIS_MODULE or c == '.':
@@ -680,7 +691,7 @@ def import_default_cases_module(test_module_name):
     try:
         cases_module = import_module(cases_module_name1)
     except ModuleNotFoundError:
-        # Then try `case_<name>.py`
+        # Then try `cases_<name>.py`
         parts = test_module_name.split('.')
         assert parts[-1][0:5] == 'test_'
         cases_module_name2 = "%s.cases_%s" % ('.'.join(parts[:-1]), parts[-1][5:])

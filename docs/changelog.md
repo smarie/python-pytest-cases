@@ -1,5 +1,16 @@
 # Changelog
 
+### 3.8.2 (in progress) - bugfixes
+
+ - Corrected API documentation (and comments) for the second file-name
+   pattern for `AUTO`-cases lookup (`cases_<name>.py` instead of
+   `case_<name>.py`). PR [#320](https://github.com/smarie/python-pytest-cases/pull/320)
+   by [@michele-riva](https://github.com/michele-riva).
+ - Fixed `AssertionError` on `AUTO` cases outside a 'normal' test module.
+   Fixes [#309](https://github.com/smarie/python-pytest-cases/issues/309). PR
+   [#320](https://github.com/smarie/python-pytest-cases/pull/320) by
+   [@michele-riva](https://github.com/michele-riva).
+
 ### 3.8.1 - bugfixes
 
  - Fixed `ScopeMismatch` with parametrized cases in non-trivial test
