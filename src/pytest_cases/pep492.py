@@ -31,6 +31,7 @@ def _decorate_fixture_plus_coroutine_pep492(fixture_func, new_sig, map_arguments
 
     return wrapped_fixture_func
 
+
 def _parametrize_plus_decorate_coroutine_pep492(
     test_func,
     new_sig,
