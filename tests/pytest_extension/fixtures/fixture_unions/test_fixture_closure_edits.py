@@ -4,6 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import warnings
 from copy import copy
+from packaging.version import Version
 
 import pytest
 
@@ -14,9 +15,9 @@ from pytest_cases import fixture, fixture_union
 try:
     import pytest_asyncio
 except ImportError:
-    PYTEST_ASYNCIO_PLUGIN = False
+    PYTEST_ASYNCIO_FIXTURE = False
 else:
-    PYTEST_ASYNCIO_PLUGIN = True
+    PYTEST_ASYNCIO_FIXTURE = Version(pytest_asyncio.__version__) >= Version('0.23.0')
 
 
 @fixture(autouse=True)
@@ -50,7 +51,7 @@ def test_super_closure_edits2():
     assert isinstance(super_closure, SuperClosure)
     super_closure = copy(super_closure)
     reflist = ['environment', 'a', 'request', 'b']
-    if PYTEST_ASYNCIO_PLUGIN:
+    if PYTEST_ASYNCIO_FIXTURE:
         reflist = ['event_loop_policy'] + reflist
     assert len(super_closure) == len(reflist)
     assert list(super_closure) == reflist
@@ -63,9 +64,9 @@ def test_super_closure_edits2():
     super_closure[1] = reflist[1]
     super_closure[::2] = reflist[::2]
     with pytest.warns(UserWarning):
-        super_closure[2+PYTEST_ASYNCIO_PLUGIN:] = ['b', 'request']
+        super_closure[2+PYTEST_ASYNCIO_FIXTURE:] = ['b', 'request']
         # the above operation is allowed but does nothing and a warning is issued.
-        assert super_closure[2+PYTEST_ASYNCIO_PLUGIN:] == ['request', 'b']
+        assert super_closure[2+PYTEST_ASYNCIO_FIXTURE:] == ['request', 'b']
 
     # removing now works
     super_closure.remove('request')
@@ -78,7 +79,7 @@ def test_super_closure_edits2():
     # we can remove the 'environment' one
     del super_closure[0]
     del reflist[0]
-    if PYTEST_ASYNCIO_PLUGIN:
+    if PYTEST_ASYNCIO_FIXTURE:
         # remove event_loop_policy and environment
         del super_closure[0]
         del reflist[0]

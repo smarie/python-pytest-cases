@@ -14,8 +14,8 @@
    is a string refering to a relative or absolute module name. Fixed `import file mismatch` with 
    pytest 8 when executing our own tests. 
    Fixes [#323](https://github.com/smarie/python-pytest-cases/issues/323).
- - Fixed failing tests in builds due to the `event_loop_policy` fixture since now `pytest-asyncio` is installed
-   in our test suite. Fixes part of
+ - Fixed failing tests in our builds due to the `event_loop_policy` fixture that appeared in `pytest-asyncio` `0.23`.
+   Fixes part of
    [#321](https://github.com/smarie/python-pytest-cases/issues/321).
 
 ### 3.8.1 - bugfixes

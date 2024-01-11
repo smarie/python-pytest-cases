@@ -2,15 +2,16 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+from packaging.version import Version
 from pytest_cases import fixture, parametrize, fixture_union, fixture_ref
 
 
 try:
     import pytest_asyncio
 except ImportError:
-    PYTEST_ASYNCIO_PLUGIN = False
+    PYTEST_ASYNCIO_FIXTURE = False
 else:
-    PYTEST_ASYNCIO_PLUGIN = True
+    PYTEST_ASYNCIO_FIXTURE = Version(pytest_asyncio.__version__) >= Version('0.23.0')
 
 
 @fixture(autouse=True)
@@ -80,7 +81,7 @@ The fixture tree is :
   -   (c)
 """
 
-    if PYTEST_ASYNCIO_PLUGIN:
+    if PYTEST_ASYNCIO_FIXTURE:
         ref_str = ref_str.replace("(environment,", "(event_loop_policy,environment,")
         ref_str = ref_str.replace("['environment',", "['event_loop_policy', 'environment',")
 
