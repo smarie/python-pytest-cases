@@ -789,7 +789,13 @@ def extract_cases_from_module(module,                           # type: ModuleRe
     """
     # optionally import module if passed as module name string
     if isinstance(module, string_types):
-        module = import_module(module, package=package_name)
+        try:
+            module = import_module(module, package=package_name)
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                "Error loading cases from module. `import_module(%r, package=%r)` raised an error: %r"
+                % (module, package_name, e)
+            )
 
     return _extract_cases_from_module_or_class(module=module, _case_param_factory=_case_param_factory,
                                                case_fun_prefix=case_fun_prefix)
