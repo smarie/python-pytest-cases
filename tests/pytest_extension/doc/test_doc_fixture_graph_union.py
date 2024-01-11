@@ -2,7 +2,14 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+from packaging.version import Version
+
+import pytest
 from pytest_cases import fixture, parametrize, fixture_union, fixture_ref
+
+
+PYTEST_VERSION = Version(pytest.__version__)
+PYTEST7_OR_GREATER = PYTEST_VERSION >= Version('7.0.0')
 
 
 @fixture(autouse=True)
@@ -58,7 +65,7 @@ def test_1(u, request):
 def test_closure():
     # make sure that the closure tree looks good
     global super_closure
-    assert str(super_closure) == """SuperClosure with 3 alternative closures:
+    ref_str = """SuperClosure with 3 alternative closures:
  - ['environment', 'e', 'request', 'u', 'a', 'c', 'd'] (filters: u=u[0]=a)
  - ['environment', 'e', 'request', 'u', 'b', 'b_ub', 'a', 'c', 'd'] (filters: u=u[1]=b, b_ub=b_ub[0]=a)
  - ['environment', 'e', 'request', 'u', 'b', 'b_ub', 'c'] (filters: u=u[1]=b, b_ub=b_ub[1]=c)
@@ -71,3 +78,9 @@ The fixture tree is :
   -   (a,c,d)
   -   (c)
 """
+
+    if PYTEST7_OR_GREATER:
+        ref_str = ref_str.replace("(environment,", "(event_loop_policy,environment,")
+        ref_str = ref_str.replace("['environment',", "['event_loop_policy', 'environment',")
+
+    assert str(super_closure) == ref_str

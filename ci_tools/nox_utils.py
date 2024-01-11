@@ -633,7 +633,8 @@ def nox_session_with_grid(
             except KeyError:
                 # Skip this session, it is a dummy one
                 nox_logger.warning(
-                    "Skipping configuration, this is not supported in python version %r" % session.python
+                    "Skipping configuration, %r is not meant to be executed in this now session for python version %r" %
+                    (grid_param if has_parameter else "this", session.python)
                 )
                 return
 

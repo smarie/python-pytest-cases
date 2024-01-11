@@ -1,10 +1,12 @@
 # Changelog
 
-### 3.8.2 (in progress) - bugfixes and compliance with pytest 8
+### 3.8.2 - bugfixes and compliance with pytest 8
 
  - Fixed `import file mismatch` with pytest 8 when executing tests. Improved 
    error message in case of cases loading error. 
    Fixes [#323](https://github.com/smarie/python-pytest-cases/issues/323).
+   Fixes part of
+   [#321](https://github.com/smarie/python-pytest-cases/issues/321).
  - Corrected API documentation (and comments) for the second file-name
    pattern for `AUTO`-cases lookup (`cases_<name>.py` instead of
    `case_<name>.py`). PR [#320](https://github.com/smarie/python-pytest-cases/pull/320)

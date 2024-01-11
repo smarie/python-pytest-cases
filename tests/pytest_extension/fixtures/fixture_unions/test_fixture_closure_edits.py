@@ -5,11 +5,16 @@
 import warnings
 
 from copy import copy
+from packaging.version import Version
 
 import pytest
 
 from pytest_cases.plugin import SuperClosure
 from pytest_cases import fixture, fixture_union
+
+
+PYTEST_VERSION = Version(pytest.__version__)
+PYTEST7_OR_GREATER = PYTEST_VERSION >= Version('7.0.0')
 
 
 @fixture(autouse=True)
@@ -42,8 +47,10 @@ def test_super_closure_edits2():
     global super_closure
     assert isinstance(super_closure, SuperClosure)
     super_closure = copy(super_closure)
-    assert len(super_closure) == 4
     reflist = ['environment', 'a', 'request', 'b']
+    if PYTEST7_OR_GREATER:
+        reflist = ['event_loop_policy'] + reflist
+    assert len(super_closure) == len(reflist)
     assert list(super_closure) == reflist
     assert super_closure[:] == reflist[:]
     assert super_closure[1] == reflist[1]
@@ -54,9 +61,9 @@ def test_super_closure_edits2():
     super_closure[1] = reflist[1]
     super_closure[::2] = reflist[::2]
     with pytest.warns(UserWarning):
-        super_closure[2:] = ['b', 'request']
+        super_closure[2+PYTEST7_OR_GREATER:] = ['b', 'request']
         # the above operation is allowed but does nothing and a warning is issued.
-        assert super_closure[2:] == ['request', 'b']
+        assert super_closure[2+PYTEST7_OR_GREATER:] == ['request', 'b']
 
     # removing now works
     super_closure.remove('request')
@@ -69,6 +76,10 @@ def test_super_closure_edits2():
     # we can remove the 'environment' one
     del super_closure[0]
     del reflist[0]
+    if PYTEST7_OR_GREATER:
+        # remove event_loop_policy and environment
+        del super_closure[0]
+        del reflist[0]
     assert list(super_closure) == reflist
 
     # now supported
