@@ -2,14 +2,15 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from packaging.version import Version
-
-import pytest
 from pytest_cases import fixture, parametrize, fixture_union, fixture_ref
 
 
-PYTEST_VERSION = Version(pytest.__version__)
-PYTEST7_OR_GREATER = PYTEST_VERSION >= Version('7.0.0')
+try:
+    import pytest_asyncio
+except ImportError:
+    PYTEST_ASYNCIO_PLUGIN = False
+else:
+    PYTEST_ASYNCIO_PLUGIN = True
 
 
 @fixture(autouse=True)
@@ -79,7 +80,7 @@ The fixture tree is :
   -   (c)
 """
 
-    if PYTEST7_OR_GREATER:
+    if PYTEST_ASYNCIO_PLUGIN:
         ref_str = ref_str.replace("(environment,", "(event_loop_policy,environment,")
         ref_str = ref_str.replace("['environment',", "['event_loop_policy', 'environment',")
 

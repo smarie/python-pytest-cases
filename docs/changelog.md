@@ -1,12 +1,7 @@
 # Changelog
 
-### 3.8.2 - bugfixes and compliance with pytest 8
+### 3.8.2 - bugfixes and project improvements
 
- - Fixed `import file mismatch` with pytest 8 when executing tests. Improved 
-   error message in case of cases loading error. 
-   Fixes [#323](https://github.com/smarie/python-pytest-cases/issues/323).
-   Fixes part of
-   [#321](https://github.com/smarie/python-pytest-cases/issues/321).
  - Corrected API documentation (and comments) for the second file-name
    pattern for `AUTO`-cases lookup (`cases_<name>.py` instead of
    `case_<name>.py`). PR [#320](https://github.com/smarie/python-pytest-cases/pull/320)
@@ -15,6 +10,13 @@
    Fixes [#309](https://github.com/smarie/python-pytest-cases/issues/309). PR
    [#320](https://github.com/smarie/python-pytest-cases/pull/320) by
    [@michele-riva](https://github.com/michele-riva).
+ - Improved error message in case of cases loading error in `@parametrize_with_cases` when the `cases` argument
+   is a string refering to a relative or absolute module name. Fixed `import file mismatch` with 
+   pytest 8 when executing our own tests. 
+   Fixes [#323](https://github.com/smarie/python-pytest-cases/issues/323).
+ - Fixed failing tests in builds due to the `event_loop_policy` fixture since now `pytest-asyncio` is installed
+   in our test suite. Fixes part of
+   [#321](https://github.com/smarie/python-pytest-cases/issues/321).
 
 ### 3.8.1 - bugfixes
 
