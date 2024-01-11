@@ -2,14 +2,16 @@ from pytest_cases import fixture, parametrize_with_cases
 
 
 @fixture
-@parametrize_with_cases('arg', cases='cases')
+@parametrize_with_cases('arg', cases='..cases')
 def function_scoped(arg):
     return [arg]
+
 
 # This tests would fail with a ScopeMismatch
 # during collection before #317
 def test_scope_mismatch_collection(scope_mismatch):
     assert scope_mismatch == [1]
+
 
 def test_scopes(session_scoped, function_scoped, class_scoped):
     session_scoped.append(2)
@@ -18,6 +20,7 @@ def test_scopes(session_scoped, function_scoped, class_scoped):
     assert session_scoped == [1, 2]
     assert function_scoped == [1, 2]
     assert class_scoped == [1, 2]
+
 
 def test_scopes_again(session_scoped, function_scoped, class_scoped):
     session_scoped.append(3)
