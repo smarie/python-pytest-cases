@@ -125,64 +125,58 @@
                class="code sev- "><tt><i>33</i> &nbsp;</tt>
             </div>
             <div id="l34"
-               class="code sev-2  le">
-               <ul class="violations">
-               
-                  <li>
-                     <span class="count sev-2">
-                        E302
-                     </span>
-                     Expected 2 blank lines, found 1</li>
-               
-               </ul><tt><i>34</i> <span class="k">def</span> <span class="nf">_parametrize_plus_decorate_coroutine_pep492</span><span class="p">(</span></tt>
+               class="code sev- "><tt><i>34</i> &nbsp;</tt>
             </div>
             <div id="l35"
-               class="code sev- "><tt><i>35</i>     <span class="n">test_func</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>35</i> <span class="k">def</span> <span class="nf">_parametrize_plus_decorate_coroutine_pep492</span><span class="p">(</span></tt>
             </div>
             <div id="l36"
-               class="code sev- "><tt><i>36</i>     <span class="n">new_sig</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>36</i>     <span class="n">test_func</span><span class="p">,</span></tt>
             </div>
             <div id="l37"
-               class="code sev- "><tt><i>37</i>     <span class="n">fixture_union_name</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>37</i>     <span class="n">new_sig</span><span class="p">,</span></tt>
             </div>
             <div id="l38"
-               class="code sev- "><tt><i>38</i>     <span class="n">replace_paramfixture_with_values</span></tt>
+               class="code sev- "><tt><i>38</i>     <span class="n">fixture_union_name</span><span class="p">,</span></tt>
             </div>
             <div id="l39"
-               class="code sev- "><tt><i>39</i> <span class="p">):</span></tt>
+               class="code sev- "><tt><i>39</i>     <span class="n">replace_paramfixture_with_values</span></tt>
             </div>
             <div id="l40"
-               class="code sev- "><tt><i>40</i>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">test_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>40</i> <span class="p">):</span></tt>
             </div>
             <div id="l41"
-               class="code sev- "><tt><i>41</i>     <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_test_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
+               class="code sev- "><tt><i>41</i>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">test_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
             </div>
             <div id="l42"
-               class="code sev- "><tt><i>42</i>         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fixture_union_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">NOT_USED</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>42</i>     <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_test_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
             </div>
             <div id="l43"
-               class="code sev- "><tt><i>43</i>             <span class="c1"># TODO why this ? it is probably useless: this fixture</span></tt>
+               class="code sev- "><tt><i>43</i>         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fixture_union_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">NOT_USED</span><span class="p">:</span></tt>
             </div>
             <div id="l44"
-               class="code sev- "><tt><i>44</i>             <span class="c1">#  is private and will never end up in another union</span></tt>
+               class="code sev- "><tt><i>44</i>             <span class="c1"># TODO why this ? it is probably useless: this fixture</span></tt>
             </div>
             <div id="l45"
-               class="code sev- "><tt><i>45</i>             <span class="k">return</span> <span class="n">NOT_USED</span></tt>
+               class="code sev- "><tt><i>45</i>             <span class="c1">#  is private and will never end up in another union</span></tt>
             </div>
             <div id="l46"
-               class="code sev- "><tt><i>46</i>         <span class="k">else</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>46</i>             <span class="k">return</span> <span class="n">NOT_USED</span></tt>
             </div>
             <div id="l47"
-               class="code sev- "><tt><i>47</i>             <span class="n">replace_paramfixture_with_values</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>47</i>         <span class="k">else</span><span class="p">:</span></tt>
             </div>
             <div id="l48"
-               class="code sev- "><tt><i>48</i>             <span class="k">return</span> <span class="k">await</span> <span class="n">test_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>48</i>             <span class="n">replace_paramfixture_with_values</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></tt>
             </div>
             <div id="l49"
-               class="code sev- "><tt><i>49</i> &nbsp;</tt>
+               class="code sev- "><tt><i>49</i>             <span class="k">return</span> <span class="k">await</span> <span class="n">test_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></tt>
             </div>
             <div id="l50"
-               class="code sev- "><tt><i>50</i>     <span class="k">return</span> <span class="n">wrapped_test_func</span></tt>
+               class="code sev- "><tt><i>50</i> &nbsp;</tt>
+            </div>
+            <div id="l51"
+               class="code sev- "><tt><i>51</i>     <span class="k">return</span> <span class="n">wrapped_test_func</span></tt>
             </div>
             
          </div>
