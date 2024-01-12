@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.8.3 (in progress) - TBD
+
+ - tbd
+
 ### 3.8.2 - bugfixes and project improvements
 
  - Fixed issue with upcoming `pytest 8.1` release. PR 
