@@ -84,11 +84,11 @@ class FixtureDefsCache(object):
     """
     A 'cache' for fixture definitions obtained from the FixtureManager `fm`, for test node `nodeid`
     """
-    __slots__ = 'fm', 'nodeid', 'cached_fix_defs'
+    __slots__ = 'fm', 'node', 'cached_fix_defs'
 
-    def __init__(self, fm, nodeid):
+    def __init__(self, fm, node):
         self.fm = fm
-        self.nodeid = nodeid
+        self.node = node
         self.cached_fix_defs = dict()
 
     def get_fixture_defs(self, fixname):
@@ -97,7 +97,10 @@ class FixtureDefsCache(object):
             fixdefs = self.cached_fix_defs[fixname]
         except KeyError:
             # otherwise get it and store for next time
-            fixdefs = self.fm.getfixturedefs(fixname, self.nodeid)
+            if hasattr(pytest, "version_tuple") and pytest.version_tuple >= (8, 1):
+                fixdefs = self.fm.getfixturedefs(fixname, self.node)
+            else:
+                fixdefs = self.fm.getfixturedefs(fixname, self.node.nodeid)
             self.cached_fix_defs[fixname] = fixdefs
 
         return fixdefs
@@ -692,7 +695,7 @@ class SuperClosure(MutableSequence):
         """
         if index == 0:
             # build the closure associated with this new fixture name
-            fixture_defs_mgr = FixtureDefsCache(self.tree.fixture_defs_mgr.fm, self.tree.fixture_defs_mgr.nodeid)
+            fixture_defs_mgr = FixtureDefsCache(self.tree.fixture_defs_mgr.fm, self.tree.fixture_defs_mgr.node)
             closure_tree = FixtureClosureNode(fixture_defs_mgr=fixture_defs_mgr)
             closure_tree.build_closure((fixture_name,))
             if closure_tree.has_split():
@@ -805,7 +808,10 @@ def create_super_closure(fm,
         print("Creating closure for %s:" % parentid)
 
     # -- auto-use fixtures
-    _init_fixnames = list(fm._getautousenames(parentid))  # noqa
+    if hasattr(pytest, "version_tuple") and pytest.version_tuple >= (8, 1):
+        _init_fixnames = list(fm._getautousenames(parentnode))  # noqa
+    else:
+        _init_fixnames = list(fm._getautousenames(parentid))  # noqa
 
     def _merge(new_items, into_list):
         """ Appends items from `new_items` into `into_list`, only if they are not already there. """
@@ -830,7 +836,7 @@ def create_super_closure(fm,
         _merge(fixturenames, _init_fixnames)
 
     # Finally create the closure
-    fixture_defs_mgr = FixtureDefsCache(fm, parentid)
+    fixture_defs_mgr = FixtureDefsCache(fm, parentnode)
     closure_tree = FixtureClosureNode(fixture_defs_mgr=fixture_defs_mgr)
     closure_tree.build_closure(_init_fixnames, ignore_args=ignore_args)
     super_closure = SuperClosure(closure_tree)
