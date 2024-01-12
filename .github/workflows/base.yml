@@ -60,7 +60,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install python ${{ matrix.nox_session.python }} for tests
-        uses: MatteoH2O1999/setup-python@v1  # actions/setup-python@v4
+        uses: MatteoH2O1999/setup-python@v2  # actions/setup-python@v4
         id: set-py
         with:
           python-version: ${{ matrix.nox_session.python }}
