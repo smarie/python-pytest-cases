@@ -2,6 +2,9 @@
 
 ### 3.8.2 - bugfixes and project improvements
 
+ - Fixed issue with upcoming `pytest 8.1` release. PR 
+   [#322](https://github.com/smarie/python-pytest-cases/pull/322) by 
+   [@bluetech](https://github.com/bluetech)
  - Corrected API documentation (and comments) for the second file-name
    pattern for `AUTO`-cases lookup (`cases_<name>.py` instead of
    `case_<name>.py`). PR [#320](https://github.com/smarie/python-pytest-cases/pull/320)
