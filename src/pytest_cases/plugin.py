@@ -28,7 +28,7 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST7_OR_GREATER
+from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST7_OR_GREATER, PYTEST8_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopeval, is_function_node, get_param_names, \
     get_param_argnames_as_list, has_function_scope, set_callspec_arg_scope_to_function
 
@@ -753,38 +753,56 @@ class SuperClosure(MutableSequence):
         self._update_fixture_defs()
 
 
-def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
-    """
-    Replaces pytest's getfixtureclosure method to handle unions.
-    """
+if PYTEST8_OR_GREATER:
+    def getfixtureclosure(fm, parentnode, initialnames, ignore_args):
+        """
+        Replaces pytest's getfixtureclosure method to handle unions.
+        """
+        # (1) first retrieve the normal pytest output for comparison
+        ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, parentnode, initialnames, ignore_args)
 
-    # (1) first retrieve the normal pytest output for comparison
-    kwargs = dict()
-    if PYTEST46_OR_GREATER:
-        # new argument "ignore_args" in 4.6+
-        kwargs['ignore_args'] = ignore_args
+        # (2) now let's do it by ourselves to support fixture unions
+        _init_fixnames, super_closure, arg2fixturedefs = create_super_closure(fm, parentnode, ref_fixturenames, ignore_args)
 
-    if PYTEST37_OR_GREATER:
-        # three outputs
-        initial_names, ref_fixturenames, ref_arg2fixturedefs = \
-            fm.__class__.getfixtureclosure(fm, fixturenames, parentnode, **kwargs)
-    else:
-        # two outputs
-        ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, fixturenames, parentnode)
-
-    # (2) now let's do it by ourselves to support fixture unions
-    _init_fixnames, super_closure, arg2fixturedefs = create_super_closure(fm, parentnode, fixturenames, ignore_args)
-
-    # Compare with the previous behaviour TODO remove when in 'production' ?
-    # NOTE different order happens all the time because of our "prepend" strategy in the closure building
-    # which makes much more sense/intuition than pytest default
-    assert set(super_closure) == set(ref_fixturenames)
-    assert dict(arg2fixturedefs) == ref_arg2fixturedefs
-
-    if PYTEST37_OR_GREATER:
-        return _init_fixnames, super_closure, arg2fixturedefs
-    else:
+        # Compare with the previous behaviour TODO remove when in 'production' ?
+        # NOTE different order happens all the time because of our "prepend" strategy in the closure building
+        # which makes much more sense/intuition than pytest default
+        assert set(super_closure) == set(ref_fixturenames)
+        assert dict(arg2fixturedefs) == ref_arg2fixturedefs
         return super_closure, arg2fixturedefs
+else:
+    def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
+        """
+        Replaces pytest's getfixtureclosure method to handle unions.
+        """
+
+        # (1) first retrieve the normal pytest output for comparison
+        kwargs = dict()
+        if PYTEST46_OR_GREATER:
+            # new argument "ignore_args" in 4.6+
+            kwargs['ignore_args'] = ignore_args
+
+        if PYTEST37_OR_GREATER:
+            # three outputs
+            initial_names, ref_fixturenames, ref_arg2fixturedefs = \
+                fm.__class__.getfixtureclosure(fm, fixturenames, parentnode, **kwargs)
+        else:
+            # two outputs
+            ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, fixturenames, parentnode)
+
+        # (2) now let's do it by ourselves to support fixture unions
+        _init_fixnames, super_closure, arg2fixturedefs = create_super_closure(fm, parentnode, fixturenames, ignore_args)
+
+        # Compare with the previous behaviour TODO remove when in 'production' ?
+        # NOTE different order happens all the time because of our "prepend" strategy in the closure building
+        # which makes much more sense/intuition than pytest default
+        assert set(super_closure) == set(ref_fixturenames)
+        assert dict(arg2fixturedefs) == ref_arg2fixturedefs
+
+        if PYTEST37_OR_GREATER:
+            return _init_fixnames, super_closure, arg2fixturedefs
+        else:
+            return super_closure, arg2fixturedefs
 
 
 def create_super_closure(fm,
