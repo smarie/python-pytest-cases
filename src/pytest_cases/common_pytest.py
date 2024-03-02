@@ -30,7 +30,8 @@ from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER, PYTEST6_OR_GREATER, \
-    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER, PYTEST71_OR_GREATER
+    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER, PYTEST71_OR_GREATER, \
+    PYTEST8_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
@@ -653,14 +654,27 @@ except ImportError:
         return arg_names
 
 
+class FakeSession(object):
+    __slots__ = ('_fixturemanager',)
+
+    def __init__(self):
+        self._fixturemanager = None
+
+
 class MiniFuncDef(object):
-    __slots__ = ('nodeid',)
+    __slots__ = ('nodeid', 'session')
 
     def __init__(self, nodeid):
         self.nodeid = nodeid
+        if PYTEST8_OR_GREATER:
+            self.session = FakeSession()
 
 
 class MiniMetafunc(Metafunc):
+    """
+    A class to know what pytest *would* do for a given function in terms of callspec.
+    It is used in function `case_to_argvalues`
+    """
     # noinspection PyMissingConstructor
     def __init__(self, func):
         from .plugin import PYTEST_CONFIG  # late import to ensure config has been loaded by now
@@ -685,12 +699,18 @@ class MiniMetafunc(Metafunc):
         self.fixturenames_not_in_sig = [f for f in get_pytest_usefixture_marks(func) if f not in self.fixturenames]
         if self.fixturenames_not_in_sig:
             self.fixturenames = tuple(self.fixturenames_not_in_sig + list(self.fixturenames))
+
+        if PYTEST8_OR_GREATER:
+            # dummy
+            self._arg2fixturedefs = dict()  # type: dict[str, Sequence["FixtureDef[Any]"]]
+
         # get parametrization marks
         self.pmarks = get_pytest_parametrize_marks(self.function)
         if self.is_parametrized:
             self.update_callspecs()
             # preserve order
-            self.required_fixtures = tuple(f for f in self.fixturenames if f not in self._calls[0].funcargs)
+            ref_names = self._calls[0].params if PYTEST8_OR_GREATER else self._calls[0].funcargs
+            self.required_fixtures = tuple(f for f in self.fixturenames if f not in ref_names)
         else:
             self.required_fixtures = self.fixturenames
 
@@ -773,8 +793,7 @@ def get_callspecs(func):
     Returns a list of pytest CallSpec objects corresponding to calls that should be made for this parametrized function.
     This mini-helper assumes no complex things (scope='function', indirect=False, no fixtures, no custom configuration)
 
-    :param func:
-    :return:
+    Note that this function is currently only used in tests.
     """
     meta = MiniMetafunc(func)
     # meta.update_callspecs()

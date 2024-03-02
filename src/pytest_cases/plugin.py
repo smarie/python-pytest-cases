@@ -41,7 +41,8 @@ from .fixture_parametrize_plus import remove_empty_ids
 from .case_parametrizer_new import get_current_cases
 
 
-_DEBUG = False
+_DEBUG = True
+"""Note: this is a manual flag to turn when developing (do not forget to also call pytest with -s)"""
 
 
 # @pytest.hookimpl(hookwrapper=True, tryfirst=True)
@@ -853,6 +854,11 @@ def create_super_closure(fm,
         # we cannot sort yet - merge the fixture names into the _init_fixnames
         _merge(fixturenames, _init_fixnames)
 
+    # Bugfix GH#330 in progress...
+    # TODO analyze why in the test "fixture_union_0simplest
+    #  the first node contains second, and the second contains first
+    # or TODO check the test for get_callspecs, it is maybe simpler
+
     # Finally create the closure
     fixture_defs_mgr = FixtureDefsCache(fm, parentnode)
     closure_tree = FixtureClosureNode(fixture_defs_mgr=fixture_defs_mgr)
@@ -1053,7 +1059,8 @@ class CallsReactor(object):
 
         if _DEBUG:
             print("\n".join(["%s[%s]: funcargs=%s, params=%s" % (get_pytest_nodeid(self.metafunc),
-                                                                 c.id, c.funcargs, c.params)
+                                                                 c.id, c.params if PYTEST8_OR_GREATER else c.funcargs,
+                                                                 c.params)
                              for c in calls]) + "\n")
 
         # clean EMPTY_ID set by @parametrize when there is at least a MultiParamsAlternative
