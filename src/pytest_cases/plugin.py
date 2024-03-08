@@ -28,9 +28,9 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST7_OR_GREATER
+from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST7_OR_GREATER, PYTEST8_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopeval, is_function_node, get_param_names, \
-    get_param_argnames_as_list, has_function_scope, set_callspec_arg_scope_to_function
+    get_param_argnames_as_list, has_function_scope, set_callspec_arg_scope_to_function, in_callspec_explicit_args
 
 from .fixture_core1_unions import NOT_USED, USED, is_fixture_union_params, UnionFixtureAlternative
 
@@ -41,7 +41,8 @@ from .fixture_parametrize_plus import remove_empty_ids
 from .case_parametrizer_new import get_current_cases
 
 
-_DEBUG = False
+_DEBUG = True
+"""Note: this is a manual flag to turn when developing (do not forget to also call pytest with -s)"""
 
 
 # @pytest.hookimpl(hookwrapper=True, tryfirst=True)
@@ -753,7 +754,7 @@ class SuperClosure(MutableSequence):
         self._update_fixture_defs()
 
 
-def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
+def _getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     """
     Replaces pytest's getfixtureclosure method to handle unions.
     """
@@ -764,7 +765,10 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
         # new argument "ignore_args" in 4.6+
         kwargs['ignore_args'] = ignore_args
 
-    if PYTEST37_OR_GREATER:
+    if PYTEST8_OR_GREATER:
+        # two outputs and sig change
+        ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, parentnode, fixturenames, **kwargs)
+    elif PYTEST37_OR_GREATER:
         # three outputs
         initial_names, ref_fixturenames, ref_arg2fixturedefs = \
             fm.__class__.getfixtureclosure(fm, fixturenames, parentnode, **kwargs)
@@ -781,10 +785,17 @@ def getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     assert set(super_closure) == set(ref_fixturenames)
     assert dict(arg2fixturedefs) == ref_arg2fixturedefs
 
-    if PYTEST37_OR_GREATER:
+    if PYTEST37_OR_GREATER and not PYTEST8_OR_GREATER:
         return _init_fixnames, super_closure, arg2fixturedefs
     else:
         return super_closure, arg2fixturedefs
+
+
+if PYTEST8_OR_GREATER:
+    def getfixtureclosure(fm, parentnode, initialnames, ignore_args):
+        return _getfixtureclosure(fm, fixturenames=initialnames, parentnode=parentnode, ignore_args=ignore_args)
+else:
+    getfixtureclosure = _getfixtureclosure
 
 
 def create_super_closure(fm,
@@ -834,6 +845,11 @@ def create_super_closure(fm,
     else:
         # we cannot sort yet - merge the fixture names into the _init_fixnames
         _merge(fixturenames, _init_fixnames)
+
+    # Bugfix GH#330 in progress...
+    # TODO analyze why in the test "fixture_union_0simplest
+    #  the first node contains second, and the second contains first
+    # or TODO check the test for get_callspecs, it is maybe simpler
 
     # Finally create the closure
     fixture_defs_mgr = FixtureDefsCache(fm, parentnode)
@@ -1035,7 +1051,8 @@ class CallsReactor(object):
 
         if _DEBUG:
             print("\n".join(["%s[%s]: funcargs=%s, params=%s" % (get_pytest_nodeid(self.metafunc),
-                                                                 c.id, c.funcargs, c.params)
+                                                                 c.id, c.params if PYTEST8_OR_GREATER else c.funcargs,
+                                                                 c.params)
                              for c in calls]) + "\n")
 
         # clean EMPTY_ID set by @parametrize when there is at least a MultiParamsAlternative
@@ -1107,7 +1124,7 @@ def _cleanup_calls_list(metafunc,
 
         # A/ set to "not used" all parametrized fixtures that were not used in some branches
         for fixture, p_to_apply in pending_dct.items():
-            if fixture not in c.params and fixture not in c.funcargs:
+            if not in_callspec_explicit_args(c, fixture):
                 # parametrize with a single "not used" value and discard the id
                 if isinstance(p_to_apply, UnionParamz):
                     c_with_dummy = _parametrize_calls(metafunc, [c], p_to_apply.union_fixture_name, [NOT_USED],
@@ -1132,7 +1149,7 @@ def _cleanup_calls_list(metafunc,
         # For this we use a dirty hack: we add a parameter with they name in the callspec, it seems to be propagated
         # in the `request`. TODO is there a better way?
         for fixture_name in _not_always_used_func_scoped:
-            if fixture_name not in c.params and fixture_name not in c.funcargs:
+            if not in_callspec_explicit_args(c, fixture_name):
                 if not n.requires(fixture_name):
                     # explicitly add it as discarded by creating a parameter value for it.
                     c.params[fixture_name] = NOT_USED
