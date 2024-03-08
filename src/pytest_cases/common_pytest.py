@@ -555,6 +555,14 @@ except ImportError:
         callspec._arg2scopenum[arg_name] = get_pytest_function_scopeval()  # noqa
 
 
+def in_callspec_explicit_args(
+    callspec,  # type: CallSpec2
+    name  # type: str
+):  # type: (...) -> bool
+    """Return True if name is explicitly used in callspec args"""
+    return (name in callspec.params) or (not PYTEST8_OR_GREATER and name in callspec.funcargs)
+
+
 if PYTEST71_OR_GREATER:
     from _pytest.python import IdMaker  # noqa
 

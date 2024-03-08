@@ -1,8 +1,10 @@
 # Changelog
 
-### 3.8.3 (in progress) - TBD
+### 3.8.3 - Support for `pytest` version 8
 
- - tbd
+ - Fixed compliance with pytest 8. Fixed [#330](https://github.com/smarie/python-pytest-cases/issues/330). PR
+   [#335](https://github.com/smarie/python-pytest-cases/pull/335) by [smarie](https://github.com/smarie) and 
+   [larsoner](https://github.com/larsoner).
 
 ### 3.8.2 - bugfixes and project improvements
 

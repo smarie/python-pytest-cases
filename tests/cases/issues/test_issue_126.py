@@ -2,10 +2,16 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+from packaging.version import Version
+
 import pytest
 
 from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 from pytest_cases import parametrize_with_cases
+
+
+PYTEST_VERSION = Version(pytest.__version__)
+PYTEST8_OR_GREATER = PYTEST_VERSION >= Version('8.0.0')
 
 
 @pytest.fixture()
@@ -66,7 +72,23 @@ def test_synthesis(module_results_dct):
     for host in (test_functionality, test_functionality_again, TestNested.test_functionality_again2):
         assert markers_dict[host] == (set(), set())
 
-    if PYTEST3_OR_GREATER:
+    if PYTEST8_OR_GREATER:
+        # in version 8 they added a smart suffix in case last char of id is already a numeric
+        assert list(module_results_dct) == [
+            'test_functionality[_requirement_1_0]',
+            'test_functionality[_requirement_2_0]',
+            'test_functionality[_requirement_1_1]',
+            'test_functionality[_requirement_2_1]',
+            'test_functionality_again[_requirement_1_0]',  # <- note: same fixtures than previously
+            'test_functionality_again[_requirement_2_0]',  # idem
+            'test_functionality_again[_requirement_1_1]',  # idem
+            'test_functionality_again[_requirement_2_1]',  # idem
+            'test_functionality_again2[_requirement_1_0]',  # idem
+            'test_functionality_again2[_requirement_2_0]',  # idem
+            'test_functionality_again2[_requirement_1_1]',  # idem
+            'test_functionality_again2[_requirement_2_1]'  # idem
+        ]
+    elif PYTEST3_OR_GREATER:
         assert list(module_results_dct) == [
             'test_functionality[_requirement_10]',
             'test_functionality[_requirement_20]',
