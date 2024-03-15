@@ -26,7 +26,7 @@ ENVS = {
     (PY311, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 3.10
     (PY310, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
-    # python 3.9 - put first to detect easy issues faster.
+    # python 3.9
     (PY39, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     (PY39, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     (PY39, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
@@ -140,13 +140,13 @@ def tests(session: PowerSession, coverage, pkg_specs):
 
     # finally run all tests
     if not coverage:
-        # install self
+        # install self so that it is recognized by pytest
         session.run2("pip install . --no-deps")
 
         # simple: pytest only
         session.run2("python -m pytest --cache-clear -v tests/")
     else:
-        # install self in dev mode so that coverage works
+        # install self in "develop" mode so that coverage can be measured
         session.run2("pip install -e . --no-deps")
 
         # coverage + junit html reports + badge generation
@@ -176,7 +176,6 @@ def flake8(session: PowerSession):
     """Launch flake8 qualimetry."""
 
     session.install("-r", str(Folders.ci_tools / "flake8-requirements.txt"))
-    session.install("genbadge[flake8]")
     session.run2("pip install .")
 
     rm_folder(Folders.flake8_reports)
@@ -195,15 +194,15 @@ def flake8(session: PowerSession):
 
 @power_session(python=[PY39])
 def docs(session: PowerSession):
-    """Generates the doc and serves it on a local http server. Pass '-- build' to build statically instead."""
+    """Generates the doc. Pass '-- serve' to serve it on a local http server instead."""
 
     session.install_reqs(phase="docs", phase_reqs=["mkdocs-material", "mkdocs", "pymdown-extensions", "pygments"])
 
     if session.posargs:
-        # use posargs instead of "serve"
+        # use posargs instead of "build"
         session.run2("mkdocs %s" % " ".join(session.posargs))
     else:
-        session.run2("mkdocs serve")
+        session.run2("mkdocs build")
 
 
 @power_session(python=[PY39])
