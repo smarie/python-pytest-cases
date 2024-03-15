@@ -1,5 +1,10 @@
 # Changelog
 
+### 3.8.4 - Removed debug logs
+
+- Reverted `DEBUG` flag used for pytest 8 compatibility. Fixed
+  [#336](https://github.com/smarie/python-pytest-cases/issues/336)
+
 ### 3.8.3 - Support for `pytest` version 8
 
  - Fixed compliance with pytest 8. Fixed [#330](https://github.com/smarie/python-pytest-cases/issues/330). PR
