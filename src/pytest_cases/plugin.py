@@ -41,7 +41,7 @@ from .fixture_parametrize_plus import remove_empty_ids
 from .case_parametrizer_new import get_current_cases
 
 
-_DEBUG = True
+_DEBUG = False
 """Note: this is a manual flag to turn when developing (do not forget to also call pytest with -s)"""
 
 
