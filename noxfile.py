@@ -316,8 +316,11 @@ def gha_list(session):
             sessions_list = ["%s-%s" % (session_func.__name__, py) for py in session_func.python]
     else:
         if additional_args.with_version:
-            sessions_list = [{"python": py, "session": "%s-%s(%s)" % (session_func.__name__, py, param)}
-                             for py, param in product(session_func.python, session_func.parametrize)]
+            # sessions_list = [{"python": py, "session": "%s-%s(%s)" % (session_func.__name__, py, param)}
+            #                  for py, param in product(session_func.python, session_func.parametrize)]
+            # Hack to return the valid ones only, in order  # TODO remove this hack when ENV is removed
+            sessions_list = [{"python": py, "session": "%s-%s(env='%s')" % (session_func.__name__, py, env)}
+                             for py, env in ENVS.keys()]
         else:
             sessions_list = ["%s-%s(%s)" % (session_func.__name__, py, param)
                              for py, param in product(session_func.python, session_func.parametrize)]
