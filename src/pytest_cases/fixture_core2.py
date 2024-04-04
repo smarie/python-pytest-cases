@@ -40,7 +40,7 @@ except ImportError:
 from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_parametrize_marks, make_marked_parameter_value, get_param_argnames_as_list, \
     combine_ids, is_marked_parameter_value, pytest_fixture, resolve_ids, extract_parameterset_info, make_test_ids
-from .common_pytest_marks import PYTEST3_OR_GREATER
+from .common_pytest_marks import PYTEST3_OR_GREATER, PYTEST8_OR_GREATER
 from .fixture__creation import get_caller_module, check_name_available, WARN, CHANGE
 from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _make_unpack_fixture
 
@@ -423,7 +423,7 @@ def _decorate_fixture_plus(fixture_func,
         _make_unpack_fixture(caller_module, unpack_into, name, hook=hook, in_cls=False)
 
     # (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)
-    parametrizer_marks = get_pytest_parametrize_marks(fixture_func)
+    parametrizer_marks = get_pytest_parametrize_marks(fixture_func, pop=PYTEST8_OR_GREATER)
     if len(parametrizer_marks) < 1:
         # make the fixture union-aware
         wrapped_fixture_func = ignore_unused(fixture_func)
