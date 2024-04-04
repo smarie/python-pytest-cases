@@ -201,21 +201,29 @@ def remove_pytest_mark(f, mark_name):
     return f
 
 
-def get_pytest_parametrize_marks(f):
+def get_pytest_parametrize_marks(
+    f,
+    pop=False  # type: bool
+):
     """
     Returns the @pytest.mark.parametrize marks associated with a function (and only those)
 
     :param f:
+    :param pop: boolean flag, when True the marks will be removed from f.
     :return: a tuple containing all 'parametrize' marks
     """
     # pytest > 3.2.0
     marks = getattr(f, 'pytestmark', None)
     if marks is not None:
+        if pop:
+            delattr(f, 'pytestmark')
         return tuple(_ParametrizationMark(m) for m in marks if m.name == 'parametrize')
     else:
         # older versions
         mark_info = getattr(f, 'parametrize', None)
         if mark_info is not None:
+            if pop:
+                delattr(f, 'parametrize')
             # mark_info.args contains a list of (name, values)
             if len(mark_info.args) % 2 != 0:
                 raise ValueError("internal pytest compatibility error - please report")

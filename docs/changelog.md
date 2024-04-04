@@ -1,5 +1,10 @@
 # Changelog
 
+### 3.8.5 - Suppressed annoying warning with pytest 8
+
+- Fixed `PytestRemovedIn9Warning: Marks applied to fixtures have no effect`. Fixed
+  [#337](https://github.com/smarie/python-pytest-cases/issues/337)
+
 ### 3.8.4 - Removed debug logs
 
 - Reverted `DEBUG` flag used for pytest 8 compatibility. Fixed
