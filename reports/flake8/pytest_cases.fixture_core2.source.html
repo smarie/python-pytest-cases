@@ -161,7 +161,7 @@
                class="code sev- "><tt><i>42</i>     <span class="n">combine_ids</span><span class="p">,</span> <span class="n">is_marked_parameter_value</span><span class="p">,</span> <span class="n">pytest_fixture</span><span class="p">,</span> <span class="n">resolve_ids</span><span class="p">,</span> <span class="n">extract_parameterset_info</span><span class="p">,</span> <span class="n">make_test_ids</span></tt>
             </div>
             <div id="l43"
-               class="code sev- "><tt><i>43</i> <span class="kn">from</span> <span class="nn">.common_pytest_marks</span> <span class="kn">import</span> <span class="n">PYTEST3_OR_GREATER</span></tt>
+               class="code sev- "><tt><i>43</i> <span class="kn">from</span> <span class="nn">.common_pytest_marks</span> <span class="kn">import</span> <span class="n">PYTEST3_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST8_OR_GREATER</span></tt>
             </div>
             <div id="l44"
                class="code sev- "><tt><i>44</i> <span class="kn">from</span> <span class="nn">.fixture__creation</span> <span class="kn">import</span> <span class="n">get_caller_module</span><span class="p">,</span> <span class="n">check_name_available</span><span class="p">,</span> <span class="n">WARN</span><span class="p">,</span> <span class="n">CHANGE</span></tt>
@@ -1346,7 +1346,7 @@
                class="code sev- "><tt><i>425</i>     <span class="c1"># (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)</span></tt>
             </div>
             <div id="l426"
-               class="code sev- "><tt><i>426</i>     <span class="n">parametrizer_marks</span> <span class="o">=</span> <span class="n">get_pytest_parametrize_marks</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>426</i>     <span class="n">parametrizer_marks</span> <span class="o">=</span> <span class="n">get_pytest_parametrize_marks</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">pop</span><span class="o">=</span><span class="n">PYTEST8_OR_GREATER</span><span class="p">)</span></tt>
             </div>
             <div id="l427"
                class="code sev- "><tt><i>427</i>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parametrizer_marks</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span></tt>

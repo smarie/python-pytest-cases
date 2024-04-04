@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_e0f0fa8c1f5d62a2_fixture_parametrize_plus_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-04-04 21:08 +0000
+            created at 2024-04-04 21:17 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -124,7 +124,7 @@
     <p class="run"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">common_pytest_lazy_values</span> <span class="key">import</span> <span class="nam">get_lazy_args</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">common_pytest</span> <span class="key">import</span> <span class="nam">get_pytest_parametrize_marks</span><span class="op">,</span> <span class="nam">make_marked_parameter_value</span><span class="op">,</span> <span class="nam">get_param_argnames_as_list</span><span class="op">,</span> <span class="xx">\</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">    <span class="nam">combine_ids</span><span class="op">,</span> <span class="nam">is_marked_parameter_value</span><span class="op">,</span> <span class="nam">pytest_fixture</span><span class="op">,</span> <span class="nam">resolve_ids</span><span class="op">,</span> <span class="nam">extract_parameterset_info</span><span class="op">,</span> <span class="nam">make_test_ids</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">common_pytest_marks</span> <span class="key">import</span> <span class="nam">PYTEST3_OR_GREATER</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">common_pytest_marks</span> <span class="key">import</span> <span class="nam">PYTEST3_OR_GREATER</span><span class="op">,</span> <span class="nam">PYTEST8_OR_GREATER</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">fixture__creation</span> <span class="key">import</span> <span class="nam">get_caller_module</span><span class="op">,</span> <span class="nam">check_name_available</span><span class="op">,</span> <span class="nam">WARN</span><span class="op">,</span> <span class="nam">CHANGE</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">fixture_core1_unions</span> <span class="key">import</span> <span class="nam">ignore_unused</span><span class="op">,</span> <span class="nam">is_used_request</span><span class="op">,</span> <span class="nam">NOT_USED</span><span class="op">,</span> <span class="nam">_make_unpack_fixture</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -507,7 +507,7 @@
     <p class="run"><span class="n"><a id="t423" href="#t423">423</a></span><span class="t">        <span class="nam">_make_unpack_fixture</span><span class="op">(</span><span class="nam">caller_module</span><span class="op">,</span> <span class="nam">unpack_into</span><span class="op">,</span> <span class="nam">name</span><span class="op">,</span> <span class="nam">hook</span><span class="op">=</span><span class="nam">hook</span><span class="op">,</span> <span class="nam">in_cls</span><span class="op">=</span><span class="key">False</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t424" href="#t424">424</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t425" href="#t425">425</a></span><span class="t">    <span class="com"># (1) Collect all @pytest.mark.parametrize markers (including those created by usage of @cases_data)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t426" href="#t426">426</a></span><span class="t">    <span class="nam">parametrizer_marks</span> <span class="op">=</span> <span class="nam">get_pytest_parametrize_marks</span><span class="op">(</span><span class="nam">fixture_func</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t426" href="#t426">426</a></span><span class="t">    <span class="nam">parametrizer_marks</span> <span class="op">=</span> <span class="nam">get_pytest_parametrize_marks</span><span class="op">(</span><span class="nam">fixture_func</span><span class="op">,</span> <span class="nam">pop</span><span class="op">=</span><span class="nam">PYTEST8_OR_GREATER</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t427" href="#t427">427</a></span><span class="t">    <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">parametrizer_marks</span><span class="op">)</span> <span class="op">&lt;</span> <span class="num">1</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t428" href="#t428">428</a></span><span class="t">        <span class="com"># make the fixture union-aware</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t429" href="#t429">429</a></span><span class="t">        <span class="nam">wrapped_fixture_func</span> <span class="op">=</span> <span class="nam">ignore_unused</span><span class="op">(</span><span class="nam">fixture_func</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -667,7 +667,7 @@
             <a id="nextFileLink" class="nav" href="d_e0f0fa8c1f5d62a2_fixture_parametrize_plus_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-04-04 21:08 +0000
+            created at 2024-04-04 21:17 +0000
         </p>
     </div>
 </footer>
