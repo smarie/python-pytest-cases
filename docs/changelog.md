@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.8.6 (in progress)
+
+- Allow `tests.py` to find tests from `tests_cases.py`.
+
 ### 3.8.5 - Suppressed annoying warning with pytest 8
 
 - Fixed `PytestRemovedIn9Warning: Marks applied to fixtures have no effect`. Fixed
