@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
 
       - name: Install python 3.9
         uses: actions/setup-python@v5.1.0
@@ -57,10 +57,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
 
       - name: Install python ${{ matrix.nox_session.python }} for tests
-        uses: MatteoH2O1999/setup-python@v3.2.0  # actions/setup-python@v5.1.0
+        uses: MatteoH2O1999/setup-python@v4.0.0  # actions/setup-python@v5.1.0
         id: set-py
         with:
           python-version: ${{ matrix.nox_session.python }}
@@ -88,7 +88,7 @@ jobs:
       # Share ./docs/reports so that they can be deployed with doc in next job
       - name: Share reports with other jobs
         # if: matrix.nox_session == '...': not needed, if empty won't be shared
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.3.3
         with:
           name: reports_dir
           path: ./docs/reports
@@ -98,7 +98,7 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
 
       - name: Install python 3.9 for nox
         uses: actions/setup-python@v5.1.0
@@ -123,7 +123,7 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
 
       - name: Checkout with no depth
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0  # so that gh-deploy works
 
@@ -135,7 +135,7 @@ jobs:
 
       # 1) retrieve the reports generated previously
       - name: Retrieve reports
-        uses: actions/download-artifact@v4.1.4
+        uses: actions/download-artifact@v4.1.7
         with:
           name: reports_dir
           path: ./docs/reports
@@ -167,7 +167,7 @@ jobs:
           EOF
       - name: \[not on TAG\] Publish coverage report
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads')
-        uses: codecov/codecov-action@v4.1.1
+        uses: codecov/codecov-action@v4.5.0
         with:
           files: ./docs/reports/coverage/coverage.xml
 
@@ -181,7 +181,7 @@ jobs:
       # 8) Publish the wheel on PyPi
       - name: \[TAG only\] Deploy on PyPi
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@v1.8.14
+        uses: pypa/gh-action-pypi-publish@v1.9.0
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
