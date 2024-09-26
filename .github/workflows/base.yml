@@ -62,7 +62,7 @@ jobs:
       - name: Install python ${{ matrix.nox_session.python }} for tests
         # If one version fails, uncomment this one and the next step. For example here 3.13.
         if: ${{ ! contains(fromJson('["3.13"]'), matrix.nox_session.python ) }}
-        uses: MatteoH2O1999/setup-python@v3.2.1  # actions/setup-python@v5.0.0
+        uses: MatteoH2O1999/setup-python@v4  # actions/setup-python@v5.0.0
         id: set-py
         with:
           python-version: ${{ matrix.nox_session.python }}
