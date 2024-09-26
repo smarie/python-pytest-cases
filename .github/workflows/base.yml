@@ -74,7 +74,7 @@ jobs:
       - name: Install python ${{ matrix.nox_session.python }} for tests (3.5)
         if: contains(fromJson('["3.5"]'), matrix.nox_session.python )
         uses: MatteoH2O1999/setup-python@v4  # actions/setup-python@v5.0.0
-        id: set-py
+        id: set-py-35
         with:
           python-version: ${{ matrix.nox_session.python }}
           architecture: x64
