@@ -59,9 +59,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
 
-      - name: Install python ${{ matrix.nox_session.python }} for tests
-        # If one version fails, uncomment this one and the next step. For example here 3.13.
-        if: ${{ ! contains(fromJson('["3.13"]'), matrix.nox_session.python ) }}
+        # General case
+      - name: Install python ${{ matrix.nox_session.python }} for tests (not 3.5 not 3.13)
+        if: ${{ ! contains(fromJson('["3.5", "3.13"]'), matrix.nox_session.python ) }}
         uses: MatteoH2O1999/setup-python@v4  # actions/setup-python@v5.0.0
         id: set-py
         with:
@@ -69,6 +69,22 @@ jobs:
           architecture: x64
           allow-build: info
           cache-build: true
+
+        # Particular case of issue with 3.5
+      - name: Install python ${{ matrix.nox_session.python }} for tests (3.5)
+        if: contains(fromJson('["3.5"]'), matrix.nox_session.python )
+        uses: MatteoH2O1999/setup-python@v4  # actions/setup-python@v5.0.0
+        id: set-py
+        with:
+          python-version: ${{ matrix.nox_session.python }}
+          architecture: x64
+          allow-build: info
+          cache-build: true
+        env:
+          # workaround found in https://github.com/actions/setup-python/issues/866
+          # for issue "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:728)" on Python 3.5
+          PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
+
 
       - name: Install python ${{ matrix.nox_session.python }} for tests (3.13)
         if: contains(fromJson('["3.13"]'), matrix.nox_session.python )
