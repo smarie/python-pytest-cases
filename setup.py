@@ -34,9 +34,12 @@ args = {
     "write_to": "src/pytest_cases/_version.py",
 }
 # Use the 'version_file_template' directive if possible to avoid type hints and annotations (python <3.8)
-from packaging.version import Version
 setuptools_scm_version = pkg_resources.get_distribution("setuptools_scm").version
-if Version(setuptools_scm_version) >= Version('6'):
+# for some reason importing packaging.version.Version here fails on python 3.5
+# from packaging.version import Version
+# if Version(setuptools_scm_version) >= Version('6'):
+setuptools_scm_version_major = int(setuptools_scm_version.split(".")[0])
+if setuptools_scm_version_major >= 6:
     # template_arg_name = "version_file_template" if Version(setuptools_scm_version) >= Version('8.1') else "write_to_template"
     # print(Version(setuptools_scm_version))
     # print(template_arg_name)
