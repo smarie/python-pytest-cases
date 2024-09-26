@@ -1,6 +1,6 @@
 virtualenv
 nox
 toml
-makefun
+setuptools<72   # later versions do not read 'tests_require' from setup.cfg anymore
 setuptools_scm  # used in 'release'
 keyring         # used in 'release'
