@@ -36,7 +36,7 @@ jobs:
 
       - name: List 'tests' nox sessions and required python versions
         id: set-matrix
-        run: echo "::set-output name=matrix::$(nox -s gha_list -- -s tests -v)"
+        run: echo "matrix=$(nox --json -l -s tests -v)" >> $GITHUB_OUTPUT
 
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}  # save nox sessions list to outputs
@@ -59,11 +59,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
 
-      - name: Install python ${{ matrix.nox_session.python }} for tests
-        uses: MatteoH2O1999/setup-python@v3.2.0  # actions/setup-python@v5.1.0
+        # General case
+      - name: Install python ${{ matrix.nox_session.python }} for tests (not 3.5 not 3.13)
+        if: ${{ ! contains(fromJson('["3.5", "3.13"]'), matrix.nox_session.python ) }}
+        uses: MatteoH2O1999/setup-python@v4  # actions/setup-python@v5.0.0
         id: set-py
         with:
           python-version: ${{ matrix.nox_session.python }}
+          architecture: x64
+          allow-build: info
+          cache-build: true
+
+        # Particular case of issue with 3.5
+      - name: Install python ${{ matrix.nox_session.python }} for tests (3.5)
+        if: contains(fromJson('["3.5"]'), matrix.nox_session.python )
+        uses: MatteoH2O1999/setup-python@v4  # actions/setup-python@v5.0.0
+        id: set-py-35
+        with:
+          python-version: ${{ matrix.nox_session.python }}
+          architecture: x64
+          allow-build: info
+          cache-build: true
+        env:
+          # workaround found in https://github.com/actions/setup-python/issues/866
+          # for issue "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:728)" on Python 3.5
+          PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
+
+
+      - name: Install python ${{ matrix.nox_session.python }} for tests (3.13)
+        if: contains(fromJson('["3.13"]'), matrix.nox_session.python )
+        uses: actions/setup-python@v5
+        id: set-py-latest
+        with:
+          # Include all versions including pre releases
+          # See https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#specifying-a-python-version
+          python-version: ${{ format('~{0}.0-alpha.0', matrix.nox_session.python) }}
           architecture: x64
           allow-build: info
           cache-build: true
@@ -87,7 +117,7 @@ jobs:
 
       # Share ./docs/reports so that they can be deployed with doc in next job
       - name: Share reports with other jobs
-        # if: matrix.nox_session == '...': not needed, if empty won't be shared
+        if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4.3.1
         with:
           name: reports_dir
@@ -170,6 +200,9 @@ jobs:
         uses: codecov/codecov-action@v4.1.1
         with:
           files: ./docs/reports/coverage/coverage.xml
+      - name: \[not on TAG\] Build wheel and sdist
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads')
+        run: nox -s build
 
       # -------------- only on Ubuntu + TAG PUSH (no pull request) -----------
 
@@ -181,7 +214,7 @@ jobs:
       # 8) Publish the wheel on PyPi
       - name: \[TAG only\] Deploy on PyPi
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@v1.8.14
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
