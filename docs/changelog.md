@@ -1,5 +1,10 @@
 # Changelog
 
+
+### 3.8.7 (in progress)
+
+- Allow `tests.py` to find tests from `tests_cases.py`.
+
 ### 3.8.6 - compatibility fix
 
 - Fixed issue with legacy python 2.7 and 3.5. Fixes [#352](https://github.com/smarie/python-pytest-cases/issues/352).
