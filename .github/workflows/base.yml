@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
 
       - name: Install python 3.9
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: 3.9
           architecture: x64
@@ -57,12 +57,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
 
         # General case
       - name: Install python ${{ matrix.nox_session.python }} for tests (not 3.5 not 3.13)
         if: ${{ ! contains(fromJson('["3.5", "3.13"]'), matrix.nox_session.python ) }}
-        uses: MatteoH2O1999/setup-python@v4  # actions/setup-python@v5.0.0
+        uses: MatteoH2O1999/setup-python@v5.0.0  # actions/setup-python@v5.0.0
         id: set-py
         with:
           python-version: ${{ matrix.nox_session.python }}
@@ -73,7 +73,7 @@ jobs:
         # Particular case of issue with 3.5
       - name: Install python ${{ matrix.nox_session.python }} for tests (3.5)
         if: contains(fromJson('["3.5"]'), matrix.nox_session.python )
-        uses: MatteoH2O1999/setup-python@v4  # actions/setup-python@v5.0.0
+        uses: MatteoH2O1999/setup-python@v5.0.0  # actions/setup-python@v5.0.0
         id: set-py-35
         with:
           python-version: ${{ matrix.nox_session.python }}
@@ -88,7 +88,7 @@ jobs:
 
       - name: Install python ${{ matrix.nox_session.python }} for tests (3.13)
         if: contains(fromJson('["3.13"]'), matrix.nox_session.python )
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.3.0
         id: set-py-latest
         with:
           # Include all versions including pre releases
@@ -99,7 +99,7 @@ jobs:
           cache-build: true
 
       - name: Install python 3.12 for nox
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: 3.12
           architecture: x64
@@ -118,7 +118,7 @@ jobs:
       # Share ./docs/reports so that they can be deployed with doc in next job
       - name: Share reports with other jobs
         if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.5.0
         with:
           name: reports_dir
           path: ./docs/reports
@@ -128,10 +128,10 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
 
       - name: Install python 3.9 for nox
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: 3.9
           architecture: x64
@@ -153,19 +153,19 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
 
       - name: Checkout with no depth
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0  # so that gh-deploy works
 
       - name: Install python 3.9 for nox
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: 3.9
           architecture: x64
 
       # 1) retrieve the reports generated previously
       - name: Retrieve reports
-        uses: actions/download-artifact@v4.1.4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: reports_dir
           path: ./docs/reports
@@ -197,7 +197,7 @@ jobs:
           EOF
       - name: \[not on TAG\] Publish coverage report
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads')
-        uses: codecov/codecov-action@v4.1.1
+        uses: codecov/codecov-action@v5.1.2
         with:
           files: ./docs/reports/coverage/coverage.xml
       - name: \[not on TAG\] Build wheel and sdist
@@ -214,7 +214,7 @@ jobs:
       # 8) Publish the wheel on PyPi
       - name: \[TAG only\] Deploy on PyPi
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@v1.12.3
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
