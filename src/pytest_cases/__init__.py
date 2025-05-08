@@ -10,7 +10,7 @@ from .fixture_core2 import pytest_fixture_plus, fixture_plus, fixture, param_fix
 from .fixture_parametrize_plus import pytest_parametrize_plus, parametrize_plus, parametrize, fixture_ref
 
 from .case_funcs import case, copy_case_info, set_case_id, get_case_id, get_case_marks, \
-    get_case_tags, matches_tag_query, is_case_class, is_case_function
+    get_case_tags, matches_tag_query, is_case_class, is_case_function, with_case_tags
 from .case_parametrizer_new import parametrize_with_cases, THIS_MODULE, get_all_cases, get_parametrize_args, \
     get_current_case_id, get_current_cases, get_current_params, CasesCollectionWarning
 
