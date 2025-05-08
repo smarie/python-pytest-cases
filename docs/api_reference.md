@@ -197,6 +197,57 @@ Returns True if the provided object is a function or callable and, if `check_pre
 
  - `check_prefix`: if this boolean is True (default), the prefix will be checked. If False, any function will lead to a `True` result whatever its name.
 
+
+### `@with_case_tags`
+
+```python
+@with_case_tags(*tags,  # type: Any
+                ):
+```
+
+This decorator can be applied to a class defining cases to apply multiple
+`*tags` to all case methods defined thereby.
+
+```python
+@with_case_tags('tag_1', 'tag_2')
+class CasesContainerClass:
+
+    def case_one(self, ...):
+        ...
+
+    @case(tags='another_tag')
+    def case_two(self, ...):
+        ...
+    
+    @case(tags='tag_1')
+    def case_three(self, ...):
+        ...
+```
+
+This is equivalent to:
+
+
+```python
+class CasesContainerClass:
+
+    @case(tags=('tag_1', 'tag_2'))
+    def case_one(self, ...):
+        ...
+
+    @case(tags=('another_tag', 'tag_1', 'tag_2'))
+    def case_two(self, ...):
+        ...
+
+    @case(tags=('tag_1', 'tag_2'))
+    def case_three(self, ...):
+        ...
+```
+
+**Parameters:**
+
+ - `tags`: custom tags to be added to all case methods. See also [`@case(tags=...)`](#case).
+
+
 ### The `filters` submodule
 
 This submodule contains symbols to help you create filters for `@parametrize_with_cases(filter=...)`.

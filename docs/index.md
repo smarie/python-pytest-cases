@@ -269,7 +269,7 @@ def test_bad_datasets(data, err_type, err_msg):
 ``` 
 
 
- - the `has_tag` argument allows you to filter cases based on tags set on case functions using the `@case` decorator. See API reference of [`@case`](./api_reference.md#case) and [`@parametrize_with_cases`](./api_reference.md#parametrize_with_cases).
+ - the `has_tag` argument allows you to filter cases based on tags set on case functions using the `@case` decorator. See API reference of [`@case`](./api_reference.md#case) and [`@parametrize_with_cases`](./api_reference.md#parametrize_with_cases). Tags shared by multiple cases grouped inside a class may be added automatically to all cases using the [`@with_case_tags`](./api_reference.md#with_case_tags) decorator.
 
 
 ```python
