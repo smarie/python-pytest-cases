@@ -373,11 +373,11 @@ def with_case_tags(*tags):
     def _decorator(cls):
         if is_case_function(cls):
             raise ValueError(
-                'Cannot use with_case_tags on a case '
-                'function. Use the @case decorator instead.'
+                'Cannot use `with_case_tags` on a case '
+                'function. Use the `@case` decorator instead.'
                 )
         if not is_case_class(cls):
-            raise ValueError('with_case_tags can only be applied to classes '
+            raise ValueError('`with_case_tags` can only be applied to classes '
                              'defining a collection of cases.')
         for case_name in dir(cls):
             case_ = getattr(cls, case_name)
