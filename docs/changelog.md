@@ -1,9 +1,10 @@
 # Changelog
 
-### 3.8.6 - Add with_case_tags decorator
+### 3.9.0 - (in progress) New `with_case_tags` decorator
+
 - Added the `with_case_tags` decorator for applying common tags to all cases
   defined in a case class. Fixes [#351](https://github.com/smarie/python-pytest-cases/issues/351).
-  PR [#361](https://github.com/smarie/python-pytest-cases/issues/361)
+  PR [#361](https://github.com/smarie/python-pytest-cases/pull/361)
   by [@michele-riva](https://github.com/michele-riva).
 
 ### 3.8.6 - compatibility fix
