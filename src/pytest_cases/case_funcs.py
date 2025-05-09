@@ -393,3 +393,4 @@ def with_case_tags(*tags):
             case_info.add_tags(tags_to_add)
         return cls
     return _decorator
+
