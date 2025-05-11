@@ -53,6 +53,7 @@ __all__ = [
     # case functions
     'case', 'copy_case_info', 'set_case_id', 'get_case_id', 'get_case_marks',
     'get_case_tags', 'matches_tag_query', 'is_case_class', 'is_case_function',
+    'with_case_tags',
     # test functions
     'get_all_cases', 'parametrize_with_cases', 'THIS_MODULE', 'get_parametrize_args', 'get_current_case_id',
     'get_current_cases', 'get_current_params', 'CasesCollectionWarning'
