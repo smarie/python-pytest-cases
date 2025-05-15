@@ -387,7 +387,11 @@ def with_case_tags(*tags):
                 case_info = getattr(case_, CASE_FIELD)
             except AttributeError:
                 # Not explicitly decorated with @case. Do so now.
-                case_ = case(case_)
+                # NB: `case(obj) is obj`, i.e., the `@case` decorator
+                # only adds some attributes to `obj`. In the future, if
+                # `@case` will return a different object, we will have
+                # to `setattr(cls, case_name, case_mod)`
+                _ = case(case_)
                 case_info = getattr(case_, CASE_FIELD)
             tags_to_add = tuple(t for t in tags if t not in case_info.tags)
             case_info.add_tags(tags_to_add)
