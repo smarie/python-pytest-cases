@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.9.0 - support for python 3.14 and pytest 8.6
+### 3.9.0 - support for python 3.14 and pytest 8.4
 
 - Fixed `AttributeError: 'MiniMetafunc' object has no attribute '_params_directness'` when a case function is 
   parametrized or requires a fixtures, with pytest 8.4.0. Fixed
