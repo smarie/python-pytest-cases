@@ -319,34 +319,34 @@ def release(session):
                 "-d", f"https://{gh_org}.github.io/{gh_repo}/changelog", current_tag)
 
 
-@nox.session(python=False)
-def gha_list(session):
-    """(mandatory arg: <base_session_name>) Prints all sessions available for <base_session_name>, for GithubActions."""
-
-    # see https://stackoverflow.com/q/66747359/7262247
-
-    # The options
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--session", help="The nox base session name")
-    parser.add_argument(
-        "-v",
-        "--with_version",
-        action="store_true",
-        default=False,
-        help="Return a list of lists where the first element is the python version and the second the nox session.",
-    )
-    additional_args = parser.parse_args(session.posargs)
-
-    # Now use --json CLI option
-    out = session.run("nox", "-l", "--json", "-s", "tests", external=True, silent=True)
-    sessions_list = [{"python": s["python"], "session": s["session"]} for s in json.loads(out)]
-
-    # TODO filter ?
-
-    # print the list so that it can be caught by GHA.
-    # Note that json.dumps is optional since this is a list of string.
-    # However it is to remind us that GHA expects a well-formatted json list of strings.
-    print(json.dumps(sessions_list))
+# @nox.session(python=False)
+# def gha_list(session):
+#     """(mandatory arg: <base_session_name>) Prints all sessions available for <base_session_name>, for GithubActions."""
+#
+#     # see https://stackoverflow.com/q/66747359/7262247
+#
+#     # The options
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("-s", "--session", help="The nox base session name")
+#     parser.add_argument(
+#         "-v",
+#         "--with_version",
+#         action="store_true",
+#         default=False,
+#         help="Return a list of lists where the first element is the python version and the second the nox session.",
+#     )
+#     additional_args = parser.parse_args(session.posargs)
+#
+#     # Now use --json CLI option
+#     out = session.run("nox", "-l", "--json", "-s", "tests", external=True, silent=True)
+#     sessions_list = [{"python": s["python"], "session": s["session"]} for s in json.loads(out)]
+#
+#     # TODO filter ?
+#
+#     # print the list so that it can be caught by GHA.
+#     # Note that json.dumps is optional since this is a list of string.
+#     # However it is to remind us that GHA expects a well-formatted json list of strings.
+#     print(json.dumps(sessions_list))
 
 
 # if __name__ == '__main__':
