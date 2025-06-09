@@ -2,11 +2,16 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+import sys
+
 from math import sqrt
 import pytest
 
 from pytest_cases.common_pytest_marks import has_pytest_param
 from pytest_cases import parametrize_with_cases, get_case_id
+
+
+IS_PY314 = sys.version_info[0:2] >= (3, 14)
 
 
 def case_int_success():
@@ -15,7 +20,7 @@ def case_int_success():
 
 def case_negative_int_failure():
     # note that we decide to return the expected type of failure to check it
-    return -1, ValueError, "math domain error"
+    return -1, ValueError, "expected a nonnegative input, got -1.0" if IS_PY314 else "math domain error"
 
 
 @parametrize_with_cases("data", cases='.', glob="*success")
