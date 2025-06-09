@@ -1,5 +1,13 @@
 # Changelog
 
+### 3.8.7 - bugfixes
+
+- Fixed `AttributeError: 'MiniMetafunc' object has no attribute '_params_directness'` when a case function is 
+  parametrized or requires a fixtures, with pytest 8.4.0. Fixed
+  [#365](https://github.com/smarie/python-pytest-cases/issues/365)
+- Fixed `ValueError: The provided fixture function does not seem to be a fixture` with `@fixture_ref`  with pytest
+  8.4.0. Fixed [#364](https://github.com/smarie/python-pytest-cases/issues/364)
+
 ### 3.8.6 - compatibility fix
 
 - Fixed issue with legacy python 2.7 and 3.5. Fixes [#352](https://github.com/smarie/python-pytest-cases/issues/352).
