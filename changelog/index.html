@@ -376,9 +376,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#387-compatibility-with-pytest-860" class="md-nav__link">
+  <a href="#390-support-for-python-314-and-pytest-86" class="md-nav__link">
     <span class="md-ellipsis">
-      3.8.7 - compatibility with pytest 8.6.0
+      3.9.0 - support for python 3.14 and pytest 8.6
     </span>
   </a>
   
@@ -1508,9 +1508,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#387-compatibility-with-pytest-860" class="md-nav__link">
+  <a href="#390-support-for-python-314-and-pytest-86" class="md-nav__link">
     <span class="md-ellipsis">
-      3.8.7 - compatibility with pytest 8.6.0
+      3.9.0 - support for python 3.14 and pytest 8.6
     </span>
   </a>
   
@@ -2625,11 +2625,17 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h3 id="387-compatibility-with-pytest-860">3.8.7 - compatibility with pytest 8.6.0<a class="headerlink" href="#387-compatibility-with-pytest-860" title="Permanent link">&para;</a></h3>
+<h3 id="390-support-for-python-314-and-pytest-86">3.9.0 - support for python 3.14 and pytest 8.6<a class="headerlink" href="#390-support-for-python-314-and-pytest-86" title="Permanent link">&para;</a></h3>
 <ul>
+<li>Fixed <code>AttributeError: 'MiniMetafunc' object has no attribute '_params_directness'</code> when a case function is 
+  parametrized or requires a fixtures, with pytest 8.4.0. Fixed
+  <a href="https://github.com/smarie/python-pytest-cases/issues/365">#365</a></li>
+<li>Fixed <code>ValueError: The provided fixture function does not seem to be a fixture</code> with <code>@fixture_ref</code>  with pytest
+  8.4.0. Fixed <a href="https://github.com/smarie/python-pytest-cases/issues/364">#364</a></li>
 <li>Dropped support for <code>python&lt;3.9</code> and <code>pytest&lt;6</code>. Fixes
   <a href="https://github.com/smarie/python-pytest-cases/issues/362">#362</a> and fixes
   <a href="https://github.com/smarie/python-pytest-cases/issues/186">#186</a></li>
+<li>Fixed test suite for python 3.14, officializing the support for this version.</li>
 </ul>
 <h3 id="386-compatibility-fix">3.8.6 - compatibility fix<a class="headerlink" href="#386-compatibility-fix" title="Permanent link">&para;</a></h3>
 <ul>
