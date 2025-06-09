@@ -1,10 +1,16 @@
 # Changelog
 
-### 3.8.7 - compatibility with pytest 8.6.0
+### 3.9.0 - support for python 3.14 and pytest 8.6
 
+- Fixed `AttributeError: 'MiniMetafunc' object has no attribute '_params_directness'` when a case function is 
+  parametrized or requires a fixtures, with pytest 8.4.0. Fixed
+  [#365](https://github.com/smarie/python-pytest-cases/issues/365)
+- Fixed `ValueError: The provided fixture function does not seem to be a fixture` with `@fixture_ref`  with pytest
+  8.4.0. Fixed [#364](https://github.com/smarie/python-pytest-cases/issues/364)
 - Dropped support for `python<3.9` and `pytest<6`. Fixes
   [#362](https://github.com/smarie/python-pytest-cases/issues/362) and fixes
   [#186](https://github.com/smarie/python-pytest-cases/issues/186)
+- Fixed test suite for python 3.14, officializing the support for this version.
 
 ### 3.8.6 - compatibility fix
 

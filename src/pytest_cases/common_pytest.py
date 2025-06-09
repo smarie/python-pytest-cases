@@ -31,7 +31,7 @@ from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER, PYTEST6_OR_GREATER, \
     PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER, PYTEST71_OR_GREATER, \
-    PYTEST8_OR_GREATER
+    PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
@@ -85,45 +85,81 @@ def remove_duplicates(lst):
             if item not in dset and not dset.add(item)]
 
 
-def is_fixture(fixture_fun  # type: Any
-               ):
-    """
-    Returns True if the provided function is a fixture
+if PYTEST84_OR_GREATER:
+    def is_fixture(fixture_fun  # type: Any
+                   ):
+        """
+        Returns True if the provided function is a fixture
 
-    :param fixture_fun:
-    :return:
-    """
-    try:
-        fixture_fun._pytestfixturefunction  # noqa
-        return True
-    except AttributeError:
-        # not a fixture ?
-        return False
+        :param fixture_fun:
+        :return:
+        """
+        from _pytest.fixtures import FixtureFunctionDefinition
+        return safe_isinstance(fixture_fun, FixtureFunctionDefinition)
+else:
+    def is_fixture(fixture_fun  # type: Any
+                   ):
+        """
+        Returns True if the provided function is a fixture
+
+        :param fixture_fun:
+        :return:
+        """
+        try:
+            fixture_fun._pytestfixturefunction  # noqa
+            return True
+        except AttributeError:
+            # not a fixture ?
+            return False
 
 
-def list_all_fixtures_in(cls_or_module, return_names=True, recurse_to_module=False):
-    """
-    Returns a list containing all fixture names (or symbols if `return_names=False`)
-    in the given class or module.
+if PYTEST84_OR_GREATER:
+    def list_all_fixtures_in(cls_or_module, return_names=True, recurse_to_module=False):
+        """
+        Returns a list containing all fixture names (or symbols if `return_names=False`)
+        in the given class or module.
 
-    Note that `recurse_to_module` can be used so that the fixtures in the parent
-    module of a class are listed too.
+        Note that `recurse_to_module` can be used so that the fixtures in the parent
+        module of a class are listed too.
 
-    :param cls_or_module:
-    :param return_names:
-    :param recurse_to_module:
-    :return:
-    """
-    res = [get_fixture_name(symb) if return_names else symb
-           for n, symb in inspect.getmembers(cls_or_module, lambda f: inspect.isfunction(f) or inspect.ismethod(f))
-           if is_fixture(symb)]
+        :param cls_or_module:
+        :param return_names:
+        :param recurse_to_module:
+        :return:
+        """
+        res = [get_fixture_name(symb) if return_names else symb
+               for n, symb in inspect.getmembers(cls_or_module, is_fixture)]
 
-    if recurse_to_module and not inspect.ismodule(cls_or_module):
-        # TODO currently this only works for a single level of nesting, we should use __qualname__ (py3) or .im_class
-        host = import_module(cls_or_module.__module__)
-        res += list_all_fixtures_in(host, recurse_to_module=True, return_names=return_names)
+        if recurse_to_module and not inspect.ismodule(cls_or_module):
+            # TODO currently this only works for a single level of nesting, we should use __qualname__ (py3) or .im_class
+            host = import_module(cls_or_module.__module__)
+            res += list_all_fixtures_in(host, recurse_to_module=True, return_names=return_names)
 
-    return res
+        return res
+else:
+    def list_all_fixtures_in(cls_or_module, return_names=True, recurse_to_module=False):
+        """
+        Returns a list containing all fixture names (or symbols if `return_names=False`)
+        in the given class or module.
+
+        Note that `recurse_to_module` can be used so that the fixtures in the parent
+        module of a class are listed too.
+
+        :param cls_or_module:
+        :param return_names:
+        :param recurse_to_module:
+        :return:
+        """
+        res = [get_fixture_name(symb) if return_names else symb
+               for n, symb in inspect.getmembers(cls_or_module, lambda f: inspect.isfunction(f) or inspect.ismethod(f))
+               if is_fixture(symb)]
+
+        if recurse_to_module and not inspect.ismodule(cls_or_module):
+            # TODO currently this only works for a single level of nesting, we should use __qualname__ (py3) or .im_class
+            host = import_module(cls_or_module.__module__)
+            res += list_all_fixtures_in(host, recurse_to_module=True, return_names=return_names)
+
+        return res
 
 
 def safe_isclass(obj  # type: object
@@ -159,54 +195,93 @@ def assert_is_fixture(fixture_fun  # type: Any
                          "it ?" % fixture_fun)
 
 
-def get_fixture_name(fixture_fun  # type: Union[str, Callable]
-                     ):
-    """
-    Internal utility to retrieve the fixture name corresponding to the given fixture function.
-    Indeed there is currently no pytest API to do this.
+if PYTEST84_OR_GREATER:
+    def get_fixture_name(fixture_fun  # type: Union[str, Callable]
+                         ):
+        """
+        Internal utility to retrieve the fixture name corresponding to the given fixture function.
+        Indeed there is currently no pytest API to do this.
 
-    Note: this function can receive a string, in which case it is directly returned.
+        Note: this function can receive a string, in which case it is directly returned.
 
-    :param fixture_fun:
-    :return:
-    """
-    if isinstance(fixture_fun, string_types):
-        return fixture_fun
-    assert_is_fixture(fixture_fun)
-    try:  # pytest 3
-        custom_fixture_name = fixture_fun._pytestfixturefunction.name  # noqa
-    except AttributeError:
-        try:  # pytest 2
-            custom_fixture_name = fixture_fun.func_name  # noqa
+        :param fixture_fun:
+        :return:
+        """
+        if isinstance(fixture_fun, string_types):
+            return fixture_fun
+
+        assert_is_fixture(fixture_fun)
+
+        if fixture_fun.name is None:
+            # As opposed to pytest < 8.4.0, the merge between custom name and function name has already been made,
+            # this should not happen.
+            # See https://github.com/nicoddemus/pytest/commit/ecde993e17efb3f34157642a111ba20f476aa80a
+            raise NotImplementedError
+
+        return fixture_fun.name
+
+else:
+    def get_fixture_name(fixture_fun  # type: Union[str, Callable]
+                         ):
+        """
+        Internal utility to retrieve the fixture name corresponding to the given fixture function.
+        Indeed there is currently no pytest API to do this.
+
+        Note: this function can receive a string, in which case it is directly returned.
+
+        :param fixture_fun:
+        :return:
+        """
+        if isinstance(fixture_fun, string_types):
+            return fixture_fun
+        assert_is_fixture(fixture_fun)
+        try:  # pytest 3
+            custom_fixture_name = fixture_fun._pytestfixturefunction.name  # noqa
         except AttributeError:
-            custom_fixture_name = None
+            try:  # pytest 2
+                custom_fixture_name = fixture_fun.func_name  # noqa
+            except AttributeError:
+                custom_fixture_name = None
 
-    if custom_fixture_name is not None:
-        # there is a custom fixture name
-        return custom_fixture_name
-    else:
-        obj__name = getattr(fixture_fun, '__name__', None)
-        if obj__name is not None:
-            # a function, probably
-            return obj__name
+        if custom_fixture_name is not None:
+            # there is a custom fixture name
+            return custom_fixture_name
         else:
-            # a callable object probably
-            return str(fixture_fun)
+            obj__name = getattr(fixture_fun, '__name__', None)
+            if obj__name is not None:
+                # a function, probably
+                return obj__name
+            else:
+                # a callable object probably
+                return str(fixture_fun)
 
 
-def get_fixture_scope(fixture_fun):
-    """
-    Internal utility to retrieve the fixture scope corresponding to the given fixture function .
-    Indeed there is currently no pytest API to do this.
+if PYTEST84_OR_GREATER:
+    def get_fixture_scope(fixture_fun):
+        """
+        Internal utility to retrieve the fixture scope corresponding to the given fixture function .
+        Indeed there is currently no pytest API to do this.
 
-    :param fixture_fun:
-    :return:
-    """
-    assert_is_fixture(fixture_fun)
-    return fixture_fun._pytestfixturefunction.scope  # noqa
-    # except AttributeError:
-    #     # pytest 2
-    #     return fixture_fun.func_scope
+        :param fixture_fun:
+        :return:
+        """
+        assert_is_fixture(fixture_fun)
+        # See https://github.com/nicoddemus/pytest/commit/ecde993e17efb3f34157642a111ba20f476aa80a
+        return fixture_fun._fixture_function_marker.scope  # noqa
+else:
+    def get_fixture_scope(fixture_fun):
+        """
+        Internal utility to retrieve the fixture scope corresponding to the given fixture function .
+        Indeed there is currently no pytest API to do this.
+
+        :param fixture_fun:
+        :return:
+        """
+        assert_is_fixture(fixture_fun)
+        return fixture_fun._pytestfixturefunction.scope  # noqa
+        # except AttributeError:
+        #     # pytest 2
+        #     return fixture_fun.func_scope
 
 
 # ---------------- working on pytest nodes (e.g. Function)
@@ -681,7 +756,14 @@ class MiniFuncDef(object):
 class MiniMetafunc(Metafunc):
     """
     A class to know what pytest *would* do for a given function in terms of callspec.
-    It is used in function `case_to_argvalues`
+    It is ONLY used in function `case_to_argvalues` and only the following are read:
+
+    - is_parametrized (bool)
+    - requires_fixtures (bool)
+    - fixturenames_not_in_sig (declared used fixtures with @pytest.mark.usefixtures)
+
+    Computation of the latter requires
+
     """
     # noinspection PyMissingConstructor
     def __init__(self, func):
@@ -701,6 +783,7 @@ class MiniMetafunc(Metafunc):
         self.function = func
         self.definition = MiniFuncDef(func.__name__)
         self._calls = []
+        self._params_directness = {}
         # non-default parameters
         self.fixturenames = getfuncargnames(func)
         # add declared used fixtures with @pytest.mark.usefixtures
