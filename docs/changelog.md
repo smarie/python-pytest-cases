@@ -1,5 +1,11 @@
 # Changelog
 
+### 3.8.7 - compatibility with pytest 8.6.0
+
+- Dropped support for `python<3.9` and `pytest<6`. Fixes
+  [#362](https://github.com/smarie/python-pytest-cases/issues/362) and fixes
+  [#186](https://github.com/smarie/python-pytest-cases/issues/186)
+
 ### 3.8.6 - compatibility fix
 
 - Fixed issue with legacy python 2.7 and 3.5. Fixes [#352](https://github.com/smarie/python-pytest-cases/issues/352).
