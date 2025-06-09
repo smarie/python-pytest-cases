@@ -1,5 +1,3 @@
-import argparse
-import json
 import logging
 
 import nox  # noqa
@@ -9,8 +7,7 @@ import sys
 # add parent folder to python path so that we can import noxfile_utils.py
 # note that you need to "pip install -r noxfile-requiterements.txt" for this file to work.
 sys.path.append(str(Path(__file__).parent / "ci_tools"))
-from nox_utils import (PY27, PY37, PY36, PY35, PY38, PY39, PY310, PY311, PY312, PY313, install_reqs, rm_folder, rm_file,
-                       DONT_INSTALL)  # noqa
+from nox_utils import (PY39, PY310, PY311, PY312, PY313, PY314, install_reqs, rm_folder, rm_file, DONT_INSTALL)  # noqa
 
 
 pkg_name = "pytest_cases"
@@ -54,46 +51,23 @@ class Folders:
 
 
 ENVS = {
+    # python 3.14 - numpy is not available in precompiled version for this python version yet
+    # (PY314, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 3.13
     (PY313, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 3.12
     (PY312, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     (PY312, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     # python 3.11
-    (PY311, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    # We'll run this last for coverage
     # python 3.10
     (PY310, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     # python 3.9
     (PY39, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
     (PY39, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     (PY39, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
-    # python 3.8
-    (PY38, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<5"}},
-    (PY38, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<6", "pytest-asyncio": DONT_INSTALL}},
-    (PY38, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
-    (PY38, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
-    (PY38, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
-    # python 2.7
-    (PY27, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<4", "pytest-harvest": "<1.10.5", "pytest-asyncio": DONT_INSTALL}},
-    (PY27, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<5", "pytest-harvest": "<1.10.5", "pytest-asyncio": DONT_INSTALL}},
-    # python 3.5
-    (PY35, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<4", "pytest-harvest": "<1.10.5", "pytest-asyncio": DONT_INSTALL}},
-    (PY35, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<5", "pytest-harvest": "<1.10.5", "pytest-asyncio": DONT_INSTALL}},
-    (PY35, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">10", "pytest": "<6", "pytest-harvest": "<1.10.5"}},
-    # python 3.6
-    (PY36, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<4"}},
-    (PY36, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<5"}},
-    (PY36, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<6"}},
-    (PY36, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
-    (PY36, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
-    # python 3.7
-    (PY37, "pytest3.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<4"}},
-    (PY37, "pytest4.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<5"}},
-    (PY37, "pytest5.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<6", "pytest-asyncio": DONT_INSTALL}},
-    (PY37, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
-    (PY37, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     # IMPORTANT: this should be last so that the folder docs/reports is not deleted afterwards
-    (PY37, "pytest-latest"): {"coverage": True, "pkg_specs": {"pip": ">19", "pytest": ""}}
+    (PY311, "pytest-latest"): {"coverage": True, "pkg_specs": {"pip": ">19", "pytest": ""}},
 }
 
 ENV_PARAMS = tuple((k[0], v["coverage"], v["pkg_specs"]) for k, v in ENVS.items())
@@ -166,7 +140,7 @@ def tests(session, coverage, pkg_specs):
                     "-m", "pytest", "--cache-clear",
                     f"--junitxml={Folders.test_xml}", f"--html={Folders.test_html}",
                     "-v", "tests/")
-        # session.run("coverage", "report")  # this shows in terminal + fails under XX%, same as --cov-report term --cov-fail-under=70  # noqa
+        session.run("coverage", "report")  # this shows in terminal + fails under XX%, same as --cov-report term --cov-fail-under=70  # noqa
         session.run("coverage", "xml", "-o", f"{Folders.coverage_xml}")
         session.run("coverage", "html", "-d", f"{Folders.coverage_reports}")
         # delete this intermediate file, it is not needed anymore
@@ -179,7 +153,7 @@ def tests(session, coverage, pkg_specs):
         session.run("genbadge", "coverage", "-i", f"{Folders.coverage_xml}", "-o", f"{Folders.coverage_badge}")
 
 
-@nox.session(python=PY39)
+@nox.session(python=PY311)
 def flake8(session):
     """Launch flake8 qualimetry."""
 
@@ -200,7 +174,7 @@ def flake8(session):
     rm_file(Folders.flake8_intermediate_file)
 
 
-@nox.session(python=PY39)
+@nox.session(python=PY311)
 def docs(session):
     """Generates the doc. Pass '-- serve' to serve it on a local http server instead."""
 
@@ -213,7 +187,7 @@ def docs(session):
         session.run("mkdocs", "build")
 
 
-@nox.session(python=PY39)
+@nox.session(python=PY311)
 def publish(session):
     """Deploy the docs+reports on github pages. Note: this rebuilds the docs"""
 
@@ -258,18 +232,19 @@ def _build(session):
 
     session.run("python", "setup.py", "sdist", "bdist_wheel")
 
-    # Make sure that the generated _version.py file exists and is compliant with python 2.7
+    # Make sure that the generated _version.py file exists
     version_py = Path(f"src/{pkg_name}/_version.py")
     if not version_py.exists():
         raise ValueError("Error with setuptools_scm: _version.py file not generated")
 
-    if ":" in version_py.read_text():
-        raise ValueError("Error with setuptools_scm: _version.py file contains annotations")
+    # ...and is compliant with python 2.7
+    # if ":" in version_py.read_text():
+    #     raise ValueError("Error with setuptools_scm: _version.py file contains annotations")
 
     return current_tag, version
 
 
-@nox.session(python=PY39)
+@nox.session(python=PY311)
 def build(session):
     """Same as release but just builds"""
 
@@ -278,7 +253,7 @@ def build(session):
     print(f"version: {version}")
 
 
-@nox.session(python=PY39)
+@nox.session(python=PY311)
 def release(session):
     """Create a release on github corresponding to the latest tag"""
 
@@ -319,34 +294,34 @@ def release(session):
                 "-d", f"https://{gh_org}.github.io/{gh_repo}/changelog", current_tag)
 
 
-@nox.session(python=False)
-def gha_list(session):
-    """(mandatory arg: <base_session_name>) Prints all sessions available for <base_session_name>, for GithubActions."""
-
-    # see https://stackoverflow.com/q/66747359/7262247
-
-    # The options
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--session", help="The nox base session name")
-    parser.add_argument(
-        "-v",
-        "--with_version",
-        action="store_true",
-        default=False,
-        help="Return a list of lists where the first element is the python version and the second the nox session.",
-    )
-    additional_args = parser.parse_args(session.posargs)
-
-    # Now use --json CLI option
-    out = session.run("nox", "-l", "--json", "-s", "tests", external=True, silent=True)
-    sessions_list = [{"python": s["python"], "session": s["session"]} for s in json.loads(out)]
-
-    # TODO filter ?
-
-    # print the list so that it can be caught by GHA.
-    # Note that json.dumps is optional since this is a list of string.
-    # However it is to remind us that GHA expects a well-formatted json list of strings.
-    print(json.dumps(sessions_list))
+# @nox.session(python=False)
+# def gha_list(session):
+#     """(mandatory arg: <base_session_name>) Prints all sessions available for <base_session_name>, for GithubActions."""
+#
+#     # see https://stackoverflow.com/q/66747359/7262247
+#
+#     # The options
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("-s", "--session", help="The nox base session name")
+#     parser.add_argument(
+#         "-v",
+#         "--with_version",
+#         action="store_true",
+#         default=False,
+#         help="Return a list of lists where the first element is the python version and the second the nox session.",
+#     )
+#     additional_args = parser.parse_args(session.posargs)
+#
+#     # Now use --json CLI option
+#     out = session.run("nox", "-l", "--json", "-s", "tests", external=True, silent=True)
+#     sessions_list = [{"python": s["python"], "session": s["session"]} for s in json.loads(out)]
+#
+#     # TODO filter ?
+#
+#     # print the list so that it can be caught by GHA.
+#     # Note that json.dumps is optional since this is a list of string.
+#     # However it is to remind us that GHA expects a well-formatted json list of strings.
+#     print(json.dumps(sessions_list))
 
 
 # if __name__ == '__main__':
