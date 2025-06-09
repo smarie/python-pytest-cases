@@ -29,16 +29,16 @@
                class="code sev- "><tt><i>4</i> <span class="c1"># License: 3-clause BSD, &lt;https://github.com/smarie/python-pytest-cases/blob/master/LICENSE&gt;</span></tt>
             </div>
             <div id="l5"
-               class="code sev- "><tt><i>5</i> <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span></tt>
+               class="code sev- "><tt><i>5</i> <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span></tt>
             </div>
             <div id="l6"
-               class="code sev- "><tt><i>6</i> <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span></tt>
+               class="code sev- "><tt><i>6</i> <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span></tt>
             </div>
             <div id="l7"
-               class="code sev- "><tt><i>7</i> <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span></tt>
+               class="code sev- "><tt><i>7</i> <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span></tt>
             </div>
             <div id="l8"
-               class="code sev- "><tt><i>8</i> <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span></tt>
+               class="code sev- "><tt><i>8</i> <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span></tt>
             </div>
             <div id="l9"
                class="code sev- "><tt><i>9</i> &nbsp;</tt>
@@ -47,19 +47,19 @@
                class="code sev- "><tt><i>10</i> <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l11"
-               class="code sev- "><tt><i>11</i>     <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableSequence</span></tt>
+               class="code sev- "><tt><i>11</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableSequence</span></tt>
             </div>
             <div id="l12"
                class="code sev- "><tt><i>12</i> <span class="k">except</span><span class="p">:</span>  <span class="c1"># noqa</span></tt>
             </div>
             <div id="l13"
-               class="code sev- "><tt><i>13</i>     <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">MutableSequence</span></tt>
+               class="code sev- "><tt><i>13</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableSequence</span></tt>
             </div>
             <div id="l14"
                class="code sev- "><tt><i>14</i> &nbsp;</tt>
             </div>
             <div id="l15"
-               class="code sev- "><tt><i>15</i> <span class="kn">import</span> <span class="nn">pytest</span></tt>
+               class="code sev- "><tt><i>15</i> <span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span></tt>
             </div>
             <div id="l16"
                class="code sev- "><tt><i>16</i> &nbsp;</tt>
@@ -68,13 +68,13 @@
                class="code sev- "><tt><i>17</i> <span class="k">try</span><span class="p">:</span>  <span class="c1"># python 3.3+</span></tt>
             </div>
             <div id="l18"
-               class="code sev- "><tt><i>18</i>     <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span></tt>
+               class="code sev- "><tt><i>18</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">signature</span></tt>
             </div>
             <div id="l19"
                class="code sev- "><tt><i>19</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
             </div>
             <div id="l20"
-               class="code sev- "><tt><i>20</i>     <span class="kn">from</span> <span class="nn">funcsigs</span> <span class="kn">import</span> <span class="n">signature</span>  <span class="c1"># noqa</span></tt>
+               class="code sev- "><tt><i>20</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">funcsigs</span><span class="w"> </span><span class="kn">import</span> <span class="n">signature</span>  <span class="c1"># noqa</span></tt>
             </div>
             <div id="l21"
                class="code sev- "><tt><i>21</i> &nbsp;</tt>
@@ -83,13 +83,13 @@
                class="code sev- "><tt><i>22</i> <span class="k">try</span><span class="p">:</span>  <span class="c1"># python 3.3+ type hints</span></tt>
             </div>
             <div id="l23"
-               class="code sev- "><tt><i>23</i>     <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span>  <span class="c1"># noqa</span></tt>
+               class="code sev- "><tt><i>23</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span>  <span class="c1"># noqa</span></tt>
             </div>
             <div id="l24"
-               class="code sev- "><tt><i>24</i>     <span class="kn">from</span> <span class="nn">_pytest.python</span> <span class="kn">import</span> <span class="n">CallSpec2</span></tt>
+               class="code sev- "><tt><i>24</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">_pytest.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallSpec2</span></tt>
             </div>
             <div id="l25"
-               class="code sev- "><tt><i>25</i>     <span class="kn">from</span> <span class="nn">_pytest.config</span> <span class="kn">import</span> <span class="n">Config</span></tt>
+               class="code sev- "><tt><i>25</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">_pytest.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span></tt>
             </div>
             <div id="l26"
                class="code sev- "><tt><i>26</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
@@ -101,10 +101,10 @@
                class="code sev- "><tt><i>28</i> &nbsp;</tt>
             </div>
             <div id="l29"
-               class="code sev- "><tt><i>29</i> <span class="kn">from</span> <span class="nn">.common_mini_six</span> <span class="kn">import</span> <span class="n">string_types</span></tt>
+               class="code sev- "><tt><i>29</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.common_mini_six</span><span class="w"> </span><span class="kn">import</span> <span class="n">string_types</span></tt>
             </div>
             <div id="l30"
-               class="code sev- "><tt><i>30</i> <span class="kn">from</span> <span class="nn">.common_pytest_lazy_values</span> <span class="kn">import</span> <span class="n">get_lazy_args</span></tt>
+               class="code sev- "><tt><i>30</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.common_pytest_lazy_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_lazy_args</span></tt>
             </div>
             <div id="l31"
                class="code sev-2  le">
@@ -116,10 +116,10 @@
                      </span>
                      Line too long (134 > 120 characters)</li>
                
-               </ul><tt><i>31</i> <span class="kn">from</span> <span class="nn">.common_pytest_marks</span> <span class="kn">import</span> <span class="n">PYTEST35_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST46_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST37_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST7_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST8_OR_GREATER</span></tt>
+               </ul><tt><i>31</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.common_pytest_marks</span><span class="w"> </span><span class="kn">import</span> <span class="n">PYTEST35_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST46_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST37_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST7_OR_GREATER</span><span class="p">,</span> <span class="n">PYTEST8_OR_GREATER</span></tt>
             </div>
             <div id="l32"
-               class="code sev- "><tt><i>32</i> <span class="kn">from</span> <span class="nn">.common_pytest</span> <span class="kn">import</span> <span class="n">get_pytest_nodeid</span><span class="p">,</span> <span class="n">get_pytest_function_scopeval</span><span class="p">,</span> <span class="n">is_function_node</span><span class="p">,</span> <span class="n">get_param_names</span><span class="p">,</span> \</tt>
+               class="code sev- "><tt><i>32</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.common_pytest</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pytest_nodeid</span><span class="p">,</span> <span class="n">get_pytest_function_scopeval</span><span class="p">,</span> <span class="n">is_function_node</span><span class="p">,</span> <span class="n">get_param_names</span><span class="p">,</span> \</tt>
             </div>
             <div id="l33"
                class="code sev- "><tt><i>33</i>     <span class="n">get_param_argnames_as_list</span><span class="p">,</span> <span class="n">has_function_scope</span><span class="p">,</span> <span class="n">set_callspec_arg_scope_to_function</span><span class="p">,</span> <span class="n">in_callspec_explicit_args</span></tt>
@@ -128,7 +128,7 @@
                class="code sev- "><tt><i>34</i> &nbsp;</tt>
             </div>
             <div id="l35"
-               class="code sev- "><tt><i>35</i> <span class="kn">from</span> <span class="nn">.fixture_core1_unions</span> <span class="kn">import</span> <span class="n">NOT_USED</span><span class="p">,</span> <span class="n">USED</span><span class="p">,</span> <span class="n">is_fixture_union_params</span><span class="p">,</span> <span class="n">UnionFixtureAlternative</span></tt>
+               class="code sev- "><tt><i>35</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.fixture_core1_unions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NOT_USED</span><span class="p">,</span> <span class="n">USED</span><span class="p">,</span> <span class="n">is_fixture_union_params</span><span class="p">,</span> <span class="n">UnionFixtureAlternative</span></tt>
             </div>
             <div id="l36"
                class="code sev- "><tt><i>36</i> &nbsp;</tt>
@@ -140,13 +140,13 @@
                class="code sev- "><tt><i>38</i> <span class="c1">#     # we will need to clean the empty ids explicitly in the plugin :&#39;(</span></tt>
             </div>
             <div id="l39"
-               class="code sev- "><tt><i>39</i> <span class="kn">from</span> <span class="nn">.fixture_parametrize_plus</span> <span class="kn">import</span> <span class="n">remove_empty_ids</span></tt>
+               class="code sev- "><tt><i>39</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.fixture_parametrize_plus</span><span class="w"> </span><span class="kn">import</span> <span class="n">remove_empty_ids</span></tt>
             </div>
             <div id="l40"
                class="code sev- "><tt><i>40</i> &nbsp;</tt>
             </div>
             <div id="l41"
-               class="code sev- "><tt><i>41</i> <span class="kn">from</span> <span class="nn">.case_parametrizer_new</span> <span class="kn">import</span> <span class="n">get_current_cases</span></tt>
+               class="code sev- "><tt><i>41</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.case_parametrizer_new</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_current_cases</span></tt>
             </div>
             <div id="l42"
                class="code sev- "><tt><i>42</i> &nbsp;</tt>
@@ -218,7 +218,7 @@
                class="code sev- "><tt><i>64</i> <span class="nd">@pytest</span><span class="o">.</span><span class="n">hookimpl</span><span class="p">(</span><span class="n">tryfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l65"
-               class="code sev- "><tt><i>65</i> <span class="k">def</span> <span class="nf">pytest_runtest_setup</span><span class="p">(</span><span class="n">item</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>65</i> <span class="k">def</span><span class="w"> </span><span class="nf">pytest_runtest_setup</span><span class="p">(</span><span class="n">item</span><span class="p">):</span></tt>
             </div>
             <div id="l66"
                class="code sev- "><tt><i>66</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot; Resolve all `lazy_value` in the dictionary of function args &quot;&quot;&quot;</span></tt>
@@ -254,7 +254,7 @@
                class="code sev- "><tt><i>76</i> <span class="c1"># @pytest.hookimpl(tryfirst=True, hookwrapper=True)</span></tt>
             </div>
             <div id="l77"
-               class="code sev- "><tt><i>77</i> <span class="k">def</span> <span class="nf">pytest_collection</span><span class="p">(</span><span class="n">session</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>77</i> <span class="k">def</span><span class="w"> </span><span class="nf">pytest_collection</span><span class="p">(</span><span class="n">session</span><span class="p">):</span></tt>
             </div>
             <div id="l78"
                class="code sev- "><tt><i>78</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot; HACK: override the fixture manager&#39;s `getfixtureclosure` method to replace it with ours &quot;&quot;&quot;</span></tt>
@@ -275,7 +275,7 @@
                class="code sev- "><tt><i>83</i> &nbsp;</tt>
             </div>
             <div id="l84"
-               class="code sev- "><tt><i>84</i> <span class="k">class</span> <span class="nc">FixtureDefsCache</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>84</i> <span class="k">class</span><span class="w"> </span><span class="nc">FixtureDefsCache</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
             </div>
             <div id="l85"
                class="code sev- "><tt><i>85</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -293,7 +293,7 @@
                class="code sev- "><tt><i>89</i> &nbsp;</tt>
             </div>
             <div id="l90"
-               class="code sev- "><tt><i>90</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fm</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>90</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fm</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span></tt>
             </div>
             <div id="l91"
                class="code sev- "><tt><i>91</i>         <span class="bp">self</span><span class="o">.</span><span class="n">fm</span> <span class="o">=</span> <span class="n">fm</span></tt>
@@ -308,7 +308,7 @@
                class="code sev- "><tt><i>94</i> &nbsp;</tt>
             </div>
             <div id="l95"
-               class="code sev- "><tt><i>95</i>     <span class="k">def</span> <span class="nf">get_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixname</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>95</i>     <span class="k">def</span><span class="w"> </span><span class="nf">get_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixname</span><span class="p">):</span></tt>
             </div>
             <div id="l96"
                class="code sev- "><tt><i>96</i>         <span class="k">try</span><span class="p">:</span></tt>
@@ -353,7 +353,7 @@
                class="code sev- "><tt><i>109</i> &nbsp;</tt>
             </div>
             <div id="l110"
-               class="code sev- "><tt><i>110</i> <span class="k">class</span> <span class="nc">FixtureClosureNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>110</i> <span class="k">class</span><span class="w"> </span><span class="nc">FixtureClosureNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
             </div>
             <div id="l111"
                class="code sev- "><tt><i>111</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -404,7 +404,7 @@
                class="code sev- "><tt><i>126</i> &nbsp;</tt>
             </div>
             <div id="l127"
-               class="code sev- "><tt><i>127</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>127</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l128"
                class="code sev- "><tt><i>128</i>                  <span class="n">fixture_defs_mgr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>   <span class="c1"># type: FixtureDefsCache</span></tt>
@@ -482,7 +482,7 @@
                class="code sev- "><tt><i>149</i> &nbsp;</tt>
             </div>
             <div id="l150"
-               class="code sev- "><tt><i>150</i>     <span class="k">def</span> <span class="nf">get_leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>150</i>     <span class="k">def</span><span class="w"> </span><span class="nf">get_leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l151"
                class="code sev- "><tt><i>151</i>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_split</span><span class="p">():</span></tt>
@@ -506,7 +506,7 @@
                class="code sev- "><tt><i>157</i> &nbsp;</tt>
             </div>
             <div id="l158"
-               class="code sev- "><tt><i>158</i>     <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent_nb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">with_children</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>158</i>     <span class="k">def</span><span class="w"> </span><span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent_nb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">with_children</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
             </div>
             <div id="l159"
                class="code sev- "><tt><i>159</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;  a string representation, either with all the subtree (default) or without (with_children=False) &quot;&quot;&quot;</span></tt>
@@ -560,7 +560,7 @@
                class="code sev- "><tt><i>175</i> &nbsp;</tt>
             </div>
             <div id="l176"
-               class="code sev- "><tt><i>176</i>     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>176</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l177"
                class="code sev- "><tt><i>177</i>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span></tt>
@@ -575,7 +575,7 @@
                class="code sev- "><tt><i>180</i> &nbsp;</tt>
             </div>
             <div id="l181"
-               class="code sev- "><tt><i>181</i>     <span class="k">def</span> <span class="nf">get_all_fixture_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">try_to_sort_by_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>181</i>     <span class="k">def</span><span class="w"> </span><span class="nf">get_all_fixture_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">try_to_sort_by_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
             </div>
             <div id="l182"
                class="code sev- "><tt><i>182</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return a list containing all unique fixture names used by this tree&quot;&quot;&quot;</span></tt>
@@ -596,7 +596,7 @@
                class="code sev- "><tt><i>187</i> &nbsp;</tt>
             </div>
             <div id="l188"
-               class="code sev- "><tt><i>188</i>     <span class="k">def</span> <span class="nf">get_all_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_fake_fixtures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">try_to_sort</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>188</i>     <span class="k">def</span><span class="w"> </span><span class="nf">get_all_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_fake_fixtures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">try_to_sort</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
             </div>
             <div id="l189"
                class="code sev- "><tt><i>189</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return a dict containing all fixture definitions for fixtures used in this tree&quot;&quot;&quot;</span></tt>
@@ -629,7 +629,7 @@
                class="code sev- "><tt><i>198</i> &nbsp;</tt>
             </div>
             <div id="l199"
-               class="code sev- "><tt><i>199</i>                 <span class="k">def</span> <span class="nf">sort_by_scope</span><span class="p">(</span><span class="n">kv_pair</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>199</i>                 <span class="k">def</span><span class="w"> </span><span class="nf">sort_by_scope</span><span class="p">(</span><span class="n">kv_pair</span><span class="p">):</span></tt>
             </div>
             <div id="l200"
                class="code sev- "><tt><i>200</i>                     <span class="n">fixture_name</span><span class="p">,</span> <span class="n">fixture_defs</span> <span class="o">=</span> <span class="n">kv_pair</span></tt>
@@ -653,7 +653,7 @@
                class="code sev- "><tt><i>206</i>                 <span class="n">f_scope</span> <span class="o">=</span> <span class="n">get_pytest_function_scopeval</span><span class="p">()</span></tt>
             </div>
             <div id="l207"
-               class="code sev- "><tt><i>207</i>                 <span class="k">def</span> <span class="nf">sort_by_scope</span><span class="p">(</span><span class="n">kv_pair</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
+               class="code sev- "><tt><i>207</i>                 <span class="k">def</span><span class="w"> </span><span class="nf">sort_by_scope</span><span class="p">(</span><span class="n">kv_pair</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
             </div>
             <div id="l208"
                class="code sev- "><tt><i>208</i>                     <span class="n">fixture_name</span><span class="p">,</span> <span class="n">fixture_defs</span> <span class="o">=</span> <span class="n">kv_pair</span></tt>
@@ -674,7 +674,7 @@
                class="code sev- "><tt><i>213</i> &nbsp;</tt>
             </div>
             <div id="l214"
-               class="code sev- "><tt><i>214</i>     <span class="k">def</span> <span class="nf">gen_all_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_fake_fixtures</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>214</i>     <span class="k">def</span><span class="w"> </span><span class="nf">gen_all_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_fake_fixtures</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
             </div>
             <div id="l215"
                class="code sev- "><tt><i>215</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -740,7 +740,7 @@
                class="code sev- "><tt><i>235</i> &nbsp;</tt>
             </div>
             <div id="l236"
-               class="code sev- "><tt><i>236</i>     <span class="k">def</span> <span class="nf">build_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>236</i>     <span class="k">def</span><span class="w"> </span><span class="nf">build_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l237"
                class="code sev- "><tt><i>237</i>                       <span class="n">initial_fixture_names</span><span class="p">,</span>  <span class="c1"># type: Iterable[str]</span></tt>
@@ -797,7 +797,7 @@
                class="code sev- "><tt><i>254</i> &nbsp;</tt>
             </div>
             <div id="l255"
-               class="code sev- "><tt><i>255</i>     <span class="k">def</span> <span class="nf">is_closure_built</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>255</i>     <span class="k">def</span><span class="w"> </span><span class="nf">is_closure_built</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l256"
                class="code sev- "><tt><i>256</i>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixture_defs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></tt>
@@ -806,7 +806,7 @@
                class="code sev- "><tt><i>257</i> &nbsp;</tt>
             </div>
             <div id="l258"
-               class="code sev- "><tt><i>258</i>     <span class="k">def</span> <span class="nf">already_knows_fixture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>258</i>     <span class="k">def</span><span class="w"> </span><span class="nf">already_knows_fixture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">):</span></tt>
             </div>
             <div id="l259"
                class="code sev- "><tt><i>259</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return True if this fixture is known by this node or one of its parents &quot;&quot;&quot;</span></tt>
@@ -833,7 +833,7 @@
                class="code sev- "><tt><i>266</i> &nbsp;</tt>
             </div>
             <div id="l267"
-               class="code sev- "><tt><i>267</i>     <span class="k">def</span> <span class="nf">_build_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>267</i>     <span class="k">def</span><span class="w"> </span><span class="nf">_build_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l268"
                class="code sev- "><tt><i>268</i>                        <span class="n">fixture_defs_mgr</span><span class="p">,</span>       <span class="c1"># type: FixtureDefsCache</span></tt>
@@ -1190,7 +1190,7 @@
                class="code sev- "><tt><i>385</i> &nbsp;</tt>
             </div>
             <div id="l386"
-               class="code sev- "><tt><i>386</i>     <span class="k">def</span> <span class="nf">remove_fixtures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixture_names_to_remove</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>386</i>     <span class="k">def</span><span class="w"> </span><span class="nf">remove_fixtures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixture_names_to_remove</span><span class="p">):</span></tt>
             </div>
             <div id="l387"
                class="code sev- "><tt><i>387</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove some fixture names from all nodes in this subtree. These fixtures should not be split fixtures&quot;&quot;&quot;</span></tt>
@@ -1241,7 +1241,7 @@
                class="code sev- "><tt><i>402</i> &nbsp;</tt>
             </div>
             <div id="l403"
-               class="code sev- "><tt><i>403</i>     <span class="k">def</span> <span class="nf">add_required_fixture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_fixture_name</span><span class="p">,</span> <span class="n">new_fixture_defs</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>403</i>     <span class="k">def</span><span class="w"> </span><span class="nf">add_required_fixture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_fixture_name</span><span class="p">,</span> <span class="n">new_fixture_defs</span><span class="p">):</span></tt>
             </div>
             <div id="l404"
                class="code sev- "><tt><i>404</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add some required fixture names to all leaves under this node&quot;&quot;&quot;</span></tt>
@@ -1280,7 +1280,7 @@
                class="code sev- "><tt><i>415</i> &nbsp;</tt>
             </div>
             <div id="l416"
-               class="code sev- "><tt><i>416</i>     <span class="k">def</span> <span class="nf">split_and_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>416</i>     <span class="k">def</span><span class="w"> </span><span class="nf">split_and_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l417"
                class="code sev- "><tt><i>417</i>                         <span class="n">fixture_defs_mgr</span><span class="p">,</span>           <span class="c1"># type: FixtureDefsCache</span></tt>
@@ -1394,7 +1394,7 @@
                class="code sev- "><tt><i>453</i> &nbsp;</tt>
             </div>
             <div id="l454"
-               class="code sev- "><tt><i>454</i>     <span class="k">def</span> <span class="nf">has_split</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>454</i>     <span class="k">def</span><span class="w"> </span><span class="nf">has_split</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l455"
                class="code sev- "><tt><i>455</i>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_fixture_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></tt>
@@ -1409,7 +1409,7 @@
                class="code sev- "><tt><i>458</i> &nbsp;</tt>
             </div>
             <div id="l459"
-               class="code sev- "><tt><i>459</i>     <span class="k">def</span> <span class="nf">get_not_always_used</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>459</i>     <span class="k">def</span><span class="w"> </span><span class="nf">get_not_always_used</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l460"
                class="code sev- "><tt><i>460</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the list of fixtures used by this subtree, that are used in *some* leaves only, not all&quot;&quot;&quot;</span></tt>
@@ -1475,7 +1475,7 @@
                class="code sev- "><tt><i>480</i> &nbsp;</tt>
             </div>
             <div id="l481"
-               class="code sev- "><tt><i>481</i>     <span class="k">def</span> <span class="nf">gather_all_required</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_parents</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>481</i>     <span class="k">def</span><span class="w"> </span><span class="nf">gather_all_required</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_parents</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
             </div>
             <div id="l482"
                class="code sev- "><tt><i>482</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -1541,7 +1541,7 @@
                class="code sev- "><tt><i>502</i> &nbsp;</tt>
             </div>
             <div id="l503"
-               class="code sev- "><tt><i>503</i>     <span class="k">def</span> <span class="nf">requires</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixturename</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>503</i>     <span class="k">def</span><span class="w"> </span><span class="nf">requires</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixturename</span><span class="p">):</span></tt>
             </div>
             <div id="l504"
                class="code sev- "><tt><i>504</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return True if the fixture with this name is required by the subtree at this node &quot;&quot;&quot;</span></tt>
@@ -1559,7 +1559,7 @@
                class="code sev- "><tt><i>508</i> &nbsp;</tt>
             </div>
             <div id="l509"
-               class="code sev- "><tt><i>509</i>     <span class="k">def</span> <span class="nf">get_alternatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>509</i>     <span class="k">def</span><span class="w"> </span><span class="nf">get_alternatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l510"
                class="code sev- "><tt><i>510</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -1610,7 +1610,7 @@
                class="code sev- "><tt><i>525</i> &nbsp;</tt>
             </div>
             <div id="l526"
-               class="code sev- "><tt><i>526</i>     <span class="k">def</span> <span class="nf">_get_alternatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>526</i>     <span class="k">def</span><span class="w"> </span><span class="nf">_get_alternatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l527"
                class="code sev- "><tt><i>527</i>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_split</span><span class="p">():</span></tt>
@@ -1673,7 +1673,7 @@
                class="code sev- "><tt><i>546</i> &nbsp;</tt>
             </div>
             <div id="l547"
-               class="code sev- "><tt><i>547</i> <span class="k">class</span> <span class="nc">SuperClosure</span><span class="p">(</span><span class="n">MutableSequence</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>547</i> <span class="k">class</span><span class="w"> </span><span class="nc">SuperClosure</span><span class="p">(</span><span class="n">MutableSequence</span><span class="p">):</span></tt>
             </div>
             <div id="l548"
                class="code sev- "><tt><i>548</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -1718,7 +1718,7 @@
                class="code sev- "><tt><i>561</i> &nbsp;</tt>
             </div>
             <div id="l562"
-               class="code sev- "><tt><i>562</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>562</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l563"
                class="code sev- "><tt><i>563</i>                  <span class="n">root_node</span>  <span class="c1"># type: FixtureClosureNode</span></tt>
@@ -1751,7 +1751,7 @@
                class="code sev- "><tt><i>572</i> &nbsp;</tt>
             </div>
             <div id="l573"
-               class="code sev- "><tt><i>573</i>     <span class="k">def</span> <span class="nf">_update_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>573</i>     <span class="k">def</span><span class="w"> </span><span class="nf">_update_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l574"
                class="code sev- "><tt><i>574</i>         <span class="c1"># get a list of all fixture defs, for quicker access (and sorted)</span></tt>
@@ -1808,7 +1808,7 @@
                class="code sev- "><tt><i>591</i>     <span class="nd">@property</span></tt>
             </div>
             <div id="l592"
-               class="code sev- "><tt><i>592</i>     <span class="k">def</span> <span class="nf">nb_alternative_closures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>592</i>     <span class="k">def</span><span class="w"> </span><span class="nf">nb_alternative_closures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l593"
                class="code sev- "><tt><i>593</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the number of alternative closures induced by fixture unions &quot;&quot;&quot;</span></tt>
@@ -1823,7 +1823,7 @@
                class="code sev- "><tt><i>596</i> &nbsp;</tt>
             </div>
             <div id="l597"
-               class="code sev- "><tt><i>597</i>     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>597</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l598"
                class="code sev- "><tt><i>598</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return a synthetic view, and a detailed tree view, of this closure &quot;&quot;&quot;</span></tt>
@@ -1853,7 +1853,7 @@
                class="code sev- "><tt><i>606</i> &nbsp;</tt>
             </div>
             <div id="l607"
-               class="code sev- "><tt><i>607</i>     <span class="k">def</span> <span class="nf">get_all_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_fake_fixtures</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>607</i>     <span class="k">def</span><span class="w"> </span><span class="nf">get_all_fixture_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drop_fake_fixtures</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span></tt>
             </div>
             <div id="l608"
                class="code sev- "><tt><i>608</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -1901,7 +1901,7 @@
                class="code sev- "><tt><i>622</i> &nbsp;</tt>
             </div>
             <div id="l623"
-               class="code sev- "><tt><i>623</i>     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>623</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l624"
                class="code sev- "><tt><i>624</i>         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_fixture_defs</span><span class="p">)</span></tt>
@@ -1910,7 +1910,7 @@
                class="code sev- "><tt><i>625</i> &nbsp;</tt>
             </div>
             <div id="l626"
-               class="code sev- "><tt><i>626</i>     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>626</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span></tt>
             </div>
             <div id="l627"
                class="code sev- "><tt><i>627</i>         <span class="c1"># return the key (fixture name) associated with the i-th pair</span></tt>
@@ -1934,7 +1934,7 @@
                class="code sev- "><tt><i>633</i> &nbsp;</tt>
             </div>
             <div id="l634"
-               class="code sev- "><tt><i>634</i>     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>634</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span></tt>
             </div>
             <div id="l635"
                class="code sev- "><tt><i>635</i>         <span class="c1"># try:</span></tt>
@@ -2078,7 +2078,7 @@
                class="code sev- "><tt><i>681</i> &nbsp;</tt>
             </div>
             <div id="l682"
-               class="code sev- "><tt><i>682</i>     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>682</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span></tt>
             </div>
             <div id="l683"
                class="code sev- "><tt><i>683</i>         <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></tt>
@@ -2087,7 +2087,7 @@
                class="code sev- "><tt><i>684</i> &nbsp;</tt>
             </div>
             <div id="l685"
-               class="code sev- "><tt><i>685</i>     <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>685</i>     <span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">):</span></tt>
             </div>
             <div id="l686"
                class="code sev- "><tt><i>686</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -2210,7 +2210,7 @@
                class="code sev- "><tt><i>725</i> &nbsp;</tt>
             </div>
             <div id="l726"
-               class="code sev- "><tt><i>726</i>     <span class="k">def</span> <span class="nf">append_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixture_names</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>726</i>     <span class="k">def</span><span class="w"> </span><span class="nf">append_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixture_names</span><span class="p">):</span></tt>
             </div>
             <div id="l727"
                class="code sev- "><tt><i>727</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Append various fixture names to the closure&quot;&quot;&quot;</span></tt>
@@ -2234,7 +2234,7 @@
                class="code sev- "><tt><i>733</i> &nbsp;</tt>
             </div>
             <div id="l734"
-               class="code sev- "><tt><i>734</i>     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>734</i>     <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></tt>
             </div>
             <div id="l735"
                class="code sev- "><tt><i>735</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -2276,7 +2276,7 @@
                class="code sev- "><tt><i>747</i> &nbsp;</tt>
             </div>
             <div id="l748"
-               class="code sev- "><tt><i>748</i>     <span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>748</i>     <span class="k">def</span><span class="w"> </span><span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span></tt>
             </div>
             <div id="l749"
                class="code sev- "><tt><i>749</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Multiple `remove` operations at once.&quot;&quot;&quot;</span></tt>
@@ -2303,7 +2303,7 @@
                class="code sev- "><tt><i>756</i> &nbsp;</tt>
             </div>
             <div id="l757"
-               class="code sev- "><tt><i>757</i> <span class="k">def</span> <span class="nf">_getfixtureclosure</span><span class="p">(</span><span class="n">fm</span><span class="p">,</span> <span class="n">fixturenames</span><span class="p">,</span> <span class="n">parentnode</span><span class="p">,</span> <span class="n">ignore_args</span><span class="o">=</span><span class="p">()):</span></tt>
+               class="code sev- "><tt><i>757</i> <span class="k">def</span><span class="w"> </span><span class="nf">_getfixtureclosure</span><span class="p">(</span><span class="n">fm</span><span class="p">,</span> <span class="n">fixturenames</span><span class="p">,</span> <span class="n">parentnode</span><span class="p">,</span> <span class="n">ignore_args</span><span class="o">=</span><span class="p">()):</span></tt>
             </div>
             <div id="l758"
                class="code sev- "><tt><i>758</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -2435,7 +2435,7 @@
                class="code sev- "><tt><i>794</i> <span class="k">if</span> <span class="n">PYTEST8_OR_GREATER</span><span class="p">:</span></tt>
             </div>
             <div id="l795"
-               class="code sev- "><tt><i>795</i>     <span class="k">def</span> <span class="nf">getfixtureclosure</span><span class="p">(</span><span class="n">fm</span><span class="p">,</span> <span class="n">parentnode</span><span class="p">,</span> <span class="n">initialnames</span><span class="p">,</span> <span class="n">ignore_args</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>795</i>     <span class="k">def</span><span class="w"> </span><span class="nf">getfixtureclosure</span><span class="p">(</span><span class="n">fm</span><span class="p">,</span> <span class="n">parentnode</span><span class="p">,</span> <span class="n">initialnames</span><span class="p">,</span> <span class="n">ignore_args</span><span class="p">):</span></tt>
             </div>
             <div id="l796"
                class="code sev- "><tt><i>796</i>         <span class="k">return</span> <span class="n">_getfixtureclosure</span><span class="p">(</span><span class="n">fm</span><span class="p">,</span> <span class="n">fixturenames</span><span class="o">=</span><span class="n">initialnames</span><span class="p">,</span> <span class="n">parentnode</span><span class="o">=</span><span class="n">parentnode</span><span class="p">,</span> <span class="n">ignore_args</span><span class="o">=</span><span class="n">ignore_args</span><span class="p">)</span></tt>
@@ -2453,7 +2453,7 @@
                class="code sev- "><tt><i>800</i> &nbsp;</tt>
             </div>
             <div id="l801"
-               class="code sev- "><tt><i>801</i> <span class="k">def</span> <span class="nf">create_super_closure</span><span class="p">(</span><span class="n">fm</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>801</i> <span class="k">def</span><span class="w"> </span><span class="nf">create_super_closure</span><span class="p">(</span><span class="n">fm</span><span class="p">,</span></tt>
             </div>
             <div id="l802"
                class="code sev- "><tt><i>802</i>                          <span class="n">parentnode</span><span class="p">,</span></tt>
@@ -2540,7 +2540,7 @@
                class="code sev- "><tt><i>826</i> &nbsp;</tt>
             </div>
             <div id="l827"
-               class="code sev- "><tt><i>827</i>     <span class="k">def</span> <span class="nf">_merge</span><span class="p">(</span><span class="n">new_items</span><span class="p">,</span> <span class="n">into_list</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>827</i>     <span class="k">def</span><span class="w"> </span><span class="nf">_merge</span><span class="p">(</span><span class="n">new_items</span><span class="p">,</span> <span class="n">into_list</span><span class="p">):</span></tt>
             </div>
             <div id="l828"
                class="code sev- "><tt><i>828</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot; Appends items from `new_items` into `into_list`, only if they are not already there. &quot;&quot;&quot;</span></tt>
@@ -2708,7 +2708,7 @@
                class="code sev- "><tt><i>873</i> <span class="nd">@pytest</span><span class="o">.</span><span class="n">hookimpl</span><span class="p">(</span><span class="n">tryfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l874"
-               class="code sev- "><tt><i>874</i> <span class="k">def</span> <span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>874</i> <span class="k">def</span><span class="w"> </span><span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">):</span></tt>
             </div>
             <div id="l875"
                class="code sev- "><tt><i>875</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -2747,7 +2747,7 @@
                class="code sev- "><tt><i>886</i> &nbsp;</tt>
             </div>
             <div id="l887"
-               class="code sev- "><tt><i>887</i> <span class="k">class</span> <span class="nc">UnionParamz</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;UnionParamz&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;union_fixture_name&#39;</span><span class="p">,</span> <span class="s1">&#39;alternative_names&#39;</span><span class="p">,</span> <span class="s1">&#39;ids&#39;</span><span class="p">,</span> <span class="s1">&#39;scope&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">])):</span></tt>
+               class="code sev- "><tt><i>887</i> <span class="k">class</span><span class="w"> </span><span class="nc">UnionParamz</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;UnionParamz&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;union_fixture_name&#39;</span><span class="p">,</span> <span class="s1">&#39;alternative_names&#39;</span><span class="p">,</span> <span class="s1">&#39;ids&#39;</span><span class="p">,</span> <span class="s1">&#39;scope&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">])):</span></tt>
             </div>
             <div id="l888"
                class="code sev- "><tt><i>888</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot; Represents some parametrization to be applied, for a union fixture &quot;&quot;&quot;</span></tt>
@@ -2762,7 +2762,7 @@
                class="code sev- "><tt><i>891</i> &nbsp;</tt>
             </div>
             <div id="l892"
-               class="code sev- "><tt><i>892</i>     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>892</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l893"
                class="code sev- "><tt><i>893</i>         <span class="k">return</span> <span class="s2">&quot;[UNION] </span><span class="si">%s</span><span class="s2">=[</span><span class="si">%s</span><span class="s2">], ids=</span><span class="si">%s</span><span class="s2">, scope=</span><span class="si">%s</span><span class="s2">, kwargs=</span><span class="si">%s</span><span class="s2">&quot;</span> \</tt>
@@ -2780,7 +2780,7 @@
                class="code sev- "><tt><i>897</i> &nbsp;</tt>
             </div>
             <div id="l898"
-               class="code sev- "><tt><i>898</i> <span class="k">class</span> <span class="nc">NormalParamz</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;NormalParamz&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;argnames&#39;</span><span class="p">,</span> <span class="s1">&#39;argvalues&#39;</span><span class="p">,</span> <span class="s1">&#39;indirect&#39;</span><span class="p">,</span> <span class="s1">&#39;ids&#39;</span><span class="p">,</span> <span class="s1">&#39;scope&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">])):</span></tt>
+               class="code sev- "><tt><i>898</i> <span class="k">class</span><span class="w"> </span><span class="nc">NormalParamz</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;NormalParamz&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;argnames&#39;</span><span class="p">,</span> <span class="s1">&#39;argvalues&#39;</span><span class="p">,</span> <span class="s1">&#39;indirect&#39;</span><span class="p">,</span> <span class="s1">&#39;ids&#39;</span><span class="p">,</span> <span class="s1">&#39;scope&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">])):</span></tt>
             </div>
             <div id="l899"
                class="code sev- "><tt><i>899</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot; Represents some parametrization to be applied &quot;&quot;&quot;</span></tt>
@@ -2795,7 +2795,7 @@
                class="code sev- "><tt><i>902</i> &nbsp;</tt>
             </div>
             <div id="l903"
-               class="code sev- "><tt><i>903</i>     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>903</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l904"
                class="code sev- "><tt><i>904</i>         <span class="k">return</span> <span class="s2">&quot;[NORMAL] </span><span class="si">%s</span><span class="s2">=[</span><span class="si">%s</span><span class="s2">], indirect=</span><span class="si">%s</span><span class="s2">, ids=</span><span class="si">%s</span><span class="s2">, scope=</span><span class="si">%s</span><span class="s2">, kwargs=</span><span class="si">%s</span><span class="s2">&quot;</span> \</tt>
@@ -2810,7 +2810,7 @@
                class="code sev- "><tt><i>907</i> &nbsp;</tt>
             </div>
             <div id="l908"
-               class="code sev- "><tt><i>908</i> <span class="k">def</span> <span class="nf">parametrize</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>908</i> <span class="k">def</span><span class="w"> </span><span class="nf">parametrize</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
             </div>
             <div id="l909"
                class="code sev- "><tt><i>909</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -2951,7 +2951,7 @@
                class="code sev- "><tt><i>954</i> &nbsp;</tt>
             </div>
             <div id="l955"
-               class="code sev- "><tt><i>955</i> <span class="k">class</span> <span class="nc">CallsReactor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>955</i> <span class="k">class</span><span class="w"> </span><span class="nc">CallsReactor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
             </div>
             <div id="l956"
                class="code sev- "><tt><i>956</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -3011,7 +3011,7 @@
                class="code sev- "><tt><i>974</i> &nbsp;</tt>
             </div>
             <div id="l975"
-               class="code sev- "><tt><i>975</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metafunc</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>975</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metafunc</span><span class="p">):</span></tt>
             </div>
             <div id="l976"
                class="code sev- "><tt><i>976</i>         <span class="bp">self</span><span class="o">.</span><span class="n">metafunc</span> <span class="o">=</span> <span class="n">metafunc</span></tt>
@@ -3032,7 +3032,7 @@
                class="code sev- "><tt><i>981</i> &nbsp;</tt>
             </div>
             <div id="l982"
-               class="code sev- "><tt><i>982</i>     <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>982</i>     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l983"
                class="code sev- "><tt><i>983</i>                <span class="n">parametrization</span>  <span class="c1"># type: Union[UnionParamz, NormalParamz]</span></tt>
@@ -3047,7 +3047,7 @@
                class="code sev- "><tt><i>986</i> &nbsp;</tt>
             </div>
             <div id="l987"
-               class="code sev- "><tt><i>987</i>     <span class="k">def</span> <span class="nf">print_parametrization_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>987</i>     <span class="k">def</span><span class="w"> </span><span class="nf">print_parametrization_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l988"
                class="code sev- "><tt><i>988</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method to print all pending parametrizations in this reactor &quot;&quot;&quot;</span></tt>
@@ -3074,7 +3074,7 @@
                class="code sev- "><tt><i>992</i> &nbsp;</tt>
             </div>
             <div id="l993"
-               class="code sev- "><tt><i>993</i>     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>993</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l994"
                class="code sev- "><tt><i>994</i>         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calls_list</span><span class="p">)</span></tt>
@@ -3083,7 +3083,7 @@
                class="code sev- "><tt><i>995</i> &nbsp;</tt>
             </div>
             <div id="l996"
-               class="code sev- "><tt><i>996</i>     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>996</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span></tt>
             </div>
             <div id="l997"
                class="code sev- "><tt><i>997</i>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">calls_list</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></tt>
@@ -3095,7 +3095,7 @@
                class="code sev- "><tt><i>999</i>     <span class="nd">@property</span></tt>
             </div>
             <div id="l1000"
-               class="code sev- "><tt><i>1000</i>     <span class="k">def</span> <span class="nf">calls_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1000</i>     <span class="k">def</span><span class="w"> </span><span class="nf">calls_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l1001"
                class="code sev- "><tt><i>1001</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -3137,7 +3137,7 @@
                class="code sev- "><tt><i>1013</i> &nbsp;</tt>
             </div>
             <div id="l1014"
-               class="code sev- "><tt><i>1014</i>     <span class="k">def</span> <span class="nf">create_call_list_from_pending_parametrizations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1014</i>     <span class="k">def</span><span class="w"> </span><span class="nf">create_call_list_from_pending_parametrizations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l1015"
                class="code sev- "><tt><i>1015</i> <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -3359,7 +3359,7 @@
                class="code sev- "><tt><i>1069</i> &nbsp;</tt>
             </div>
             <div id="l1070"
-               class="code sev- "><tt><i>1070</i> <span class="k">def</span> <span class="nf">get_calls_for_tree</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>1070</i> <span class="k">def</span><span class="w"> </span><span class="nf">get_calls_for_tree</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span></tt>
             </div>
             <div id="l1071"
                class="code sev- "><tt><i>1071</i>                        <span class="n">fix_closure_tree</span><span class="p">,</span>  <span class="c1"># type: FixtureClosureNode</span></tt>
@@ -3413,7 +3413,7 @@
                class="code sev- "><tt><i>1087</i> &nbsp;</tt>
             </div>
             <div id="l1088"
-               class="code sev- "><tt><i>1088</i> <span class="k">def</span> <span class="nf">_cleanup_calls_list</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>1088</i> <span class="k">def</span><span class="w"> </span><span class="nf">_cleanup_calls_list</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span></tt>
             </div>
             <div id="l1089"
                class="code sev- "><tt><i>1089</i>                         <span class="n">fix_closure_tree</span><span class="p">,</span>   <span class="c1"># type: FixtureClosureNode</span></tt>
@@ -4043,7 +4043,7 @@
                class="code sev- "><tt><i>1294</i> <span class="nd">@property</span></tt>
             </div>
             <div id="l1295"
-               class="code sev- "><tt><i>1295</i> <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1295</i> <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l1296"
                class="code sev- "><tt><i>1296</i>     <span class="c1"># legacy _CallSpec2 id was filtering empty strings, we&#39;ll put it back on the class below</span></tt>
@@ -4061,7 +4061,7 @@
                class="code sev- "><tt><i>1300</i> &nbsp;</tt>
             </div>
             <div id="l1301"
-               class="code sev- "><tt><i>1301</i> <span class="k">def</span> <span class="nf">_parametrize_calls</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span> <span class="n">init_calls</span><span class="p">,</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">discard_id</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>1301</i> <span class="k">def</span><span class="w"> </span><span class="nf">_parametrize_calls</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span> <span class="n">init_calls</span><span class="p">,</span> <span class="n">argnames</span><span class="p">,</span> <span class="n">argvalues</span><span class="p">,</span> <span class="n">discard_id</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span></tt>
             </div>
             <div id="l1302"
                class="code sev- "><tt><i>1302</i>                        <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
@@ -4139,7 +4139,7 @@
                class="code sev- "><tt><i>1326</i> &nbsp;</tt>
             </div>
             <div id="l1327"
-               class="code sev- "><tt><i>1327</i> <span class="k">def</span> <span class="nf">_process_node</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>1327</i> <span class="k">def</span><span class="w"> </span><span class="nf">_process_node</span><span class="p">(</span><span class="n">metafunc</span><span class="p">,</span></tt>
             </div>
             <div id="l1328"
                class="code sev- "><tt><i>1328</i>                   <span class="n">current_node</span><span class="p">,</span>  <span class="c1"># type: FixtureClosureNode</span></tt>
@@ -4499,7 +4499,7 @@
                class="code sev- "><tt><i>1440</i> &nbsp;</tt>
             </div>
             <div id="l1441"
-               class="code sev- "><tt><i>1441</i> <span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1441</i> <span class="k">def</span><span class="w"> </span><span class="nf">flatten_list</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span></tt>
             </div>
             <div id="l1442"
                class="code sev- "><tt><i>1442</i>     <span class="k">return</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">nested_list</span> <span class="ow">in</span> <span class="n">lst</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nested_list</span><span class="p">]</span></tt>
@@ -4511,7 +4511,7 @@
                class="code sev- "><tt><i>1444</i> &nbsp;</tt>
             </div>
             <div id="l1445"
-               class="code sev- "><tt><i>1445</i> <span class="k">def</span> <span class="nf">sort_according_to_ref_list</span><span class="p">(</span><span class="n">fixturenames</span><span class="p">,</span> <span class="n">param_names</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1445</i> <span class="k">def</span><span class="w"> </span><span class="nf">sort_according_to_ref_list</span><span class="p">(</span><span class="n">fixturenames</span><span class="p">,</span> <span class="n">param_names</span><span class="p">):</span></tt>
             </div>
             <div id="l1446"
                class="code sev- "><tt><i>1446</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -4622,7 +4622,7 @@
                class="code sev- "><tt><i>1481</i> <span class="c1"># @hookspec(historic=True)</span></tt>
             </div>
             <div id="l1482"
-               class="code sev- "><tt><i>1482</i> <span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1482</i> <span class="k">def</span><span class="w"> </span><span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span></tt>
             </div>
             <div id="l1483"
                class="code sev- "><tt><i>1483</i>     <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getgroup</span><span class="p">(</span><span class="s1">&#39;pytest-cases ordering&#39;</span><span class="p">,</span> <span class="s1">&#39;pytest-cases reordering options&#39;</span><span class="p">,</span> <span class="n">after</span><span class="o">=</span><span class="s1">&#39;general&#39;</span><span class="p">)</span></tt>
@@ -4661,7 +4661,7 @@
                class="code sev- "><tt><i>1494</i> &nbsp;</tt>
             </div>
             <div id="l1495"
-               class="code sev- "><tt><i>1495</i> <span class="k">def</span> <span class="nf">pytest_load_initial_conftests</span><span class="p">(</span><span class="n">early_config</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1495</i> <span class="k">def</span><span class="w"> </span><span class="nf">pytest_load_initial_conftests</span><span class="p">(</span><span class="n">early_config</span><span class="p">):</span></tt>
             </div>
             <div id="l1496"
                class="code sev- "><tt><i>1496</i>     <span class="c1"># store the received config object for future use; see #165 #166 #196</span></tt>
@@ -4682,7 +4682,7 @@
                class="code sev- "><tt><i>1501</i> <span class="c1"># @hookspec(historic=True)</span></tt>
             </div>
             <div id="l1502"
-               class="code sev- "><tt><i>1502</i> <span class="k">def</span> <span class="nf">pytest_configure</span><span class="p">(</span><span class="n">config</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1502</i> <span class="k">def</span><span class="w"> </span><span class="nf">pytest_configure</span><span class="p">(</span><span class="n">config</span><span class="p">):</span></tt>
             </div>
             <div id="l1503"
                class="code sev- "><tt><i>1503</i>     <span class="c1"># validate the config</span></tt>
@@ -4712,7 +4712,7 @@
                class="code sev- "><tt><i>1511</i> <span class="nd">@pytest</span><span class="o">.</span><span class="n">hookimpl</span><span class="p">(</span><span class="n">tryfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l1512"
-               class="code sev- "><tt><i>1512</i> <span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
+               class="code sev- "><tt><i>1512</i> <span class="k">def</span><span class="w"> </span><span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
             </div>
             <div id="l1513"
                class="code sev- "><tt><i>1513</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -4832,7 +4832,7 @@
                class="code sev- "><tt><i>1548</i> <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span></tt>
             </div>
             <div id="l1549"
-               class="code sev- "><tt><i>1549</i> <span class="k">def</span> <span class="nf">current_cases</span><span class="p">(</span><span class="n">request</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>1549</i> <span class="k">def</span><span class="w"> </span><span class="nf">current_cases</span><span class="p">(</span><span class="n">request</span><span class="p">):</span></tt>
             </div>
             <div id="l1550"
                class="code sev- "><tt><i>1550</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>

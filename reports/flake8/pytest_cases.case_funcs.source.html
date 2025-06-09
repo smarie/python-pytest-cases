@@ -29,10 +29,10 @@
                class="code sev- "><tt><i>4</i> <span class="c1"># License: 3-clause BSD, &lt;https://github.com/smarie/python-pytest-cases/blob/master/LICENSE&gt;</span></tt>
             </div>
             <div id="l5"
-               class="code sev- "><tt><i>5</i> <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span></tt>
+               class="code sev- "><tt><i>5</i> <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span></tt>
             </div>
             <div id="l6"
-               class="code sev- "><tt><i>6</i> <span class="kn">from</span> <span class="nn">decopatch</span> <span class="kn">import</span> <span class="n">function_decorator</span><span class="p">,</span> <span class="n">DECORATED</span></tt>
+               class="code sev- "><tt><i>6</i> <span class="kn">from</span><span class="w"> </span><span class="nn">decopatch</span><span class="w"> </span><span class="kn">import</span> <span class="n">function_decorator</span><span class="p">,</span> <span class="n">DECORATED</span></tt>
             </div>
             <div id="l7"
                class="code sev- "><tt><i>7</i> &nbsp;</tt>
@@ -41,7 +41,7 @@
                class="code sev- "><tt><i>8</i> <span class="k">try</span><span class="p">:</span>  <span class="c1"># python 3.5+</span></tt>
             </div>
             <div id="l9"
-               class="code sev- "><tt><i>9</i>     <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span></tt>
+               class="code sev- "><tt><i>9</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span></tt>
             </div>
             <div id="l10"
                class="code sev- "><tt><i>10</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
@@ -53,13 +53,13 @@
                class="code sev- "><tt><i>12</i> &nbsp;</tt>
             </div>
             <div id="l13"
-               class="code sev- "><tt><i>13</i> <span class="kn">from</span> <span class="nn">.common_mini_six</span> <span class="kn">import</span> <span class="n">string_types</span></tt>
+               class="code sev- "><tt><i>13</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.common_mini_six</span><span class="w"> </span><span class="kn">import</span> <span class="n">string_types</span></tt>
             </div>
             <div id="l14"
-               class="code sev- "><tt><i>14</i> <span class="kn">from</span> <span class="nn">.common_pytest</span> <span class="kn">import</span> <span class="n">safe_isclass</span></tt>
+               class="code sev- "><tt><i>14</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.common_pytest</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_isclass</span></tt>
             </div>
             <div id="l15"
-               class="code sev- "><tt><i>15</i> <span class="kn">from</span> <span class="nn">.common_pytest_marks</span> <span class="kn">import</span> <span class="n">get_pytest_marks_on_function</span><span class="p">,</span> <span class="n">markdecorators_as_tuple</span><span class="p">,</span> <span class="n">markdecorators_to_markinfos</span></tt>
+               class="code sev- "><tt><i>15</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.common_pytest_marks</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pytest_marks_on_function</span><span class="p">,</span> <span class="n">markdecorators_as_tuple</span><span class="p">,</span> <span class="n">markdecorators_to_markinfos</span></tt>
             </div>
             <div id="l16"
                class="code sev- "><tt><i>16</i> &nbsp;</tt>
@@ -68,7 +68,7 @@
                class="code sev- "><tt><i>17</i> <span class="k">try</span><span class="p">:</span></tt>
             </div>
             <div id="l18"
-               class="code sev- "><tt><i>18</i>     <span class="kn">from</span> <span class="nn">_pytest.mark.structures</span> <span class="kn">import</span> <span class="n">MarkDecorator</span><span class="p">,</span> <span class="n">Mark</span></tt>
+               class="code sev- "><tt><i>18</i>     <span class="kn">from</span><span class="w"> </span><span class="nn">_pytest.mark.structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarkDecorator</span><span class="p">,</span> <span class="n">Mark</span></tt>
             </div>
             <div id="l19"
                class="code sev- "><tt><i>19</i> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span></tt>
@@ -116,7 +116,7 @@
                class="code sev- "><tt><i>33</i> &nbsp;</tt>
             </div>
             <div id="l34"
-               class="code sev- "><tt><i>34</i> <span class="k">class</span> <span class="nc">_CaseInfo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>34</i> <span class="k">class</span><span class="w"> </span><span class="nc">_CaseInfo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></tt>
             </div>
             <div id="l35"
                class="code sev- "><tt><i>35</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span></tt>
@@ -152,7 +152,7 @@
                class="code sev- "><tt><i>45</i> &nbsp;</tt>
             </div>
             <div id="l46"
-               class="code sev- "><tt><i>46</i>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>46</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l47"
                class="code sev- "><tt><i>47</i>                  <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>   <span class="c1"># type: str</span></tt>
@@ -182,7 +182,7 @@
                class="code sev- "><tt><i>55</i> &nbsp;</tt>
             </div>
             <div id="l56"
-               class="code sev- "><tt><i>56</i>     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>56</i>     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></tt>
             </div>
             <div id="l57"
                class="code sev- "><tt><i>57</i>         <span class="k">return</span> <span class="s2">&quot;_CaseInfo(id=</span><span class="si">%r</span><span class="s2">,marks=</span><span class="si">%r</span><span class="s2">,tags=</span><span class="si">%r</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">marks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span></tt>
@@ -194,7 +194,7 @@
                class="code sev- "><tt><i>59</i>     <span class="nd">@classmethod</span></tt>
             </div>
             <div id="l60"
-               class="code sev- "><tt><i>60</i>     <span class="k">def</span> <span class="nf">get_from</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>60</i>     <span class="k">def</span><span class="w"> </span><span class="nf">get_from</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span></tt>
             </div>
             <div id="l61"
                class="code sev- "><tt><i>61</i>                  <span class="n">case_func</span><span class="p">,</span>               <span class="c1"># type: Callable</span></tt>
@@ -242,7 +242,7 @@
                class="code sev- "><tt><i>75</i> &nbsp;</tt>
             </div>
             <div id="l76"
-               class="code sev- "><tt><i>76</i>     <span class="k">def</span> <span class="nf">attach_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>76</i>     <span class="k">def</span><span class="w"> </span><span class="nf">attach_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l77"
                class="code sev- "><tt><i>77</i>                   <span class="n">case_func</span>  <span class="c1"># type: Callable</span></tt>
@@ -260,7 +260,7 @@
                class="code sev- "><tt><i>81</i> &nbsp;</tt>
             </div>
             <div id="l82"
-               class="code sev- "><tt><i>82</i>     <span class="k">def</span> <span class="nf">add_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>82</i>     <span class="k">def</span><span class="w"> </span><span class="nf">add_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l83"
                class="code sev- "><tt><i>83</i>                  <span class="n">tags</span>  <span class="c1"># type: Union[Any, Union[List, Set, Tuple]]</span></tt>
@@ -293,7 +293,7 @@
                class="code sev- "><tt><i>92</i> &nbsp;</tt>
             </div>
             <div id="l93"
-               class="code sev- "><tt><i>93</i>     <span class="k">def</span> <span class="nf">matches_tag_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>93</i>     <span class="k">def</span><span class="w"> </span><span class="nf">matches_tag_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span></tt>
             </div>
             <div id="l94"
                class="code sev- "><tt><i>94</i>                           <span class="n">has_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Union[str, Iterable[str]]</span></tt>
@@ -329,7 +329,7 @@
                class="code sev- "><tt><i>104</i>     <span class="nd">@classmethod</span></tt>
             </div>
             <div id="l105"
-               class="code sev- "><tt><i>105</i>     <span class="k">def</span> <span class="nf">copy_info</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>105</i>     <span class="k">def</span><span class="w"> </span><span class="nf">copy_info</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span></tt>
             </div>
             <div id="l106"
                class="code sev- "><tt><i>106</i>                   <span class="n">from_case_func</span><span class="p">,</span></tt>
@@ -359,7 +359,7 @@
                class="code sev- "><tt><i>114</i> &nbsp;</tt>
             </div>
             <div id="l115"
-               class="code sev- "><tt><i>115</i> <span class="k">def</span> <span class="nf">_tags_match_query</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span>    <span class="c1"># type: Iterable[str]</span></tt>
+               class="code sev- "><tt><i>115</i> <span class="k">def</span><span class="w"> </span><span class="nf">_tags_match_query</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span>    <span class="c1"># type: Iterable[str]</span></tt>
             </div>
             <div id="l116"
                class="code sev- "><tt><i>116</i>                       <span class="n">has_tag</span>  <span class="c1"># type: Optional[Union[str, Iterable[str]]]</span></tt>
@@ -404,7 +404,7 @@
                class="code sev- "><tt><i>129</i> &nbsp;</tt>
             </div>
             <div id="l130"
-               class="code sev- "><tt><i>130</i> <span class="k">def</span> <span class="nf">copy_case_info</span><span class="p">(</span><span class="n">from_fun</span><span class="p">,</span>  <span class="c1"># type: Callable</span></tt>
+               class="code sev- "><tt><i>130</i> <span class="k">def</span><span class="w"> </span><span class="nf">copy_case_info</span><span class="p">(</span><span class="n">from_fun</span><span class="p">,</span>  <span class="c1"># type: Callable</span></tt>
             </div>
             <div id="l131"
                class="code sev- "><tt><i>131</i>                    <span class="n">to_fun</span>     <span class="c1"># type: Callable</span></tt>
@@ -425,7 +425,7 @@
                class="code sev- "><tt><i>136</i> &nbsp;</tt>
             </div>
             <div id="l137"
-               class="code sev- "><tt><i>137</i> <span class="k">def</span> <span class="nf">set_case_id</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span>        <span class="c1"># type: str</span></tt>
+               class="code sev- "><tt><i>137</i> <span class="k">def</span><span class="w"> </span><span class="nf">set_case_id</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span>        <span class="c1"># type: str</span></tt>
             </div>
             <div id="l138"
                class="code sev- "><tt><i>138</i>                 <span class="n">case_func</span>  <span class="c1"># type: Callable</span></tt>
@@ -449,7 +449,7 @@
                class="code sev- "><tt><i>144</i> &nbsp;</tt>
             </div>
             <div id="l145"
-               class="code sev- "><tt><i>145</i> <span class="k">def</span> <span class="nf">get_case_id</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                              <span class="c1"># type: Callable</span></tt>
+               class="code sev- "><tt><i>145</i> <span class="k">def</span><span class="w"> </span><span class="nf">get_case_id</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                              <span class="c1"># type: Callable</span></tt>
             </div>
             <div id="l146"
                class="code sev- "><tt><i>146</i>                 <span class="n">prefix_for_default_ids</span><span class="o">=</span><span class="n">CASE_PREFIX_FUN</span>  <span class="c1"># type: str</span></tt>
@@ -551,7 +551,7 @@
                class="code sev- "><tt><i>178</i> &nbsp;</tt>
             </div>
             <div id="l179"
-               class="code sev- "><tt><i>179</i> <span class="k">def</span> <span class="nf">get_case_marks</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                         <span class="c1"># type: Callable</span></tt>
+               class="code sev- "><tt><i>179</i> <span class="k">def</span><span class="w"> </span><span class="nf">get_case_marks</span><span class="p">(</span><span class="n">case_func</span><span class="p">,</span>                         <span class="c1"># type: Callable</span></tt>
             </div>
             <div id="l180"
                class="code sev- "><tt><i>180</i>                    <span class="n">concatenate_with_fun_marks</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># type: bool</span></tt>
@@ -677,7 +677,7 @@
                class="code sev- "><tt><i>220</i> &nbsp;</tt>
             </div>
             <div id="l221"
-               class="code sev- "><tt><i>221</i> <span class="k">def</span> <span class="nf">get_case_tags</span><span class="p">(</span><span class="n">case_func</span>  <span class="c1"># type: Callable</span></tt>
+               class="code sev- "><tt><i>221</i> <span class="k">def</span><span class="w"> </span><span class="nf">get_case_tags</span><span class="p">(</span><span class="n">case_func</span>  <span class="c1"># type: Callable</span></tt>
             </div>
             <div id="l222"
                class="code sev- "><tt><i>222</i>                   <span class="p">):</span></tt>
@@ -698,7 +698,7 @@
                class="code sev- "><tt><i>227</i> &nbsp;</tt>
             </div>
             <div id="l228"
-               class="code sev- "><tt><i>228</i> <span class="k">def</span> <span class="nf">matches_tag_query</span><span class="p">(</span><span class="n">case_fun</span><span class="p">,</span>      <span class="c1"># type: Callable</span></tt>
+               class="code sev- "><tt><i>228</i> <span class="k">def</span><span class="w"> </span><span class="nf">matches_tag_query</span><span class="p">(</span><span class="n">case_fun</span><span class="p">,</span>      <span class="c1"># type: Callable</span></tt>
             </div>
             <div id="l229"
                class="code sev- "><tt><i>229</i>                       <span class="n">has_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Union[str, Iterable[str]]</span></tt>
@@ -869,7 +869,7 @@
                class="code sev- "><tt><i>284</i> <span class="nd">@function_decorator</span></tt>
             </div>
             <div id="l285"
-               class="code sev- "><tt><i>285</i> <span class="k">def</span> <span class="nf">case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>             <span class="c1"># type: str  # noqa</span></tt>
+               class="code sev- "><tt><i>285</i> <span class="k">def</span><span class="w"> </span><span class="nf">case</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>             <span class="c1"># type: str  # noqa</span></tt>
             </div>
             <div id="l286"
                class="code sev- "><tt><i>286</i>          <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>           <span class="c1"># type: Union[Any, Iterable[Any]]</span></tt>
@@ -956,7 +956,7 @@
                class="code sev- "><tt><i>313</i> &nbsp;</tt>
             </div>
             <div id="l314"
-               class="code sev- "><tt><i>314</i> <span class="k">def</span> <span class="nf">is_case_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>                                  <span class="c1"># type: Any</span></tt>
+               class="code sev- "><tt><i>314</i> <span class="k">def</span><span class="w"> </span><span class="nf">is_case_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>                                  <span class="c1"># type: Any</span></tt>
             </div>
             <div id="l315"
                class="code sev- "><tt><i>315</i>                   <span class="n">case_marker_in_name</span><span class="o">=</span><span class="n">CASE_PREFIX_CLS</span><span class="p">,</span>  <span class="c1"># type: str</span></tt>
@@ -1028,7 +1028,7 @@
                class="code sev- "><tt><i>337</i> &nbsp;</tt>
             </div>
             <div id="l338"
-               class="code sev- "><tt><i>338</i> <span class="k">def</span> <span class="nf">is_case_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>                       <span class="c1"># type: Any</span></tt>
+               class="code sev- "><tt><i>338</i> <span class="k">def</span><span class="w"> </span><span class="nf">is_case_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>                       <span class="c1"># type: Any</span></tt>
             </div>
             <div id="l339"
                class="code sev- "><tt><i>339</i>                      <span class="n">prefix</span><span class="o">=</span><span class="n">CASE_PREFIX_FUN</span><span class="p">,</span>  <span class="c1"># type: str</span></tt>

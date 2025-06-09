@@ -38,10 +38,10 @@
                class="code sev- "><tt><i>7</i> &nbsp;</tt>
             </div>
             <div id="l8"
-               class="code sev- "><tt><i>8</i> <span class="kn">from</span> <span class="nn">makefun</span> <span class="kn">import</span> <span class="n">wraps</span></tt>
+               class="code sev- "><tt><i>8</i> <span class="kn">from</span><span class="w"> </span><span class="nn">makefun</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span></tt>
             </div>
             <div id="l9"
-               class="code sev- "><tt><i>9</i> <span class="kn">from</span> <span class="nn">.fixture_core1_unions</span> <span class="kn">import</span> <span class="n">is_used_request</span><span class="p">,</span> <span class="n">NOT_USED</span></tt>
+               class="code sev- "><tt><i>9</i> <span class="kn">from</span><span class="w"> </span><span class="nn">.fixture_core1_unions</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_used_request</span><span class="p">,</span> <span class="n">NOT_USED</span></tt>
             </div>
             <div id="l10"
                class="code sev- "><tt><i>10</i> &nbsp;</tt>
@@ -50,13 +50,13 @@
                class="code sev- "><tt><i>11</i> &nbsp;</tt>
             </div>
             <div id="l12"
-               class="code sev- "><tt><i>12</i> <span class="k">def</span> <span class="nf">_ignore_unused_asyncgen_pep525</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">func_needs_request</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>12</i> <span class="k">def</span><span class="w"> </span><span class="nf">_ignore_unused_asyncgen_pep525</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">func_needs_request</span><span class="p">):</span></tt>
             </div>
             <div id="l13"
                class="code sev- "><tt><i>13</i>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
             </div>
             <div id="l14"
-               class="code sev- "><tt><i>14</i>     <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>14</i>     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
             </div>
             <div id="l15"
                class="code sev- "><tt><i>15</i>         <span class="n">request</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">func_needs_request</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">)</span></tt>
@@ -95,13 +95,13 @@
                      </span>
                      Expected 2 blank lines, found 1</li>
                
-               </ul><tt><i>24</i> <span class="k">def</span> <span class="nf">_decorate_fixture_plus_asyncgen_pep525</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">map_arguments</span><span class="p">):</span></tt>
+               </ul><tt><i>24</i> <span class="k">def</span><span class="w"> </span><span class="nf">_decorate_fixture_plus_asyncgen_pep525</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="p">,</span> <span class="n">map_arguments</span><span class="p">):</span></tt>
             </div>
             <div id="l25"
                class="code sev- "><tt><i>25</i>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">fixture_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
             </div>
             <div id="l26"
-               class="code sev- "><tt><i>26</i>     <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span></tt>
+               class="code sev- "><tt><i>26</i>     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_fixture_func</span><span class="p">(</span><span class="o">*</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span></tt>
             </div>
             <div id="l27"
                class="code sev- "><tt><i>27</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_used_request</span><span class="p">(</span><span class="n">_kwargs</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">]):</span></tt>
@@ -140,7 +140,7 @@
                      </span>
                      Expected 2 blank lines, found 1</li>
                
-               </ul><tt><i>36</i> <span class="k">def</span> <span class="nf">_parametrize_plus_decorate_asyncgen_pep525</span><span class="p">(</span></tt>
+               </ul><tt><i>36</i> <span class="k">def</span><span class="w"> </span><span class="nf">_parametrize_plus_decorate_asyncgen_pep525</span><span class="p">(</span></tt>
             </div>
             <div id="l37"
                class="code sev- "><tt><i>37</i>     <span class="n">test_func</span><span class="p">,</span></tt>
@@ -161,7 +161,7 @@
                class="code sev- "><tt><i>42</i>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">test_func</span><span class="p">,</span> <span class="n">new_sig</span><span class="o">=</span><span class="n">new_sig</span><span class="p">)</span></tt>
             </div>
             <div id="l43"
-               class="code sev- "><tt><i>43</i>     <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_test_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
+               class="code sev- "><tt><i>43</i>     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_test_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># noqa</span></tt>
             </div>
             <div id="l44"
                class="code sev- "><tt><i>44</i>         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fixture_union_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">NOT_USED</span><span class="p">:</span></tt>

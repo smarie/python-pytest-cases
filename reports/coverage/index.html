@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage report</title>
-    <link rel="icon" sizes="32x32" href="favicon_32.png">
-    <link rel="stylesheet" href="style.css" type="text/css">
-    <script type="text/javascript" src="coverage_html.js" defer></script>
+    <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
+    <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
+    <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="indexfile">
 <header>
@@ -16,13 +16,13 @@
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
             <label for="help_panel_state">
-                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+                <img id="keyboard_icon" src="keybd_closed_cb_ce680311.png" alt="Show/hide keyboard shortcuts">
             </label>
             <div id="help_panel">
                 <p class="legend">Shortcuts on this page</p>
                 <div class="keyhelp">
                     <p>
-                        <kbd>n</kbd>
+                        <kbd>f</kbd>
                         <kbd>s</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
@@ -43,11 +43,20 @@
             </div>
         </aside>
         <form id="filter_container">
-            <input id="filter" type="text" value="" placeholder="filter..." />
+            <input id="filter" type="text" value="" placeholder="filter...">
+            <div>
+                <input id="hide100" type="checkbox" >
+                <label for="hide100">hide covered</label>
+            </div>
         </form>
+        <h2>
+                <a class="button current">Files</a>
+                <a class="button" href="function_index.html">Functions</a>
+                <a class="button" href="class_index.html">Classes</a>
+        </h2>
         <p class="text">
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-09-26 21:52 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.8.2">coverage.py v7.8.2</a>,
+            created at 2025-06-09 19:01 +0000
         </p>
     </div>
 </header>
@@ -55,54 +64,54 @@
     <table class="index" data-sortable>
         <thead>
             <tr class="tablehead" title="Click to sort">
-                <th class="name left" aria-sort="none" data-shortcut="n">Module</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="b">branches</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="p">partial</th>
-                <th class="right" aria-sort="none" data-shortcut="c">coverage</th>
+                <th id="file" class="name left" aria-sort="none" data-shortcut="f">File<span class="arrows"></span></th>
+                <th id="statements" aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements<span class="arrows"></span></th>
+                <th id="missing" aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing<span class="arrows"></span></th>
+                <th id="excluded" aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded<span class="arrows"></span></th>
+                <th id="branches" aria-sort="none" data-default-sort-order="descending" data-shortcut="b">branches<span class="arrows"></span></th>
+                <th id="partial" aria-sort="none" data-default-sort-order="descending" data-shortcut="p">partial<span class="arrows"></span></th>
+                <th id="coverage" class="right" aria-sort="none" data-shortcut="c">coverage<span class="arrows"></span></th>
             </tr>
         </thead>
         <tbody>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2___init___py.html">src/pytest_cases/__init__.py</a></td>
-                <td>11</td>
-                <td>0</td>
-                <td>4</td>
-                <td>0</td>
-                <td>0</td>
-                <td class="right" data-ratio="11 11">100%</td>
-            </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2__version_py.html">src/pytest_cases/_version.py</a></td>
-                <td>2</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-                <td class="right" data-ratio="2 2">100%</td>
-            </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_case_funcs_py.html">src/pytest_cases/case_funcs.py</a></td>
-                <td>115</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2___init___py.html">src/pytest_cases/__init__.py</a></td>
                 <td>12</td>
+                <td>0</td>
                 <td>4</td>
-                <td>40</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="12 12">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2__version_py.html">src/pytest_cases/_version.py</a></td>
+                <td>13</td>
+                <td>3</td>
+                <td>0</td>
+                <td>2</td>
+                <td>1</td>
+                <td class="right" data-ratio="11 15">73%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_case_funcs_py.html">src/pytest_cases/case_funcs.py</a></td>
+                <td>118</td>
+                <td>14</td>
+                <td>4</td>
+                <td>38</td>
                 <td>5</td>
-                <td class="right" data-ratio="138 155">89%</td>
+                <td class="right" data-ratio="137 156">88%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_case_parametrizer_new_py.html">src/pytest_cases/case_parametrizer_new.py</a></td>
-                <td>455</td>
-                <td>45</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_case_parametrizer_new_py.html">src/pytest_cases/case_parametrizer_new.py</a></td>
+                <td>458</td>
+                <td>44</td>
                 <td>4</td>
-                <td>190</td>
+                <td>180</td>
                 <td>25</td>
-                <td class="right" data-ratio="575 645">89%</td>
+                <td class="right" data-ratio="569 638">89%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_common_mini_six_py.html">src/pytest_cases/common_mini_six.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_common_mini_six_py.html">src/pytest_cases/common_mini_six.py</a></td>
                 <td>6</td>
                 <td>1</td>
                 <td>0</td>
@@ -110,53 +119,53 @@
                 <td>1</td>
                 <td class="right" data-ratio="6 8">75%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_common_others_py.html">src/pytest_cases/common_others.py</a></td>
-                <td>220</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_common_others_py.html">src/pytest_cases/common_others.py</a></td>
+                <td>222</td>
                 <td>65</td>
                 <td>3</td>
                 <td>108</td>
                 <td>16</td>
-                <td class="right" data-ratio="225 328">69%</td>
+                <td class="right" data-ratio="227 330">69%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_common_pytest_py.html">src/pytest_cases/common_pytest.py</a></td>
-                <td>321</td>
-                <td>60</td>
-                <td>59</td>
-                <td>134</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_common_pytest_py.html">src/pytest_cases/common_pytest.py</a></td>
+                <td>324</td>
+                <td>57</td>
+                <td>89</td>
+                <td>108</td>
                 <td>18</td>
-                <td class="right" data-ratio="357 455">78%</td>
+                <td class="right" data-ratio="337 432">78%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_common_pytest_lazy_values_py.html">src/pytest_cases/common_pytest_lazy_values.py</a></td>
-                <td>208</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_common_pytest_lazy_values_py.html">src/pytest_cases/common_pytest_lazy_values.py</a></td>
+                <td>215</td>
                 <td>43</td>
                 <td>6</td>
-                <td>56</td>
+                <td>44</td>
                 <td>11</td>
-                <td class="right" data-ratio="206 264">78%</td>
+                <td class="right" data-ratio="201 259">78%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_common_pytest_marks_py.html">src/pytest_cases/common_pytest_marks.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_common_pytest_marks_py.html">src/pytest_cases/common_pytest_marks.py</a></td>
                 <td>168</td>
-                <td>48</td>
+                <td>47</td>
                 <td>6</td>
-                <td>66</td>
-                <td>9</td>
-                <td class="right" data-ratio="155 234">66%</td>
+                <td>50</td>
+                <td>8</td>
+                <td class="right" data-ratio="145 218">67%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_filters_py.html">src/pytest_cases/filters.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_filters_py.html">src/pytest_cases/filters.py</a></td>
                 <td>37</td>
                 <td>5</td>
                 <td>0</td>
-                <td>6</td>
                 <td>0</td>
-                <td class="right" data-ratio="38 43">88%</td>
+                <td>0</td>
+                <td class="right" data-ratio="32 37">86%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_fixture__creation_py.html">src/pytest_cases/fixture__creation.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_fixture__creation_py.html">src/pytest_cases/fixture__creation.py</a></td>
                 <td>53</td>
                 <td>9</td>
                 <td>2</td>
@@ -164,79 +173,79 @@
                 <td>5</td>
                 <td class="right" data-ratio="61 75">81%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_fixture_core1_unions_py.html">src/pytest_cases/fixture_core1_unions.py</a></td>
-                <td>184</td>
-                <td>16</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_fixture_core1_unions_py.html">src/pytest_cases/fixture_core1_unions.py</a></td>
+                <td>196</td>
+                <td>17</td>
                 <td>10</td>
-                <td>60</td>
+                <td>58</td>
                 <td>5</td>
-                <td class="right" data-ratio="219 244">90%</td>
+                <td class="right" data-ratio="228 254">90%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_fixture_core2_py.html">src/pytest_cases/fixture_core2.py</a></td>
-                <td>198</td>
-                <td>31</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_fixture_core2_py.html">src/pytest_cases/fixture_core2.py</a></td>
+                <td>206</td>
+                <td>32</td>
                 <td>10</td>
-                <td>98</td>
+                <td>84</td>
                 <td>14</td>
-                <td class="right" data-ratio="239 296">81%</td>
+                <td class="right" data-ratio="234 290">81%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_fixture_parametrize_plus_py.html">src/pytest_cases/fixture_parametrize_plus.py</a></td>
-                <td>522</td>
-                <td>53</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_fixture_parametrize_plus_py.html">src/pytest_cases/fixture_parametrize_plus.py</a></td>
+                <td>530</td>
+                <td>54</td>
                 <td>12</td>
-                <td>269</td>
+                <td>238</td>
                 <td>28</td>
-                <td class="right" data-ratio="700 791">88%</td>
+                <td class="right" data-ratio="680 768">89%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_pep380_py.html">src/pytest_cases/pep380.py</a></td>
-                <td>23</td>
-                <td>1</td>
-                <td>0</td>
-                <td>6</td>
-                <td>1</td>
-                <td class="right" data-ratio="27 29">93%</td>
-            </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_pep492_py.html">src/pytest_cases/pep492.py</a></td>
-                <td>23</td>
-                <td>11</td>
-                <td>0</td>
-                <td>6</td>
-                <td>1</td>
-                <td class="right" data-ratio="13 29">45%</td>
-            </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_pep525_py.html">src/pytest_cases/pep525.py</a></td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_pep380_py.html">src/pytest_cases/pep380.py</a></td>
                 <td>26</td>
-                <td>19</td>
+                <td>1</td>
+                <td>0</td>
+                <td>6</td>
+                <td>1</td>
+                <td class="right" data-ratio="30 32">94%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_pep492_py.html">src/pytest_cases/pep492.py</a></td>
+                <td>26</td>
+                <td>12</td>
+                <td>0</td>
+                <td>6</td>
+                <td>1</td>
+                <td class="right" data-ratio="15 32">47%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_pep525_py.html">src/pytest_cases/pep525.py</a></td>
+                <td>29</td>
+                <td>21</td>
                 <td>0</td>
                 <td>12</td>
                 <td>0</td>
-                <td class="right" data-ratio="7 38">18%</td>
+                <td class="right" data-ratio="8 41">20%</td>
             </tr>
-            <tr class="file">
-                <td class="name left"><a href="d_e0f0fa8c1f5d62a2_plugin_py.html">src/pytest_cases/plugin.py</a></td>
-                <td>524</td>
-                <td>63</td>
+            <tr class="region">
+                <td class="name left"><a href="z_e0f0fa8c1f5d62a2_plugin_py.html">src/pytest_cases/plugin.py</a></td>
+                <td>532</td>
+                <td>57</td>
                 <td>4</td>
-                <td>236</td>
-                <td>38</td>
-                <td class="right" data-ratio="647 760">85%</td>
+                <td>204</td>
+                <td>37</td>
+                <td class="right" data-ratio="638 736">87%</td>
             </tr>
         </tbody>
         <tfoot>
             <tr class="total">
                 <td class="name left">Total</td>
-                <td>3096</td>
+                <td>3171</td>
                 <td>482</td>
-                <td>124</td>
-                <td>1311</td>
-                <td>177</td>
-                <td class="right" data-ratio="3626 4407">82%</td>
+                <td>154</td>
+                <td>1162</td>
+                <td>176</td>
+                <td class="right" data-ratio="3571 4333">82%</td>
             </tr>
         </tfoot>
     </table>
@@ -247,16 +256,16 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-09-26 21:52 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.8.2">coverage.py v7.8.2</a>,
+            created at 2025-06-09 19:01 +0000
         </p>
     </div>
     <aside class="hidden">
-        <a id="prevFileLink" class="nav" href="d_e0f0fa8c1f5d62a2_plugin_py.html"/>
-        <a id="nextFileLink" class="nav" href="d_e0f0fa8c1f5d62a2___init___py.html"/>
-        <button type="button" class="button_prev_file" data-shortcut="["/>
-        <button type="button" class="button_next_file" data-shortcut="]"/>
-        <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+        <a id="prevFileLink" class="nav" href="z_e0f0fa8c1f5d62a2_plugin_py.html"></a>
+        <a id="nextFileLink" class="nav" href="z_e0f0fa8c1f5d62a2___init___py.html"></a>
+        <button type="button" class="button_prev_file" data-shortcut="["></button>
+        <button type="button" class="button_next_file" data-shortcut="]"></button>
+        <button type="button" class="button_show_hide_help" data-shortcut="?"></button>
     </aside>
 </footer>
 </body>
