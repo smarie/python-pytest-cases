@@ -2,10 +2,8 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-import fnmatch
-import sys
 import pytest
-import six
+
 
 pytest_plugins = ["pytester"]
 # In order to run meta-tests, see https://docs.pytest.org/en/latest/writing_plugins.html
@@ -18,30 +16,30 @@ def environment():
     pass
 
 
-def pytest_ignore_collect(path, config):
-    """
-    In python 2, equivalent of adding
-
-        --ignore-glob='**/*py35*.py'
-
-    This method works even with old pytest 2 and 3.
-    It was copied from recent pytest.main.pytest_ignore_collect
-
-    :param path:
-    :param config:
-    :return:
-    """
-    ignore_globs = []
-
-    if sys.version_info < (3, 6):
-        ignore_globs += ['**/*py36*.py']
-    if sys.version_info < (3, 5):
-        ignore_globs += ['**/*py35*.py']
-    if any(
-            fnmatch.fnmatch(six.text_type(path), six.text_type(glob))
-            for glob in ignore_globs
-    ):
-        return True
+# def pytest_ignore_collect(path, config):
+#     """
+#     In python 2, equivalent of adding
+#
+#         --ignore-glob='**/*py35*.py'
+#
+#     This method works even with old pytest 2 and 3.
+#     It was copied from recent pytest.main.pytest_ignore_collect
+#
+#     :param path:
+#     :param config:
+#     :return:
+#     """
+#     ignore_globs = []
+#
+#     if sys.version_info < (3, 6):
+#         ignore_globs += ['**/*py36*.py']
+#     if sys.version_info < (3, 5):
+#         ignore_globs += ['**/*py35*.py']
+#     if any(
+#             fnmatch.fnmatch(six.text_type(path), six.text_type(glob))
+#             for glob in ignore_globs
+#     ):
+#         return True
 
 
 # @pytest.hookimpl(trylast=True)
