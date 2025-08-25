@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for src/pytest_cases/common_pytest_marks.py: 67%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="pyfile">
@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_e0f0fa8c1f5d62a2_filters_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.8.2">coverage.py v7.8.2</a>,
-            created at 2025-06-09 20:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.5">coverage.py v7.10.5</a>,
+            created at 2025-08-25 06:36 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -175,7 +175,7 @@
     <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">        <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t">            <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">remaining_kwargs</span><span class="op">)</span> <span class="op">></span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t">                <span class="nam">warnings</span><span class="op">.</span><span class="nam">warn</span><span class="op">(</span><span class="str">"parametrize kwargs not taken into account: %s. Please report it at"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">                              <span class="str">" https://github.com/smarie/python-pytest-cases/issues"</span> <span class="op">%</span> <span class="nam">remaining_kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">                              <span class="str">" https://github.com/smarie/python-pytest-cases/issues"</span> <span class="op">%</span> <span class="nam">remaining_kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">param_names</span> <span class="op">=</span> <span class="nam">get_param_argnames_as_list</span><span class="op">(</span><span class="nam">bound</span><span class="op">.</span><span class="nam">arguments</span><span class="op">[</span><span class="str">'argnames'</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">param_values</span> <span class="op">=</span> <span class="nam">bound</span><span class="op">.</span><span class="nam">arguments</span><span class="op">[</span><span class="str">'argvalues'</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">        <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -205,8 +205,8 @@
     <p class="pln"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t"><span class="key">def</span> <span class="nam">filter_marks</span><span class="op">(</span><span class="nam">marks</span><span class="op">,</span>  <span class="com"># type: Iterable[Mark]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">                 <span class="nam">remove</span>  <span class="com"># type: str</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">                 <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">                 <span class="nam">remove</span>  <span class="com"># type: str</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">                 <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t">    <span class="com"># type: (...) -> Tuple[Mark]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t"><span class="str">    Returns a tuple of all marks in `marks` that do not have a 'parametrize' name.</span>&nbsp;</span><span class="r"></span></p>
@@ -219,8 +219,8 @@
     <p class="pln"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t"><span class="key">def</span> <span class="nam">get_pytest_marks_on_function</span><span class="op">(</span><span class="nam">f</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">                                 <span class="nam">as_decorators</span><span class="op">=</span><span class="key">False</span>  <span class="com"># type: bool</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">                                 <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">                                 <span class="nam">as_decorators</span><span class="op">=</span><span class="key">False</span>  <span class="com"># type: bool</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">                                 <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">    <span class="com"># type: (...) -> Union[List[Mark], List[MarkDecorator]]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t"><span class="str">    Utility to return a list of *ALL* pytest marks (not only parametrization) applied on a function</span>&nbsp;</span><span class="r"></span></p>
@@ -260,8 +260,8 @@
     <p class="run"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t">    <span class="nam">marks</span> <span class="op">=</span> <span class="nam">getattr</span><span class="op">(</span><span class="nam">f</span><span class="op">,</span> <span class="str">'pytestmark'</span><span class="op">,</span> <span class="key">None</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t">    <span class="key">if</span> <span class="nam">marks</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t">        <span class="key">return</span> <span class="nam">tuple</span><span class="op">(</span><span class="nam">itertools</span><span class="op">.</span><span class="nam">chain</span><span class="op">.</span><span class="nam">from_iterable</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t179" href="#t179">179</a></span><span class="t">            <span class="nam">mark</span><span class="op">.</span><span class="nam">args</span> <span class="key">for</span> <span class="nam">mark</span> <span class="key">in</span> <span class="nam">marks</span> <span class="key">if</span> <span class="nam">mark</span><span class="op">.</span><span class="nam">name</span> <span class="op">==</span> <span class="str">'usefixtures'</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t180" href="#t180">180</a></span><span class="t">        <span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t179" href="#t179">179</a></span><span class="t">            <span class="nam">mark</span><span class="op">.</span><span class="nam">args</span> <span class="key">for</span> <span class="nam">mark</span> <span class="key">in</span> <span class="nam">marks</span> <span class="key">if</span> <span class="nam">mark</span><span class="op">.</span><span class="nam">name</span> <span class="op">==</span> <span class="str">'usefixtures'</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t180" href="#t180">180</a></span><span class="t">        <span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t181" href="#t181">181</a></span><span class="t">    <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t182" href="#t182">182</a></span><span class="t">        <span class="com"># older versions</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t183" href="#t183">183</a></span><span class="t">        <span class="nam">mark_info</span> <span class="op">=</span> <span class="nam">getattr</span><span class="op">(</span><span class="nam">f</span><span class="op">,</span> <span class="str">'usefixtures'</span><span class="op">,</span> <span class="key">None</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -287,9 +287,9 @@
     <p class="pln"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t"><span class="key">def</span> <span class="nam">get_pytest_parametrize_marks</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t">    <span class="nam">f</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t">    <span class="nam">pop</span><span class="op">=</span><span class="key">False</span>  <span class="com"># type: bool</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t"><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t">    <span class="nam">f</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t">    <span class="nam">pop</span><span class="op">=</span><span class="key">False</span>  <span class="com"># type: bool</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t"><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t209" href="#t209">209</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t"><span class="str">    Returns the @pytest.mark.parametrize marks associated with a function (and only those)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -315,10 +315,10 @@
     <p class="mis show_mis"><span class="n"><a id="t231" href="#t231">231</a></span><span class="t">            <span class="nam">nb_parametrize_decorations</span> <span class="op">=</span> <span class="nam">len</span><span class="op">(</span><span class="nam">mark_info</span><span class="op">.</span><span class="nam">args</span><span class="op">)</span> <span class="op">//</span> <span class="num">2</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t232" href="#t232">232</a></span><span class="t">            <span class="key">if</span> <span class="nam">nb_parametrize_decorations</span> <span class="op">></span> <span class="num">1</span> <span class="key">and</span> <span class="nam">len</span><span class="op">(</span><span class="nam">mark_info</span><span class="op">.</span><span class="nam">kwargs</span><span class="op">)</span> <span class="op">></span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t233" href="#t233">233</a></span><span class="t">                <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">"Unfortunately with this old pytest version it is not possible to have several "</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t234" href="#t234">234</a></span><span class="t">                                 <span class="str">"parametrization decorators while specifying **kwargs, as all **kwargs are "</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t235" href="#t235">235</a></span><span class="t">                                 <span class="str">"merged, leading to inconsistent results. Either upgrade pytest, remove the **kwargs,"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t236" href="#t236">236</a></span><span class="t">                                 <span class="str">"or merge all the @parametrize decorators into a single one. **kwargs: %s"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t237" href="#t237">237</a></span><span class="t">                                 <span class="op">%</span> <span class="nam">mark_info</span><span class="op">.</span><span class="nam">kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t234" href="#t234">234</a></span><span class="t">                                 <span class="str">"parametrization decorators while specifying **kwargs, as all **kwargs are "</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t235" href="#t235">235</a></span><span class="t">                                 <span class="str">"merged, leading to inconsistent results. Either upgrade pytest, remove the **kwargs,"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t236" href="#t236">236</a></span><span class="t">                                 <span class="str">"or merge all the @parametrize decorators into a single one. **kwargs: %s"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t237" href="#t237">237</a></span><span class="t">                                 <span class="op">%</span> <span class="nam">mark_info</span><span class="op">.</span><span class="nam">kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t238" href="#t238">238</a></span><span class="t">            <span class="nam">res</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t239" href="#t239">239</a></span><span class="t">            <span class="key">for</span> <span class="nam">i</span> <span class="key">in</span> <span class="nam">range</span><span class="op">(</span><span class="nam">nb_parametrize_decorations</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t240" href="#t240">240</a></span><span class="t">                <span class="nam">param_name</span><span class="op">,</span> <span class="nam">param_values</span> <span class="op">=</span> <span class="nam">mark_info</span><span class="op">.</span><span class="nam">args</span><span class="op">[</span><span class="num">2</span><span class="op">*</span><span class="nam">i</span><span class="op">:</span><span class="num">2</span><span class="op">*</span><span class="op">(</span><span class="nam">i</span><span class="op">+</span><span class="num">1</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
@@ -368,8 +368,8 @@
     <p class="pln"><span class="n"><a id="t284" href="#t284">284</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t285" href="#t285">285</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t286" href="#t286">286</a></span><span class="t"><span class="key">def</span> <span class="nam">markinfos_to_markdecorators</span><span class="op">(</span><span class="nam">marks</span><span class="op">,</span>                <span class="com"># type: Iterable[Mark]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t287" href="#t287">287</a></span><span class="t">                                <span class="nam">function_marks</span><span class="op">=</span><span class="key">False</span>  <span class="com"># type: bool</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t288" href="#t288">288</a></span><span class="t">                                <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t287" href="#t287">287</a></span><span class="t">                                <span class="nam">function_marks</span><span class="op">=</span><span class="key">False</span>  <span class="com"># type: bool</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t288" href="#t288">288</a></span><span class="t">                                <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t289" href="#t289">289</a></span><span class="t">    <span class="com"># type: (...) -> List[MarkDecorator]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t290" href="#t290">290</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t291" href="#t291">291</a></span><span class="t"><span class="str">    Transforms the provided marks (MarkInfo or Mark in recent pytest) obtained from marked cases, into MarkDecorator so</span>&nbsp;</span><span class="r"></span></p>
@@ -414,7 +414,7 @@
     <p class="pln"><span class="n"><a id="t330" href="#t330">330</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t331" href="#t331">331</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t332" href="#t332">332</a></span><span class="t"><span class="key">def</span> <span class="nam">markdecorators_as_tuple</span><span class="op">(</span><span class="nam">marks</span>  <span class="com"># type: Optional[Union[MarkDecorator, Iterable[MarkDecorator]]]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t333" href="#t333">333</a></span><span class="t">                            <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t333" href="#t333">333</a></span><span class="t">                            <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t334" href="#t334">334</a></span><span class="t">    <span class="com"># type: (...) -> Tuple[MarkDecorator, ...]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t335" href="#t335">335</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t336" href="#t336">336</a></span><span class="t"><span class="str">    Internal routine used to normalize marks received from users in a `marks=` parameter</span>&nbsp;</span><span class="r"></span></p>
@@ -434,7 +434,7 @@
     <p class="pln"><span class="n"><a id="t350" href="#t350">350</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t351" href="#t351">351</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t352" href="#t352">352</a></span><span class="t"><span class="key">def</span> <span class="nam">markdecorators_to_markinfos</span><span class="op">(</span><span class="nam">marks</span>  <span class="com"># type: Sequence[MarkDecorator]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t353" href="#t353">353</a></span><span class="t">                                <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t353" href="#t353">353</a></span><span class="t">                                <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t354" href="#t354">354</a></span><span class="t">    <span class="com"># type: (...) -> Tuple[Mark, ...]</span>&nbsp;</span><span class="r"></span></p>
     <p class="par run show_par"><span class="n"><a id="t355" href="#t355">355</a></span><span class="t">    <span class="key">if</span> <span class="nam">PYTEST3_OR_GREATER</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">355&#x202F;&#x219B;&#x202F;357</span><span class="annotate long">line 355 didn't jump to line 357 because the condition on line 355 was always true</span></span></p>
     <p class="run"><span class="n"><a id="t356" href="#t356">356</a></span><span class="t">        <span class="key">return</span> <span class="nam">tuple</span><span class="op">(</span><span class="nam">m</span><span class="op">.</span><span class="nam">mark</span> <span class="key">for</span> <span class="nam">m</span> <span class="key">in</span> <span class="nam">marks</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -450,8 +450,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_e0f0fa8c1f5d62a2_filters_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.8.2">coverage.py v7.8.2</a>,
-            created at 2025-06-09 20:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.5">coverage.py v7.10.5</a>,
+            created at 2025-08-25 06:36 +0000
         </p>
     </div>
 </footer>

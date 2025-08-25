@@ -1135,6 +1135,99 @@
             <div id="l368"
                class="code sev- "><tt><i>368</i>             <span class="k">return</span> <span class="kc">False</span></tt>
             </div>
+            <div id="l369"
+               class="code sev- "><tt><i>369</i> &nbsp;</tt>
+            </div>
+            <div id="l370"
+               class="code sev- "><tt><i>370</i> &nbsp;</tt>
+            </div>
+            <div id="l371"
+               class="code sev- "><tt><i>371</i> <span class="k">def</span><span class="w"> </span><span class="nf">with_case_tags</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">):</span></tt>
+            </div>
+            <div id="l372"
+               class="code sev- "><tt><i>372</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Attach `tags` to all cases defined in the decorated class.&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l373"
+               class="code sev- "><tt><i>373</i>     <span class="k">def</span><span class="w"> </span><span class="nf">_decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span></tt>
+            </div>
+            <div id="l374"
+               class="code sev- "><tt><i>374</i>         <span class="k">if</span> <span class="n">is_case_function</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span></tt>
+            </div>
+            <div id="l375"
+               class="code sev- "><tt><i>375</i>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span></tt>
+            </div>
+            <div id="l376"
+               class="code sev- "><tt><i>376</i>                 <span class="s1">&#39;Cannot use `with_case_tags` on a case &#39;</span></tt>
+            </div>
+            <div id="l377"
+               class="code sev- "><tt><i>377</i>                 <span class="s1">&#39;function. Use the `@case` decorator instead.&#39;</span></tt>
+            </div>
+            <div id="l378"
+               class="code sev- "><tt><i>378</i>                 <span class="p">)</span></tt>
+            </div>
+            <div id="l379"
+               class="code sev- "><tt><i>379</i>         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_case_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span></tt>
+            </div>
+            <div id="l380"
+               class="code sev- "><tt><i>380</i>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`with_case_tags` can only be applied to classes &#39;</span></tt>
+            </div>
+            <div id="l381"
+               class="code sev- "><tt><i>381</i>                              <span class="s1">&#39;defining a collection of cases.&#39;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l382"
+               class="code sev- "><tt><i>382</i>         <span class="k">for</span> <span class="n">case_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span></tt>
+            </div>
+            <div id="l383"
+               class="code sev- "><tt><i>383</i>             <span class="n">case_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">case_name</span><span class="p">)</span></tt>
+            </div>
+            <div id="l384"
+               class="code sev- "><tt><i>384</i>             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_case_function</span><span class="p">(</span><span class="n">case_</span><span class="p">):</span>  <span class="c1"># Not a case</span></tt>
+            </div>
+            <div id="l385"
+               class="code sev- "><tt><i>385</i>                 <span class="k">continue</span></tt>
+            </div>
+            <div id="l386"
+               class="code sev- "><tt><i>386</i>             <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l387"
+               class="code sev- "><tt><i>387</i>                 <span class="n">case_info</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">case_</span><span class="p">,</span> <span class="n">CASE_FIELD</span><span class="p">)</span></tt>
+            </div>
+            <div id="l388"
+               class="code sev- "><tt><i>388</i>             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span></tt>
+            </div>
+            <div id="l389"
+               class="code sev- "><tt><i>389</i>                 <span class="c1"># Not explicitly decorated with @case. Do so now.</span></tt>
+            </div>
+            <div id="l390"
+               class="code sev- "><tt><i>390</i>                 <span class="c1"># NB: `case(obj) is obj`, i.e., the `@case` decorator</span></tt>
+            </div>
+            <div id="l391"
+               class="code sev- "><tt><i>391</i>                 <span class="c1"># only adds some attributes to `obj`. In the future, if</span></tt>
+            </div>
+            <div id="l392"
+               class="code sev- "><tt><i>392</i>                 <span class="c1"># `@case` will return a different object, we will have</span></tt>
+            </div>
+            <div id="l393"
+               class="code sev- "><tt><i>393</i>                 <span class="c1"># to `setattr(cls, case_name, case_mod)`</span></tt>
+            </div>
+            <div id="l394"
+               class="code sev- "><tt><i>394</i>                 <span class="n">_</span> <span class="o">=</span> <span class="n">case</span><span class="p">(</span><span class="n">case_</span><span class="p">)</span></tt>
+            </div>
+            <div id="l395"
+               class="code sev- "><tt><i>395</i>                 <span class="n">case_info</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">case_</span><span class="p">,</span> <span class="n">CASE_FIELD</span><span class="p">)</span></tt>
+            </div>
+            <div id="l396"
+               class="code sev- "><tt><i>396</i>             <span class="n">tags_to_add</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">case_info</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span></tt>
+            </div>
+            <div id="l397"
+               class="code sev- "><tt><i>397</i>             <span class="n">case_info</span><span class="o">.</span><span class="n">add_tags</span><span class="p">(</span><span class="n">tags_to_add</span><span class="p">)</span></tt>
+            </div>
+            <div id="l398"
+               class="code sev- "><tt><i>398</i>         <span class="k">return</span> <span class="bp">cls</span></tt>
+            </div>
+            <div id="l399"
+               class="code sev- "><tt><i>399</i>     <span class="k">return</span> <span class="n">_decorator</span></tt>
+            </div>
             
          </div>
       </div>
