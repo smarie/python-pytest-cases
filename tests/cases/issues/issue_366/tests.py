@@ -7,4 +7,6 @@ def mock_parameterization_target():
 
 
 def test_get_all_cases_auto_works_in_tests_py():
-    get_all_cases(mock_parameterization_target, cases=AUTO)
+    res = get_all_cases(mock_parameterization_target, cases=AUTO)
+    assert isinstance(res, list) and len(res) == 1
+    assert res[0].__name__ == "case_one_366"
