@@ -2,6 +2,11 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+"""
+This test file is about chacking that all fixture naming conflicts are handled correctly, between fixtures in the
+module, in the test classes, and the fixtures generated for the case functions when they are parametrized or require
+fixtures.
+"""
 import pytest
 
 from pytest_cases.common_pytest_marks import has_pytest_param
@@ -12,42 +17,69 @@ from pytest_cases import parametrize_with_cases
 if has_pytest_param:
     @pytest.fixture
     def b():
+        """This fixture has the same name as the fixtures created for cases in the test_issue_126_2_cases.py"""
         return -1
 
 
     @pytest.fixture(name='a')
     def a_in_module():
+        """This fixture has the same name as the fixtures created for cases in the test_issue_126_2_cases.py"""
         return 1
 
 
     class TestA:
         @pytest.fixture(name='a')
         def a_nested(self):
+            """This fixture has the same name as the fixtures created for cases in the test_issue_126_2_cases.py"""
             return 2
 
         def test_a_nested(self, a):
+            """Here the requested fixture is `a` so it is the one from this file, not the one generated from the case
+            file. Since the nested one overrides the module one, it is 2 and not 1"""
             assert a == 2
 
         @parametrize_with_cases('o', debug=True)
         def test_foo_nested(self, o):
+            """
+            Here parameter o will receive as argvalues the various cases defined in the test_issue_126_2_cases.py,
+            all equal to 'case!'. If it receives "1" or "-1", it means that the fixtures generated for the cases did
+            not well manage to coexists with the fixtures in this file, above.
+            """
             assert o == 'case!'
 
         @parametrize_with_cases('o', debug=True)
         def test_foo_nested2(self, o):
+            """
+            Here parameter o will receive as argvalues the various cases defined in the test_issue_126_2_cases.py,
+            all equal to 'case!'. If it receives "1" or "-1", it means that the fixtures generated for the cases did
+            not well manage to coexists with the fixtures in this file, above.
+            """
             assert o == 'case!'
 
 
     def test_bar(a):
+        """Here the requested fixture is `a` so it is the one from this file, not the one generated from the case
+        file. S it is 1"""
         assert a == 1
 
 
     @parametrize_with_cases('o', debug=True)
     def test_foo(o):
+        """
+        Here parameter o will receive as argvalues the various cases defined in the test_issue_126_2_cases.py,
+        all equal to 'case!'. If it receives "1" or "-1", it means that the fixtures generated for the cases did
+        not well manage to coexists with the fixtures in this file, above.
+        """
         assert o == 'case!'
 
 
     @parametrize_with_cases('o', debug=True)
     def test_foo2(o):
+        """
+        Here parameter o will receive as argvalues the various cases defined in the test_issue_126_2_cases.py,
+        all equal to 'case!'. If it receives "1" or "-1", it means that the fixtures generated for the cases did
+        not well manage to coexists with the fixtures in this file, above.
+        """
         assert o == 'case!'
 
     def test_synthesis(module_results_dct):

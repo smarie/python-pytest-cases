@@ -4,7 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
 
-from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, PYTEST361_36X, PYTEST811, PYTEST81_OR_GREATER
+from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, PYTEST361_36X, PYTEST81_OR_GREATER
 
 
 def test_config(request):
