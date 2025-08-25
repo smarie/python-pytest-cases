@@ -304,7 +304,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
                 # as we don't know what to look for. We complain here
                 # rather than raising AssertionError in the call to
                 # import_default_cases_module. See #309.
-                if not caller_module_name.split('.')[-1].startswith('test_'):
+                if not _has_test_prefix(caller_module_name.split('.')[-1]):
                     raise ValueError(
                         'Cannot use `cases=AUTO` in file "%s". `cases=AUTO` is '
                         'only allowed in files whose name starts with "test_" '
@@ -322,6 +322,11 @@ def get_all_cases(parametrization_target=None,  # type: Callable
     # filter last, for easier debugging (collection will be slightly less performant when a large volume of cases exist)
     return [c for c in cases_funs
             if matches_tag_query(c, has_tag=has_tag, filter=filters)]
+
+
+def _has_test_prefix(module_name):  # type: (str) -> bool
+    prefixes = ('test_', 'tests')
+    return any(module_name.startswith(p) for p in prefixes)
 
 
 def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType]
@@ -694,7 +699,7 @@ def import_default_cases_module(test_module_name):
     except ModuleNotFoundError:
         # Then try `cases_<name>.py`
         parts = test_module_name.split('.')
-        assert parts[-1][0:5] == 'test_'
+        assert _has_test_prefix(parts[-1])
         cases_module_name2 = "%s.cases_%s" % ('.'.join(parts[:-1]), parts[-1][5:])
         try:
             cases_module = import_module(cases_module_name2)
