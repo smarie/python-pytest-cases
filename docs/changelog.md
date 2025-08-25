@@ -1,5 +1,12 @@
 # Changelog
 
+### 3.10.0 - (in progress) New `with_case_tags` decorator
+
+- Added the `with_case_tags` decorator for applying common tags to all cases
+  defined in a case class. Fixes [#351](https://github.com/smarie/python-pytest-cases/issues/351).
+  PR [#361](https://github.com/smarie/python-pytest-cases/pull/361)
+  by [@michele-riva](https://github.com/michele-riva).
+
 ### 3.9.1 - support for python 3.14 and pytest 8.4
 
 - Fixed `AttributeError: 'MiniMetafunc' object has no attribute '_params_directness'` when a case function is 
@@ -11,6 +18,10 @@
   [#362](https://github.com/smarie/python-pytest-cases/issues/362) and fixes
   [#186](https://github.com/smarie/python-pytest-cases/issues/186)
 - Fixed test suite for python 3.14, officializing the support for this version.
+
+### 3.9.0 - yanked version
+
+This version was yanked. See 3.9.1.
 
 ### 3.8.6 - compatibility fix
 
