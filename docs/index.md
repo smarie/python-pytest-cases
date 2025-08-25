@@ -2,7 +2,7 @@
 
 *Separate test code from test cases in `pytest`.*
 
-[![Python versions](https://img.shields.io/pypi/pyversions/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) ![Pytest versions](https://img.shields.io/badge/pytest-3%20%7C%204%20%7C%205%20%7C%206%20%7C%207%20%7C%208-blue) [![Build Status](https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml/badge.svg)](https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml)  [![Tests Status](./reports/junit/junit-badge.svg?dummy=8484744)](./reports/junit/report.html) [![Coverage Status](./reports/coverage/coverage-badge.svg?dummy=8484744)](./reports/coverage/index.html) [![codecov](https://codecov.io/gh/smarie/python-pytest-cases/branch/main/graph/badge.svg)](https://codecov.io/gh/smarie/python-pytest-cases) [![Flake8 Status](./reports/flake8/flake8-badge.svg?dummy=8484744)](./reports/flake8/index.html)
+[![Python versions](https://img.shields.io/pypi/pyversions/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) ![Pytest versions](https://img.shields.io/badge/pytest-6%20%7C%207%20%7C%208-blue) [![Build Status](https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml/badge.svg)](https://github.com/smarie/python-pytest-cases/actions/workflows/base.yml)  [![Tests Status](./reports/junit/junit-badge.svg?dummy=8484744)](./reports/junit/report.html) [![Coverage Status](./reports/coverage/coverage-badge.svg?dummy=8484744)](./reports/coverage/index.html) [![codecov](https://codecov.io/gh/smarie/python-pytest-cases/branch/main/graph/badge.svg)](https://codecov.io/gh/smarie/python-pytest-cases) [![Flake8 Status](./reports/flake8/flake8-badge.svg?dummy=8484744)](./reports/flake8/index.html)
 
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-pytest-cases/) [![PyPI](https://img.shields.io/pypi/v/pytest-cases.svg)](https://pypi.python.org/pypi/pytest-cases/) [![Downloads](https://pepy.tech/badge/pytest-cases)](https://pepy.tech/project/pytest-cases) [![Downloads per week](https://pepy.tech/badge/pytest-cases/week)](https://pepy.tech/project/pytest-cases) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-pytest-cases.svg)](https://github.com/smarie/python-pytest-cases/stargazers)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3937829.svg)](https://doi.org/10.5281/zenodo.3937829)
@@ -269,7 +269,7 @@ def test_bad_datasets(data, err_type, err_msg):
 ``` 
 
 
- - the `has_tag` argument allows you to filter cases based on tags set on case functions using the `@case` decorator. See API reference of [`@case`](./api_reference.md#case) and [`@parametrize_with_cases`](./api_reference.md#parametrize_with_cases).
+ - the `has_tag` argument allows you to filter cases based on tags set on case functions using the `@case` decorator. See API reference of [`@case`](./api_reference.md#case) and [`@parametrize_with_cases`](./api_reference.md#parametrize_with_cases). Tags shared by multiple cases grouped inside a class may be added automatically to all cases using the [`@with_case_tags`](./api_reference.md#with_case_tags) decorator.
 
 
 ```python

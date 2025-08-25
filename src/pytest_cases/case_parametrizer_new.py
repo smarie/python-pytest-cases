@@ -426,8 +426,9 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
     If `case_fun` requires at least on fixture, a fixture will be created if not yet present, and a `fixture_ref` will
     be returned.
 
-    If `case_fun` is a parametrized case, one `lazy_value` with a partialized version will be created for each parameter
-    combination.
+    If `case_fun` is a parametrized case, (NEW since 3.0.0) a fixture will be created if not yet present,
+    and a `fixture_ref` will be returned. (OLD < 3.0.0) one `lazy_value` with a partialized version will be created
+    for each parameter combination.
 
     Otherwise, `case_fun` represents a single case: in that case a single `lazy_value` is returned.
 
@@ -739,12 +740,27 @@ def extract_cases_from_class(cls,
                              ):
     # type: (...) -> List[Callable]
     """
+    Collects all case functions (methods matching ``case_fun_prefix``) in class ``cls``.
 
-    :param cls:
-    :param check_name:
-    :param case_fun_prefix:
-    :param _case_param_factory:
-    :return:
+    Parameters
+    ----------
+    cls : Type
+        A class where to look for case functions. All methods matching ``prefix`` will be returned.
+
+    check_name : bool
+        If this is ``True`` and class name does not contain the string ``Case``, the class will not be inspected and
+        an empty list will be returned.
+
+    case_fun_prefix : str
+        A prefix that case functions (class methods) must match to be collected.
+
+    _case_param_factory :
+        Legacy. Not used.
+
+    Returns
+    -------
+    cases_lst : List[Callable]
+        A list of collected case functions (class methods).
     """
     if is_case_class(cls, check_name=check_name):
         # see from _pytest.python import pytest_pycollect_makeitem
@@ -774,7 +790,7 @@ def extract_cases_from_class(cls,
         return []
 
 
-def extract_cases_from_module(module,                           # type: ModuleRef
+def extract_cases_from_module(module,                           # type: Union[str, ModuleRef]
                               package_name=None,                # type: str
                               case_fun_prefix=CASE_PREFIX_FUN,  # type: str
                               _case_param_factory=None
@@ -787,10 +803,27 @@ def extract_cases_from_module(module,                           # type: ModuleRe
     See also `_pytest.python.PyCollector.collect` and `_pytest.python.PyCollector._makeitem` and
     `_pytest.python.pytest_pycollect_makeitem`: we could probably do this in a better way in pytest_pycollect_makeitem
 
-    :param module:
-    :param package_name:
-    :param _case_param_factory:
-    :return:
+    Parameters
+    ----------
+    module : Union[str, ModuleRef]
+        A module where to look for case functions. All functions in the module matching ``prefix`` will be
+        returned. In addition, all classes in the module with ``Case`` in their name will be inspected. For each of
+        them, all methods matching ``prefix`` will be returned too.
+
+    package_name : Optional[str], default: None
+        If ``module`` is provided as a string, this is a mandatory package full qualified name (e.g. ``a.b.c``) where
+        to import the module from.
+
+    case_fun_prefix : str
+        A prefix that case functions (including class methods) must match to be collected.
+
+    _case_param_factory :
+        Legacy. Not used.
+
+    Returns
+    -------
+    cases : List[Callable]
+        A list of case functions
     """
     # optionally import module if passed as module name string
     if isinstance(module, string_types):
@@ -810,12 +843,30 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                                         cls=None,                         # type: Type
                                         case_fun_prefix=CASE_PREFIX_FUN,  # type: str
                                         _case_param_factory=None
-                                        ):
+                                        ):  # type: (...) -> List[Callable]
     """
+    Extracts all case functions from `module` or `cls` (only one non-None must be provided).
 
-    :param module:
-    :param _case_param_factory:
-    :return:
+    Parameters
+    ----------
+    module : Optional[ModuleRef], default: None
+        A module where to look for case functions. All functions in the module matching ``prefix`` will be
+        returned. In addition, all classes in the module with ``Case`` in their name will be inspected. For each of
+        them, all methods matching ``prefix`` will be returned too.
+
+    cls : Optional[Type], default: None
+        A class where to look for case functions. All methods matching ``prefix`` will be returned.
+
+    case_fun_prefix : str
+        A prefix that case functions (including class methods) must match to be collected.
+
+    _case_param_factory :
+        Legacy. Not used.
+
+    Returns
+    -------
+    cases : List[Callable]
+        A list of case functions
     """
     if not ((cls is None) ^ (module is None)):
         raise ValueError("Only one of cls or module should be provided")
@@ -902,6 +953,7 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                                      % (m, cases_dct[co_firstlineno]))
                 cases_dct[co_firstlineno] = m
             else:
+                # Not used anymore
                 # Legacy usage where the cases generators were expanded here and inserted with a virtual line no
                 _case_param_factory(m, co_firstlineno, cases_dct)
 
