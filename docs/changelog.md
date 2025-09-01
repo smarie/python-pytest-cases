@@ -6,6 +6,8 @@
   defined in a case class. Fixes [#351](https://github.com/smarie/python-pytest-cases/issues/351).
   PR [#361](https://github.com/smarie/python-pytest-cases/pull/361)
   by [@michele-riva](https://github.com/michele-riva).
+- Allow `tests.py` to find tests from `tests_cases.py`. Fixes [#366](https://github.com/smarie/python-pytest-cases/issues/366).
+  PR [#344](https://github.com/smarie/python-pytest-cases/pull/344) by [@last-partizan](https://github.com/last-partizan).
 
 ### 3.9.1 - support for python 3.14 and pytest 8.4
 

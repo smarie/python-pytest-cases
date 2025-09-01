@@ -325,7 +325,7 @@ CaseType = Union[Callable, Type, ModuleRef]
 
 A decorator for test functions or fixtures, to parametrize them based on test cases. It works similarly to [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/parametrize.html): argnames represent a coma-separated string of arguments to inject in the decorated test function or fixture. The argument values (`argvalues` in [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/parametrize.html)) are collected from the various case functions found according to `cases`, and injected as lazy values so that the case functions are called just before the test or fixture is executed.
 
-By default (`cases=AUTO`) the list of test cases is automatically drawn from the python module file named `test_<name>_cases.py` or if not found, `cases_<name>.py`,  where `test_<name>` is the current module name.
+By default (`cases=AUTO`) the list of test cases is automatically drawn from the python module file named `test_<name>_cases.py` or if not found, `cases_<name>.py`,  where `test_<name>` is the current module name. Also works for `tests.py` (`tests_cases.py`).
 
 Finally, the `cases` argument also accepts an explicit case function, cases-containing class, module or module name; or a list containing any mix of these elements. Note that both absolute and relative module names are supported.
 
