@@ -46,6 +46,7 @@ PYTEST71_OR_GREATER = PYTEST_VERSION >= Version('7.1.0')
 PYTEST8_OR_GREATER = PYTEST_VERSION >= Version('8.0.0')
 PYTEST81_OR_GREATER = PYTEST_VERSION >= Version('8.1.0')
 PYTEST84_OR_GREATER = PYTEST_VERSION >= Version('8.4.0')
+PYTEST9_OR_GREATER = PYTEST_VERSION >= Version('9.0.0')
 
 
 def get_param_argnames_as_list(argnames):
