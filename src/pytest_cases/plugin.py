@@ -337,14 +337,13 @@ class FixtureClosureNode(object):
 
                     # add all dependencies, accounting for overrides
                     if PYTEST9_OR_GREATER:
-                        dependencies_set = set()
+                        dependencies = []
                         for _fixture_or_overridden in reversed(fixturedefs):
-                            dependencies_set.update(_fixture_or_overridden.argnames)
+                            dependencies = list(_fixture_or_overridden.argnames) + dependencies
                             # If there's an override and doesn't depend on the overridden fixture,
                             # ignore remaining definitions
                             if fixname not in _fixture_or_overridden.argnames:
                                 break
-                        dependencies = list(dependencies_set)
                     else:
                         dependencies = _fixdef.argnames
 
