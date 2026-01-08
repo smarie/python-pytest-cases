@@ -335,7 +335,7 @@ class FixtureClosureNode(object):
                     # normal fixture
                     self.add_required_fixture(fixname, fixturedefs)
 
-                    # add all dependencies in the to the list, accounting for overrides
+                    # add all dependencies, accounting for overrides
                     if PYTEST9_OR_GREATER:
                         dependencies_set = set()
                         for _fixture_or_overridden in reversed(fixturedefs):
