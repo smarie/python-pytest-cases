@@ -32,7 +32,7 @@ class TestOverrideWithoutParent:
 
 def test_overridden_fixtures(pytester):
     pytester.makepyfile(OVERRIDDEN_FIXTURES_TEST_FILE)
-    result = pytester.runpytest("-p", "pytest_cases.plugin")
+    result = pytester.runpytest()
     result.assert_outcomes(passed=2)
 
 
@@ -87,5 +87,5 @@ class TestOverrideWithoutParent:
 
 def test_overridden_unions(pytester):
     pytester.makepyfile(OVERRIDDEN_UNION_FIXTURES_TEST_FILE)
-    result = pytester.runpytest("-p", "pytest_cases.plugin")
+    result = pytester.runpytest()
     result.assert_outcomes(passed=6)
