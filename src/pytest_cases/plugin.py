@@ -71,7 +71,7 @@ def pytest_collection(session):
     session._fixturemanager.getfixtureclosure = partial(getfixtureclosure, session._fixturemanager)  # noqa
 
 
-class FixtureDefsCache(object):
+class FixtureDefsCache:
     """
     A 'cache' for fixture definitions obtained from the FixtureManager `fm`, for test node `nodeid`
     """
@@ -97,7 +97,7 @@ class FixtureDefsCache(object):
         return fixdefs
 
 
-class FixtureClosureNode(object):
+class FixtureClosureNode:
     """
     A node in a fixture closure Tree.
 
@@ -936,7 +936,7 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
             calls_reactor.append(NormalParamz(argnames, argvalues, indirect, ids, scope, kwargs))
 
 
-class CallsReactor(object):
+class CallsReactor:
     """
     This object replaces the list of calls that was in `metafunc._calls`.
     It behaves like a list, but it actually builds that list dynamically based on all parametrizations collected

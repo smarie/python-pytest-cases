@@ -161,7 +161,7 @@ class ExceptionCheckingError(AssertionError):
     pass
 
 
-class AssertException(object):
+class AssertException:
     """ An implementation of the `assert_exception` context manager"""
 
     __slots__ = ('expected_exception', 'err_type', 'err_ptrn', 'err_inst', 'err_checker')

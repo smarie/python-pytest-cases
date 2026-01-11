@@ -41,7 +41,7 @@ USED = _Used()
 """Object representing a fixture value when the fixture is used"""
 
 
-class UnionIdMakers(object):
+class UnionIdMakers:
     """
     The enum defining all possible id styles for union fixture parameters ("alternatives")
     """
@@ -89,7 +89,7 @@ class UnionIdMakers(object):
             return style
 
 
-class UnionFixtureAlternative(object):
+class UnionFixtureAlternative:
     """Defines an "alternative", used to parametrize a fixture union"""
     __slots__ = 'union_name', 'alternative_name', 'alternative_index'
 

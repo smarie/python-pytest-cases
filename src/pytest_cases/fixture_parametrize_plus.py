@@ -120,7 +120,7 @@ _make_fixture_product = _fixture_product
 """A readable alias for callers not using the returned symbol"""
 
 
-class fixture_ref(object):  # noqa
+class fixture_ref:  # noqa
     """
     A reference to a fixture, to be used in `@parametrize`.
     You can create it from a fixture name or a fixture object (function).
@@ -178,7 +178,7 @@ class fixture_ref(object):  # noqa
         return FixtureRefItem(self, item)
 
 
-class FixtureRefItem(object):
+class FixtureRefItem:
     """An item in a fixture_ref when this fixture_ref is used as a tuple."""
     __slots__ = 'host', 'item'
 

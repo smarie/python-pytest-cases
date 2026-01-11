@@ -321,7 +321,7 @@ def fixture(scope="function",        # type: str
                                   hook=hook, _caller_module_offset_when_unpack=3, **kwargs)
 
 
-class FixtureParam(object):
+class FixtureParam:
     __slots__ = 'argnames',
 
     def __init__(self, argnames):
@@ -331,7 +331,7 @@ class FixtureParam(object):
         return "FixtureParam(argnames=%s)" % self.argnames
 
 
-class CombinedFixtureParamValue(object):
+class CombinedFixtureParamValue:
     """Represents a parameter value created when @parametrize is used on a @fixture """
     __slots__ = 'param_defs', 'argvalues',
 

@@ -27,7 +27,7 @@ CASE_PREFIX_FUN = 'case_'
 CASE_FIELD = '_pytestcase'
 
 
-class _CaseInfo(object):
+class _CaseInfo:
     """
     Contains all information available about a case.
     It is attached to a case function as an attribute.

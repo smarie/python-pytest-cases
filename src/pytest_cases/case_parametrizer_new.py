@@ -343,7 +343,7 @@ def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType
                                                               debug)]
 
 
-class CaseParamValue(object):
+class CaseParamValue:
     """Common class for lazy values and fixture refs created from cases"""
     __slots__ = ()
 
@@ -1287,7 +1287,7 @@ def get_current_case_id(request_or_item,
 #     __module__ = "pytest_cases"
 #
 #
-# class CasesModule(object):
+# class CasesModule:
 #     """
 #     A collector for test cases
 #     This is a very lightweight version of `_pytest.python.Module`,the pytest collector for test functions and classes.

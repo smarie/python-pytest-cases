@@ -16,7 +16,7 @@ from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as
     markdecorators_to_markinfos
 
 
-class Lazy(object):
+class Lazy:
     """
     All lazy items should inherit from this for good pytest compliance (ids, marks, etc.)
     """

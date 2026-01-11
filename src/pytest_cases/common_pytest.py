@@ -693,14 +693,14 @@ except ImportError:
         return arg_names
 
 
-class FakeSession(object):
+class FakeSession:
     __slots__ = ('_fixturemanager',)
 
     def __init__(self):
         self._fixturemanager = None
 
 
-class MiniFuncDef(object):
+class MiniFuncDef:
     __slots__ = ('nodeid', 'session')
 
     def __init__(self, nodeid):
@@ -910,7 +910,7 @@ def inject_host(apply_decorator):
     :param apply_decorator:
     :return:
     """
-    # class _apply_decorator_with_host_tracking(object):
+    # class _apply_decorator_with_host_tracking:
     #     def __init__(self, _target):
     #         # This is called when the decorator is applied on the target. Remember the target and result of paramz
     #         self._target = _target
