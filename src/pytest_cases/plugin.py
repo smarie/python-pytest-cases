@@ -163,10 +163,11 @@ class FixtureClosureNode(object):
         if not self.is_closure_built():
             str_repr = "<pending, incomplete>"
         else:
-            str_repr = "%s(%s)" % (indent, ",".join([("%s" % f) for f in self.fixture_defs.keys()]))
+            list_part = ",".join([(f"{f}") for f in self.fixture_defs.keys()])
+            str_repr = f"{indent}({list_part})"
 
         if self.has_split() and with_children:
-            children_str_prefix = "\n%s - " % indent
+            children_str_prefix = f"\n{indent} - "
             children_str = children_str_prefix + children_str_prefix.join([c.to_str(indent_nb=indent_nb + 1)
                                                                            for c in self.children])
             str_repr = str_repr + " split: " + self.split_fixture_name + children_str
@@ -598,11 +599,13 @@ class SuperClosure(MutableSequence):
         """ Return a synthetic view, and a detailed tree view, of this closure """
         alternatives = self.tree.get_alternatives()
         nb_alternative_closures = len(alternatives)
-        return "SuperClosure with %s alternative closures:\n" % nb_alternative_closures \
-               + "\n".join(" - %s (filters: %s)" % (p, ", ".join("%s=%s[%s]=%s" % (k, k, v[0], v[1])
-                                                                 for k, v in f.items()))
-                           for f, p in alternatives) \
-               + "\nThe 'super closure list' is %s\n\nThe fixture tree is :\n%s\n" % (list(self), self.tree)
+        filter_list = []
+        for f, p in alternatives:
+            filters = ", ".join(f"{k}={k}[{v[0]}]={v[1]}" for k, v in f.items())
+            filter_list.append(f" - {p} (filters: {filters})")
+        return f"SuperClosure with {nb_alternative_closures} alternative closures:\n" \
+               + "\n".join(filter_list) \
+               + f"\nThe 'super closure list' is {list(self)}\n\nThe fixture tree is :\n{self.tree}\n"
 
     def get_all_fixture_defs(self, drop_fake_fixtures=True):
         """
@@ -816,7 +819,7 @@ def create_super_closure(fm,
     parentid = parentnode.nodeid
 
     if _DEBUG:
-        print("Creating closure for %s:" % parentid)
+        print(f"Creating closure for {parentid}:")
 
     # -- auto-use fixtures
     if hasattr(pytest, "version_tuple") and pytest.version_tuple >= (8, 1):
@@ -863,7 +866,7 @@ def create_super_closure(fm,
         super_closure = list(super_closure)
 
     if _DEBUG:
-        print("Closure for %s completed:" % parentid)
+        print(f"Closure for {parentid} completed:")
         print(closure_tree)
         print(super_closure)
 
@@ -890,9 +893,8 @@ class UnionParamz(namedtuple('UnionParamz', ['union_fixture_name', 'alternative_
     __slots__ = ()
 
     def __str__(self):
-        return "[UNION] %s=[%s], ids=%s, scope=%s, kwargs=%s" \
-               "" % (self.union_fixture_name, ','.join([str(a) for a in self.alternative_names]),
-                     self.ids, self.scope, self.kwargs)
+        return f"[UNION] {self.union_fixture_name}=[{','.join([str(a) for a in self.alternative_names])}], " \
+               f"ids={self.ids}, scope={self.scope}, kwargs={self.kwargs}"
 
 
 class NormalParamz(namedtuple('NormalParamz', ['argnames', 'argvalues', 'indirect', 'ids', 'scope', 'kwargs'])):
@@ -901,8 +903,8 @@ class NormalParamz(namedtuple('NormalParamz', ['argnames', 'argvalues', 'indirec
     __slots__ = ()
 
     def __str__(self):
-        return "[NORMAL] %s=[%s], indirect=%s, ids=%s, scope=%s, kwargs=%s" \
-               "" % (self.argnames, self.argvalues, self.indirect, self.ids, self.scope, self.kwargs)
+        return f"[NORMAL] {self.argnames}=[{self.argvalues}], indirect={self.indirect}, ids={self.ids}, " \
+               f"scope={self.scope}, kwargs={self.kwargs}" 
 
 
 def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
@@ -1050,9 +1052,8 @@ class CallsReactor(object):
         #     calls += get_calls_for_partition(self.metafunc, super_closure, i, pending.copy())
 
         if _DEBUG:
-            print("\n".join(["%s[%s]: funcargs=%s, params=%s" % (get_pytest_nodeid(self.metafunc),
-                                                                 c.id, c.params if PYTEST8_OR_GREATER else c.funcargs,
-                                                                 c.params)
+            print("\n".join([f"{get_pytest_nodeid(self.metafunc)}[{c.id}]: "
+                             f"funcargs={c.params if PYTEST8_OR_GREATER else c.funcargs}, params={c.params}"
                              for c in calls]) + "\n")
 
         # clean EMPTY_ID set by @parametrize when there is at least a MultiParamsAlternative
@@ -1220,8 +1221,8 @@ def _cleanup_calls_list(metafunc,
 #                 # assert selected_alternative.alternative_name == selected_filter
 #
 #                 if _DEBUG:
-#                     print("[Partition %s] Applying parametrization for UNION fixture %r=%r"
-#                           "" % (p_idx, p_to_apply.union_fixture_name, selected_alternative))
+#                     print(f"[Partition {p_idx}] Applying parametrization for UNION "
+#                           f"fixture {p_to_apply.union_fixture_name!r}={selected_alternative!r}")
 #
 #                 # always use 'indirect' since that's a fixture.
 #                 calls = _parametrize_calls(metafunc, calls, p_to_apply.union_fixture_name,
@@ -1231,14 +1232,13 @@ def _cleanup_calls_list(metafunc,
 #             elif isinstance(p_to_apply, NormalParamz):
 #                 # ******** Normal parametrization **********
 #                 if _DEBUG:
-#                     print("[Partition %s] Applying parametrization for NORMAL %s"
-#                           "" % (p_idx, p_to_apply.argnames))
+#                     print(f"[Partition {p_idx}] Applying parametrization for NORMAL {p_to_apply.argnames}")
 #
 #                 calls = _parametrize_calls(metafunc, calls, p_to_apply.argnames, p_to_apply.argvalues,
 #                                            indirect=p_to_apply.indirect, ids=p_to_apply.ids,
 #                                            scope=p_to_apply.scope, **p_to_apply.kwargs)
 #             else:
-#                 raise TypeError("Invalid parametrization type: %s" % p_to_apply.__class__)
+#                 raise TypeError(f"Invalid parametrization type: {p_to_apply.__class__}")
 #
 #     # Cleaning
 #     for i in range(len(calls)):
@@ -1364,14 +1364,14 @@ def _process_node(metafunc,
             elif isinstance(p_to_apply, NormalParamz):
                 # ******** Normal parametrization **********
                 if _DEBUG:
-                    print("[Node %s] Applying parametrization for NORMAL %s"
-                          "" % (current_node.to_str(with_children=False), p_to_apply.argnames))
+                    print(f"[Node {current_node.to_str(with_children=False)}] Applying parametrization "
+                          f"for NORMAL {p_to_apply.argnames}")
 
                 calls = _parametrize_calls(metafunc, calls, p_to_apply.argnames, p_to_apply.argvalues,
                                            indirect=p_to_apply.indirect, ids=p_to_apply.ids,
                                            scope=p_to_apply.scope, **p_to_apply.kwargs)
             else:
-                raise TypeError("Invalid parametrization type: %s" % p_to_apply.__class__)
+                raise TypeError(f"Invalid parametrization type: {p_to_apply.__class__}")
 
     # (2) then is there a "union" = a split between two sub-branches in the tree ?
     if not current_node.has_split():
@@ -1391,8 +1391,8 @@ def _process_node(metafunc,
             elif isinstance(p_to_apply, UnionParamz):
                 # ******** Union parametrization **********
                 if _DEBUG:
-                    print("[Node %s] Applying parametrization for UNION %s"
-                          "" % (current_node.to_str(with_children=False), p_to_apply.union_fixture_name))
+                    print(f"[Node {current_node.to_str(with_children=False)}] "
+                          f"Applying parametrization for UNION {p_to_apply.union_fixture_name}")
 
                 # always use 'indirect' since that's a fixture.
                 calls = _parametrize_calls(metafunc, calls, p_to_apply.union_fixture_name,
@@ -1481,10 +1481,11 @@ _OPTIONS = {
 # @hookspec(historic=True)
 def pytest_addoption(parser):
     group = parser.getgroup('pytest-cases ordering', 'pytest-cases reordering options', after='general')
-    help_str = """String specifying one of the reordering alternatives to use. Should be one of :
- - %s""" % ("\n - ".join(["%s: %s" % (k, v) for k, v in _OPTIONS.items()]))
+    options_str = "\n - ".join([f"{k}: {v}" for k, v in _OPTIONS.items()])
+    help_str = f"""String specifying one of the reordering alternatives to use. Should be one of :
+ - {options_str}"""
     group.addoption(
-        '--%s' % _OPTION_NAME.replace('_', '-'), type=str, default='normal', help=help_str
+        f"--{_OPTION_NAME.replace('_', '-')}", type=str, default='normal', help=help_str
     )
 
 
@@ -1504,8 +1505,8 @@ def pytest_configure(config):
     allowed_values = ('normal', 'skip')
     reordering_choice = config.getoption(_OPTION_NAME)
     if reordering_choice not in allowed_values:
-        raise ValueError("[pytest-cases] Wrong --%s option: %s. Allowed values: %s"
-                         "" % (_OPTION_NAME, reordering_choice, allowed_values))
+        raise ValueError(f"[pytest-cases] Wrong --{_OPTION_NAME} option: {reordering_choice}. "
+                         f"Allowed values: {allowed_values}")
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

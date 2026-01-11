@@ -76,14 +76,14 @@ class UnionIdMakers(object):
                 param  # type: UnionFixtureAlternative
                 ):
         """ ids are /<fixture_name> """
-        return "/%s" % (param.get_alternative_id(),)
+        return f"/{param.get_alternative_id()}"
 
     @classmethod
     def explicit(cls,
                  param  # type: UnionFixtureAlternative
                  ):
         """ ids are <union_name>/<fixture_name> """
-        return "%s/%s" % (param.get_union_id(), param.get_alternative_id())
+        return f"{param.get_union_id()}/{param.get_alternative_id()}"
 
     @classmethod
     def get(cls, style  # type: Union[str, Callable]
@@ -102,7 +102,7 @@ class UnionIdMakers(object):
             try:
                 return getattr(cls, style)
             except AttributeError:
-                raise ValueError("Unknown style: %r" % style)
+                raise ValueError(f"Unknown style: {style!r}")
         else:
             # assume a callable: return it directly
             return style
@@ -142,11 +142,11 @@ class UnionFixtureAlternative(object):
 
     def __str__(self):
         # This string representation can be used as an id if you pass `ids=str` to fixture_union for example
-        return "%s/%s/%s" % (self.get_union_id(), self.get_alternative_idx(), self.get_alternative_id())
+        return f"{self.get_union_id()}/{self.get_alternative_idx()}/{self.get_alternative_id()}"
 
     def __repr__(self):
-        return "%s(union_name=%s, alternative_index=%s, alternative_name=%s)" \
-               % (self.__class__.__name__, self.union_name, self.alternative_index, self.alternative_name)
+        return f"{self.__class__.__name__}(union_name={self.union_name}, " \
+               f"alternative_index={self.alternative_index}, alternative_name={self.alternative_name})"
 
     @staticmethod
     def to_list_of_fixture_names(alternatives_lst  # type: List[UnionFixtureAlternative]
@@ -171,7 +171,7 @@ class InvalidParamsList(Exception):
 
     def __str__(self):
         return "Invalid parameters list (`argvalues`) in pytest parametrize. `list(argvalues)` returned an error. " \
-               "Please make sure that `argvalues` is a list, tuple or iterable : %r" % self.params
+               f"Please make sure that `argvalues` is a list, tuple or iterable : {self.params!r}"
 
 
 def is_fixture_union_params(params):
@@ -338,7 +338,7 @@ def fixture_union(name,                # type: str
 
         # remove duplicates in the fixture arguments: each is required only once by the union fixture to create
         if _name in f_names_args:
-            warn("Creating a fixture union %r where two alternatives are the same fixture %r." % (name, _name))
+            warn(f"Creating a fixture union {name!r} where two alternatives are the same fixture {_name!r}.")
         else:
             f_names_args.append(_name)
 
@@ -399,7 +399,7 @@ def _fixture_union(fixtures_dest,
 
     # then generate the body of our union fixture. It will require all of its dependent fixtures and receive as
     # a parameter the name of the fixture to use
-    @with_signature("%s(%s, request)" % (name, ', '.join(unique_fix_alt_names)))
+    @with_signature(f"{name}({', '.join(unique_fix_alt_names)}, request)")
     def _new_fixture(request, **all_fixtures):
         # ignore the "not used" marks, like in @ignore_unused
         if not is_used_request(request):
@@ -410,8 +410,8 @@ def _fixture_union(fixtures_dest,
                 fixture_to_use = _alternative.alternative_name
                 return all_fixtures[fixture_to_use]
             else:
-                raise TypeError("Union Fixture %s received invalid parameter type: %s. Please report this issue."
-                                "" % (name, _alternative.__class__))
+                raise TypeError(f"Union Fixture {name} received invalid parameter type: {_alternative.__class__}. "
+                                "Please report this issue.")
 
     if ids is None:
         ids = UnionIdMakers.get(idstyle)
@@ -539,9 +539,9 @@ def _unpack_fixture(fixtures_dest,  # type: ModuleType
 
     # we'll need to create their signature
     if in_cls:
-        _sig = "(self, %s, request)" % source_f_name
+        _sig = f"(self, {source_f_name}, request)"
     else:
-        _sig = "(%s, request)" % source_f_name
+        _sig = f"({source_f_name}, request)"
 
     for value_idx, argname in enumerate(argnames_lst):
         # create the fixture

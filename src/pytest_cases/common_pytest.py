@@ -191,8 +191,8 @@ def assert_is_fixture(fixture_fun  # type: Any
     :return:
     """
     if not is_fixture(fixture_fun):
-        raise ValueError("The provided fixture function does not seem to be a fixture: %s. Did you properly decorate "
-                         "it ?" % fixture_fun)
+        raise ValueError(f"The provided fixture function does not seem to be a fixture: {fixture_fun}. Did you "
+                         "properly decorate it ?")
 
 
 if PYTEST84_OR_GREATER:
@@ -409,8 +409,8 @@ def resolve_ids(ids,                # type: Optional[Union[Callable, Iterable[st
             nb_ids = len(ids)
 
         if nb_ids != len(argvalues):
-            raise ValueError("Explicit list or generator of `ids` provided has a different length (%s) than the number "
-                             "of argvalues (%s). Ids provided: %r" % (len(ids), len(argvalues), ids))
+            raise ValueError(f"Explicit list or generator of `ids` provided has a different length ({len(ids)}) than "
+                             f"the number of argvalues ({len(argvalues)}). Ids provided: {ids!r}")
         return ids
 
 
@@ -426,7 +426,7 @@ def make_test_ids_from_param_values(param_names,
     :return: a list of param ids
     """
     if isinstance(param_names, string_types):
-        raise TypeError("param_names must be an iterable. Found %r" % param_names)
+        raise TypeError(f"param_names must be an iterable. Found {param_names!r}")
 
     nb_params = len(param_names)
     if nb_params == 0:
@@ -440,8 +440,7 @@ def make_test_ids_from_param_values(param_names,
         paramids = []
         for _idx, vv in enumerate(param_values):
             if len(vv) != nb_params:
-                raise ValueError("Inconsistent lengths for parameter names and values: '%s' and '%s'"
-                                 "" % (param_names, vv))
+                raise ValueError(f"Inconsistent lengths for parameter names and values: '{param_names}' and '{vv}'")
             _id = mini_idvalset(param_names, vv, _idx)
             paramids.append(_id)
     return paramids
@@ -494,7 +493,7 @@ def extract_parameterset_info(argnames, argvalues, check_nb=True):
     pmarks = []
     pvalues = []
     if isinstance(argnames, string_types):
-        raise TypeError("argnames must be an iterable. Found %r" % argnames)
+        raise TypeError(f"argnames must be an iterable. Found {argnames!r}")
     nbnames = len(argnames)
     for v in argvalues:
         _pid, _pmark, _pvalue = extract_pset_info_single(nbnames, v)
@@ -504,8 +503,8 @@ def extract_parameterset_info(argnames, argvalues, check_nb=True):
         pvalues.append(_pvalue)
 
         if check_nb and nbnames > 1 and (len(_pvalue) != nbnames):
-            raise ValueError("Inconsistent number of values in pytest parametrize: %s items found while the "
-                             "number of parameters is %s: %s." % (len(_pvalue), nbnames, _pvalue))
+            raise ValueError(f"Inconsistent number of values in pytest parametrize: {len(_pvalue)} items found while "
+                             f"the number of parameters is {nbnames}: {_pvalue}.")
 
     return pids, pmarks, pvalues
 
@@ -852,7 +851,7 @@ def add_fixture_params(func, new_names):
     # prepend all new parameters if needed
     for n in new_names:
         if n in old_sig.parameters:
-            raise ValueError("argument named %s already present in signature" % n)
+            raise ValueError(f"argument named {n} already present in signature")
     new_sig = add_signature_parameters(old_sig,
                                        first=[Parameter(n, kind=Parameter.POSITIONAL_OR_KEYWORD) for n in new_names])
 
@@ -996,7 +995,7 @@ def inject_host(apply_decorator):
     #
     #                 # path, lineno = get_fslocation_from_item(self)
     #                 # warn_explicit(
-    #                 #     "Error parametrizing function %s : [%s] %s" % (self._target, e.__class__, e),
+    #                 #     f"Error parametrizing function {self._target} : [{e.__class__}] {e}",
     #                 #     category=None,
     #                 #     filename=str(path),
     #                 #     lineno=lineno + 1 if lineno is not None else None,

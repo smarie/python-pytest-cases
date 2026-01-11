@@ -36,7 +36,7 @@ def get_code_first_line(f):
             _, lineno = findsource(f)
             return lineno
         except:  # noqa
-            raise ValueError("Cannot get code information for function or class %r" % f)
+            raise ValueError(f"Cannot get code information for function or class {f!r}")
 
 
 # Below is the beginning of a switch from our scanning code to the same one than pytest. See `case_parametrizer_new`
@@ -187,27 +187,27 @@ class AssertException(object):
 
         # Type check
         if not isinstance(exc_val, self.err_type):
-            raise ExceptionCheckingError("Caught exception %r is not an instance of expected type %r"
-                                         % (exc_val, self.err_type))
+            raise ExceptionCheckingError(f"Caught exception {exc_val!r} is not an instance of "
+                                         f"expected type {self.err_type!r}")
 
         # Optional - pattern matching
         if self.err_ptrn is not None:
             if not self.err_ptrn.match(repr(exc_val)):
-                raise ExceptionCheckingError("Caught exception %r does not match expected pattern %r"
-                                             % (exc_val, self.err_ptrn))
+                raise ExceptionCheckingError(f"Caught exception {exc_val!r} does not match expected "
+                                             f"pattern {self.err_ptrn!r}")
 
         # Optional - Additional Exception instance check with equality
         if self.err_inst is not None:
             # note: do not use != because in python 2 that is not equivalent
             if not (exc_val == self.err_inst):
-                raise ExceptionCheckingError("Caught exception %r does not equal expected instance %r"
-                                             % (exc_val, self.err_inst))
+                raise ExceptionCheckingError(f"Caught exception {exc_val!r} does not equal "
+                                             f"expected instance {self.err_inst!r}")
 
         # Optional - Additional Exception instance check with custom checker
         if self.err_checker is not None:
             if self.err_checker(exc_val) is False:
-                raise ExceptionCheckingError("Caught exception %r is not valid according to %r"
-                                             % (exc_val, self.err_checker))
+                raise ExceptionCheckingError(f"Caught exception {exc_val!r} is not valid "
+                                             f"according to {self.err_checker!r}")
 
         # Suppress the exception since it is valid.
         # See https://docs.python.org/2/reference/datamodel.html#object.__exit__
@@ -446,8 +446,8 @@ if PY3:
                     # non-resolvable __qualname__
                     raise HostNotConstructedYet(
                         "__qualname__ is not resolvable, this can happen if the host class of this method "
-                        "%r has not yet been created. PEP3155 does not seem to tell us what we should do "
-                        "in this case." % meth
+                        f"{meth!r} has not yet been created. PEP3155 does not seem to tell us what we should do "
+                        "in this case."
                     )
                 if host is None:
                     raise ValueError("__qualname__ leads to `None`, this is strange and not PEP3155 compliant, please "
@@ -553,7 +553,7 @@ def make_identifier(name  # type: str
                     ):
     """Transform the given name into a valid python identifier"""
     if not isinstance(name, string_types):
-        raise TypeError("name should be a string, found : %r" % name)
+        raise TypeError(f"name should be a string, found : {name!r}")
 
     if iskeyword(name) or (not PY3 and name == "None"):
         # reserved keywords: add an underscore
