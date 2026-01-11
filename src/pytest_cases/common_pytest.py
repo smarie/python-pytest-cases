@@ -30,7 +30,7 @@ from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST6_OR_GREATER, \
-    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER, PYTEST71_OR_GREATER, \
+    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST71_OR_GREATER, \
     PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
@@ -52,11 +52,7 @@ def pytest_is_running():
 
     See https://stackoverflow.com/questions/25188119/test-if-code-is-executed-from-within-a-py-test-session
     """
-    if PYTEST32_OR_GREATER:
-        return "PYTEST_CURRENT_TEST" in os.environ
-    else:
-        import re
-        return any(re.findall(r'pytest|py.test', sys.argv[0]))
+    return "PYTEST_CURRENT_TEST" in os.environ
 
 
 def remove_duplicates(lst):
