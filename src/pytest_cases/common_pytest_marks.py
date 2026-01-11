@@ -28,7 +28,6 @@ from .common_mini_six import string_types
 
 
 PYTEST_VERSION = Version(pytest.__version__)
-PYTEST53_OR_GREATER = PYTEST_VERSION >= Version('5.3.0')
 PYTEST54_OR_GREATER = PYTEST_VERSION >= Version('5.4.0')
 PYTEST421_OR_GREATER = PYTEST_VERSION >= Version('4.2.1')
 PYTEST6_OR_GREATER = PYTEST_VERSION >= Version('6.0.0')

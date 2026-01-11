@@ -4,7 +4,6 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
 
-from pytest_cases.common_pytest_marks import PYTEST53_OR_GREATER
 from pytest_cases.common_pytest_lazy_values import LazyValue, LazyTuple, LazyTupleItem
 
 from pytest_cases import lazy_value
@@ -123,16 +122,10 @@ def test_lv_clone():
     assert ">, _id='hi'," in repr(lv)
     assert "'skip'" in repr(lv)
 
-    if PYTEST53_OR_GREATER:
-        assert not isinstance(lv, int)
-        lv2 = lv.clone()
-        assert lv == lv2
-        assert not isinstance(lv2, int)
-    else:
-        assert isinstance(lv, int)
-        lv2 = lv.clone(remove_int_base=True)
-        assert lv == lv2
-        assert not isinstance(lv2, int)
+    assert not isinstance(lv, int)
+    lv2 = lv.clone()
+    assert lv == lv2
+    assert not isinstance(lv2, int)
 
 
 def test_lv_tuple_clone():
@@ -147,13 +140,7 @@ def test_lv_tuple_clone():
         assert str(lv) == "hi[%s]" % i
         assert repr(lv).startswith("LazyTupleItem(item=%s, tuple=LazyValue(valuegetter=<function" % i)
 
-        if PYTEST53_OR_GREATER:
-            assert not isinstance(lv, int)
-            lv2 = lv.clone()
-            assert lv == lv2
-            assert not isinstance(lv2, int)
-        else:
-            assert isinstance(lv, int)
-            lv2 = lv.clone(remove_int_base=True)
-            assert lv == lv2
-            assert not isinstance(lv2, int)
+        assert not isinstance(lv, int)
+        lv2 = lv.clone()
+        assert lv == lv2
+        assert not isinstance(lv2, int)
