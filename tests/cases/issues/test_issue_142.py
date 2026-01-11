@@ -1,6 +1,6 @@
 import pytest
 
-from pytest_cases.common_pytest_marks import PYTEST421_OR_GREATER, PYTEST54_OR_GREATER
+from pytest_cases.common_pytest_marks import PYTEST421_OR_GREATER
 from pytest_cases import parametrize_with_cases, case
 
 
