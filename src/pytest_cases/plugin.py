@@ -28,7 +28,7 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST46_OR_GREATER, PYTEST7_OR_GREATER, PYTEST8_OR_GREATER
+from .common_pytest_marks import PYTEST7_OR_GREATER, PYTEST8_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopeval, is_function_node, get_param_names, \
     get_param_argnames_as_list, has_function_scope, set_callspec_arg_scope_to_function, in_callspec_explicit_args
 
@@ -760,10 +760,7 @@ def _getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     """
 
     # (1) first retrieve the normal pytest output for comparison
-    kwargs = dict()
-    if PYTEST46_OR_GREATER:
-        # new argument "ignore_args" in 4.6+
-        kwargs['ignore_args'] = ignore_args
+    kwargs = {'ignore_args': ignore_args}
 
     if PYTEST8_OR_GREATER:
         # two outputs and sig change
