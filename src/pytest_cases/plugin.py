@@ -414,7 +414,7 @@ class FixtureClosureNode(object):
     def split_and_build(self,
                         fixture_defs_mgr: FixtureDefsCache,
                         split_fixture_name: str,
-                        split_fixture_defs: tuple[FixtureDef],
+                        split_fixture_defs: tuple[FixtureDef, ...],
                         alternative_fixture_names: list[str],
                         pending_fixtures_list,
                         ignore_args

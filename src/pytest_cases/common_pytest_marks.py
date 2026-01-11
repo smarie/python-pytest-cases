@@ -117,7 +117,7 @@ def copy_pytest_marks(from_f, to_f, override=False):
 
 def filter_marks(marks: Iterable[Mark],
                  remove: str
-                 ) -> tuple[Mark]:
+                 ) -> tuple[Mark, ...]:
     """
     Returns a tuple of all marks in `marks` that do not have a 'parametrize' name.
 

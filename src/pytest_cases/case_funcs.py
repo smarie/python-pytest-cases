@@ -42,11 +42,11 @@ class _CaseInfo(object):
     def __init__(self,
                  id: str = None,
                  marks: tuple[MarkDecorator, ...] = (),
-                 tags: tuple[Any] = ()
+                 tags: tuple[Any, ...] = ()
                  ):
         self.id: str = id
         self.marks: tuple[MarkDecorator, ...] = marks
-        self.tags: tuple[Any] = ()
+        self.tags: tuple[Any, ...] = ()
         self.add_tags(tags)
 
     def __repr__(self):
