@@ -1017,7 +1017,6 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 # return
                 return kwargs
 
-
             if isasyncgenfunction(test_func):
                 from .pep525 import _parametrize_plus_decorate_asyncgen_pep525
                 wrapped_test_func = _parametrize_plus_decorate_asyncgen_pep525(test_func, new_sig, fixture_union_name,
