@@ -4,7 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import pytest
 
-from pytest_cases.common_pytest_marks import PYTEST361_36X, PYTEST81_OR_GREATER
+from pytest_cases.common_pytest_marks import PYTEST81_OR_GREATER
 
 
 def test_config(request):
@@ -30,8 +30,6 @@ def test2(reprovision):
     pass
 
 
-@pytest.mark.skipif(PYTEST361_36X,
-                    reason="This 'optimal order' was changed in some versions of pytest")
 def test_synthesis(module_results_dct):
     if PYTEST81_OR_GREATER:
         # new 'optimal order'
