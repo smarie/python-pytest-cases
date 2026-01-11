@@ -60,9 +60,8 @@ class Lazy(object):
 
     def __repr__(self):
         """Default repr method based on the _field_names"""
-
-        return "%s(%s)" % (self.__class__.__name__, ", ".join("%s=%r" % (k, getattr(self, k))
-                                                              for k in self._field_names))
+        parenthesis_part = ", ".join(f"{k}={getattr(self, k)!r}" for k in self._field_names)
+        return f"{self.__class__.__name__}({parenthesis_part})"
 
     @property
     def __name__(self):
@@ -107,14 +106,14 @@ def _unwrap(obj):
 
 def partial_to_str(partialfun):
     """Return a string representation of a partial function, to use in lazy_value ids"""
-    strwds = ", ".join("%s=%s" % (k, v) for k, v in partialfun.keywords.items())
+    strwds = ", ".join(f"{k}={v}" for k, v in partialfun.keywords.items())
     if len(partialfun.args) > 0:
         strargs = ', '.join(str(i) for i in partialfun.args)
         if len(partialfun.keywords) > 0:
-            strargs = "%s, %s" % (strargs, strwds)
+            strargs = f"{strargs}, {strwds}"
     else:
         strargs = strwds
-    return "%s(%s)" % (partialfun.func.__name__, strargs)
+    return f"{partialfun.func.__name__}({strargs})"
 
 
 # noinspection PyPep8Naming
@@ -314,10 +313,11 @@ class _LazyTupleItem(Lazy):
             ('item', self.item),  # item number first for easier debug
             ('tuple', tuple_to_represent),
         )
-        return "%s(%s)" % (self.__class__.__name__, ", ".join("%s=%r" % (k, v) for k, v in vals_to_display))
+        parenthesis_part = ", ".join(f"{k}={v!r}" for k, v in vals_to_display)
+        return f"{self.__class__.__name__}({parenthesis_part})"
 
     def get_id(self):
-        return "%s[%s]" % (self.host.get_id(), self.item)
+        return f"{self.host.get_id()}[{self.item}]"
 
     def get(self, request_or_item):
         """ Call the underlying value getter if needed (cache), then return the result tuple item value (not self).
@@ -418,11 +418,10 @@ class LazyTuple(Lazy):
         try:
             return argvalue[item]
         except TypeError as e:
-            raise ValueError("(lazy_value) The parameter value returned by `%r` is not compliant with the number"
-                             " of argnames in parametrization (%s). A %s-tuple-like was expected. "
-                             "Returned lazy argvalue is %r and argvalue[%s] raised %s: %s"
-                             % (self._lazyvalue, self.theoretical_size, self.theoretical_size,
-                                argvalue, item, e.__class__, e))
+            raise ValueError(f"(lazy_value) The parameter value returned by `{self._lazyvalue}` is not compliant "
+                             f"with the number of argnames in parametrization ({self.theoretical_size}). "
+                             f"A {self.theoretical_size}-tuple-like was expected. Returned lazy argvalue "
+                             f"is {argvalue!r} and argvalue[{item}] raised {e.__class__}: {e}")
 
 
 if PYTEST53_OR_GREATER:

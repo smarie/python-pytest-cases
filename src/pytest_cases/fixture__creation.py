@@ -27,8 +27,8 @@ class ExistingFixtureNameError(ValueError):
         self.caller = caller
 
     def __str__(self):
-        return "Symbol `%s` already exists in module %s and therefore a corresponding fixture can not be created by " \
-               "`%s`" % (self.name, self.module, self.caller)
+        return f"Symbol `{self.name}` already exists in module {self.module} and therefore a corresponding " \
+               f"fixture can not be created by `{self.caller}`"
 
 
 RAISE = 0
@@ -61,15 +61,15 @@ def check_name_available(module,
     new_name = make_identifier(name)
     if new_name != name:
         if if_name_exists is RAISE:
-            raise ValueError("Proposed name is an invalid identifier: %s" % name)
+            raise ValueError(f"Proposed name is an invalid identifier: {name}")
         elif if_name_exists is WARN:
-            warn("%s name was not a valid identifier, changed it to %s" % (name, new_name))
+            warn(f"{name} name was not a valid identifier, changed it to {new_name}")
         name = new_name
 
     if name_changer is None:
         # default style for name changing. i starts with 1
         def name_changer(name, i):
-            return name + '_%s' % i
+            return f'{name}_{i}'
 
     ref_list = dir(module) + list(extra_forbidden_names)
 
@@ -82,7 +82,7 @@ def check_name_available(module,
             raise ExistingFixtureNameError(module, name, caller)
 
         elif if_name_exists is WARN:
-            warn("%s Overriding symbol %s in module %s" % (caller, name, module))
+            warn(f"{caller} Overriding symbol {name} in module {module}")
 
         elif if_name_exists is CHANGE:
             # find a non-used name in that module
@@ -94,7 +94,7 @@ def check_name_available(module,
 
             name = name2
         else:
-            raise ValueError("invalid value for `if_name_exists`: %s" % if_name_exists)
+            raise ValueError(f"invalid value for `if_name_exists`: {if_name_exists}")
 
     return name
 
