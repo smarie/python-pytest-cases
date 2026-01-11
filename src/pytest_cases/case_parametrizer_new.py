@@ -7,10 +7,13 @@ from __future__ import division
 
 from collections import namedtuple
 
+import enum
 import functools
 from importlib import import_module
 from inspect import getmembers, ismodule
 import re
+from typing import Union, Callable, Iterable, Any, Type,  Literal
+from types import ModuleType
 from warnings import warn
 
 try:  # python 3.3+
@@ -18,13 +21,8 @@ try:  # python 3.3+
 except ImportError:
     from funcsigs import signature  # noqa
 
-try:
-    from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
-except ImportError:
-    pass
-
 from .common_mini_six import string_types
-from .common_others import get_code_first_line, AUTO, qname, funcopy, needs_binding, get_function_host, \
+from .common_others import get_code_first_line, AUTO, Auto, qname, funcopy, needs_binding, get_function_host, \
     in_same_module, get_host_module, get_class_that_defined_method
 from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks, \
     get_param_argnames_as_list, Mark
@@ -48,37 +46,33 @@ except NameError:
     ModuleNotFoundError = ImportError
 
 
-THIS_MODULE = object()
+class ThisModule(enum.Enum):
+    """Class to allow type hints for the THIS_MODULE Singleton"""
+    THIS_MODULE = object()
+
+THIS_MODULE = ThisModule.THIS_MODULE
 """Singleton that can be used instead of a module name to indicate that the module is the current one"""
 
-try:
-    from typing import Literal, Optional  # noqa
-    from types import ModuleType  # noqa
-
-    ModuleRef = Union[str, ModuleType, Literal[AUTO], Literal[THIS_MODULE]]  # noqa
-    CaseType = Union[Callable, Type, ModuleRef]
-
-except:  # noqa
-    pass
+ModuleRef = Union[str, ModuleType, Literal[Auto.AUTO], Literal[ThisModule.THIS_MODULE]]
+CaseType = Union[Callable, Type, ModuleRef]
 
 
 _HOST_CLS_ATTR = '_pytestcases_host_cls'
 
 
-def parametrize_with_cases(argnames,                # type: Union[str, List[str], Tuple[str, ...]]
-                           cases=AUTO,              # type: Union[CaseType, List[CaseType]]
-                           prefix=CASE_PREFIX_FUN,  # type: str
-                           glob=None,               # type: str
-                           has_tag=None,            # type: Any
-                           filter=None,             # type: Callable[..., bool]  # noqa
-                           ids=None,                # type: Union[Callable, Iterable[str]]
-                           idstyle=None,            # type: Union[str, Callable]
-                           # idgen=_IDGEN,            # type: Union[str, Callable]
-                           debug=False,             # type: bool
-                           scope="function",        # type: str
-                           import_fixtures=False    # type: bool
-                           ):
-    # type: (...) -> Callable[[Callable], Callable]
+def parametrize_with_cases(argnames: Union[str, list[str], tuple[str, ...]],
+                           cases: Union[CaseType, list[CaseType]] = AUTO,
+                           prefix: str = CASE_PREFIX_FUN,
+                           glob: str = None,
+                           has_tag: Any = None,
+                           filter: Callable[..., bool] = None,
+                           ids: Union[Callable, Iterable[str]] = None,
+                           idstyle: Union[str, Callable] = None,
+                           # idgen: Union[str, Callable] = _IDGEN,
+                           debug: bool = False,
+                           scope: str = "function",
+                           import_fixtures: bool = False
+                           ) -> Callable[[Callable], Callable]:
     """
     A decorator for test functions or fixtures, to parametrize them based on test cases. It works similarly to
     `@pytest.mark.parametrize`: argnames represent a coma-separated string of arguments to inject in the decorated
@@ -171,8 +165,7 @@ def parametrize_with_cases(argnames,                # type: Union[str, List[str]
     return _apply_parametrization
 
 
-def _get_original_case_func(case_fun  # type: Callable
-                            ):
+def _get_original_case_func(case_fun: Callable):
     """
 
     :param case_fun:
@@ -183,8 +176,7 @@ def _get_original_case_func(case_fun  # type: Callable
     return true_case_func, case_in_class
 
 
-def create_glob_name_filter(glob_str  # type: str
-                            ):
+def create_glob_name_filter(glob_str: str):
     """
     Creates a glob-like matcher for the name of case functions
     The only special character that is supported is `*` and it can not be
@@ -206,14 +198,13 @@ def create_glob_name_filter(glob_str  # type: str
     return _glob_name_filter
 
 
-def get_all_cases(parametrization_target=None,  # type: Callable
-                  cases=AUTO,                   # type: Union[CaseType, List[CaseType]]
-                  prefix=CASE_PREFIX_FUN,       # type: str
-                  glob=None,                    # type: str
-                  has_tag=None,                 # type: Union[str, Iterable[str]]
-                  filter=None                   # type: Callable[[Callable], bool]  # noqa
-                  ):
-    # type: (...) -> List[Callable]
+def get_all_cases(parametrization_target: Callable = None,
+                  cases: Union[CaseType, list[CaseType]] = AUTO,
+                  prefix: str = CASE_PREFIX_FUN,
+                  glob: str = None,
+                  has_tag: Union[str, Iterable[str]] = None,
+                  filter: Callable[[Callable], bool] = None
+                  ) -> list[Callable]:
     """
     Lists all desired cases for a given `parametrization_target` (a test function or a fixture). This function may be
     convenient for debugging purposes. See `@parametrize_with_cases` for details on the parameters.
@@ -324,14 +315,13 @@ def get_all_cases(parametrization_target=None,  # type: Callable
             if matches_tag_query(c, has_tag=has_tag, filter=filters)]
 
 
-def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType]
-                         cases_funs,              # type: List[Callable]
-                         prefix,                  # type: str
-                         scope="function",        # type: str
-                         import_fixtures=False,   # type: bool
-                         debug=False              # type: bool
-                         ):
-    # type: (...) -> List[CaseParamValue]
+def get_parametrize_args(host_class_or_module: Union[Type, ModuleType],
+                         cases_funs: list[Callable],
+                         prefix: str,
+                         scope: str = "function",
+                         import_fixtures: bool = False,
+                         debug: bool = False
+                         ) -> list['CaseParamValue']:
     """
     Transforms a list of cases (obtained from `get_all_cases`) into a list of argvalues for `@parametrize`.
     Each case function `case_fun` is transformed into one or several `lazy_value`(s) or a `fixture_ref`:
@@ -408,14 +398,13 @@ class _FixtureRefCaseParamValue(fixture_ref, CaseParamValue):
         return f.__origcasefun__
 
 
-def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
-                      case_fun,                # type: Callable
-                      prefix,                  # type: str
-                      scope,                   # type: str
-                      import_fixtures=False,   # type: bool
-                      debug=False              # type: bool
-                      ):
-    # type: (...) -> Tuple[CaseParamValue, ...]
+def case_to_argvalues(host_class_or_module: Union[Type, ModuleType],
+                      case_fun: Callable,
+                      prefix: str,
+                      scope: str,
+                      import_fixtures: bool = False,
+                      debug: bool = False
+                      ) -> tuple[CaseParamValue, ...]:
     """Transform a single case into one or several `lazy_value`(s) or a `fixture_ref` to be used in `@parametrize`
 
     If `case_fun` requires at least on fixture, a fixture will be created if not yet present, and a `fixture_ref` will
@@ -485,15 +474,14 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         return (make_marked_parameter_value((argvalues,), marks=remaining_marks) if remaining_marks else argvalues,)
 
 
-def get_or_create_case_fixture(case_id,                # type: str
-                               case_fun,               # type: Callable
-                               target_host,            # type: Union[Type, ModuleType]
-                               add_required_fixtures,  # type: Iterable[str]
-                               scope,                  # type: str
-                               import_fixtures=False,  # type: bool
-                               debug=False             # type: bool
-                               ):
-    # type: (...) -> Tuple[str, Tuple[Mark]]
+def get_or_create_case_fixture(case_id: str,
+                               case_fun: Callable,
+                               target_host: Union[Type, ModuleType],
+                               add_required_fixtures: Iterable[str],
+                               scope: str,
+                               import_fixtures: bool = False,
+                               debug: bool = False
+                               ) -> tuple[str, tuple[Mark]]:
     """
     When case functions require fixtures, we want to rely on pytest to inject everything. Therefore
     we create a "case fixture" wrapping the case function. Since a case function may not be located in the same place
@@ -643,8 +631,7 @@ def get_or_create_case_fixture(case_id,                # type: str
     return fix_name, case_marks
 
 
-def _get_fixture_cases(module_or_class  # type: Union[ModuleType, Type]
-                       ):
+def _get_fixture_cases(module_or_class: Union[ModuleType, Type]):
     """
     Returns our 'storage unit' in a module or class, used to remember the fixtures created from case functions.
     That way we can reuse fixtures already created for cases, in a given module/class.
@@ -674,7 +661,7 @@ def _get_fixture_cases(module_or_class  # type: Union[ModuleType, Type]
     return cache, imported_fixtures_list
 
 
-def import_default_cases_module(test_module_name):
+def import_default_cases_module(test_module_name: str):
     """
     Implements the `module=AUTO` behaviour of `@parameterize_cases`.
 
@@ -713,7 +700,7 @@ def hasinit(obj):
     if init:
         return init != object.__init__
 
-
+ 
 def hasnew(obj):
     new = getattr(obj, "__new__", None)
     if new:
@@ -728,12 +715,11 @@ class CasesCollectionWarning(UserWarning):
     __module__ = "pytest_cases"
 
 
-def extract_cases_from_class(cls,
-                             check_name=True,
-                             case_fun_prefix=CASE_PREFIX_FUN,
+def extract_cases_from_class(cls: type,
+                             check_name: bool = True,
+                             case_fun_prefix: str = CASE_PREFIX_FUN,
                              _case_param_factory=None
-                             ):
-    # type: (...) -> List[Callable]
+                             ) -> list[Callable]:
     """
     Collects all case functions (methods matching ``case_fun_prefix``) in class ``cls``.
 
@@ -785,12 +771,11 @@ def extract_cases_from_class(cls,
         return []
 
 
-def extract_cases_from_module(module,                           # type: Union[str, ModuleRef]
-                              package_name=None,                # type: str
-                              case_fun_prefix=CASE_PREFIX_FUN,  # type: str
+def extract_cases_from_module(module: Union[str, ModuleRef],
+                              package_name: str = None,
+                              case_fun_prefix: str = CASE_PREFIX_FUN,
                               _case_param_factory=None
-                              ):
-    # type: (...) -> List[Callable]
+                              ) -> list[Callable]:
     """
     Internal method used to create a list of case functions for all cases available from the given module.
     See `@cases_data`
@@ -834,11 +819,11 @@ def extract_cases_from_module(module,                           # type: Union[st
                                                case_fun_prefix=case_fun_prefix)
 
 
-def _extract_cases_from_module_or_class(module=None,                      # type: ModuleRef
-                                        cls=None,                         # type: Type
-                                        case_fun_prefix=CASE_PREFIX_FUN,  # type: str
+def _extract_cases_from_module_or_class(module: ModuleRef = None,
+                                        cls: type = None,
+                                        case_fun_prefix: str = CASE_PREFIX_FUN,
                                         _case_param_factory=None
-                                        ):  # type: (...) -> List[Callable]
+                                        ) -> list[Callable]:
     """
     Extracts all case functions from `module` or `cls` (only one non-None must be provided).
 
@@ -1251,7 +1236,7 @@ def _get_place_as(f):
 
 
 def get_current_case_id(request_or_item,
-                        argnames  # type: Union[Iterable[str], str]
+                        argnames:  Union[Iterable[str], str]
                         ):
     """ DEPRECATED - use `get_current_cases` instead
     A helper function to return the current case id for a given `pytest` item (available in some hooks) or `request`

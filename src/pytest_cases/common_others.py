@@ -2,6 +2,7 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+import enum
 import functools
 import inspect
 from keyword import iskeyword
@@ -9,11 +10,8 @@ import makefun
 from importlib import import_module
 from inspect import findsource
 import re
+from typing import Union, Callable, Optional, Type  # noqa
 
-try:
-    from typing import Union, Callable, Any, Optional, Tuple, Type  # noqa
-except ImportError:
-    pass
 
 from .common_mini_six import string_types, PY3, PY34
 
@@ -47,22 +45,17 @@ def get_code_first_line(f):
 # except ImportError:
 #     from _pytest.compat import getfslineno as compat_getfslineno
 
-try:
-    ExpectedError = Optional[Union[Type[Exception], str, Exception, Callable[[Exception], Optional[bool]]]]
-    """The expected error in case failure is expected. An exception type, instance, or a validation function"""
+ExpectedError = Optional[Union[Type[Exception], str, Exception, Callable[[Exception], Optional[bool]]]]
+"""The expected error in case failure is expected. An exception type, instance, or a validation function"""
 
-    ExpectedErrorType = Optional[Type[BaseException]]
-    ExpectedErrorPattern = Optional[re.Pattern]
-    ExpectedErrorInstance = Optional[BaseException]
-    ExpectedErrorValidator = Optional[Callable[[BaseException], Optional[bool]]]
-
-except:  # noqa
-    pass
+ExpectedErrorType = Optional[Type[BaseException]]
+ExpectedErrorPattern = Optional[re.Pattern]
+ExpectedErrorInstance = Optional[BaseException]
+ExpectedErrorValidator = Optional[Callable[[BaseException], Optional[bool]]]
 
 
-def unfold_expected_err(expected_e  # type: ExpectedError
-                        ):
-    # type: (...) -> Tuple[ExpectedErrorType, ExpectedErrorPattern, ExpectedErrorInstance, ExpectedErrorValidator]
+def unfold_expected_err(expected_e: ExpectedError
+                        ) -> tuple[ExpectedErrorType, ExpectedErrorPattern, ExpectedErrorInstance, ExpectedErrorValidator]:
     """
     'Unfolds' the expected error `expected_e` to return a tuple of
      - expected error type
@@ -98,8 +91,7 @@ def unfold_expected_err(expected_e  # type: ExpectedError
                      "validation callable")
 
 
-def assert_exception(expected    # type: ExpectedError
-                     ):
+def assert_exception(expected: ExpectedError):
     """
     A context manager to check that some bit of code raises an exception. Sometimes it might be more
     handy than `with pytest.raises():`.
@@ -213,8 +205,11 @@ class AssertException(object):
         # See https://docs.python.org/2/reference/datamodel.html#object.__exit__
         return True
 
+class Auto(enum.Enum):
+    """Class to allow type hints for the AUTO Singleton"""
+    AUTO = object()
 
-AUTO = object()
+AUTO = Auto.AUTO
 """Marker for automatic defaults"""
 
 
@@ -253,8 +248,7 @@ def get_function_host(func, fallback_to_module=True):
     return host
 
 
-def needs_binding(f, return_bound=False):
-    # type: (...) -> Union[bool, Tuple[bool, Callable]]
+def needs_binding(f, return_bound: bool = False) -> Union[bool, tuple[bool, Callable]]:
     """Utility to check if a function needs to be bound to be used """
 
     # detect non-callables
@@ -540,8 +534,7 @@ def robust_isinstance(o, cls):
         return False
 
 
-def isidentifier(s  # type: str
-                 ):
+def isidentifier(s: str):
     """python 2+3 compliant <str>.isidentifier()"""
     try:
         return s.isidentifier()
@@ -549,8 +542,7 @@ def isidentifier(s  # type: str
         return re.match("[a-zA-Z_]\\w*\\Z", s)
 
 
-def make_identifier(name  # type: str
-                    ):
+def make_identifier(name: str):
     """Transform the given name into a valid python identifier"""
     if not isinstance(name, string_types):
         raise TypeError("name should be a string, found : %r" % name)

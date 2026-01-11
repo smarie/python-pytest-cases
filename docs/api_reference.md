@@ -28,9 +28,9 @@ As explained in the [documentation](index.md), case functions have no requiremen
 ### `@case`
 
 ```python
-@case(id=None,    # type: str  # noqa
-      tags=None,  # type: Union[Any, Iterable[Any]]
-      marks=(),   # type: Union[MarkDecorator, Iterable[MarkDecorator]]
+@case(id: str = None,  # noqa
+      tags: Union[Any, Iterable[Any]] = None,
+      marks: Union[MarkDecorator, Iterable[MarkDecorator]] = (),
       )
 ```
 
@@ -54,8 +54,7 @@ def case_hi():
 ### `@with_case_tags`
 
 ```python
-@with_case_tags(*tags,  # type: Any
-                ):
+@with_case_tags(*tags: Any):
 ```
 
 This decorator can be applied to a class defining cases to apply multiple
@@ -105,8 +104,8 @@ class CasesContainerClass:
 ### `copy_case_info`
 
 ```python
-def copy_case_info(from_fun,  # type: Callable
-                   to_fun     # type: Callable
+def copy_case_info(from_fun: Callable,
+                   to_fun: Callable
                    ):
 ```
 
@@ -116,8 +115,8 @@ Copies all information from case function `from_fun` to `to_fun`.
 ### `set_case_id`
 
 ```python
-def set_case_id(id,        # type: str
-                case_func  # type: Callable
+def set_case_id(id: str,
+                case_func: Callable
                 ):
 ```
 
@@ -127,8 +126,8 @@ Sets an explicit id on case function `case_func`.
 ### `get_case_id`
 
 ```python
-def get_case_id(case_func,                      # type: Callable
-                prefix_for_default_ids='case_'  # type: str
+def get_case_id(case_func: Callable,
+                prefix_for_default_ids: str = 'case_'
                 ):
 ```
 
@@ -147,9 +146,9 @@ If a custom id is not present, a case id is automatically created from the funct
 ### `get_case_marks`
 
 ```python
-def get_case_marks(case_func,                         # type: Callable
-                   concatenate_with_fun_marks=False,  # type: bool
-                   as_decorators=False                # type: bool
+def get_case_marks(case_func: Callable,
+                   concatenate_with_fun_marks: bool = False,
+                   as_decorators: bool = False
                    ):
 ```
 
@@ -169,7 +168,7 @@ There are currently two ways to place a mark on a case function: either with `@p
 ### `get_case_tags`
 
 ```python
-def get_case_tags(case_func  # type: Callable
+def get_case_tags(case_func: Callable
                   ):
 ```
 
@@ -183,9 +182,9 @@ Return the tags on this case function or an empty tuple.
 ### `matches_tag_query`
 
 ```python
-def matches_tag_query(case_fun,      # type: Callable
-                      has_tag=None,  # type: Union[str, Iterable[str]]
-                      filter=None,   # type: Union[Callable[[Callable], bool], Iterable[Callable[[Callable], bool]]]  # noqa
+def matches_tag_query(case_fun: Callable,
+                      has_tag: Union[str, Iterable[str]] = None,
+                      filter: Union[Callable[[Callable], bool], Iterable[Callable[[Callable], bool]]] = None,  # noqa
                       ):
 ```
 
@@ -209,9 +208,9 @@ Returns True if the case function is selected by the query:
 ### `is_case_class`
 
 ```python
-def is_case_class(cls,                         # type: Any
-                  case_marker_in_name='Case',  # type: str
-                  check_name=True              # type: bool
+def is_case_class(cls: Any,
+                  case_marker_in_name: str = 'Case',
+                  check_name: bool = True
                   ):
 ```
 
@@ -230,9 +229,9 @@ Returns True if the given object is a class and, if `check_name=True` (default),
 ### `is_case_function`
 
 ```python
-def is_case_function(f,                 # type: Any
-                     prefix='case_',    # type: str
-                     check_prefix=True  # type: bool
+def is_case_function(f: Any,
+                     prefix: str = 'case_',
+                     check_prefix: bool = True
                      ):
 ```
 

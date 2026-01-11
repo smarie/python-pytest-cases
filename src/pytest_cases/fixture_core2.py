@@ -6,6 +6,7 @@ from __future__ import division
 
 from inspect import isgeneratorfunction
 from itertools import product
+from typing import Callable, Union, Any, Iterable, Sequence  # noqa
 from warnings import warn
 
 from decopatch import function_decorator, DECORATED
@@ -31,12 +32,6 @@ except ImportError:
     def isasyncgenfunction(obj):
         return False
 
-try:  # type hints, python 3+
-    from typing import Callable, Union, Any, List, Iterable, Sequence  # noqa
-    from types import ModuleType  # noqa
-except ImportError:
-    pass
-
 from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_parametrize_marks, make_marked_parameter_value, get_param_argnames_as_list, \
     combine_ids, is_marked_parameter_value, pytest_fixture, resolve_ids, extract_parameterset_info, make_test_ids
@@ -45,13 +40,13 @@ from .fixture__creation import get_caller_module, check_name_available, WARN, CH
 from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _make_unpack_fixture
 
 
-def param_fixture(argname,           # type: str
-                  argvalues,         # type: Iterable[Any]
-                  autouse=False,     # type: bool
-                  ids=None,          # type: Union[Callable, Iterable[str]]
-                  scope="function",  # type: str
-                  hook=None,         # type: Callable[[Callable], Callable]
-                  debug=False,       # type: bool
+def param_fixture(argname: str,
+                  argvalues: Iterable[Any],
+                  autouse: bool = False,
+                  ids: Union[Callable, Iterable[str]] = None,
+                  scope: str = "function",
+                  hook: Callable[[Callable], Callable] = None,
+                  debug: bool = False,
                   **kwargs):
     """
     Identical to `param_fixtures` but for a single parameter name, so that you can assign its output to a single
@@ -99,14 +94,14 @@ def param_fixture(argname,           # type: str
 
 
 def _create_param_fixture(fixtures_dest,
-                          argname,           # type: str
-                          argvalues,         # type: Sequence[Any]
-                          autouse=False,     # type: bool
-                          ids=None,          # type: Union[Callable, Iterable[str]]
-                          scope="function",  # type: str
-                          hook=None,         # type: Callable[[Callable], Callable]
-                          auto_simplify=False,
-                          debug=False,
+                          argname: str,
+                          argvalues: Sequence[Any],
+                          autouse: bool = False,
+                          ids: Union[Callable, Iterable[str]] = None,
+                          scope: str = "function",
+                          hook: Callable[[Callable], Callable] = None,
+                          auto_simplify: bool = False,
+                          debug: bool = False,
                           **kwargs):
     """ Internal method shared with param_fixture and param_fixtures """
 
@@ -147,13 +142,13 @@ def _create_param_fixture(fixtures_dest,
     return fix
 
 
-def param_fixtures(argnames,          # type: str
-                   argvalues,         # type: Iterable[Any]
-                   autouse=False,     # type: bool
-                   ids=None,          # type: Union[Callable, Iterable[str]]
-                   scope="function",  # type: str
-                   hook=None,         # type: Callable[[Callable], Callable]
-                   debug=False,       # type: bool
+def param_fixtures(argnames: str,
+                   argvalues: Iterable[Any],
+                   autouse: bool = False,
+                   ids: Union[Callable, Iterable[str]] = None,
+                   scope: str = "function",
+                   hook: Callable[[Callable], Callable] = None,
+                   debug: bool = False,
                    **kwargs):
     """
     Creates one or several "parameters" fixtures - depending on the number or coma-separated names in `argnames`. The
@@ -205,13 +200,13 @@ def param_fixtures(argnames,          # type: str
 
 
 def _create_params_fixture(fixtures_dest,
-                           argnames_lst,      # type: Sequence[str]
-                           argvalues,         # type: Sequence[Any]
-                           autouse=False,     # type: bool
-                           ids=None,          # type: Union[Callable, Iterable[str]]
-                           scope="function",  # type: str
-                           hook=None,         # type: Callable[[Callable], Callable]
-                           debug=False,       # type: bool
+                           argnames_lst: Sequence[str],
+                           argvalues: Sequence[Any],
+                           autouse: bool = False,
+                           ids: Union[Callable, Iterable[str]] = None,
+                           scope: str = "function",
+                           hook: Callable[[Callable], Callable] = None,
+                           debug: bool = False,
                            **kwargs):
     argnames = ','.join(argnames_lst)
     created_fixtures = []
@@ -292,11 +287,11 @@ fixture_plus = pytest_fixture_plus
 
 
 @function_decorator
-def fixture(scope="function",        # type: str
-            autouse=False,           # type: bool
-            name=None,               # type: str
-            unpack_into=None,        # type: Iterable[str]
-            hook=None,               # type: Callable[[Callable], Callable]
+def fixture(scope: str = "function",
+            autouse: bool = False,
+            name: str = None,
+            unpack_into: Iterable[str] = None,
+            hook: Callable[[Callable], Callable] = None,
             fixture_func=DECORATED,  # noqa
             **kwargs):
     """ decorator to mark a fixture factory function.
@@ -353,7 +348,7 @@ class CombinedFixtureParamValue(object):
     __slots__ = 'param_defs', 'argvalues',
 
     def __init__(self,
-                 param_defs,  # type: Iterable[FixtureParam]
+                 param_defs: Iterable[FixtureParam],
                  argvalues):
         self.param_defs = param_defs
         self.argvalues = argvalues
@@ -367,12 +362,12 @@ class CombinedFixtureParamValue(object):
 
 
 def _decorate_fixture_plus(fixture_func,
-                           scope="function",   # type: str
-                           autouse=False,      # type: bool
-                           name=None,          # type: str
-                           unpack_into=None,   # type: Iterable[str]
-                           hook=None,          # type: Callable[[Callable], Callable]
-                           _caller_module_offset_when_unpack=3,  # type: int
+                           scope: str = "function",
+                           autouse: bool = False,
+                           name: str = None,
+                           unpack_into: Iterable[str] = None,
+                           hook: Callable[[Callable], Callable] = None,
+                           _caller_module_offset_when_unpack: int = 3,
                            **kwargs):
     """ decorator to mark a fixture factory function.
 

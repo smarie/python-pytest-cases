@@ -5,6 +5,8 @@
 from __future__ import division
 
 from inspect import isgeneratorfunction
+from typing import Callable, Union, Optional, Iterable, Sequence  # noqa
+from types import ModuleType  # noqa
 from warnings import warn
 
 from makefun import with_signature, add_signature_parameters, wraps
@@ -29,12 +31,6 @@ except ImportError:
     def isasyncgenfunction(obj):
         return False
 
-
-try:  # type hints, python 3+
-    from typing import Callable, Union, Optional, Any, List, Iterable, Sequence  # noqa
-    from types import ModuleType  # noqa
-except ImportError:
-    pass
 
 from .common_mini_six import string_types
 from .common_pytest import get_fixture_name, is_marked_parameter_value, get_marked_parameter_values, pytest_fixture, \
@@ -66,29 +62,28 @@ class UnionIdMakers(object):
     """
     @classmethod
     def nostyle(cls,
-                param  # type: UnionFixtureAlternative
+                param: 'UnionFixtureAlternative'
                 ):
         """ ids are <fixture_name> """
         return param.get_alternative_id()
 
     @classmethod
     def compact(cls,
-                param  # type: UnionFixtureAlternative
+                param: 'UnionFixtureAlternative'
                 ):
         """ ids are /<fixture_name> """
         return "/%s" % (param.get_alternative_id(),)
 
     @classmethod
     def explicit(cls,
-                 param  # type: UnionFixtureAlternative
+                 param: 'UnionFixtureAlternative'
                  ):
         """ ids are <union_name>/<fixture_name> """
         return "%s/%s" % (param.get_union_id(), param.get_alternative_id())
 
     @classmethod
-    def get(cls, style  # type: Union[str, Callable]
-            ):
-        # type: (...) -> Callable[[UnionFixtureAlternative], str]
+    def get(cls, style: Union[str, Callable]
+            ) -> Callable[['UnionFixtureAlternative'], str]:
         """
         Returns a function that one can use as the `ids` argument in parametrize, applying the given id style.
         See https://github.com/smarie/python-pytest-cases/issues/41
@@ -113,9 +108,9 @@ class UnionFixtureAlternative(object):
     __slots__ = 'union_name', 'alternative_name', 'alternative_index'
 
     def __init__(self,
-                 union_name,        # type: str
-                 alternative_name,  # type: str
-                 alternative_index  # type: int
+                 union_name: str,
+                 alternative_name: str,
+                 alternative_index: int
                  ):
         """
 
@@ -149,8 +144,7 @@ class UnionFixtureAlternative(object):
                % (self.__class__.__name__, self.union_name, self.alternative_index, self.alternative_name)
 
     @staticmethod
-    def to_list_of_fixture_names(alternatives_lst  # type: List[UnionFixtureAlternative]
-                                 ):
+    def to_list_of_fixture_names(alternatives_lst: list['UnionFixtureAlternative']):
         res = []
         for f in alternatives_lst:
             if is_marked_parameter_value(f):
@@ -271,14 +265,14 @@ def ignore_unused(fixture_func):
     return wrapped_fixture_func
 
 
-def fixture_union(name,                # type: str
-                  fixtures,            # type: Iterable[Union[str, Callable]]
-                  scope="function",    # type: str
-                  idstyle='compact',   # type: Optional[Union[str, Callable]]
-                  ids=None,            # type: Union[Callable, Iterable[str]]
-                  unpack_into=None,    # type: Iterable[str]
-                  autouse=False,       # type: bool
-                  hook=None,           # type: Callable[[Callable], Callable]
+def fixture_union(name: str,
+                  fixtures: Iterable[Union[str, Callable]],
+                  scope: str = "function",
+                  idstyle: Optional[Union[str, Callable]] = 'compact',
+                  ids: Union[Callable, Iterable[str]] = None,
+                  unpack_into: Iterable[str] = None,
+                  autouse: bool = False,
+                  hook: Callable[[Callable], Callable] = None,
                   **kwargs):
     """
     Creates a fixture that will take all values of the provided fixtures in order. That fixture is automatically
@@ -362,15 +356,15 @@ def fixture_union(name,                # type: str
 
 
 def _fixture_union(fixtures_dest,
-                   name,                  # type: str
-                   fix_alternatives,      # type: Sequence[UnionFixtureAlternative]
-                   unique_fix_alt_names,  # type: List[str]
-                   scope="function",      # type: str
-                   idstyle="compact",     # type: Optional[Union[str, Callable]]
-                   ids=None,              # type: Union[Callable, Iterable[str]]
-                   autouse=False,         # type: bool
-                   hook=None,             # type: Callable[[Callable], Callable]
-                   caller=fixture_union,  # type: Callable
+                   name: str,
+                   fix_alternatives: Sequence[UnionFixtureAlternative],
+                   unique_fix_alt_names: list[str],
+                   scope: str = "function",
+                   idstyle: Optional[Union[str, Callable]] = "compact",
+                   ids: Union[Callable, Iterable[str]] = None,
+                   autouse: bool = False,
+                   hook: Callable[[Callable], Callable] = None,
+                   caller: Callable = fixture_union,
                    **kwargs):
     """
     Internal implementation for fixture_union.
@@ -435,10 +429,10 @@ _make_fixture_union = _fixture_union
 """A readable alias for callers not using the returned symbol"""
 
 
-def unpack_fixture(argnames,      # type: str
-                   fixture,       # type: Union[str, Callable]
-                   in_cls=False,  # type: bool
-                   hook=None      # type: Callable[[Callable], Callable]
+def unpack_fixture(argnames: str,
+                   fixture: Union[str, Callable],
+                   in_cls: bool = False,
+                   hook: Callable[[Callable], Callable] = None     
                    ):
     """
     Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to
@@ -505,11 +499,11 @@ def unpack_fixture(argnames,      # type: str
     return _unpack_fixture(caller_module, argnames, fixture, hook=hook, in_cls=in_cls)
 
 
-def _unpack_fixture(fixtures_dest,  # type: ModuleType
-                    argnames,       # type: Union[str, Iterable[str]]
-                    fixture,        # type: Union[str, Callable]
-                    in_cls,         # type: bool
-                    hook            # type: Callable[[Callable], Callable]
+def _unpack_fixture(fixtures_dest: ModuleType,
+                    argnames: Union[str, Iterable[str]],
+                    fixture: Union[str, Callable],
+                    in_cls: bool,
+                    hook: Callable[[Callable], Callable]
                     ):
     """
 

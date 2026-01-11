@@ -5,14 +5,9 @@
 from __future__ import division
 
 from inspect import getmodule, currentframe
+from typing import Callable, Any, Iterable  # noqa
+from types import ModuleType  # noqa
 from warnings import warn
-
-try:
-    # type hints, python 3+
-    from typing import Callable, Any, Union, Iterable  # noqa
-    from types import ModuleType  # noqa
-except ImportError:
-    pass
 
 from .common_others import make_identifier
 
@@ -37,11 +32,11 @@ CHANGE = 2
 
 
 def check_name_available(module,
-                         name,                  # type: str
-                         if_name_exists=RAISE,  # type: int
-                         name_changer=None,     # type: Callable
-                         caller=None,           # type: Callable[[Any], Any]
-                         extra_forbidden_names=()  # type: Iterable[str]
+                         name: str,
+                         if_name_exists: int = RAISE,
+                         name_changer: Callable = None,
+                         caller: Callable[[Any], Any] = None,
+                         extra_forbidden_names: Iterable[str] = ()
                          ):
     """
     Routine to check that a name is not already in dir(module) + extra_forbidden_names.
@@ -99,8 +94,7 @@ def check_name_available(module,
     return name
 
 
-def get_caller_module(frame_offset=1):
-    # type: (...) -> ModuleType
+def get_caller_module(frame_offset: int = 1) -> ModuleType:
     """ Return the module where the last frame belongs.
 
     :param frame_offset: an alternate offset to look further up in the call stack
@@ -111,7 +105,7 @@ def get_caller_module(frame_offset=1):
     return getmodule(frame)
 
 
-def _get_callerframe(offset=0):
+def _get_callerframe(offset: int = 0):
     """ Return a frame in the call stack
 
     :param offset: an alternate offset to look further up in the call stack

@@ -44,8 +44,7 @@ class CaseFilter(object):
         )
 
 
-def has_tags(*tag_names  # type: str
-             ):
+def has_tags(*tag_names: str):
     """
     Selects cases that have all tags in `tag_names`. See `@case(tags=...)` to add tags to a case.
 
@@ -61,8 +60,7 @@ def has_tags(*tag_names  # type: str
     return CaseFilter(_filter)
 
 
-def has_tag(tag_name  # type: str
-            ):
+def has_tag(tag_name: str):
     """
     Selects cases that have the tag `tag_name`. See `@case(tags=...)` to add tags to a case.
 
@@ -76,8 +74,7 @@ def has_tag(tag_name  # type: str
     return CaseFilter(_filter)
 
 
-def id_has_prefix(prefix  # type: str
-                  ):
+def id_has_prefix(prefix: str):
     """
     Selects cases that have a case id prefix `prefix`.
 
@@ -91,8 +88,7 @@ def id_has_prefix(prefix  # type: str
     return CaseFilter(_filter)
 
 
-def id_has_suffix(suffix  # type: str
-                  ):
+def id_has_suffix(suffix: str):
     """
     Selects cases that have a case id suffix `suffix`.
 
@@ -106,8 +102,7 @@ def id_has_suffix(suffix  # type: str
     return CaseFilter(_filter)
 
 
-def id_match_regex(regex  # type: str
-                   ):
+def id_match_regex(regex: str):
     """
     Select cases that have a case id matching `regex`.
 
