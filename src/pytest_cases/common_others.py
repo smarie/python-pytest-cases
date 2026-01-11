@@ -427,7 +427,7 @@ def get_class_that_defined_method(meth):
                 )
             if host is None:
                 raise ValueError("__qualname__ leads to `None`, this is strange and not PEP3155 compliant, please "
-                                    "report")
+                                 "report")
 
         if isinstance(host, type):
             return host
