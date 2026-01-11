@@ -28,7 +28,7 @@ except ImportError:
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST7_OR_GREATER, PYTEST8_OR_GREATER
+from .common_pytest_marks import PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST7_OR_GREATER, PYTEST8_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopeval, is_function_node, get_param_names, \
     get_param_argnames_as_list, has_function_scope, set_callspec_arg_scope_to_function, in_callspec_explicit_args
 
@@ -201,7 +201,7 @@ class FixtureClosureNode(object):
                     return fixture_defs[-1]._scope if fixture_defs is not None else f_scope
                 items = sorted(list(items), key=sort_by_scope, reverse=True)
 
-            elif PYTEST35_OR_GREATER:
+            else:
                 # scopes is a list, values are indices in the list, and the field is scopenum
                 f_scope = get_pytest_function_scopeval()
                 def sort_by_scope(kv_pair):  # noqa
