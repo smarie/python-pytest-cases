@@ -54,8 +54,9 @@ ExpectedErrorInstance = Optional[BaseException]
 ExpectedErrorValidator = Optional[Callable[[BaseException], Optional[bool]]]
 
 
-def unfold_expected_err(expected_e: ExpectedError
-                        ) -> tuple[ExpectedErrorType, ExpectedErrorPattern, ExpectedErrorInstance, ExpectedErrorValidator]:
+def unfold_expected_err(
+        expected_e: ExpectedError
+    ) -> tuple[ExpectedErrorType, ExpectedErrorPattern, ExpectedErrorInstance, ExpectedErrorValidator]:
     """
     'Unfolds' the expected error `expected_e` to return a tuple of
      - expected error type
@@ -205,9 +206,11 @@ class AssertException(object):
         # See https://docs.python.org/2/reference/datamodel.html#object.__exit__
         return True
 
+
 class Auto(enum.Enum):
     """Class to allow type hints for the AUTO Singleton"""
     AUTO = object()
+
 
 AUTO = Auto.AUTO
 """Marker for automatic defaults"""

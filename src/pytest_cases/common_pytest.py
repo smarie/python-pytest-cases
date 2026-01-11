@@ -363,7 +363,7 @@ def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomput
 
 def resolve_ids(ids: Optional[Union[Callable, Iterable[str]]],
                 argvalues: Collection[Any],
-                full_resolve: bool = False 
+                full_resolve: bool = False
                 ) -> Union[list[str], Callable]:
     """
     Resolves the `ids` argument of a parametrized fixture.

@@ -432,7 +432,7 @@ _make_fixture_union = _fixture_union
 def unpack_fixture(argnames: str,
                    fixture: Union[str, Callable],
                    in_cls: bool = False,
-                   hook: Callable[[Callable], Callable] = None     
+                   hook: Callable[[Callable], Callable] = None
                    ):
     """
     Creates several fixtures with names `argnames` from the source `fixture`. Created fixtures will correspond to

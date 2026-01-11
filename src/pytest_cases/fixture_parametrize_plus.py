@@ -314,7 +314,7 @@ class SingleParamAlternative(ParamAlternative):
                id: Union[str, Callable],
                scope: str = None,
                hook: Callable = None,
-               debug: bool = False        
+               debug: bool = False
                ) -> 'SingleParamAlternative':
         """
         Creates an alternative for fixture union `param_union_name`, to handle single parameter value
@@ -424,7 +424,7 @@ class MultiParamAlternative(ParamAlternative):
                ids: Union[Sequence[str], Callable],
                scope: str = "function",
                hook: Callable = None,
-               debug: bool = False       
+               debug: bool = False
                ) -> 'MultiParamAlternative':
         """
         Creates an alternative for fixture union `param_union_name`, to handle a group of consecutive parameters

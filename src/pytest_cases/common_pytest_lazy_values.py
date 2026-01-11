@@ -164,7 +164,7 @@ class _LazyValue(Lazy):
         return hash((self.__class__, self.valuegetter, self._id, self._marks))
 
     def get_marks(self,
-                  as_decorators: bool = False 
+                  as_decorators: bool = False
                   ) -> Union[tuple[Mark, ...], tuple[MarkDecorator, ...]]:
         """
         Overrides default implementation to return the marks that are on the case function
@@ -480,7 +480,7 @@ else:
 
 def lazy_value(valuegetter: Callable[[], Any],
                id: str = None,  # noqa
-               marks: Union[MarkDecorator, Iterable[MarkDecorator]] = ()     
+               marks: Union[MarkDecorator, Iterable[MarkDecorator]] = ()
                ):
     """
     Creates a reference to a value getter, to be used in `parametrize`.
