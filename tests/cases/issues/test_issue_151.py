@@ -1,7 +1,6 @@
 import itertools
 
 import pytest
-from pytest_cases.common_pytest_marks import has_pytest_param
 
 from pytest_cases import parametrize_with_cases, case, get_case_id
 
@@ -86,8 +85,6 @@ def test_create_no_fixture_idstyle_none(inputs, request_data):
 
 
 def test_synthesis(module_results_dct):
-    simple_id = "simple" if has_pytest_param else "simple[0]-simple[1]"
-
     assert list(module_results_dct) == [
         'test_create_fixture_idstyle_explicit[(inputs,request_data)/simple]',  # explicit
         'test_create_fixture_ids_generator[custom{0}]',
@@ -95,9 +92,9 @@ def test_synthesis(module_results_dct):
         'test_create_fixture_ids_callable_str[(inputs,request_data)/P0F/simple]',
         'test_create_fixture_idstyle_compact[/simple]',    # compact
         'test_create_fixture_idstyle_none[simple]',     # none (default)
-        'test_create_no_fixture_idstyle_explicit[%s]' % simple_id,  # explicit: not taken into account
+        'test_create_no_fixture_idstyle_explicit[simple]',  # explicit: not taken into account
         'test_create_no_fixture_ids_generator[custom{0}]',
         "test_create_no_fixture_ids_callable[hello_simple]",
-        'test_create_no_fixture_idstyle_compact[%s]' % simple_id,  # compact: not taken into account
-        'test_create_no_fixture_idstyle_none[%s]' % simple_id,  # none: not taken into account
+        'test_create_no_fixture_idstyle_compact[simple]',  # compact: not taken into account
+        'test_create_no_fixture_idstyle_none[simple]',  # none: not taken into account
     ]

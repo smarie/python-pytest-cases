@@ -7,7 +7,6 @@ import sys
 from math import sqrt
 import pytest
 
-from pytest_cases.common_pytest_marks import has_pytest_param
 from pytest_cases import parametrize_with_cases, get_case_id
 
 
@@ -35,16 +34,10 @@ def test_bad_datasets(data, err_type, err_msg):
 
 
 def test_synthesis(module_results_dct):
-    if has_pytest_param:
-        assert list(module_results_dct) == [
-            'test_good_datasets[int_success]',
-            'test_bad_datasets[negative_int_failure]'
-        ]
-    else:
-        assert list(module_results_dct) == [
-            'test_good_datasets[int_success]',
-            'test_bad_datasets[negative_int_failure[0]-negative_int_failure[1]-negative_int_failure[2]]'
-        ]
+    assert list(module_results_dct) == [
+        'test_good_datasets[int_success]',
+        'test_bad_datasets[negative_int_failure]'
+    ]
 
 
 def create_filter(sub_str):
@@ -65,19 +58,10 @@ def test_bad_datasets2(data, err_type, err_msg):
 
 
 def test_synthesis2(module_results_dct):
-    if has_pytest_param:
-        assert list(module_results_dct) == [
-            'test_good_datasets[int_success]',
-            'test_bad_datasets[negative_int_failure]',
-            'test_synthesis',
-            'test_good_datasets2[int_success]',
-            'test_bad_datasets2[negative_int_failure]'
-        ]
-    else:
-        assert list(module_results_dct) == [
-            'test_good_datasets[int_success]',
-            'test_bad_datasets[negative_int_failure[0]-negative_int_failure[1]-negative_int_failure[2]]',
-            'test_synthesis',
-            'test_good_datasets2[int_success]',
-            'test_bad_datasets2[negative_int_failure[0]-negative_int_failure[1]-negative_int_failure[2]]'
-        ]
+    assert list(module_results_dct) == [
+        'test_good_datasets[int_success]',
+        'test_bad_datasets[negative_int_failure]',
+        'test_synthesis',
+        'test_good_datasets2[int_success]',
+        'test_bad_datasets2[negative_int_failure]'
+    ]

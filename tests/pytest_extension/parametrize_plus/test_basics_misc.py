@@ -9,7 +9,6 @@ from pytest_harvest import get_session_synthesis_dct
 
 from pytest_cases.common_pytest import cart_product_pytest, get_marked_parameter_values, \
     extract_parameterset_info, extract_pset_info_single
-from pytest_cases.common_pytest_marks import has_pytest_param
 from pytest_cases.common_pytest_lazy_values import is_lazy
 from pytest_cases.fixture_parametrize_plus import _get_argnames_argvalues
 from ...utils import skip
@@ -112,10 +111,9 @@ def test_get_argnames_argvalues(tuple_around_single):
 
     # a mark on any of them
     argnames, argvalues = _get_argnames_argvalues(**{'a,b': (skip(True, 1.25), (True, 0)), 'c': [-1, 2]})
-    if has_pytest_param:
-        assert argvalues[0].id is None
-        assert argvalues[0].marks[0].name == 'skip'
-        assert argvalues[0].values == (True, 1.25, -1) if argnames[-1] == 'c' else (-1, True, 1.25)
+    assert argvalues[0].id is None
+    assert argvalues[0].marks[0].name == 'skip'
+    assert argvalues[0].values == (True, 1.25, -1) if argnames[-1] == 'c' else (-1, True, 1.25)
 
     # hybrid
     # -- several argnames in two entries
@@ -129,11 +127,10 @@ def test_get_argnames_argvalues(tuple_around_single):
     assert all(p is None for p in custom_pids)
     assert p_values == [(True, -1, True, 1.25), (True, -1, True, 0), ('hey', 2, True, 1.25), ('hey', 2, True, 0)]
     assert p_marks[0:2] == [None, None]
-    if has_pytest_param:
-        assert len(p_marks[2]) == 1
-        assert p_marks[2][0].name == 'skip'
-        assert len(p_marks[3]) == 1
-        assert p_marks[3][0].name == 'skip'
+    assert len(p_marks[2]) == 1
+    assert p_marks[2][0].name == 'skip'
+    assert len(p_marks[3]) == 1
+    assert p_marks[3][0].name == 'skip'
 
 
 def format_me(**kwargs):

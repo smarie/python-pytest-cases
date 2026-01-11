@@ -19,7 +19,7 @@ import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
 from .common_others import AUTO, robust_isinstance, replace_list_contents
-from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
+from .common_pytest_marks import get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
     extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, \
@@ -534,48 +534,12 @@ class ProductParamAlternative(SingleParamAlternative):
             return mini_idvalset(self.argnames, argval, idx=self.alternative_index)
 
 
-# if PYTEST54_OR_GREATER:
-#     # an empty string will be taken into account but NOT filtered out in CallSpec2.id.
-#     # so instead we create a dedicated unique string and return it.
-#     # Ugly but the only viable alternative seems worse: it would be to return an empty string
-#     # and in `remove_empty_ids` to always remove all empty strings (not necessary the ones set by us).
-#     # That is too much of a change.
-
 EMPTY_ID = "<pytest_cases_empty_id>"
 
 
-if has_pytest_param:
-    def remove_empty_ids(callspec):
-        # used by plugin.py to remove the EMPTY_ID from the callspecs
-        replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.startswith(EMPTY_ID)])
-else:
-    def remove_empty_ids(callspec):
-        # used by plugin.py to remove the EMPTY_ID from the callspecs
-        replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.endswith(EMPTY_ID)])
-
-
-# elif PYTEST421_OR_GREATER:
-#     # an empty string will be taken into account and filtered out in CallSpec2.id.
-#     # but.... if this empty string appears several times in the tests it is appended with a number to become unique :(
-#     EMPTY_ID = ""
-#
-# else:
-#     # an empty string will only be taken into account if its truth value is True
-#     # but.... if this empty string appears several times in the tests it is appended with a number to become unique :(
-#     # it will be filtered out in CallSpec2.id
-#     class EmptyId(str):
-#         def __new__(cls):
-#             return str.__new__(cls, "")
-#
-#         def __nonzero__(self):
-#             # python 2
-#             return True
-#
-#         def __bool__(self):
-#             # python 3
-#             return True
-#
-#     EMPTY_ID = EmptyId()
+def remove_empty_ids(callspec):
+    # used by plugin.py to remove the EMPTY_ID from the callspecs
+    replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.startswith(EMPTY_ID)])
 
 
 class ParamIdMakers(UnionIdMakers):
@@ -1307,17 +1271,9 @@ def _process_argvalues(argnames, marked_argvalues, nb_params, has_custom_ids, au
 
                 # TUPLE usage: if the id is not provided elsewhere we HAVE to set an id to avoid <id>[0]-<id>[1]...
                 if p_ids[i] is None and not has_custom_ids:
-                    if not has_pytest_param:
-                        if v._id is not None:
-                            # (on pytest 2 we cannot do it since pytest.param does not exist)
-                            warn("The custom id %r in `lazy_value` will be ignored as this version of pytest is too old"
-                                 " to support `pytest.param`." % v._id)
-                        else:
-                            pass  # no warning, but no p_id update
-                    else:
-                        # update/create the pytest.param id on this value
-                        p_ids[i] = v.get_id()
-                        mod_lvid_indices.append(i)
+                    # update/create the pytest.param id on this value
+                    p_ids[i] = v.get_id()
+                    mod_lvid_indices.append(i)
 
                 # handle marks
                 _mks = v.get_marks(as_decorators=True)

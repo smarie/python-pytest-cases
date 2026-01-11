@@ -1,5 +1,4 @@
 from pytest_cases import parametrize_with_cases, lazy_value, parametrize
-from pytest_cases.common_pytest_marks import has_pytest_param
 
 
 def case_dumb():
@@ -34,22 +33,11 @@ def test_tuples(a, b):
 
 
 def test_synthesis(module_results_dct):
-    if has_pytest_param:
-        assert list(module_results_dct) == [
-            "test_foo[1-b0]",
-            "test_foo[case_dumb]",
-            'test_tuples_no_id[dumb]',
-            "test_foo2[hello]",
-            "test_foo2[world]",
-            'test_tuples[hello]',
-        ]
-    else:
-        # no pytest.param exists in this old pytest so the ids can not all be fixed
-        assert list(module_results_dct) == [
-            "test_foo[1-b0]",
-            "test_foo[case_dumb[0]-case_dumb[1]]",
-            'test_tuples_no_id[dumb[0]-dumb[1]]',
-            "test_foo2[hello]",
-            "test_foo2[world]",
-            'test_tuples[hello]',
-        ]
+    assert list(module_results_dct) == [
+        "test_foo[1-b0]",
+        "test_foo[case_dumb]",
+        'test_tuples_no_id[dumb]',
+        "test_foo2[hello]",
+        "test_foo2[world]",
+        'test_tuples[hello]',
+    ]

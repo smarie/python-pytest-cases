@@ -231,38 +231,16 @@ def get_pytest_parametrize_marks(
 # Compatibility for the way we put marks on single parameters in the list passed to @pytest.mark.parametrize
 # see https://docs.pytest.org/en/3.3.0/skipping.html?highlight=mark%20parametrize#skip-xfail-with-parametrize
 
-# check if pytest.param exists
-has_pytest_param = hasattr(pytest, 'param')
 
+def make_marked_parameter_value(argvalues_tuple, marks):
+    if not isinstance(argvalues_tuple, tuple):
+        raise TypeError("argvalues must be a tuple !")
 
-if not has_pytest_param:
-    # if not this is how it was done
-    # see e.g. https://docs.pytest.org/en/2.9.2/skipping.html?highlight=mark%20parameter#skip-xfail-with-parametrize
-    def make_marked_parameter_value(argvalues_tuple, marks):
-        if len(marks) > 1:
-            raise ValueError("Multiple marks on parameters not supported for old versions of pytest")
-        else:
-            if not isinstance(argvalues_tuple, tuple):
-                raise TypeError("argvalues must be a tuple !")
+    # get a decorator for each of the markinfo
+    marks_mod = markinfos_to_markdecorators(marks, function_marks=False)
 
-            # get a decorator for each of the markinfo
-            marks_mod = markinfos_to_markdecorators(marks, function_marks=False)
-
-            # decorate. We need to distinguish between single value and multiple values
-            # indeed in pytest 2 a single arg passed to the decorator is passed directly
-            # (for example: @pytest.mark.skip(1) in parametrize)
-            return marks_mod[0](argvalues_tuple) if len(argvalues_tuple) > 1 else marks_mod[0](argvalues_tuple[0])
-else:
-    # Otherwise pytest.param exists, it is easier
-    def make_marked_parameter_value(argvalues_tuple, marks):
-        if not isinstance(argvalues_tuple, tuple):
-            raise TypeError("argvalues must be a tuple !")
-
-        # get a decorator for each of the markinfo
-        marks_mod = markinfos_to_markdecorators(marks, function_marks=False)
-
-        # decorate
-        return pytest.param(*argvalues_tuple, marks=marks_mod)
+    # decorate
+    return pytest.param(*argvalues_tuple, marks=marks_mod)
 
 
 def markinfos_to_markdecorators(marks,                # type: Iterable[Mark]

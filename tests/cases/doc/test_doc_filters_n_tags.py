@@ -54,7 +54,6 @@ def test_with_data_param(data, user):
 
 
 def test_with_data_synthesis(module_results_dct):
-    # if has_pytest_param:
     assert list(module_results_dct) == [
         # pytest parametrize
         'test_default_pytest_order[bob-a]',
@@ -67,12 +66,6 @@ def test_with_data_synthesis(module_results_dct):
         'test_with_data_param[b-True-bob]',
         'test_with_data_param[b-False-bob]'
     ]
-    # else:
-    #     assert list(results_dct) == [
-    #         'test_with_data[a-bob]',
-    #         'test_with_data[b-True-bob]',
-    #         'test_with_data[b-False-bob]'
-    #     ]
 
 
 class Foo:

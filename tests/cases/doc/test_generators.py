@@ -5,7 +5,6 @@
 from pytest_harvest import get_session_synthesis_dct
 
 from pytest_cases import parametrize_with_cases, parametrize
-from pytest_cases.common_pytest_marks import has_pytest_param
 
 from ...utils import skip
 
@@ -51,7 +50,6 @@ def test_foo_multi(msg, score):
 
 def test_foo_multi_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_multi, test_id_format='function')
-    # if has_pytest_param:
     assert list(results_dct) == [
         'test_foo_multi[hello]',
         # 'test_foo_multi[simple_generator-who=you]',  skipped
@@ -59,11 +57,3 @@ def test_foo_multi_synthesis(request):
         'test_foo_multi[simple_generator-who=there-a=5-b=5]',
         'test_foo_multi[simple_generator-who=there-a=10-b=10]'
     ]
-    # else:
-    #     assert list(results_dct) == [
-    #         'test_foo_multi[hello[0]-hello[1]]',
-    #         # 'test_foo_multi[simple_generator-who=you]',  skipped
-    #         # 'test_foo_multi[simple_generator-who=you]',  skipped
-    #         'test_foo_multi[simple_generator-who=there-a=5-b=5[0]-simple_generator-who=there-a=5-b=5[1]]',
-    #         'test_foo_multi[simple_generator-who=there-a=10-b=10[0]-simple_generator-who=there-a=10-b=10[1]]'
-    #     ]

@@ -6,7 +6,6 @@ import pytest
 
 from pytest_harvest import get_session_synthesis_dct
 from pytest_cases import parametrize_with_cases, fixture, case, AUTO
-from pytest_cases.common_pytest_marks import has_pytest_param
 
 from . import cases_doc_alternate
 from .example import foo
@@ -30,8 +29,8 @@ def test_foo_default_cases_file(a, b):
 def test_foo_default_cases_file_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_default_cases_file, test_id_format='function')
     assert list(results_dct) == [
-        'test_foo_default_cases_file[%s]' % ('two_positive_ints' if has_pytest_param else 'two_positive_ints[0]-two_positive_ints[1]'),
-        'test_foo_default_cases_file[%s]' % ('two_negative_ints' if has_pytest_param else 'two_negative_ints[0]-two_negative_ints[1]')
+        'test_foo_default_cases_file[two_positive_ints]',
+        'test_foo_default_cases_file[two_negative_ints]'
     ]
 
 
@@ -47,10 +46,7 @@ def test_foo_fun(a, b):
 
 def test_foo_fun_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_fun, test_id_format='function')
-    if has_pytest_param:
-        assert list(results_dct) == ['test_foo_fun[strange_ints]']
-    else:
-        assert list(results_dct) == ['test_foo_fun[strange_ints[0]-strange_ints[1]]']
+    assert list(results_dct) == ['test_foo_fun[strange_ints]']
 
 
 @parametrize_with_cases("a,b", cases=(strange_ints, strange_ints))
@@ -60,16 +56,10 @@ def test_foo_fun_list(a, b):
 
 def test_foo_fun_list_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_fun_list, test_id_format='function')
-    if has_pytest_param:
-        assert list(results_dct) == [
-            'test_foo_fun_list[strange_ints0]',
-            'test_foo_fun_list[strange_ints1]'
-        ]
-    else:
-        assert list(results_dct) == [
-            'test_foo_fun_list[0strange_ints[0]-strange_ints[1]]',
-            'test_foo_fun_list[1strange_ints[0]-strange_ints[1]]'
-        ]
+    assert list(results_dct) == [
+        'test_foo_fun_list[strange_ints0]',
+        'test_foo_fun_list[strange_ints1]'
+    ]
 
 
 class CasesFoo:
@@ -104,20 +94,12 @@ def test_foo_cls(a, b):
 
 def test_foo_cls_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_foo_cls, test_id_format='function')
-    if has_pytest_param:
-        assert list(results_dct) == [
-            'test_foo_cls[toto]',
-            'test_foo_cls[foo]',
-            'test_foo_cls[hello world]',
-            'test_foo_cls[two_negative_ints]'
-        ]
-    else:
-        assert list(results_dct) == [
-            'test_foo_cls[toto[0]-toto[1]]',
-            'test_foo_cls[foo[0]-foo[1]]',
-            'test_foo_cls[hello world[0]-hello world[1]]',
-            'test_foo_cls[two_negative_ints[0]-two_negative_ints[1]]'
-        ]
+    assert list(results_dct) == [
+        'test_foo_cls[toto]',
+        'test_foo_cls[foo]',
+        'test_foo_cls[hello world]',
+        'test_foo_cls[two_negative_ints]'
+    ]
 
 
 @parametrize_with_cases("a,b", cases=(CasesFoo, strange_ints, cases_doc_alternate, CasesFoo, '.test_doc_cases'))
@@ -150,10 +132,7 @@ def test_foo_cls_list_synthesis(request):
         'test_foo_cls_list[two_positive_ints]',
         'test_foo_cls_list[two_negative_ints4]'
     ]
-    if has_pytest_param:
-        assert list(results_dct) == ref_list
-    else:
-        assert len(results_dct) == len(ref_list)
+    assert list(results_dct) == ref_list
 
 
 @fixture
