@@ -17,10 +17,10 @@ Here is a non-exhaustive list of interesting open topics: [https://github.com/sm
 
 ## `nox` setup
 
-This project uses `nox` to define all lifecycle tasks. In order to be able to run those tasks, you should create python 3.7 environment and install the requirements:
+This project uses `nox` to define all lifecycle tasks. In order to be able to run those tasks, you should create python 3.11 environment and install the requirements:
 
 ```bash
->>> conda create -n noxenv python="3.7"
+>>> conda create -n noxenv python="3.11"
 >>> activate noxenv
 (noxenv) >>> pip install -r noxfile-requirements.txt
 ```
@@ -31,14 +31,17 @@ You should then be able to list all available tasks using:
 >>> nox --list
 Sessions defined in <path>\noxfile.py:
 
-* tests-2.7 -> Run the test suite, including test reports generation and coverage reports.
-* tests-3.5 -> Run the test suite, including test reports generation and coverage reports.
-* tests-3.6 -> Run the test suite, including test reports generation and coverage reports.
-* tests-3.8 -> Run the test suite, including test reports generation and coverage reports.
-* tests-3.7 -> Run the test suite, including test reports generation and coverage reports.
-- docs-3.7 -> Generates the doc and serves it on a local http server. Pass '-- build' to build statically instead.
-- publish-3.7 -> Deploy the docs+reports on github pages. Note: this rebuilds the docs
-- release-3.7 -> Create a release on github corresponding to the latest tag
+* tests(3-14-env-pytest-latest) -> Run the test suite, including test reports generation and coverage reports.
+* tests(3-14-env-pytest8.x) -> Run the test suite, including test reports generation and coverage reports.
+* tests(3-14-env-pytest7.x) -> Run the test suite, including test reports generation and coverage reports.
+* tests(3-14-env-pytest6.x) -> Run the test suite, including test reports generation and coverage reports.
+...
+* tests(3-11-env-pytest-latest) -> Run the test suite, including test reports generation and coverage reports.
+* flake8 -> Launch flake8 qualimetry.
+* docs -> Generates the doc. Pass '-- serve' to serve it on a local http server instead.
+- publish -> Deploy the docs+reports on github pages. Note: this rebuilds the docs
+* build -> Same as release but just builds
+- release -> Create a release on github corresponding to the latest tag
 ```
 
 ## Running the tests and generating the reports
@@ -49,9 +52,9 @@ This project uses `pytest` so running `pytest` at the root folder will execute a
 nox
 ```
 
-Tests and coverage reports are automatically generated under `./docs/reports` for one of the sessions (`tests-3.7`). 
+Tests and coverage reports are automatically generated under `./docs/reports` for one of the sessions (`tests(3-14-env-pytest-latest)`). 
 
-If you wish to execute tests on a specific environment, use explicit session names, e.g. `nox -s tests-3.6`.
+If you wish to execute tests on a specific environment, use explicit session names, e.g. `nox -s tests(3-13-env-pytest-latest)`.
 
 
 ## Editing the documentation
@@ -59,12 +62,12 @@ If you wish to execute tests on a specific environment, use explicit session nam
 This project uses `mkdocs` to generate its documentation page. Therefore building a local copy of the doc page may be done using `mkdocs build -f docs/mkdocs.yml`. However once again things are easier with `nox`. You can easily build and serve locally a version of the documentation site using:
 
 ```bash
->>> nox -s docs
-nox > Running session docs-3.7
-nox > Creating conda env in .nox\docs-3-7 with python=3.7
+>>> nox -s docs -- serve
+nox > Running session docs
+nox > Creating conda env in .nox\docs with python=3.11
 nox > [docs] Installing requirements with pip: ['mkdocs-material', 'mkdocs', 'pymdown-extensions', 'pygments']
 nox > python -m pip install mkdocs-material mkdocs pymdown-extensions pygments
-nox > mkdocs serve -f ./docs/mkdocs.yml
+nox > mkdocs serve -f
 INFO    -  Building documentation...
 INFO    -  Cleaning site directory
 INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
