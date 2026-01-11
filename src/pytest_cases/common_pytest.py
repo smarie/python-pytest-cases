@@ -29,41 +29,22 @@ from _pytest.python import Metafunc
 from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
-    get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER, PYTEST6_OR_GREATER, \
+    get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST6_OR_GREATER, \
     PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER, PYTEST71_OR_GREATER, \
     PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
 # A decorator that will work to create a fixture containing 'yield', whatever the pytest version, and supports hooks
-if PYTEST3_OR_GREATER:
-    def pytest_fixture(hook=None, **kwargs):
-        def _decorate(f):
-            # call hook if needed
-            if hook is not None:
-                f = hook(f)
+def pytest_fixture(hook=None, **kwargs):
+    def _decorate(f):
+        # call hook if needed
+        if hook is not None:
+            f = hook(f)
 
-            # create the fixture
-            return pytest.fixture(**kwargs)(f)
-        return _decorate
-else:
-    def pytest_fixture(hook=None, name=None, **kwargs):
-        """Generator-aware pytest.fixture decorator for legacy pytest versions"""
-        def _decorate(f):
-            if name is not None:
-                # 'name' argument is not supported in this old version, use the __name__ trick.
-                f.__name__ = name
-
-            # call hook if needed
-            if hook is not None:
-                f = hook(f)
-
-            # create the fixture
-            if isgeneratorfunction(f):
-                return pytest.yield_fixture(**kwargs)(f)
-            else:
-                return pytest.fixture(**kwargs)(f)
-        return _decorate
+        # create the fixture
+        return pytest.fixture(**kwargs)(f)
+    return _decorate
 
 
 def pytest_is_running():
@@ -820,17 +801,7 @@ class MiniMetafunc(Metafunc):
         """
         for pmark in self.pmarks:
             if len(pmark.param_names) == 1:
-                if PYTEST3_OR_GREATER:
-                    argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
-                else:
-                    argvals = []
-                    for v in pmark.param_values:
-                        if is_marked_parameter_value(v):
-                            newmark = MarkDecorator(v.markname, v.args[:-1] + ((v.args[-1],),), v.kwargs)
-                            argvals.append(newmark)
-                        else:
-                            argvals.append((v,))
-                    argvals = tuple(argvals)
+                argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
             else:
                 argvals = pmark.param_values
             self.parametrize(argnames=pmark.param_names, argvalues=argvals, ids=pmark.param_ids,

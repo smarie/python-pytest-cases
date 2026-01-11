@@ -28,7 +28,6 @@ from .common_mini_six import string_types
 
 
 PYTEST_VERSION = Version(pytest.__version__)
-PYTEST3_OR_GREATER = PYTEST_VERSION >= Version('3.0.0')
 PYTEST32_OR_GREATER = PYTEST_VERSION >= Version('3.2.0')
 PYTEST33_OR_GREATER = PYTEST_VERSION >= Version('3.3.0')
 PYTEST34_OR_GREATER = PYTEST_VERSION >= Version('3.4.0')
@@ -165,10 +164,7 @@ def get_pytest_marks_on_function(f,
 
 def get_pytest_marks_on_item(item):
     """lists all marks on an item such as `request._pyfuncitem`"""
-    if PYTEST3_OR_GREATER:
-        return item.callspec.marks
-    else:
-        return [val for val in item.keywords.values() if isinstance(val, (MarkDecorator, Mark))]
+    return item.callspec.marks
 
 
 def get_pytest_usefixture_marks(f):
@@ -303,25 +299,11 @@ def markinfos_to_markdecorators(marks,                # type: Iterable[Mark]
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             for m in marks:
-                if PYTEST3_OR_GREATER:
-                    if isinstance(m, MarkDecorator):
-                        # already a decorator, we can use it
-                        marks_mod.append(m)
-                    else:
-                        md = MarkDecorator(m)
-                        marks_mod.append(md)
+                if isinstance(m, MarkDecorator):
+                    # already a decorator, we can use it
+                    marks_mod.append(m)
                 else:
-                    # create a dummy new MarkDecorator named "MarkDecorator" for reference
-                    md = MarkDecorator()
-                    # always recreate one, type comparison does not work (all generic stuff)
-                    md.name = m.name
-
-                    if function_marks:
-                        md.args = m.args  # a mark on a function does not include the function in the args
-                    else:
-                        md.args = m.args[:-1]  # not a function: the value is in the args, remove it
-                    md.kwargs = m.kwargs
-
+                    md = MarkDecorator(m)
                     marks_mod.append(md)
 
     except Exception as e:
@@ -352,9 +334,4 @@ def markdecorators_as_tuple(marks  # type: Optional[Union[MarkDecorator, Iterabl
 def markdecorators_to_markinfos(marks  # type: Sequence[MarkDecorator]
                                 ):
     # type: (...) -> Tuple[Mark, ...]
-    if PYTEST3_OR_GREATER:
-        return tuple(m.mark for m in marks)
-    elif len(marks) == 0:
-        return ()
-    else:
-        return tuple(Mark(m.name, m.args, m.kwargs) for m in marks)
+    return tuple(m.mark for m in marks)

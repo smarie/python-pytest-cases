@@ -8,7 +8,7 @@ from pytest_cases.common_mini_six import string_types
 import pytest
 
 from pytest_cases import fixture
-from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, PYTEST34_OR_GREATER
+from pytest_cases.common_pytest_marks import PYTEST34_OR_GREATER
 
 STEREO_PATHS = ['stereo 1.wav', 'stereo 2.wav']
 CFG_TYPES = [list, dict]
@@ -26,19 +26,7 @@ class StateAsserter:
         self.current_state += 1
 
 
-if PYTEST3_OR_GREATER:
-    a = StateAsserter()
-else:
-    # for old versions of pytest, the execution order seems harder to get strictly
-    class UnOrderedStateAsserter:
-        def __init__(self):
-            self.all_remaining = list(product(STEREO_PATHS, CFG_TYPES))
-
-        def assert_state_and_move(self, path, cfg_factory):
-            # just check that this state has not been reached yet and remove it
-            self.all_remaining.remove((path, cfg_factory))
-
-    a = UnOrderedStateAsserter()
+a = StateAsserter()
 
 
 @fixture

@@ -11,7 +11,7 @@ from pytest_harvest import get_session_synthesis_dct
 
 from pytest_cases.common_pytest import cart_product_pytest, get_marked_parameter_values, \
     extract_parameterset_info, extract_pset_info_single
-from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, has_pytest_param
+from pytest_cases.common_pytest_marks import has_pytest_param
 from pytest_cases.common_pytest_lazy_values import is_lazy
 from pytest_cases.fixture_parametrize_plus import _get_argnames_argvalues
 from ...utils import skip
@@ -165,16 +165,12 @@ def test_idgen1(a, b, c, d):
 def test_idgen1_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_idgen1, test_id_format='function')
     if sys.version_info >= (3, 6):
-        if PYTEST3_OR_GREATER:
-            assert list(results_dct) == [
-                'test_idgen1[10yes-c2.1-a=True,b= -1]',
-                'test_idgen1[10yes-c2.1-a=False,b=  3]',
-                'test_idgen1[10yes-c0.0-a=True,b= -1]',
-                'test_idgen1[10yes-c0.0-a=False,b=  3]'
-            ]
-        else:
-            # the order seems not guaranteed or at least quite different in pytest 2
-            assert len(results_dct) == 4
+        assert list(results_dct) == [
+            'test_idgen1[10yes-c2.1-a=True,b= -1]',
+            'test_idgen1[10yes-c2.1-a=False,b=  3]',
+            'test_idgen1[10yes-c0.0-a=True,b= -1]',
+            'test_idgen1[10yes-c0.0-a=False,b=  3]'
+        ]
     else:
         assert len(results_dct) == 4
 

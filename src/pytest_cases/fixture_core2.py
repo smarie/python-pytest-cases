@@ -40,7 +40,7 @@ except ImportError:
 from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_parametrize_marks, make_marked_parameter_value, get_param_argnames_as_list, \
     combine_ids, is_marked_parameter_value, pytest_fixture, resolve_ids, extract_parameterset_info, make_test_ids
-from .common_pytest_marks import PYTEST3_OR_GREATER, PYTEST8_OR_GREATER
+from .common_pytest_marks import PYTEST8_OR_GREATER
 from .fixture__creation import get_caller_module, check_name_available, WARN, CHANGE
 from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _make_unpack_fixture
 
@@ -402,13 +402,7 @@ def _decorate_fixture_plus(fixture_func,
     :param kwargs: other keyword arguments for `@pytest.fixture`
     """
     if name is not None:
-        # Compatibility for the 'name' argument
-        if PYTEST3_OR_GREATER:
-            # pytest version supports "name" keyword argument
-            kwargs['name'] = name
-        elif name is not None:
-            # 'name' argument is not supported in this old version, use the __name__ trick.
-            fixture_func.__name__ = name
+        kwargs['name'] = name
 
     # if unpacking is requested, do it first
     if unpack_into is not None:
