@@ -30,7 +30,7 @@ from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST6_OR_GREATER, \
-    PYTEST38_OR_GREATER, PYTEST71_OR_GREATER, PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
+    PYTEST71_OR_GREATER, PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
@@ -624,14 +624,10 @@ else:
                              nodeid=None,  # item is not used in pytest(>=6.0.0) nodeid is only used by idfn
                              config=None  # if a config hook was available it would be used before this is called)
                              )
-    elif PYTEST38_OR_GREATER:
+    else:
         _idval_kwargs = dict(idfn=None,
                              item=None,  # item is only used by idfn
                              config=None  # if a config hook was available it would be used before this is called)
-                             )
-    else:
-        _idval_kwargs = dict(idfn=None,
-                             # config=None  # if a config hook was available it would be used before this is called)
                              )
 
 
