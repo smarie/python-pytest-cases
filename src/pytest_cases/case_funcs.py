@@ -13,10 +13,7 @@ except ImportError:
 from .common_pytest import safe_isclass
 from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, markdecorators_to_markinfos
 
-try:
-    from _pytest.mark.structures import MarkDecorator, Mark
-except ImportError:
-    pass
+from _pytest.mark.structures import MarkDecorator, Mark
 
 
 # ------------------ API --------------

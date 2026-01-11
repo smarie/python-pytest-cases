@@ -9,14 +9,9 @@ from collections import namedtuple
 
 import functools
 from importlib import import_module
-from inspect import getmembers, ismodule
+from inspect import getmembers, ismodule, signature
 import re
 from warnings import warn
-
-try:  # python 3.3+
-    from inspect import signature
-except ImportError:
-    from funcsigs import signature  # noqa
 
 try:
     from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
@@ -39,12 +34,6 @@ from .fixture_core2 import CombinedFixtureParamValue, fixture
 from .fixture__creation import check_name_available, get_caller_module, CHANGE
 from .fixture_parametrize_plus import fixture_ref, _parametrize_plus, FixtureParamAlternative, ParamAlternative, \
     SingleParamAlternative, MultiParamAlternative, FixtureRefItem
-
-try:
-    ModuleNotFoundError
-except NameError:
-    # python < 3.6
-    ModuleNotFoundError = ImportError
 
 
 THIS_MODULE = object()

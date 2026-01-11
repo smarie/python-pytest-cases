@@ -5,20 +5,12 @@
 from functools import partial
 import weakref
 
-try:  # python 3.3+
-    from inspect import signature
-except ImportError:
-    from funcsigs import signature  # noqa
-
 try:
     from typing import Union, Callable, List, Set, Tuple, Any, Sequence, Optional, Iterable  # noqa
 except ImportError:
     pass
 
-try:
-    from _pytest.mark.structures import MarkDecorator, Mark  # noqa
-except ImportError:
-    pass
+from _pytest.mark.structures import MarkDecorator, Mark  # noqa
 
 from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, \
     markdecorators_to_markinfos

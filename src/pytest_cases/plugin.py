@@ -3,21 +3,12 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from collections import OrderedDict, namedtuple
+from collections.abc import MutableSequence
 from copy import copy
 from functools import partial
 from warnings import warn
 
-try:
-    from collections.abc import MutableSequence
-except:  # noqa
-    from collections import MutableSequence
-
 import pytest
-
-try:  # python 3.3+
-    from inspect import signature
-except ImportError:
-    from funcsigs import signature  # noqa
 
 try:  # python 3.3+ type hints
     from typing import List, Tuple, Union, Iterable, MutableMapping, Mapping, Optional  # noqa

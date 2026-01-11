@@ -2,15 +2,11 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
+from inspect import signature
 import itertools
 
 import warnings
 from packaging.version import Version
-
-try:  # python 3.3+
-    from inspect import signature
-except ImportError:
-    from funcsigs import signature  # noqa
 
 try:
     from typing import Iterable, Optional, Tuple, List, Set, Union, Sequence  # noqa
@@ -19,10 +15,7 @@ except ImportError:
 
 import pytest
 
-try:
-    from _pytest.mark.structures import MarkDecorator, Mark  # noqa
-except ImportError:
-    from _pytest.mark import MarkDecorator, MarkInfo as Mark  # noqa
+from _pytest.mark.structures import MarkDecorator, Mark
 
 
 PYTEST_VERSION = Version(pytest.__version__)

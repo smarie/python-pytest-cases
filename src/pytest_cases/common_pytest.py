@@ -5,18 +5,12 @@
 from __future__ import division
 
 import inspect
+from inspect import isgeneratorfunction, isclass, signature, Parameter
 import sys
 import os
 from importlib import import_module
 
 from makefun import add_signature_parameters, wraps
-
-try:  # python 3.3+
-    from inspect import signature, Parameter
-except ImportError:
-    from funcsigs import signature, Parameter  # noqa
-
-from inspect import isgeneratorfunction, isclass
 
 try:
     from typing import Union, Callable, Any, Optional, Tuple, Type, Iterable, Sized, List  # noqa
