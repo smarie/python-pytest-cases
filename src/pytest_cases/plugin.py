@@ -904,7 +904,7 @@ class NormalParamz(namedtuple('NormalParamz', ['argnames', 'argvalues', 'indirec
 
     def __str__(self):
         return f"[NORMAL] {self.argnames}=[{self.argvalues}], indirect={self.indirect}, ids={self.ids}, " \
-               f"scope={self.scope}, kwargs={self.kwargs}" 
+               f"scope={self.scope}, kwargs={self.kwargs}"
 
 
 def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=None, **kwargs):
