@@ -471,15 +471,6 @@ def robust_isinstance(o, cls):
         return False
 
 
-def isidentifier(s  # type: str
-                 ):
-    """python 2+3 compliant <str>.isidentifier()"""
-    try:
-        return s.isidentifier()
-    except AttributeError:
-        return re.match("[a-zA-Z_]\\w*\\Z", s)
-
-
 def make_identifier(name  # type: str
                     ):
     """Transform the given name into a valid python identifier"""
@@ -490,7 +481,7 @@ def make_identifier(name  # type: str
         # reserved keywords: add an underscore
         name = name + "_"
 
-    if isidentifier(name):
+    if name.isidentifier():
         return name
     elif len(name) == 0:
         # empty string

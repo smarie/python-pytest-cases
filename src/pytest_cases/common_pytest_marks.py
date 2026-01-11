@@ -147,33 +147,20 @@ def get_pytest_marks_on_item(item):
 
 
 def get_pytest_usefixture_marks(f):
-    # pytest > 3.2.0
     marks = getattr(f, 'pytestmark', None)
     if marks is not None:
         return tuple(itertools.chain.from_iterable(
             mark.args for mark in marks if mark.name == 'usefixtures'
         ))
     else:
-        # older versions
-        mark_info = getattr(f, 'usefixtures', None)
-        if mark_info is not None:
-            return mark_info.args
-        else:
-            return ()
+        return ()
 
 
 def remove_pytest_mark(f, mark_name):
     marks = getattr(f, 'pytestmark', None)
     if marks is not None:
-        # pytest > 3.2.0
         new_marks = [m for m in marks if m.name != mark_name]
         f.pytestmark = new_marks
-    else:
-        # older versions
-        try:
-            delattr(f, mark_name)
-        except AttributeError:
-            pass
     return f
 
 
@@ -188,35 +175,13 @@ def get_pytest_parametrize_marks(
     :param pop: boolean flag, when True the marks will be removed from f.
     :return: a tuple containing all 'parametrize' marks
     """
-    # pytest > 3.2.0
     marks = getattr(f, 'pytestmark', None)
     if marks is not None:
         if pop:
             delattr(f, 'pytestmark')
         return tuple(_ParametrizationMark(m) for m in marks if m.name == 'parametrize')
     else:
-        # older versions
-        mark_info = getattr(f, 'parametrize', None)
-        if mark_info is not None:
-            if pop:
-                delattr(f, 'parametrize')
-            # mark_info.args contains a list of (name, values)
-            if len(mark_info.args) % 2 != 0:
-                raise ValueError("internal pytest compatibility error - please report")
-            nb_parametrize_decorations = len(mark_info.args) // 2
-            if nb_parametrize_decorations > 1 and len(mark_info.kwargs) > 0:
-                raise ValueError("Unfortunately with this old pytest version it is not possible to have several "
-                                 "parametrization decorators while specifying **kwargs, as all **kwargs are "
-                                 "merged, leading to inconsistent results. Either upgrade pytest, remove the **kwargs,"
-                                 "or merge all the @parametrize decorators into a single one. **kwargs: %s"
-                                 % mark_info.kwargs)
-            res = []
-            for i in range(nb_parametrize_decorations):
-                param_name, param_values = mark_info.args[2*i:2*(i+1)]
-                res.append(_ParametrizationMark(_LegacyMark(param_name, param_values, **mark_info.kwargs)))
-            return tuple(res)
-        else:
-            return ()
+        return ()
 
 
 # ---- tools to reapply marks on test parameter values, whatever the pytest version ----
