@@ -30,8 +30,7 @@ from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST6_OR_GREATER, \
-    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST71_OR_GREATER, \
-    PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
+    PYTEST38_OR_GREATER, PYTEST71_OR_GREATER, PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
@@ -277,10 +276,7 @@ def get_parametrization_markers(fnode):
     :param fnode:
     :return:
     """
-    if PYTEST34_OR_GREATER:
-        return list(fnode.iter_markers(name="parametrize"))
-    else:
-        return list(fnode.parametrize)
+    return list(fnode.iter_markers(name="parametrize"))
 
 
 def get_param_names(fnode):
