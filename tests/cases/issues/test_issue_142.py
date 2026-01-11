@@ -1,6 +1,5 @@
 import pytest
 
-from pytest_cases.common_pytest_marks import PYTEST421_OR_GREATER
 from pytest_cases import parametrize_with_cases, case
 
 
@@ -35,6 +34,6 @@ def test_synthesis(module_results_dct):
         'test_empty_prefix[<empty_case_id>-1]',
         'test_empty_prefix[<empty_case_id>-0]',
         'test_empty_prefix[<empty_case_id>--1]',
-        'test_empty_caseid_both[%s]' % ("0" if PYTEST421_OR_GREATER else "test_empty_caseid_both_dummy_amount0"),
-        'test_empty_caseid_both[%s-1]' % ("1" if PYTEST421_OR_GREATER else "test_empty_caseid_both_dummy_amount1"),
+        'test_empty_caseid_both[0]',
+        'test_empty_caseid_both[1-1]',
     ]
