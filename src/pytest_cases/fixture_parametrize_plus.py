@@ -2,31 +2,10 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from inspect import isgeneratorfunction
+from collections.abc import Iterable
+from inspect import isasyncgenfunction, iscoroutinefunction, isgeneratorfunction, signature, Parameter
 from warnings import warn
 
-
-try:  # python 3.3+
-    from inspect import signature, Parameter
-except ImportError:
-    from funcsigs import signature, Parameter  # noqa
-
-try: # native coroutines, python 3.5+
-    from inspect import iscoroutinefunction
-except ImportError:
-    def iscoroutinefunction(obj):
-        return False
-
-try: # native async generators, python 3.6+
-    from inspect import isasyncgenfunction
-except ImportError:
-    def isasyncgenfunction(obj):
-        return False
-
-try:
-    from collections.abc import Iterable
-except ImportError:  # noqa
-    from collections import Iterable
 
 try:
     from typing import Union, Callable, List, Any, Sequence, Optional, Type, Tuple, TypeVar  # noqa
@@ -37,7 +16,6 @@ except ImportError:
     pass
 
 import pytest
-import sys
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
 from .common_mini_six import string_types
@@ -1077,32 +1055,20 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 return kwargs
 
 
-            if isasyncgenfunction(test_func)and sys.version_info >= (3, 6):
+            if isasyncgenfunction(test_func):
                 from .pep525 import _parametrize_plus_decorate_asyncgen_pep525
                 wrapped_test_func = _parametrize_plus_decorate_asyncgen_pep525(test_func, new_sig, fixture_union_name,
                                                                                replace_paramfixture_with_values)
-            elif iscoroutinefunction(test_func) and sys.version_info >= (3, 5):
+            elif iscoroutinefunction(test_func):
                 from .pep492 import _parametrize_plus_decorate_coroutine_pep492
                 wrapped_test_func = _parametrize_plus_decorate_coroutine_pep492(test_func, new_sig, fixture_union_name,
                                                                                replace_paramfixture_with_values)
             elif isgeneratorfunction(test_func):
                 # generator function (with a yield statement)
-                if sys.version_info >= (3, 3):
-                    from .pep380 import _parametrize_plus_decorate_generator_pep380
-                    wrapped_test_func = _parametrize_plus_decorate_generator_pep380(test_func, new_sig,
-                                                                                    fixture_union_name,
-                                                                                    replace_paramfixture_with_values)
-                else:
-                    @wraps(test_func, new_sig=new_sig)
-                    def wrapped_test_func(*args, **kwargs):  # noqa
-                        if kwargs.get(fixture_union_name, None) is NOT_USED:
-                            # TODO why this ? it is probably useless: this fixture
-                            #  is private and will never end up in another union
-                            yield NOT_USED
-                        else:
-                            replace_paramfixture_with_values(kwargs)
-                            for res in test_func(*args, **kwargs):
-                                yield res
+                from .pep380 import _parametrize_plus_decorate_generator_pep380
+                wrapped_test_func = _parametrize_plus_decorate_generator_pep380(test_func, new_sig,
+                                                                                fixture_union_name,
+                                                                                replace_paramfixture_with_values)
             else:
                 # normal function with return statement
                 @wraps(test_func, new_sig=new_sig)

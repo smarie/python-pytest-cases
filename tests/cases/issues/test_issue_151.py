@@ -1,5 +1,3 @@
-import sys
-
 import itertools
 
 import pytest
@@ -90,15 +88,11 @@ def test_create_no_fixture_idstyle_none(inputs, request_data):
 def test_synthesis(module_results_dct):
     simple_id = "simple" if has_pytest_param else "simple[0]-simple[1]"
 
-    lst = list(module_results_dct)
-    if sys.version_info >= (3, 6):
-        # the AUTO id gen uses dict iteration which has random order in old python
-        assert lst[3] == 'test_create_fixture_ids_callable_str[(inputs,request_data)/P0F/simple]'
-
-    assert lst[:3] + lst[4:] == [
+    assert list(module_results_dct) == [
         'test_create_fixture_idstyle_explicit[(inputs,request_data)/simple]',  # explicit
         'test_create_fixture_ids_generator[custom{0}]',
         "test_create_fixture_ids_callable[hello_simple]",
+        'test_create_fixture_ids_callable_str[(inputs,request_data)/P0F/simple]',
         'test_create_fixture_idstyle_compact[/simple]',    # compact
         'test_create_fixture_idstyle_none[simple]',     # none (default)
         'test_create_no_fixture_idstyle_explicit[%s]' % simple_id,  # explicit: not taken into account

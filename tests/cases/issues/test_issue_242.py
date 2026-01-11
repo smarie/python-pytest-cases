@@ -1,12 +1,7 @@
-import sys
-
 from pytest_cases import parametrize_with_cases
 from multiprocessing import Pool, Process
 
 from functools import partial
-
-
-PY3 = sys.version_info >= (3,)
 
 
 class TestCases:
@@ -33,11 +28,10 @@ def test_f_xy(x, y):
     p.join()
     p.terminate()
 
-    if PY3:
-        # in a pool
-        pool = Pool(processes=2)
-        pool.starmap(partial(f), [(x, y, False), (x, y, True)])
-        pool.terminate()
+    # in a pool
+    pool = Pool(processes=2)
+    pool.starmap(partial(f), [(x, y, False), (x, y, True)])
+    pool.terminate()
 
 
 def test_synthesis(module_results_dct):
