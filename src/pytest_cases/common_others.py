@@ -55,8 +55,8 @@ ExpectedErrorValidator = Optional[Callable[[BaseException], Optional[bool]]]
 
 
 def unfold_expected_err(
-        expected_e: ExpectedError
-    ) -> tuple[ExpectedErrorType, ExpectedErrorPattern, ExpectedErrorInstance, ExpectedErrorValidator]:
+    expected_e: ExpectedError
+) -> tuple[ExpectedErrorType, ExpectedErrorPattern, ExpectedErrorInstance, ExpectedErrorValidator]:
     """
     'Unfolds' the expected error `expected_e` to return a tuple of
      - expected error type
