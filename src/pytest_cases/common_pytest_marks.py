@@ -3,7 +3,7 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 import itertools
-
+from typing import Iterable, Optional, Union, Sequence
 import warnings
 from packaging.version import Version
 
@@ -11,11 +11,6 @@ try:  # python 3.3+
     from inspect import signature
 except ImportError:
     from funcsigs import signature  # noqa
-
-try:
-    from typing import Iterable, Optional, Tuple, List, Set, Union, Sequence  # noqa
-except ImportError:
-    pass
 
 import pytest
 
@@ -120,10 +115,9 @@ def copy_pytest_marks(from_f, to_f, override=False):
     to_f.pytestmark = to_marks + from_marks
 
 
-def filter_marks(marks,  # type: Iterable[Mark]
-                 remove  # type: str
-                 ):
-    # type: (...) -> Tuple[Mark]
+def filter_marks(marks: Iterable[Mark],
+                 remove: str
+                 ) -> tuple[Mark, ...]:
     """
     Returns a tuple of all marks in `marks` that do not have a 'parametrize' name.
 
@@ -135,9 +129,8 @@ def filter_marks(marks,  # type: Iterable[Mark]
 
 
 def get_pytest_marks_on_function(f,
-                                 as_decorators=False  # type: bool
-                                 ):
-    # type: (...) -> Union[List[Mark], List[MarkDecorator]]
+                                 as_decorators: bool = False
+                                 ) -> Union[list[Mark], list[MarkDecorator]]:
     """
     Utility to return a list of *ALL* pytest marks (not only parametrization) applied on a function
     Note that this also works on classes
@@ -204,7 +197,7 @@ def remove_pytest_mark(f, mark_name):
 
 def get_pytest_parametrize_marks(
     f,
-    pop=False  # type: bool
+    pop: bool = False
 ):
     """
     Returns the @pytest.mark.parametrize marks associated with a function (and only those)
@@ -283,10 +276,9 @@ else:
         return pytest.param(*argvalues_tuple, marks=marks_mod)
 
 
-def markinfos_to_markdecorators(marks,                # type: Iterable[Mark]
-                                function_marks=False  # type: bool
-                                ):
-    # type: (...) -> List[MarkDecorator]
+def markinfos_to_markdecorators(marks: Iterable[Mark],
+                                function_marks: bool = False
+                                ) -> list[MarkDecorator]:
     """
     Transforms the provided marks (MarkInfo or Mark in recent pytest) obtained from marked cases, into MarkDecorator so
     that they can be re-applied to generated pytest parameters in the global @pytest.mark.parametrize.
@@ -329,9 +321,8 @@ def markinfos_to_markdecorators(marks,                # type: Iterable[Mark]
     return marks_mod
 
 
-def markdecorators_as_tuple(marks  # type: Optional[Union[MarkDecorator, Iterable[MarkDecorator]]]
-                            ):
-    # type: (...) -> Tuple[MarkDecorator, ...]
+def markdecorators_as_tuple(marks: Optional[Union[MarkDecorator, Iterable[MarkDecorator]]]
+                            ) -> tuple[MarkDecorator, ...]:
     """
     Internal routine used to normalize marks received from users in a `marks=` parameter
 
@@ -349,9 +340,8 @@ def markdecorators_as_tuple(marks  # type: Optional[Union[MarkDecorator, Iterabl
         return (marks,)
 
 
-def markdecorators_to_markinfos(marks  # type: Sequence[MarkDecorator]
-                                ):
-    # type: (...) -> Tuple[Mark, ...]
+def markdecorators_to_markinfos(marks: Sequence[MarkDecorator]
+                                ) -> tuple[Mark, ...]:
     if PYTEST3_OR_GREATER:
         return tuple(m.mark for m in marks)
     elif len(marks) == 0:

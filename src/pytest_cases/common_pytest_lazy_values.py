@@ -3,17 +3,13 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from functools import partial
+from typing import Union, Callable, Any, Iterable  # noqa
 import weakref
 
 try:  # python 3.3+
     from inspect import signature
 except ImportError:
     from funcsigs import signature  # noqa
-
-try:
-    from typing import Union, Callable, List, Set, Tuple, Any, Sequence, Optional, Iterable  # noqa
-except ImportError:
-    pass
 
 try:
     from _pytest.mark.structures import MarkDecorator, Mark  # noqa
@@ -142,7 +138,7 @@ class _LazyValue(Lazy):
 
     @classmethod
     def copy_from(cls,
-                  obj  # type: _LazyValue
+                  obj: '_LazyValue'
                   ):
         """Creates a copy of this _LazyValue"""
         new_obj = cls(valuegetter=obj.valuegetter, id=obj._id, marks=obj._marks)
@@ -153,9 +149,9 @@ class _LazyValue(Lazy):
 
     # noinspection PyMissingConstructor
     def __init__(self,
-                 valuegetter,  # type: Callable[[], Any]
-                 id=None,      # type: str  # noqa
-                 marks=None,   # type: Union[MarkDecorator, Iterable[MarkDecorator]]
+                 valuegetter: Callable[[], Any],
+                 id: str = None,  # noqa
+                 marks: Union[MarkDecorator, Iterable[MarkDecorator]] = None,
                  ):
         self.valuegetter = valuegetter
         self._id = id
@@ -168,9 +164,8 @@ class _LazyValue(Lazy):
         return hash((self.__class__, self.valuegetter, self._id, self._marks))
 
     def get_marks(self,
-                  as_decorators=False  # type: bool
-                  ):
-        # type: (...) -> Union[Tuple[Mark, ...], Tuple[MarkDecorator, ...]]
+                  as_decorators: bool = False
+                  ) -> Union[tuple[Mark, ...], tuple[MarkDecorator, ...]]:
         """
         Overrides default implementation to return the marks that are on the case function
 
@@ -284,15 +279,15 @@ class _LazyTupleItem(Lazy):
 
     @classmethod
     def copy_from(cls,
-                  obj  # type: _LazyTupleItem
+                  obj: '_LazyTupleItem'
                   ):
         """Creates a copy of this _LazyTupleItem"""
         return cls(host=obj.host, item=obj.item)
 
     # noinspection PyMissingConstructor
     def __init__(self,
-                 host,  # type: LazyTuple
-                 item   # type: int
+                 host: 'LazyTuple',
+                 item: int
                  ):
         self.host = host
         self.item = item
@@ -347,7 +342,7 @@ class LazyTuple(Lazy):
 
     @classmethod
     def copy_from(cls,
-                  obj  # type: LazyTuple
+                  obj: 'LazyTuple'
                   ):
         # clone the inner lazy value
         value_copy = obj._lazyvalue.clone()
@@ -355,8 +350,8 @@ class LazyTuple(Lazy):
 
     # noinspection PyMissingConstructor
     def __init__(self,
-                 valueref,         # type: _LazyValue
-                 theoretical_size  # type: int
+                 valueref: _LazyValue,
+                 theoretical_size: int
                  ):
         self._lazyvalue = valueref
         self.theoretical_size = theoretical_size
@@ -483,9 +478,9 @@ else:
                 return _LazyTupleItem.copy_from(self)
 
 
-def lazy_value(valuegetter,  # type: Callable[[], Any]
-               id=None,      # type: str  # noqa
-               marks=()      # type: Union[MarkDecorator, Iterable[MarkDecorator]]
+def lazy_value(valuegetter: Callable[[], Any],
+               id: str = None,  # noqa
+               marks: Union[MarkDecorator, Iterable[MarkDecorator]] = ()
                ):
     """
     Creates a reference to a value getter, to be used in `parametrize`.

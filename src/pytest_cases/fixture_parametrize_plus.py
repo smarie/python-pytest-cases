@@ -3,6 +3,8 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from inspect import isgeneratorfunction
+from typing import Union, Callable, Any, Sequence, Optional, Type, TypeVar
+from types import ModuleType
 from warnings import warn
 
 
@@ -28,13 +30,7 @@ try:
 except ImportError:  # noqa
     from collections import Iterable
 
-try:
-    from typing import Union, Callable, List, Any, Sequence, Optional, Type, Tuple, TypeVar  # noqa
-    from types import ModuleType  # noqa
-
-    T = TypeVar('T', bound=Union[Type, Callable])
-except ImportError:
-    pass
+T = TypeVar('T', bound=Union[Type, Callable])
 
 import pytest
 import sys
@@ -56,14 +52,14 @@ from .fixture_core2 import _create_param_fixture, fixture
 
 
 def _fixture_product(fixtures_dest,
-                     name,                # type: str
+                     name: str,
                      fixtures_or_values,
                      fixture_positions,
-                     scope="function",    # type: str
-                     unpack_into=None,    # type: Iterable[str]
-                     autouse=False,       # type: bool
-                     hook=None,           # type: Callable[[Callable], Callable]
-                     caller=None,         # type: Callable
+                     scope: str = "function",
+                     unpack_into: Iterable[str] = None,
+                     autouse: bool = False,
+                     hook: Callable[[Callable], Callable] = None,
+                     caller: Callable = None,
                      **kwargs):
     """
     Internal implementation for fixture products created by pytest parametrize plus.
@@ -151,8 +147,8 @@ class fixture_ref(object):  # noqa
     __slots__ = 'fixture', 'theoretical_size', '_id'
 
     def __init__(self,
-                 fixture,  # type: Union[str, Callable]
-                 id=None,  # type: str  # noqa
+                 fixture: Union[str, Callable],
+                 id: str = None,  # noqa
                  ):
         """
 
@@ -206,8 +202,8 @@ class FixtureRefItem(object):
     __slots__ = 'host', 'item'
 
     def __init__(self,
-                 host,  # type: fixture_ref
-                 item   # type: int
+                 host: fixture_ref,
+                 item: int
                  ):
         self.host = host
         self.item = item
@@ -243,11 +239,11 @@ class ParamAlternative(UnionFixtureAlternative):
     __slots__ = ('argnames', 'decorated')
 
     def __init__(self,
-                 union_name,        # type: str
-                 alternative_name,  # type: str
-                 param_index,       # type: int
-                 argnames,          # type: Sequence[str]
-                 decorated          # type: Callable
+                 union_name: str,
+                 alternative_name: str,
+                 param_index: int,
+                 argnames: Sequence[str],
+                 decorated: Callable
                  ):
         """
 
@@ -278,13 +274,13 @@ class SingleParamAlternative(ParamAlternative):
     __slots__ = 'argval', 'id'
 
     def __init__(self,
-                 union_name,        # type: str
-                 alternative_name,  # type: str
-                 param_index,       # type: int
-                 argnames,          # type: Sequence[str]
-                 argval,            # type: Any
-                 id,                # type: Optional[str]
-                 decorated          # type: Callable
+                 union_name: str,
+                 alternative_name: str,
+                 param_index: int,
+                 argnames: Sequence[str],
+                 argval: Any,
+                 id: Optional[str],
+                 decorated: Callable
                  ):
         """
         :param union_name: the name of the union fixture created by @parametrize to switch between param alternatives
@@ -309,18 +305,17 @@ class SingleParamAlternative(ParamAlternative):
 
     @classmethod
     def create(cls,
-               new_fixture_host,   # type: Union[Type, ModuleType]
-               test_func,          # type: Callable
-               param_union_name,   # type: str
-               argnames,           # type: Sequence[str]
-               i,                  # type: int
-               argvalue,           # type: Any
-               id,                 # type: Union[str, Callable]
-               scope=None,         # type: str
-               hook=None,          # type: Callable
-               debug=False         # type: bool
-               ):
-        # type: (...) -> SingleParamAlternative
+               new_fixture_host: Union[Type, ModuleType],
+               test_func: Callable,
+               param_union_name: str,
+               argnames: Sequence[str],
+               i: int,
+               argvalue: Any,
+               id: Union[str, Callable],
+               scope: str = None,
+               hook: Callable = None,
+               debug: bool = False
+               ) -> 'SingleParamAlternative':
         """
         Creates an alternative for fixture union `param_union_name`, to handle single parameter value
         argvalue = argvalues[i] in @parametrize.
@@ -383,12 +378,12 @@ class MultiParamAlternative(ParamAlternative):
     __slots__ = 'param_index_from', 'param_index_to'
 
     def __init__(self,
-                 union_name,        # type: str
-                 alternative_name,  # type: str
-                 argnames,          # type: Sequence[str]
-                 param_index_from,  # type: int
-                 param_index_to,    # type: int
-                 decorated          # type: Callable
+                 union_name: str,
+                 alternative_name: str,
+                 argnames: Sequence[str],
+                 param_index_from: int,
+                 param_index_to: int,
+                 decorated: Callable
                  ):
         """
 
@@ -419,19 +414,18 @@ class MultiParamAlternative(ParamAlternative):
 
     @classmethod
     def create(cls,
-               new_fixture_host,  # type: Union[Type, ModuleType]
-               test_func,         # type: Callable
-               param_union_name,  # type: str
-               argnames,          # type: Sequence[str]
-               from_i,            # type: int
-               to_i,              # type: int
-               argvalues,         # type: Any
-               ids,               # type: Union[Sequence[str], Callable]
-               scope="function",  # type: str
-               hook=None,         # type: Callable
-               debug=False        # type: bool
-               ):
-        # type: (...) -> MultiParamAlternative
+               new_fixture_host: Union[Type, ModuleType],
+               test_func: Callable,
+               param_union_name: str,
+               argnames: Sequence[str],
+               from_i: int,
+               to_i: int,
+               argvalues: Any,
+               ids: Union[Sequence[str], Callable],
+               scope: str = "function",
+               hook: Callable = None,
+               debug: bool = False
+               ) -> 'MultiParamAlternative':
         """
         Creates an alternative for fixture union `param_union_name`, to handle a group of consecutive parameters
         argvalues[from_i:to_i] in @parametrize. Note that here the received `argvalues` should be already sliced
@@ -509,12 +503,12 @@ class FixtureParamAlternative(SingleParamAlternative):
     """alternative class for a single parameter containing a fixture ref"""
 
     def __init__(self,
-                 union_name,   # type: str
-                 fixture_ref,  # type: fixture_ref
-                 argnames,     # type: Sequence[str]
-                 param_index,  # type: int
-                 id,           # type: Optional[str]
-                 decorated     # type: Callable
+                 union_name: str,
+                 fixture_ref: fixture_ref,
+                 argnames: Sequence[str],
+                 param_index: int,
+                 id: Optional[str],
+                 decorated: Callable
                  ):
         """
         :param union_name: the name of the union fixture created by @parametrize to switch between param alternatives
@@ -609,7 +603,7 @@ class ParamIdMakers(UnionIdMakers):
     """
     @classmethod
     def nostyle(cls,
-                param  # type: ParamAlternative
+                param: ParamAlternative
                 ):
         if isinstance(param, MultiParamAlternative):
             # make an empty minimal id since the parameter themselves will appear as ids separately
@@ -620,7 +614,7 @@ class ParamIdMakers(UnionIdMakers):
 
     # @classmethod
     # def explicit(cls,
-    #              param  # type: ParamAlternative
+    #              param: ParamAlternative
     #              ):
     #     """Same than parent but display the argnames as prefix instead of the fixture union name generated by
     #     @parametrize, because the latter is too complex (for unicity reasons)"""
@@ -630,18 +624,17 @@ class ParamIdMakers(UnionIdMakers):
 _IDGEN = object()
 
 
-def parametrize(argnames=None,   # type: Union[str, Tuple[str], List[str]]
-                argvalues=None,  # type: Iterable[Any]
-                indirect=False,  # type: bool
-                ids=None,        # type: Union[Callable, Iterable[str]]
-                idstyle=None,    # type: Union[str, Callable]
-                idgen=_IDGEN,    # type: Union[str, Callable]
-                auto_refs=True,  # type: bool
-                scope=None,      # type: str
-                hook=None,       # type: Callable[[Callable], Callable]
-                debug=False,     # type: bool
-                **args):
-    # type: (...) -> Callable[[T], T]
+def parametrize(argnames: Union[str, tuple[str, ...], list[str]] = None,
+                argvalues: Iterable[Any] = None,
+                indirect: bool = False,
+                ids: Union[Callable, Iterable[str]] = None,
+                idstyle: Union[str, Callable] = None,
+                idgen: Union[str, Callable] = _IDGEN,
+                auto_refs: bool = True,
+                scope: str = None,
+                hook: Callable[[Callable], Callable] = None,
+                debug: bool = False,
+                **args) -> Callable[[T], T]:
     """
     Equivalent to `@pytest.mark.parametrize` but also supports
 
@@ -740,18 +733,17 @@ class InvalidIdTemplateException(Exception):
                % (self.idgen, self.params, self.caught.__class__, self.caught)
 
 
-def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
-                      argvalues=None,  # type: Iterable[Any]
-                      indirect=False,  # type: bool
-                      ids=None,        # type: Union[Callable, Iterable[str]]
-                      idstyle=None,    # type: Optional[Union[str, Callable]]
-                      idgen=_IDGEN,    # type: Union[str, Callable]
-                      auto_refs=True,  # type: bool
-                      scope=None,      # type: str
-                      hook=None,       # type: Callable[[Callable], Callable]
-                      debug=False,     # type: bool
-                      **args):
-    # type: (...) -> Tuple[Callable[[T], T], bool]
+def _parametrize_plus(argnames: Union[str, tuple[str, ...], list[str]] = None,
+                      argvalues: Iterable[Any] = None,
+                      indirect: bool = False,
+                      ids: Union[Callable, Iterable[str]] = None,
+                      idstyle: Optional[Union[str, Callable]] = None,
+                      idgen: Union[str, Callable] = _IDGEN,
+                      auto_refs: bool = True,
+                      scope: str = None,
+                      hook: Callable[[Callable], Callable] = None,
+                      debug: bool = False,
+                      **args) -> tuple[Callable[[T], T], bool]:
     """
 
     :return: a tuple (decorator, needs_inject) where needs_inject is True if decorator has signature (f, host)
@@ -808,8 +800,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
             return _decorator, False
         else:
             # wrap the decorator to check if the test function has the parameters as arguments
-            def _apply(test_func):
-                # type: (...) -> Callable[[T], T]
+            def _apply(test_func) -> Callable[[T], T]:
                 if not safe_isclass(test_func):
                     # a Function: raise a proper error message if improper use
                     s = signature(test_func)
@@ -944,8 +935,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
             return p_fix_alt
 
         # Then create the decorator per se
-        def parametrize_plus_decorate(test_func, fixtures_dest):
-            # type: (...) -> Callable[[T], T]
+        def parametrize_plus_decorate(test_func, fixtures_dest) -> Callable[[T], T]:
             """
             A decorator that wraps the test function so that instead of receiving the parameter names, it receives the
             new fixture. All other decorations are unchanged.
@@ -1134,8 +1124,8 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
 
 
 def _get_argnames_argvalues(
-    argnames=None,   # type: Union[str, Tuple[str], List[str]]
-    argvalues=None,  # type: Iterable[Any]
+    argnames: Union[str, tuple[str, ...], list[str]] = None,
+    argvalues: Iterable[Any] = None,
     **args
 ):
     """

@@ -4,11 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from copy import copy
 from decopatch import function_decorator, DECORATED
-
-try:  # python 3.5+
-    from typing import Callable, Union, Optional, Any, Tuple, Iterable, List, Set
-except ImportError:
-    pass
+from typing import Callable, Union, Optional, Any, Iterable
 
 from .common_mini_six import string_types
 from .common_pytest import safe_isclass
@@ -44,13 +40,13 @@ class _CaseInfo(object):
     __slots__ = ('id', 'marks', 'tags')
 
     def __init__(self,
-                 id=None,   # type: str
-                 marks=(),  # type: Tuple[MarkDecorator, ...]
-                 tags=()    # type: Tuple[Any]
+                 id: str = None,
+                 marks: tuple[MarkDecorator, ...] = (),
+                 tags: tuple[Any, ...] = ()
                  ):
-        self.id = id
-        self.marks = marks  # type: Tuple[MarkDecorator, ...]
-        self.tags = ()
+        self.id: str = id
+        self.marks: tuple[MarkDecorator, ...] = marks
+        self.tags: tuple[Any, ...] = ()
         self.add_tags(tags)
 
     def __repr__(self):
@@ -58,8 +54,8 @@ class _CaseInfo(object):
 
     @classmethod
     def get_from(cls,
-                 case_func,               # type: Callable
-                 create_if_missing=False  # type: bool
+                 case_func: Callable,
+                 create_if_missing: bool = False
                  ):
         """ Return the _CaseInfo associated with case_fun or None
 
@@ -73,15 +69,11 @@ class _CaseInfo(object):
             ci.attach_to(case_func)
         return ci
 
-    def attach_to(self,
-                  case_func  # type: Callable
-                  ):
+    def attach_to(self, case_func: Callable):
         """attach this case_info to the given case function"""
         setattr(case_func, CASE_FIELD, self)
 
-    def add_tags(self,
-                 tags  # type: Union[Any, Union[List, Set, Tuple]]
-                 ):
+    def add_tags(self, tags: Union[Any, Union[list, set, tuple]]):
         """add the given tag or tags"""
         if tags:
             if isinstance(tags, string_types) or not isinstance(tags, (set, list, tuple)):
@@ -90,9 +82,7 @@ class _CaseInfo(object):
 
             self.tags += tuple(tags)
 
-    def matches_tag_query(self,
-                          has_tag=None,  # type: Union[str, Iterable[str]]
-                          ):
+    def matches_tag_query(self, has_tag: Union[str, Iterable[str]] = None):
         """
         Returns True if the case function with this case_info is selected by the query
 
@@ -103,8 +93,8 @@ class _CaseInfo(object):
 
     @classmethod
     def copy_info(cls,
-                  from_case_func,
-                  to_case_func):
+                  from_case_func: Callable,
+                  to_case_func: Callable):
         case_info = cls.get_from(from_case_func)
         if case_info is not None:
             # there is something to copy: do it
@@ -112,8 +102,8 @@ class _CaseInfo(object):
             cp.attach_to(to_case_func)
 
 
-def _tags_match_query(tags,    # type: Iterable[str]
-                      has_tag  # type: Optional[Union[str, Iterable[str]]]
+def _tags_match_query(tags: Iterable[str],
+                      has_tag: Optional[Union[str, Iterable[str]]]
                       ):
     """Internal routine to determine is all tags in `has_tag` are persent in `tags`
     Note that `has_tag` can be a single tag, or none
@@ -127,23 +117,23 @@ def _tags_match_query(tags,    # type: Iterable[str]
     return all(t in tags for t in has_tag)
 
 
-def copy_case_info(from_fun,  # type: Callable
-                   to_fun     # type: Callable
+def copy_case_info(from_fun: Callable,
+                   to_fun: Callable
                    ):
     """Copy all information from case function `from_fun` to `to_fun`."""
     _CaseInfo.copy_info(from_fun, to_fun)
 
 
-def set_case_id(id,        # type: str
-                case_func  # type: Callable
+def set_case_id(id: str,
+                case_func: Callable
                 ):
     """Set an explicit id on case function `case_func`."""
     ci = _CaseInfo.get_from(case_func, create_if_missing=True)
     ci.id = id
 
 
-def get_case_id(case_func,                              # type: Callable
-                prefix_for_default_ids=CASE_PREFIX_FUN  # type: str
+def get_case_id(case_func: Callable,
+                prefix_for_default_ids: str = CASE_PREFIX_FUN
                 ):
     """Return the case id associated with this case function.
 
@@ -176,11 +166,10 @@ def get_case_id(case_func,                              # type: Callable
 # def add_case_marks: no need, equivalent of @case(marks) or @mark
 
 
-def get_case_marks(case_func,                         # type: Callable
-                   concatenate_with_fun_marks=False,  # type: bool
-                   as_decorators=False                # type: bool
-                   ):
-    # type: (...) -> Union[Tuple[Mark, ...], Tuple[MarkDecorator, ...]]
+def get_case_marks(case_func: Callable,
+                   concatenate_with_fun_marks: bool = False,
+                   as_decorators: bool = False
+                   ) -> Union[tuple[Mark, ...], tuple[MarkDecorator, ...]]:
     """Return the marks that are on the case function.
 
     There are currently two ways to place a mark on a case function: either with `@pytest.mark.<name>` or in
@@ -218,16 +207,15 @@ def get_case_marks(case_func,                         # type: Callable
 #     ci.add_tags(tags)
 
 
-def get_case_tags(case_func  # type: Callable
-                  ):
+def get_case_tags(case_func: Callable):
     """Return the tags on this case function or an empty tuple"""
     ci = _CaseInfo.get_from(case_func)
     return ci.tags if ci is not None else ()
 
 
-def matches_tag_query(case_fun,      # type: Callable
-                      has_tag=None,  # type: Union[str, Iterable[str]]
-                      filter=None,   # type: Union[Callable[[Callable], bool], Iterable[Callable[[Callable], bool]]]  # noqa
+def matches_tag_query(case_fun: Callable,
+                      has_tag: Union[str, Iterable[str]] = None,
+                      filter: Union[Callable[[Callable], bool], Iterable[Callable[[Callable], bool]]] = None,
                       ):
     """
     This function is the one used by `@parametrize_with_cases` to filter the case functions collected. It can be used
@@ -275,16 +263,10 @@ def matches_tag_query(case_fun,      # type: Callable
     return selected
 
 
-try:
-    SeveralMarkDecorators = Union[Tuple[MarkDecorator, ...], List[MarkDecorator], Set[MarkDecorator]]
-except:  # noqa
-    pass
-
-
 @function_decorator
-def case(id=None,             # type: str  # noqa
-         tags=None,           # type: Union[Any, Iterable[Any]]
-         marks=(),            # type: Union[MarkDecorator, SeveralMarkDecorators]
+def case(id: str = None,
+         tags: Union[Any, Iterable[Any]] = None,
+         marks: Union[MarkDecorator, tuple[MarkDecorator, ...], list[MarkDecorator], set[MarkDecorator]] = (),
          case_func=DECORATED  # noqa
          ):
     """
@@ -311,9 +293,9 @@ def case(id=None,             # type: str  # noqa
     return case_func
 
 
-def is_case_class(cls,                                  # type: Any
-                  case_marker_in_name=CASE_PREFIX_CLS,  # type: str
-                  check_name=True                       # type: bool
+def is_case_class(cls: Any,
+                  case_marker_in_name: str = CASE_PREFIX_CLS,
+                  check_name: bool = True
                   ):
     """
     This function is the one used by `@parametrize_with_cases` to collect cases within classes. It can be used manually
@@ -335,9 +317,9 @@ def is_case_class(cls,                                  # type: Any
 GEN_BY_US = '_pytestcases_gen'
 
 
-def is_case_function(f,                       # type: Any
-                     prefix=CASE_PREFIX_FUN,  # type: str
-                     check_prefix=True        # type: bool
+def is_case_function(f: Any,
+                     prefix: str = CASE_PREFIX_FUN,
+                     check_prefix: bool = True
                      ):
     """
     This function is the one used by `@parametrize_with_cases` to collect cases. It can be used manually for
@@ -363,7 +345,7 @@ def is_case_function(f,                       # type: Any
     else:
         try:
             return f.__name__.startswith(prefix) if check_prefix else True
-        except:
+        except:  # noqa
             # GH#287: safe fallback
             return False
 
@@ -397,4 +379,3 @@ def with_case_tags(*tags):
             case_info.add_tags(tags_to_add)
         return cls
     return _decorator
-

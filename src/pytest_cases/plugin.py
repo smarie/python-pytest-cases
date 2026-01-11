@@ -5,6 +5,7 @@
 from collections import OrderedDict, namedtuple
 from copy import copy
 from functools import partial
+from typing import Union, Iterable, MutableMapping, Mapping, Optional
 from warnings import warn
 
 try:
@@ -13,18 +14,15 @@ except:  # noqa
     from collections import MutableSequence
 
 import pytest
+from _pytest.python import CallSpec2
+from _pytest.config import Config
+from _pytest.fixtures import FixtureDef
+
 
 try:  # python 3.3+
     from inspect import signature
 except ImportError:
     from funcsigs import signature  # noqa
-
-try:  # python 3.3+ type hints
-    from typing import List, Tuple, Union, Iterable, MutableMapping, Mapping, Optional  # noqa
-    from _pytest.python import CallSpec2
-    from _pytest.config import Config
-except ImportError:
-    pass
 
 from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
@@ -125,8 +123,8 @@ class FixtureClosureNode(object):
                 'fixture_defs', 'split_fixture_name', 'split_fixture_alternatives', 'children'
 
     def __init__(self,
-                 fixture_defs_mgr=None,   # type: FixtureDefsCache
-                 parent_node=None         # type: FixtureClosureNode
+                 fixture_defs_mgr: FixtureDefsCache = None,
+                 parent_node: 'FixtureClosureNode' = None
                  ):
         if fixture_defs_mgr is None:
             if parent_node is None:
@@ -139,11 +137,11 @@ class FixtureClosureNode(object):
         self.parent = parent_node
 
         # these will be set after closure has been built
-        self.fixture_defs = None  # type: OrderedDict
-        self.split_fixture_name = None  # type: str
+        self.fixture_defs: OrderedDict = None
+        self.split_fixture_name: str = None
         self.split_fixture_alternatives = []
         # we do not use a dict any more as several children can use the same union value (doubled unions)
-        self.children = []  # type: List[FixtureClosureNode]
+        self.children: list[FixtureClosureNode] = []
 
     # ------ tree ------------------
 
@@ -234,7 +232,7 @@ class FixtureClosureNode(object):
     # ---- utils to build the closure
 
     def build_closure(self,
-                      initial_fixture_names,  # type: Iterable[str]
+                      initial_fixture_names: Iterable[str],
                       ignore_args=()
                       ):
         """
@@ -265,8 +263,8 @@ class FixtureClosureNode(object):
             return self.parent.already_knows_fixture(fixture_name)
 
     def _build_closure(self,
-                       fixture_defs_mgr,       # type: FixtureDefsCache
-                       initial_fixture_names,  # type: Iterable[str]
+                       fixture_defs_mgr: FixtureDefsCache,
+                       initial_fixture_names: Iterable[str],
                        ignore_args
                        ):
         """
@@ -414,11 +412,11 @@ class FixtureClosureNode(object):
                 c.add_required_fixture(new_fixture_name, new_fixture_defs)
 
     def split_and_build(self,
-                        fixture_defs_mgr,           # type: FixtureDefsCache
-                        split_fixture_name,         # type: str
-                        split_fixture_defs,         # type: Tuple[FixtureDefinition]  # noqa
-                        alternative_fixture_names,  # type: List[str]
-                        pending_fixtures_list,      #
+                        fixture_defs_mgr: FixtureDefsCache,
+                        split_fixture_name: str,
+                        split_fixture_defs: tuple[FixtureDef, ...],
+                        alternative_fixture_names: list[str],
+                        pending_fixtures_list,
                         ignore_args
                         ):
         """ Declares that this node contains a union with alternatives (child nodes=subtrees) """
@@ -560,7 +558,7 @@ class SuperClosure(MutableSequence):
     __slots__ = 'tree', 'all_fixture_defs'
 
     def __init__(self,
-                 root_node  # type: FixtureClosureNode
+                 root_node: FixtureClosureNode
                  ):
         # if we wish to drop the tree - but we do not anymore to get a better paramz order
         # filters_list, partitions_list = root_node._get_alternatives()
@@ -802,8 +800,7 @@ def create_super_closure(fm,
                          parentnode,
                          fixturenames,
                          ignore_args
-                         ):
-    # type: (...) -> Tuple[List, Union[List, SuperClosure], Mapping]
+                         ) -> tuple[list, Union[list, SuperClosure], Mapping]:
     """
 
     :param fm:
@@ -974,13 +971,13 @@ class CallsReactor(object):
 
     def __init__(self, metafunc):
         self.metafunc = metafunc
-        self._pending = []        # type: List[Union[UnionParamz, NormalParamz]]
+        self._pending: list[Union[UnionParamz, NormalParamz]] = []
         self._call_list = None
 
     # -- methods to provising parametrization orders without executing them --
 
     def append(self,
-               parametrization  # type: Union[UnionParamz, NormalParamz]
+               parametrization: Union[UnionParamz, NormalParamz]
                ):
         self._pending.append(parametrization)
 
@@ -1068,8 +1065,8 @@ class CallsReactor(object):
 
 
 def get_calls_for_tree(metafunc,
-                       fix_closure_tree,  # type: FixtureClosureNode
-                       pending_dct        # type: MutableMapping[str, Union[UnionParamz, NormalParamz]]
+                       fix_closure_tree: FixtureClosureNode,
+                       pending_dct: MutableMapping[str, Union[UnionParamz, NormalParamz]]
                        ):
     """
     Creates the list of calls for `metafunc` based on
@@ -1086,10 +1083,10 @@ def get_calls_for_tree(metafunc,
 
 
 def _cleanup_calls_list(metafunc,
-                        fix_closure_tree,   # type: FixtureClosureNode
-                        calls,              # type: List[CallSpec2]
-                        nodes,              # type: List[FixtureClosureNode]
-                        pending_dct         # type: MutableMapping[str, Union[UnionParamz, NormalParamz]]
+                        fix_closure_tree: FixtureClosureNode,
+                        calls: list[CallSpec2],
+                        nodes: list[FixtureClosureNode],
+                        pending_dct: MutableMapping[str, Union[UnionParamz, NormalParamz]]
                         ):
     """
     Cleans the calls list so that all calls contain a value for all parameters. This is basically
@@ -1325,9 +1322,9 @@ def _parametrize_calls(metafunc, init_calls, argnames, argvalues, discard_id=Fal
 
 
 def _process_node(metafunc,
-                  current_node,  # type: FixtureClosureNode
-                  pending,       # type: MutableMapping[str, Union[UnionParamz, NormalParamz]]
-                  calls          # type: List[CallSpec2]
+                  current_node: FixtureClosureNode,
+                  pending: MutableMapping[str, Union[UnionParamz, NormalParamz]],
+                  calls: list[CallSpec2]
                   ):
     """
     Routine to apply all the parametrization tasks in `pending` that are relevant to `current_node`,
@@ -1489,7 +1486,7 @@ def pytest_addoption(parser):
 
 
 # will be loaded when the pytest_configure hook below is called
-PYTEST_CONFIG = None  # type: Optional[Config]
+PYTEST_CONFIG: Optional[Config] = None
 
 
 def pytest_load_initial_conftests(early_config):

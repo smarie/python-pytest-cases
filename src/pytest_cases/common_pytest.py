@@ -7,6 +7,7 @@ from __future__ import division
 import inspect
 import sys
 import os
+from typing import Union, Callable, Any, Optional, Iterable, Sequence, Collection
 from importlib import import_module
 
 from makefun import add_signature_parameters, wraps
@@ -18,13 +19,9 @@ except ImportError:
 
 from inspect import isgeneratorfunction, isclass
 
-try:
-    from typing import Union, Callable, Any, Optional, Tuple, Type, Iterable, Sized, List  # noqa
-except ImportError:
-    pass
-
 import pytest
-from _pytest.python import Metafunc
+from _pytest.python import CallSpec2, Metafunc
+from _pytest.fixtures import FixtureDef
 
 from .common_mini_six import string_types
 from .common_others import get_function_host
@@ -86,8 +83,7 @@ def remove_duplicates(lst):
 
 
 if PYTEST84_OR_GREATER:
-    def is_fixture(fixture_fun  # type: Any
-                   ):
+    def is_fixture(fixture_fun: Any):
         """
         Returns True if the provided function is a fixture
 
@@ -97,8 +93,7 @@ if PYTEST84_OR_GREATER:
         from _pytest.fixtures import FixtureFunctionDefinition
         return safe_isinstance(fixture_fun, FixtureFunctionDefinition)
 else:
-    def is_fixture(fixture_fun  # type: Any
-                   ):
+    def is_fixture(fixture_fun: Any):
         """
         Returns True if the provided function is a fixture
 
@@ -162,9 +157,7 @@ else:
         return res
 
 
-def safe_isclass(obj  # type: object
-                 ):
-    # type: (...) -> bool
+def safe_isclass(obj: object) -> bool:
     """Ignore any exception via isinstance on Python 3."""
     try:
         return isclass(obj)
@@ -172,9 +165,8 @@ def safe_isclass(obj  # type: object
         return False
 
 
-def safe_isinstance(obj,  # type: object
-                    cls):
-    # type: (...) -> bool
+def safe_isinstance(obj: object,
+                    cls: type) -> bool:
     """Ignore any exception via isinstance"""
     try:
         return isinstance(obj, cls)
@@ -182,8 +174,7 @@ def safe_isinstance(obj,  # type: object
         return False
 
 
-def assert_is_fixture(fixture_fun  # type: Any
-                      ):
+def assert_is_fixture(fixture_fun: Any):
     """
     Raises a ValueError if the provided fixture function is not a fixture.
 
@@ -196,8 +187,7 @@ def assert_is_fixture(fixture_fun  # type: Any
 
 
 if PYTEST84_OR_GREATER:
-    def get_fixture_name(fixture_fun  # type: Union[str, Callable]
-                         ):
+    def get_fixture_name(fixture_fun: Union[str, Callable]):
         """
         Internal utility to retrieve the fixture name corresponding to the given fixture function.
         Indeed there is currently no pytest API to do this.
@@ -221,8 +211,7 @@ if PYTEST84_OR_GREATER:
         return fixture_fun.name
 
 else:
-    def get_fixture_name(fixture_fun  # type: Union[str, Callable]
-                         ):
+    def get_fixture_name(fixture_fun: Union[str, Callable]):
         """
         Internal utility to retrieve the fixture name corresponding to the given fixture function.
         Indeed there is currently no pytest API to do this.
@@ -372,11 +361,10 @@ def make_test_ids(global_ids, id_marks, argnames=None, argvalues=None, precomput
     return p_ids
 
 
-def resolve_ids(ids,                # type: Optional[Union[Callable, Iterable[str]]]
-                argvalues,          # type: Sized(Any)
-                full_resolve=False  # type: bool
-                ):
-    # type: (...) -> Union[List[str], Callable]
+def resolve_ids(ids: Optional[Union[Callable, Iterable[str]]],
+                argvalues: Collection[Any],
+                full_resolve: bool = False
+                ) -> Union[list[str], Callable]:
     """
     Resolves the `ids` argument of a parametrized fixture.
 
@@ -631,9 +619,9 @@ except ImportError:
 
 
 def in_callspec_explicit_args(
-    callspec,  # type: CallSpec2
-    name  # type: str
-):  # type: (...) -> bool
+    callspec: CallSpec2,
+    name: str
+) -> bool:
     """Return True if name is explicitly used in callspec args"""
     return (name in callspec.params) or (not PYTEST8_OR_GREATER and name in callspec.funcargs)
 
@@ -663,9 +651,9 @@ else:
 
 
 def mini_idval(
-        val,      # type: object
-        argname,  # type: str
-        idx,      # type: int
+        val: object,
+        argname: str,
+        idx: int,
 ):
     """
     A simplified version of idval where idfn, item and config do not need to be passed.
@@ -793,7 +781,7 @@ class MiniMetafunc(Metafunc):
 
         if PYTEST8_OR_GREATER:
             # dummy
-            self._arg2fixturedefs = dict()  # type: dict[str, Sequence["FixtureDef[Any]"]]
+            self._arg2fixturedefs: dict[str, Sequence[FixtureDef[Any]]] = dict()
 
         # get parametrization marks
         self.pmarks = get_pytest_parametrize_marks(self.function)
