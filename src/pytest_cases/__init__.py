@@ -34,7 +34,7 @@ __all__ = [
     '__version__',
     # the submodules
     'case_funcs', 'case_parametrizer_new',
-    'common_mini_six', 'common_others', 'common_pytest', 'common_pytest_lazy_values', 'common_pytest_marks',
+    'common_others', 'common_pytest', 'common_pytest_lazy_values', 'common_pytest_marks',
     'filters',
     'fixture__creation', 'fixture_core1_unions', 'fixture_core2', 'fixture_parametrize_plus',
 

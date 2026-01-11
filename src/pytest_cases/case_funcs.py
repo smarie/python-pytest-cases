@@ -10,7 +10,6 @@ try:  # python 3.5+
 except ImportError:
     pass
 
-from .common_mini_six import string_types
 from .common_pytest import safe_isclass
 from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, markdecorators_to_markinfos
 
@@ -84,7 +83,7 @@ class _CaseInfo(object):
                  ):
         """add the given tag or tags"""
         if tags:
-            if isinstance(tags, string_types) or not isinstance(tags, (set, list, tuple)):
+            if isinstance(tags, str) or not isinstance(tags, (set, list, tuple)):
                 # a single tag, create a tuple around it
                 tags = (tags,)
 

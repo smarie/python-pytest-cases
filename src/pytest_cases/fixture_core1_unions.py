@@ -18,7 +18,6 @@ try:  # type hints, python 3+
 except ImportError:
     pass
 
-from .common_mini_six import string_types
 from .common_pytest import get_fixture_name, is_marked_parameter_value, get_marked_parameter_values, pytest_fixture, \
     extract_parameterset_info, get_param_argnames_as_list, get_fixture_scope, resolve_ids
 from .fixture__creation import get_caller_module, check_name_available, WARN
@@ -78,7 +77,7 @@ class UnionIdMakers(object):
         :param style:
         :return:
         """
-        if style is None or isinstance(style, string_types):
+        if style is None or isinstance(style, str):
             # return one of the styles from the class
             style = style or 'nostyle'
             try:
@@ -499,7 +498,7 @@ def _unpack_fixture(fixtures_dest,  # type: ModuleType
 
     # possibly get the source fixture name if the fixture symbol was provided
     source_f_name = get_fixture_name(fixture)
-    if not isinstance(fixture, string_types):
+    if not isinstance(fixture, str):
         scope = get_fixture_scope(fixture)
     else:
         # we dont have a clue about the real scope, so lets use function scope

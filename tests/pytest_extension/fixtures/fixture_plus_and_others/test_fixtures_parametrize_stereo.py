@@ -4,7 +4,6 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from itertools import product
 
-from pytest_cases.common_mini_six import string_types
 import pytest
 
 from pytest_cases import fixture
@@ -38,7 +37,7 @@ def stereo_cfg(path, cfg_factory, request):
     As opposed to `stereo_cfg_2`, we use here two @parametrize decorators.
     We check that the execution order is correct.
     """
-    assert isinstance(path, string_types)
+    assert isinstance(path, str)
     assert isinstance(cfg_factory, type)
     a.assert_state_and_move(path=path, cfg_factory=cfg_factory)
     return "hello"
@@ -84,7 +83,7 @@ def stereo_cfg_2(path, request, cfg_factory):
     `product(CFG_TYPES, STEREO_PATHS)` and a single call to parametrize is made.
     We check that the execution order is the same.
     """
-    assert isinstance(path, string_types)
+    assert isinstance(path, str)
     assert isinstance(cfg_factory, type)
 
     c.assert_state_and_move(path=path, cfg_factory=cfg_factory)

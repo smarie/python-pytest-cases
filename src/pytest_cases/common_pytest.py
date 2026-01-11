@@ -26,7 +26,6 @@ except ImportError:
 import pytest
 from _pytest.python import Metafunc
 
-from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
     get_pytest_parametrize_marks, get_pytest_usefixture_marks, \
@@ -183,7 +182,7 @@ if PYTEST84_OR_GREATER:
         :param fixture_fun:
         :return:
         """
-        if isinstance(fixture_fun, string_types):
+        if isinstance(fixture_fun, str):
             return fixture_fun
 
         assert_is_fixture(fixture_fun)
@@ -208,7 +207,7 @@ else:
         :param fixture_fun:
         :return:
         """
-        if isinstance(fixture_fun, string_types):
+        if isinstance(fixture_fun, str):
             return fixture_fun
         assert_is_fixture(fixture_fun)
         try:  # pytest 3
@@ -398,7 +397,7 @@ def make_test_ids_from_param_values(param_names,
     :param param_values:
     :return: a list of param ids
     """
-    if isinstance(param_names, string_types):
+    if isinstance(param_names, str):
         raise TypeError("param_names must be an iterable. Found %r" % param_names)
 
     nb_params = len(param_names)
@@ -466,7 +465,7 @@ def extract_parameterset_info(argnames, argvalues, check_nb=True):
     pids = []
     pmarks = []
     pvalues = []
-    if isinstance(argnames, string_types):
+    if isinstance(argnames, str):
         raise TypeError("argnames must be an iterable. Found %r" % argnames)
     nbnames = len(argnames)
     for v in argvalues:

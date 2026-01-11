@@ -23,7 +23,6 @@ try:
 except ImportError:
     pass
 
-from .common_mini_six import string_types
 from .common_others import get_code_first_line, AUTO, qname, funcopy, needs_binding, get_function_host, \
     in_same_module, get_host_module, get_class_that_defined_method
 from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks, \
@@ -240,7 +239,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
         needs to be selected.
     """
     # Handle single elements
-    if isinstance(cases, string_types):
+    if isinstance(cases, str):
         cases = (cases,)
     else:
         try:
@@ -255,7 +254,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
     # validate glob and filter and merge them in a single tuple of callables
     filters = ()
     if glob is not None:
-        if not isinstance(glob, string_types):
+        if not isinstance(glob, str):
             raise TypeError("`glob` should be a string containing a glob-like pattern (not a regex).")
 
         filters += (create_glob_name_filter(glob),)
@@ -821,7 +820,7 @@ def extract_cases_from_module(module,                           # type: Union[st
         A list of case functions
     """
     # optionally import module if passed as module name string
-    if isinstance(module, string_types):
+    if isinstance(module, str):
         try:
             module = import_module(module, package=package_name)
         except ModuleNotFoundError as e:
@@ -1267,7 +1266,7 @@ def get_current_case_id(request_or_item,
     warn("`get_current_case_id` is DEPRECATED - please use the `current_cases` fixture instead, or `get_current_cases`")
 
     # process argnames
-    if isinstance(argnames, string_types):
+    if isinstance(argnames, str):
         argnames = get_param_argnames_as_list(argnames)
 
     # retrieve the correct id

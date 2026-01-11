@@ -26,7 +26,6 @@ try:  # python 3.3+ type hints
 except ImportError:
     pass
 
-from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest_marks import PYTEST7_OR_GREATER, PYTEST8_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopeval, is_function_node, get_param_names, \
@@ -932,7 +931,7 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
 
         # detect union fixtures
         if is_fixture_union_params(argvalues):
-            if ',' in argnames or not isinstance(argnames, string_types):
+            if ',' in argnames or not isinstance(argnames, str):
                 raise ValueError("Union fixtures can not be parametrized")
             union_fixture_name = argnames
             union_fixture_alternatives = argvalues

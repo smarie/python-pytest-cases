@@ -24,8 +24,6 @@ try:
 except ImportError:
     from _pytest.mark import MarkDecorator, MarkInfo as Mark  # noqa
 
-from .common_mini_six import string_types
-
 
 PYTEST_VERSION = Version(pytest.__version__)
 PYTEST7_OR_GREATER = PYTEST_VERSION >= Version('7.0.0')
@@ -42,7 +40,7 @@ def get_param_argnames_as_list(argnames):
     :param argnames:
     :return:
     """
-    if isinstance(argnames, string_types):
+    if isinstance(argnames, str):
         argnames = argnames.replace(' ', '').split(',')
     return list(argnames)
 

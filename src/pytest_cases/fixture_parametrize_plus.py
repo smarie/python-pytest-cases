@@ -18,7 +18,6 @@ except ImportError:
 import pytest
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
-from .common_mini_six import string_types
 from .common_others import AUTO, robust_isinstance, replace_list_contents
 from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, get_lazy_args
@@ -1010,7 +1009,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                       % (fixture_union_name, UnionFixtureAlternative.to_list_of_fixture_names(fixture_alternatives)))
 
             # use the custom subclass of idstyle that was created for ParamAlternatives
-            if idstyle is None or isinstance(idstyle, string_types):
+            if idstyle is None or isinstance(idstyle, str):
                 _idstyle = ParamIdMakers.get(idstyle)
             else:
                 _idstyle = idstyle
@@ -1129,7 +1128,7 @@ def _get_argnames_argvalues(
             argvalues = [_l[0] if not is_marked_parameter_value(_l) else _l for _l in argvalues]
         return argnames, argvalues
 
-    if isinstance(argnames, string_types):
+    if isinstance(argnames, str):
         # (2) argnames + argvalues, as usual. However **args can also be passed and should be added
         argnames = get_param_argnames_as_list(argnames)
 
@@ -1169,7 +1168,7 @@ def _gen_ids(argnames, argvalues, idgen):
     """
     if not callable(idgen):
         # idgen is a new-style string formatting template
-        if not isinstance(idgen, string_types):
+        if not isinstance(idgen, str):
             raise TypeError("idgen should be a callable or a string, found: %r" % idgen)
 
         _formatter = idgen
