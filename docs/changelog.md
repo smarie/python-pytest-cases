@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.10.0 - (in progress) New `with_case_tags` decorator + pytest 9 compatibility
+### 3.10.0 - New `with_case_tags` decorator + pytest 9 compatibility
 
 - Fixed an issue with `pytest 9` related to the fixture closure building fixes
   [pytest-dev/pytest#13789](https://github.com/pytest-dev/pytest/pull/13789),

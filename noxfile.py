@@ -300,7 +300,7 @@ def release(session):
         # keyring set https://upload.pypi.org/legacy/ your-username
         # keyring set https://test.pypi.org/legacy/ your-username
         install_reqs(session, phase="PyPi", phase_reqs=["twine"])
-        session.run("twine", "upload", "dist/*", "-u", "smarie")  # -r testpypi
+        session.run("twine", "upload", "dist/*", "-u", "__token__")  # -r testpypi
 
     # create the github release
     install_reqs(session, phase="release", phase_reqs=["click", "PyGithub"])
