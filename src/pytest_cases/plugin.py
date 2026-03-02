@@ -18,7 +18,8 @@ except ImportError:
     pass
 
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST7_OR_GREATER, PYTEST8_OR_GREATER
+from .common_pytest_marks import PYTEST7_OR_GREATER, \
+    PYTEST8_OR_GREATER, PYTEST9_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopeval, is_function_node, get_param_names, \
     get_param_argnames_as_list, has_function_scope, set_callspec_arg_scope_to_function, in_callspec_explicit_args
 
@@ -324,8 +325,18 @@ class FixtureClosureNode:
                     # normal fixture
                     self.add_required_fixture(fixname, fixturedefs)
 
-                    # add all dependencies in the to do list
-                    dependencies = _fixdef.argnames
+                    # add all dependencies, accounting for overrides
+                    if PYTEST9_OR_GREATER:
+                        dependencies = []
+                        for _fixture_or_overridden in reversed(fixturedefs):
+                            dependencies = list(_fixture_or_overridden.argnames) + dependencies
+                            # If there's an override and doesn't depend on the overridden fixture,
+                            # ignore remaining definitions
+                            if fixname not in _fixture_or_overridden.argnames:
+                                break
+                    else:
+                        dependencies = _fixdef.argnames
+
                     # - append: was pytest default
                     # pending_fixture_names += dependencies
                     # - prepend: makes much more sense

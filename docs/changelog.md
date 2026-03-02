@@ -1,7 +1,12 @@
 # Changelog
 
-### 3.10.0 - (in progress) New `with_case_tags` decorator
+### 3.10.0 - (in progress) New `with_case_tags` decorator + pytest 9 compatibility
 
+- Fixed an issue with `pytest 9` related to the fixture closure building fixes
+  [pytest-dev/pytest#13789](https://github.com/pytest-dev/pytest/pull/13789),
+  solving [pytest-dev/pytest#13773](https://github.com/pytest-dev/pytest/issues/13773).
+  Fixed [#374](https://github.com/smarie/python-pytest-cases/issues/374). PR
+  [#376](https://github.com/smarie/python-pytest-cases/pull/376) by [jammer87](https://github.com/jammer87).
 - Added the `with_case_tags` decorator for applying common tags to all cases
   defined in a case class. Fixes [#351](https://github.com/smarie/python-pytest-cases/issues/351).
   PR [#361](https://github.com/smarie/python-pytest-cases/pull/361)
