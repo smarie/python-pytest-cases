@@ -55,6 +55,8 @@ def test_run_all_tests(test_to_run, testdir):
 
         # check if there is a conf file
         conf_file_path = join(test_folder_path, "conf.py")
+        if not exists(conf_file_path):
+            conf_file_path = join(test_folder_path, "conftest.py")
         if exists(conf_file_path):
             with open(conf_file_path) as c:
                 cfg_contents = c.read()

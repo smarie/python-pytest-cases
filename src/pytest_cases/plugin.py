@@ -122,7 +122,7 @@ class FixtureClosureNode(object):
 
     """
     __slots__ = 'parent', 'fixture_defs_mgr', \
-                'fixture_defs', 'split_fixture_name', 'split_fixture_alternatives', 'children'
+                'fixture_defs', '_current_indices', 'split_fixture_name', 'split_fixture_alternatives', 'children'
 
     def __init__(self,
                  fixture_defs_mgr=None,   # type: FixtureDefsCache
@@ -138,8 +138,12 @@ class FixtureClosureNode(object):
         self.fixture_defs_mgr = fixture_defs_mgr
         self.parent = parent_node
 
+        # This is a temp variable used during closure construction
+        self._current_indices = None  # type: dict[str, int]
+
         # these will be set after closure has been built
         self.fixture_defs = None  # type: OrderedDict
+        # Note: fixture_defs contains dependencies of a node, with their definitions.
         self.split_fixture_name = None  # type: str
         self.split_fixture_alternatives = []
         # we do not use a dict any more as several children can use the same union value (doubled unions)
@@ -238,6 +242,7 @@ class FixtureClosureNode(object):
                       ignore_args=()
                       ):
         """
+        This method is for the root node only
         Updates this Node with the fixture names provided as argument.
         Fixture names and definitions will be stored in self.fixture_defs.
 
@@ -250,7 +255,40 @@ class FixtureClosureNode(object):
             to "direct parametrization"
         :return:
         """
+        assert self.parent is None, "This should only be called on the root node, use _build_closure otherwise"
         self._build_closure(self.fixture_defs_mgr, initial_fixture_names, ignore_args=ignore_args)
+
+        # We can now remove the temporary "current indices" from all nodes
+        self._clean_current_indices()
+
+    def _clean_current_indices(self):
+        """Clean `self._current_indices` from all nodes. This variable is only used to remember the current fixture
+        overridden variants used while walking the dependencies. Once closure is built it is useless."""
+        for c in self.children:
+            c._clean_current_indices()
+        self._current_indices = None
+
+    @property
+    def root(self):
+        """Return the root of the fixture closure tree"""
+        node = self
+        while node.parent is not None:
+            node = node.parent
+        return node
+
+    def _get_current_index(self, argname, default=None):
+        """Equivalent of pytest 9 current_index.get(argname, default) but performed recursively till the top of the tree."""
+        assert self._current_indices is not None, "should never happen by design"
+        idx = self._current_indices.get(argname)  # without the default as we need to know if this worked
+        if idx is not None:
+            # Found
+            return idx
+        elif self.parent is not None:
+            # Not found - Maybe the parent has it
+            return self.parent._get_current_index(argname, default)
+        else:
+            # Root reached and not found, return the default
+            return default
 
     def is_closure_built(self):
         return self.fixture_defs is not None
@@ -284,63 +322,97 @@ class FixtureClosureNode(object):
         if self.fixture_defs is None:
             self.fixture_defs = OrderedDict()
 
-        # -- then for all pending, add them with their dependencies
-        pending_fixture_names = list(initial_fixture_names)
-        while len(pending_fixture_names) > 0:
-            fixname = pending_fixture_names.pop(0)
+        # -- then for all fixture names, add them with their dependencies
 
-            # if the fixture is already known in this node or above, do not care
-            if self.already_knows_fixture(fixname):
-                continue
+        # From Pytest9 on, see https://github.com/pytest-dev/pytest/pull/13789/changes
+        # Track the index for each fixture name in the simulated stack.
+        # Needed for handling override chains correctly, similar to _get_active_fixturedef.
+        # Using negative indices: -1 is the most specific (last), -2 is second to last, etc.
+        self._current_indices = {}
 
-            # new ignore_args option in pytest 4.6+. Not really a fixture but a test function parameter, it seems.
-            if fixname in ignore_args:
-                self.add_required_fixture(fixname, None)
-                continue
+        def process_argname(argname: str) -> None:
+            # Optimization: if this version of the fixture name was already processed in this node or parent chain,
+            # do not care.
+            idx = self._get_current_index(argname)
+            if idx == -1:
+                return
+            elif idx is None:
+                # Fixture was not processed OR has been registered without any fixture def
+                # Check the latter
+                if self.already_knows_fixture(argname):
+                    return
 
-            # else grab the fixture definition(s) for this fixture name for this test node id
-            fixturedefs = fixture_defs_mgr.get_fixture_defs(fixname)
+            # Add fixture name to the closure :
+            # The equivalent of this section from pytest code will be done after the 'ignore_args' below for two reasons
+            # - in case of fixture 'unions' we will not add them the same way
+            # - in our closure tree nodes, the closure is not only containing the names but also the definitions (it is
+            #   a combination of fixturenames_closure and arg2fixturedefs)
+            #
+            # if argname not in fixturenames_closure:
+            #     fixturenames_closure.append(argname)
+
+            # New ignore_args option in pytest 4.6+. Not really a fixture but a test function parameter, it seems.
+            if argname in ignore_args:
+                self.add_required_fixture(argname, None)  # do not store any fixture def for it
+                return
+
+            # Finally the main processing
+            # (a) Grab the fixture definition(s) for this fixture name for this test node id
+            fixturedefs = fixture_defs_mgr.get_fixture_defs(argname)
             if not fixturedefs:
-                # fixture without definition: add it. This can happen with e.g. "requests", etc.
-                self.add_required_fixture(fixname, None)
-                continue
+                # Fixture not defined or not visible - This can happen with e.g. "requests", etc. - add it.
+                self.add_required_fixture(argname, None)  # do not store any fixture def for it
+                return
+
+            # (b) Get the index of the override fixture definition version we need to manage.
+            # Start with the last one (-1) = the one that will actually be used, but it may require some of the other
+            # definitions because of a complex dependency chain.
+            index = self._get_current_index(argname, -1)
+            if -index > len(fixturedefs):
+                # Exhausted the override chain (will error during runtest).
+                return
+            # Now grab that version of the fixture definition
+            fixturedef = fixturedefs[index]
+
+            # (c) introspect parameters to check: Is this fixture parametrized with a "union" of fixtures ?
+            _params = fixturedef.params
+            if _params is None or not is_fixture_union_params(_params):
+                # No : this is a standard fixture. Do the same as in pytest
+
+                # This is the place where we finally add the fixture name to the closure
+                # if argname not in fixturenames_closure:
+                #     fixturenames_closure.append(argname)
+                self.add_required_fixture(argname, fixturedefs)
+
+                # Now process all fixture dependencies, but in their analysis we will consider the "previous" override
+                # so that (I guess) we can handle the situation a[overridden] -> b -> a[original] -> c
+                self._current_indices[argname] = index - 1
+                for dependency in fixturedef.argnames:
+                    process_argname(dependency)
+                self._current_indices[argname] = index
             else:
-                # the actual definition is the last one
-                _fixdef = fixturedefs[-1]
-                _params = _fixdef.params
+                # This is a 'Union'-parametrized fixture - do not add it yet
+                # It requires to split the current closure node into two branches before continuing the analysis
+                # Indeed some fixture dependencies will be needed in some of the branches, while some others not.
 
-                if _params is not None and is_fixture_union_params(_params):
-                    # create an UNION fixture
+                # transform the _params into a list of names
+                alternative_f_names = UnionFixtureAlternative.to_list_of_fixture_names(_params)
 
-                    # transform the _params into a list of names
-                    alternative_f_names = UnionFixtureAlternative.to_list_of_fixture_names(_params)
+                # TO DO if only one name, simplify ? >> No, we leave such "optimization" to the end user
 
-                    # TO DO if only one name, simplify ? >> No, we leave such "optimization" to the end user
+                # if there are direct dependencies that are not the union members, add them to pending
+                non_member_dependencies = [f for f in fixturedef.argnames if f not in alternative_f_names]
+                # currently we only have 'requests' in this list but future impl of fixture_union may act otherwise
 
-                    # if there are direct dependencies that are not the union members, add them to pending
-                    non_member_dependencies = [f for f in _fixdef.argnames if f not in alternative_f_names]
-                    # currently we only have 'requests' in this list but future impl of fixture_union may act otherwise
-                    pending_fixture_names += non_member_dependencies
+                # propagate WITH all non-member dependencies
+                # but handle the situation where the union fixture was an override of another fixture (nasty!)
+                self._current_indices[argname] = index - 1
+                self.split_and_build(fixture_defs_mgr, argname, fixturedefs, alternative_f_names,
+                                     non_member_dependencies, ignore_args=ignore_args)
+                self._current_indices[argname] = index
 
-                    # propagate WITH the pending
-                    self.split_and_build(fixture_defs_mgr, fixname, fixturedefs, alternative_f_names,
-                                         pending_fixture_names, ignore_args=ignore_args)
-
-                    # empty the pending because all of them have been propagated on all children with their dependencies
-                    pending_fixture_names = []
-                    continue
-
-                else:
-                    # normal fixture
-                    self.add_required_fixture(fixname, fixturedefs)
-
-                    # add all dependencies in the to do list
-                    dependencies = _fixdef.argnames
-                    # - append: was pytest default
-                    # pending_fixture_names += dependencies
-                    # - prepend: makes much more sense
-                    pending_fixture_names = list(dependencies) + pending_fixture_names
-                    continue
+        for name in initial_fixture_names:
+            process_argname(name)
 
     # ------ tools to add new fixture names during closure construction
 
@@ -405,7 +477,8 @@ class FixtureClosureNode(object):
         if self.already_knows_fixture(new_fixture_name):
             return
         elif not self.has_split():
-            # add_required_fixture locally
+            # Add required fixture to the dependencies of this node
+            # (fixture_defs is the dict of dependencies + their defs for this node)
             if new_fixture_name not in self.fixture_defs:
                 self.fixture_defs[new_fixture_name] = new_fixture_defs
         else:
@@ -424,10 +497,10 @@ class FixtureClosureNode(object):
         """ Declares that this node contains a union with alternatives (child nodes=subtrees) """
 
         if self.has_split():
-            raise ValueError("This should not happen anymore")
-            # # propagate the split on the children: split each of them
-            # for n in self.children:
-            #     n.split_and_build(fm, nodeid, split_fixture_name, split_fixture_defs, alternative_fixture_names)
+            # Propagate the split on the children: split each of them
+            for n in self.children:
+                n.split_and_build(fixture_defs_mgr, split_fixture_name, split_fixture_defs,
+                                  alternative_fixture_names, pending_fixtures_list, ignore_args)
         else:
             # add the split (union) name to known fixtures
             self.add_required_fixture(split_fixture_name, split_fixture_defs)
@@ -779,7 +852,9 @@ def _getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     # (2) now let's do it by ourselves to support fixture unions
     _init_fixnames, super_closure, arg2fixturedefs = create_super_closure(fm, parentnode, fixturenames, ignore_args)
 
-    # Compare with the previous behaviour TODO remove when in 'production' ?
+    # Compare with the previous behaviour.
+    # NOTE: do not remove these asserts when in 'production', as this proved effective to detect bugs related with
+    # pytest modifications such as GH#374
     # NOTE different order happens all the time because of our "prepend" strategy in the closure building
     # which makes much more sense/intuition than pytest default
     assert set(super_closure) == set(ref_fixturenames)

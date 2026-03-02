@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=39.2",
+    "setuptools>=39.2,<82",  # setuptools v82 does not have pkg_resources anymore GH#
     "setuptools_scm",
     "wheel"
 ]
