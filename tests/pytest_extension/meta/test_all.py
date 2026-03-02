@@ -7,7 +7,6 @@ from os.path import join, dirname, isdir, exists
 
 import pytest
 from pytest import __version__
-from pytest_cases.common_mini_six import string_types
 
 # Make the list of all tests that we will have to execute (each in an independent pytest runner)
 THIS_DIR = dirname(__file__)
@@ -149,7 +148,7 @@ def get_pytest_prepare_config(dynamic=False):
             elif isinstance(args, py.path.local):
                 args = [str(args)]
             elif not isinstance(args, (tuple, list)):
-                if not isinstance(args, string_types):
+                if not isinstance(args, str):
                     raise ValueError("not a string or argument list: %r" % (args,))
                 args = shlex.split(args, posix=sys.platform != "win32")
             config = get_config()

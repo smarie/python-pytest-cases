@@ -4,30 +4,12 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from __future__ import division
 
-from inspect import isgeneratorfunction
+from inspect import isasyncgenfunction, iscoroutinefunction, isgeneratorfunction, signature, Parameter
 from warnings import warn
 
 from makefun import with_signature, add_signature_parameters, wraps
 
 import pytest
-import sys
-
-try:  # python 3.3+
-    from inspect import signature, Parameter
-except ImportError:
-    from funcsigs import signature, Parameter  # noqa
-
-try: # native coroutines, python 3.5+
-    from inspect import iscoroutinefunction
-except ImportError:
-    def iscoroutinefunction(obj):
-        return False
-
-try: # native async generators, python 3.6+
-    from inspect import isasyncgenfunction
-except ImportError:
-    def isasyncgenfunction(obj):
-        return False
 
 
 try:  # type hints, python 3+
@@ -36,7 +18,6 @@ try:  # type hints, python 3+
 except ImportError:
     pass
 
-from .common_mini_six import string_types
 from .common_pytest import get_fixture_name, is_marked_parameter_value, get_marked_parameter_values, pytest_fixture, \
     extract_parameterset_info, get_param_argnames_as_list, get_fixture_scope, resolve_ids
 from .fixture__creation import get_caller_module, check_name_available, WARN
@@ -60,7 +41,7 @@ USED = _Used()
 """Object representing a fixture value when the fixture is used"""
 
 
-class UnionIdMakers(object):
+class UnionIdMakers:
     """
     The enum defining all possible id styles for union fixture parameters ("alternatives")
     """
@@ -96,7 +77,7 @@ class UnionIdMakers(object):
         :param style:
         :return:
         """
-        if style is None or isinstance(style, string_types):
+        if style is None or isinstance(style, str):
             # return one of the styles from the class
             style = style or 'nostyle'
             try:
@@ -108,7 +89,7 @@ class UnionIdMakers(object):
             return style
 
 
-class UnionFixtureAlternative(object):
+class UnionFixtureAlternative:
     """Defines an "alternative", used to parametrize a fixture union"""
     __slots__ = 'union_name', 'alternative_name', 'alternative_index'
 
@@ -238,26 +219,15 @@ def ignore_unused(fixture_func):
     else:
         new_sig = old_sig
 
-    if isasyncgenfunction(fixture_func) and sys.version_info >= (3, 6):
+    if isasyncgenfunction(fixture_func):
         from .pep525 import _ignore_unused_asyncgen_pep525
         wrapped_fixture_func = _ignore_unused_asyncgen_pep525(fixture_func, new_sig, func_needs_request)
-    elif iscoroutinefunction(fixture_func) and sys.version_info >= (3, 5):
+    elif iscoroutinefunction(fixture_func):
         from .pep492 import _ignore_unused_coroutine_pep492
         wrapped_fixture_func = _ignore_unused_coroutine_pep492(fixture_func, new_sig, func_needs_request)
     elif isgeneratorfunction(fixture_func):
-        if sys.version_info >= (3, 3):
-            from .pep380 import _ignore_unused_generator_pep380
-            wrapped_fixture_func = _ignore_unused_generator_pep380(fixture_func, new_sig, func_needs_request)
-        else:
-        # generator function (with a yield statement)
-            @wraps(fixture_func, new_sig=new_sig)
-            def wrapped_fixture_func(*args, **kwargs):
-                request = kwargs['request'] if func_needs_request else kwargs.pop('request')
-                if is_used_request(request):
-                    for res in fixture_func(*args, **kwargs):
-                        yield res
-                else:
-                    yield NOT_USED
+        from .pep380 import _ignore_unused_generator_pep380
+        wrapped_fixture_func = _ignore_unused_generator_pep380(fixture_func, new_sig, func_needs_request)
     else:
         # normal function with return statement
         @wraps(fixture_func, new_sig=new_sig)
@@ -528,7 +498,7 @@ def _unpack_fixture(fixtures_dest,  # type: ModuleType
 
     # possibly get the source fixture name if the fixture symbol was provided
     source_f_name = get_fixture_name(fixture)
-    if not isinstance(fixture, string_types):
+    if not isinstance(fixture, str):
         scope = get_fixture_scope(fixture)
     else:
         # we dont have a clue about the real scope, so lets use function scope

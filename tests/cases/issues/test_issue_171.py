@@ -1,6 +1,5 @@
 import pytest
 
-from pytest_cases.common_pytest_marks import has_pytest_param
 from pytest_cases import case, parametrize_with_cases, fixture
 
 
@@ -86,12 +85,12 @@ def test_synthesis(module_results_dct):
     assert list(module_results_dct) == [
          'test_create[current_object]',
          'test_create[lala]',
-         'test_create[%swithout_validation]' % ("" if has_pytest_param else "1"),
+         'test_create[without_validation]',
          'test_create[history_object]',
          'test_create[xml_with_namespaces]',
          'test_create[duplicate_name]',
-         'test_create[%sduplicate_name_without_valid]' % ("" if has_pytest_param else "3"),
+         'test_create[duplicate_name_without_valid]',
          'test_create[not_enough_namespaceses]',
          'test_create[invalid_xml]',
-         'test_create[%sinvalid_xml_without_valid]' % ("" if has_pytest_param else "5"),
+         'test_create[invalid_xml_without_valid]',
     ]

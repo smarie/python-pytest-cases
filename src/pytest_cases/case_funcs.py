@@ -10,14 +10,10 @@ try:  # python 3.5+
 except ImportError:
     pass
 
-from .common_mini_six import string_types
 from .common_pytest import safe_isclass
 from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, markdecorators_to_markinfos
 
-try:
-    from _pytest.mark.structures import MarkDecorator, Mark
-except ImportError:
-    pass
+from _pytest.mark.structures import MarkDecorator, Mark
 
 
 # ------------------ API --------------
@@ -31,7 +27,7 @@ CASE_PREFIX_FUN = 'case_'
 CASE_FIELD = '_pytestcase'
 
 
-class _CaseInfo(object):
+class _CaseInfo:
     """
     Contains all information available about a case.
     It is attached to a case function as an attribute.
@@ -84,7 +80,7 @@ class _CaseInfo(object):
                  ):
         """add the given tag or tags"""
         if tags:
-            if isinstance(tags, string_types) or not isinstance(tags, (set, list, tuple)):
+            if isinstance(tags, str) or not isinstance(tags, (set, list, tuple)):
                 # a single tag, create a tuple around it
                 tags = (tags,)
 

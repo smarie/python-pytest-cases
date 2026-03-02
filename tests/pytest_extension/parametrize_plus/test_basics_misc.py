@@ -2,8 +2,6 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-import sys
-
 import pytest
 
 from pytest_cases import parametrize, lazy_value
@@ -11,7 +9,6 @@ from pytest_harvest import get_session_synthesis_dct
 
 from pytest_cases.common_pytest import cart_product_pytest, get_marked_parameter_values, \
     extract_parameterset_info, extract_pset_info_single
-from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, has_pytest_param
 from pytest_cases.common_pytest_lazy_values import is_lazy
 from pytest_cases.fixture_parametrize_plus import _get_argnames_argvalues
 from ...utils import skip
@@ -68,9 +65,6 @@ def test_argname_error():
             pass
 
 
-PY36 = sys.version_info >= (3, 6)
-
-
 @pytest.mark.parametrize("tuple_around_single", [False, True])
 def test_get_argnames_argvalues(tuple_around_single):
 
@@ -91,10 +85,7 @@ def test_get_argnames_argvalues(tuple_around_single):
     assert argvalues == [1.25, 0]
     # -- several argnames
     argnames, argvalues = _get_argnames_argvalues(a=[True], b=[1.25, 0])
-    if PY36:
-        assert argnames == ['a', 'b']
-    else:
-        assert set(argnames) == {'a', 'b'}
+    assert argnames == ['a', 'b']
     if argnames[-1] == 'b':
         assert argvalues == [(True, 1.25), (True, 0)]
     else:
@@ -111,11 +102,7 @@ def test_get_argnames_argvalues(tuple_around_single):
     assert argvalues == [(True, 1.25), (True, 0)]
     # -- several argnames in two entries
     argnames, argvalues = _get_argnames_argvalues(**{'a,b': ((True, 1.25), (True, 0)), 'c': [-1, 2]})
-    if not PY36:
-        # order is lost
-        assert set(argnames) == {'a', 'b', 'c'}
-    else:
-        assert argnames == ['a', 'b', 'c']
+    assert argnames == ['a', 'b', 'c']
     if argnames[-1] == 'c':
         assert argvalues == [(True, 1.25, -1), (True, 1.25, 2), (True, 0, -1), (True, 0, 2)]
     else:
@@ -124,10 +111,9 @@ def test_get_argnames_argvalues(tuple_around_single):
 
     # a mark on any of them
     argnames, argvalues = _get_argnames_argvalues(**{'a,b': (skip(True, 1.25), (True, 0)), 'c': [-1, 2]})
-    if has_pytest_param:
-        assert argvalues[0].id is None
-        assert argvalues[0].marks[0].name == 'skip'
-        assert argvalues[0].values == (True, 1.25, -1) if argnames[-1] == 'c' else (-1, True, 1.25)
+    assert argvalues[0].id is None
+    assert argvalues[0].marks[0].name == 'skip'
+    assert argvalues[0].values == (True, 1.25, -1) if argnames[-1] == 'c' else (-1, True, 1.25)
 
     # hybrid
     # -- several argnames in two entries
@@ -141,11 +127,10 @@ def test_get_argnames_argvalues(tuple_around_single):
     assert all(p is None for p in custom_pids)
     assert p_values == [(True, -1, True, 1.25), (True, -1, True, 0), ('hey', 2, True, 1.25), ('hey', 2, True, 0)]
     assert p_marks[0:2] == [None, None]
-    if has_pytest_param:
-        assert len(p_marks[2]) == 1
-        assert p_marks[2][0].name == 'skip'
-        assert len(p_marks[3]) == 1
-        assert p_marks[3][0].name == 'skip'
+    assert len(p_marks[2]) == 1
+    assert p_marks[2][0].name == 'skip'
+    assert len(p_marks[3]) == 1
+    assert p_marks[3][0].name == 'skip'
 
 
 def format_me(**kwargs):
@@ -164,19 +149,12 @@ def test_idgen1(a, b, c, d):
 
 def test_idgen1_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_idgen1, test_id_format='function')
-    if sys.version_info >= (3, 6):
-        if PYTEST3_OR_GREATER:
-            assert list(results_dct) == [
-                'test_idgen1[10yes-c2.1-a=True,b= -1]',
-                'test_idgen1[10yes-c2.1-a=False,b=  3]',
-                'test_idgen1[10yes-c0.0-a=True,b= -1]',
-                'test_idgen1[10yes-c0.0-a=False,b=  3]'
-            ]
-        else:
-            # the order seems not guaranteed or at least quite different in pytest 2
-            assert len(results_dct) == 4
-    else:
-        assert len(results_dct) == 4
+    assert list(results_dct) == [
+        'test_idgen1[10yes-c2.1-a=True,b= -1]',
+        'test_idgen1[10yes-c2.1-a=False,b=  3]',
+        'test_idgen1[10yes-c0.0-a=True,b= -1]',
+        'test_idgen1[10yes-c0.0-a=False,b=  3]'
+    ]
 
 
 @parametrize(idgen="a={a},b={b:.1f} and {c:4d}", **{'a,b': ((True, 1.25), (True, 0.)), 'c': [-1, 2]})
@@ -186,15 +164,12 @@ def test_alt_usage1(a, b, c):
 
 def test_alt_usage1_synthesis(request):
     results_dct = get_session_synthesis_dct(request, filter=test_alt_usage1, test_id_format='function')
-    if sys.version_info > (3, 6):
-        assert list(results_dct) == [
-            'test_alt_usage1[a=True,b=1.2 and   -1]',
-            'test_alt_usage1[a=True,b=1.2 and    2]',
-            'test_alt_usage1[a=True,b=0.0 and   -1]',
-            'test_alt_usage1[a=True,b=0.0 and    2]'
-        ]
-    else:
-        assert len(results_dct) == 4
+    assert list(results_dct) == [
+        'test_alt_usage1[a=True,b=1.2 and   -1]',
+        'test_alt_usage1[a=True,b=1.2 and    2]',
+        'test_alt_usage1[a=True,b=0.0 and   -1]',
+        'test_alt_usage1[a=True,b=0.0 and    2]'
+    ]
 
 
 @parametrize(idgen="b{b:.1}", **{'b': (1.25, 0.)})

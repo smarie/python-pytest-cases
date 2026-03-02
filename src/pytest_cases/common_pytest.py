@@ -5,18 +5,12 @@
 from __future__ import division
 
 import inspect
+from inspect import isgeneratorfunction, isclass, signature, Parameter
 import sys
 import os
 from importlib import import_module
 
 from makefun import add_signature_parameters, wraps
-
-try:  # python 3.3+
-    from inspect import signature, Parameter
-except ImportError:
-    from funcsigs import signature, Parameter  # noqa
-
-from inspect import isgeneratorfunction, isclass
 
 try:
     from typing import Union, Callable, Any, Optional, Tuple, Type, Iterable, Sized, List  # noqa
@@ -26,44 +20,23 @@ except ImportError:
 import pytest
 from _pytest.python import Metafunc
 
-from .common_mini_six import string_types
 from .common_others import get_function_host
 from .common_pytest_marks import make_marked_parameter_value, get_param_argnames_as_list, \
-    get_pytest_parametrize_marks, get_pytest_usefixture_marks, PYTEST3_OR_GREATER, PYTEST6_OR_GREATER, \
-    PYTEST38_OR_GREATER, PYTEST34_OR_GREATER, PYTEST33_OR_GREATER, PYTEST32_OR_GREATER, PYTEST71_OR_GREATER, \
-    PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
+    get_pytest_parametrize_marks, get_pytest_usefixture_marks, \
+    PYTEST71_OR_GREATER, PYTEST8_OR_GREATER, PYTEST84_OR_GREATER
 from .common_pytest_lazy_values import is_lazy_value, is_lazy
 
 
 # A decorator that will work to create a fixture containing 'yield', whatever the pytest version, and supports hooks
-if PYTEST3_OR_GREATER:
-    def pytest_fixture(hook=None, **kwargs):
-        def _decorate(f):
-            # call hook if needed
-            if hook is not None:
-                f = hook(f)
+def pytest_fixture(hook=None, **kwargs):
+    def _decorate(f):
+        # call hook if needed
+        if hook is not None:
+            f = hook(f)
 
-            # create the fixture
-            return pytest.fixture(**kwargs)(f)
-        return _decorate
-else:
-    def pytest_fixture(hook=None, name=None, **kwargs):
-        """Generator-aware pytest.fixture decorator for legacy pytest versions"""
-        def _decorate(f):
-            if name is not None:
-                # 'name' argument is not supported in this old version, use the __name__ trick.
-                f.__name__ = name
-
-            # call hook if needed
-            if hook is not None:
-                f = hook(f)
-
-            # create the fixture
-            if isgeneratorfunction(f):
-                return pytest.yield_fixture(**kwargs)(f)
-            else:
-                return pytest.fixture(**kwargs)(f)
-        return _decorate
+        # create the fixture
+        return pytest.fixture(**kwargs)(f)
+    return _decorate
 
 
 def pytest_is_running():
@@ -71,11 +44,7 @@ def pytest_is_running():
 
     See https://stackoverflow.com/questions/25188119/test-if-code-is-executed-from-within-a-py-test-session
     """
-    if PYTEST32_OR_GREATER:
-        return "PYTEST_CURRENT_TEST" in os.environ
-    else:
-        import re
-        return any(re.findall(r'pytest|py.test', sys.argv[0]))
+    return "PYTEST_CURRENT_TEST" in os.environ
 
 
 def remove_duplicates(lst):
@@ -207,7 +176,7 @@ if PYTEST84_OR_GREATER:
         :param fixture_fun:
         :return:
         """
-        if isinstance(fixture_fun, string_types):
+        if isinstance(fixture_fun, str):
             return fixture_fun
 
         assert_is_fixture(fixture_fun)
@@ -232,7 +201,7 @@ else:
         :param fixture_fun:
         :return:
         """
-        if isinstance(fixture_fun, string_types):
+        if isinstance(fixture_fun, str):
             return fixture_fun
         assert_is_fixture(fixture_fun)
         try:  # pytest 3
@@ -300,10 +269,7 @@ def get_parametrization_markers(fnode):
     :param fnode:
     :return:
     """
-    if PYTEST34_OR_GREATER:
-        return list(fnode.iter_markers(name="parametrize"))
-    else:
-        return list(fnode.parametrize)
+    return list(fnode.iter_markers(name="parametrize"))
 
 
 def get_param_names(fnode):
@@ -425,7 +391,7 @@ def make_test_ids_from_param_values(param_names,
     :param param_values:
     :return: a list of param ids
     """
-    if isinstance(param_names, string_types):
+    if isinstance(param_names, str):
         raise TypeError("param_names must be an iterable. Found %r" % param_names)
 
     nb_params = len(param_names)
@@ -493,7 +459,7 @@ def extract_parameterset_info(argnames, argvalues, check_nb=True):
     pids = []
     pmarks = []
     pvalues = []
-    if isinstance(argnames, string_types):
+    if isinstance(argnames, str):
         raise TypeError("argnames must be an iterable. Found %r" % argnames)
     nbnames = len(argnames)
     for v in argvalues:
@@ -646,20 +612,10 @@ if PYTEST71_OR_GREATER:
 else:
     from _pytest.python import _idval  # noqa
 
-    if PYTEST6_OR_GREATER:
-        _idval_kwargs = dict(idfn=None,
-                             nodeid=None,  # item is not used in pytest(>=6.0.0) nodeid is only used by idfn
-                             config=None  # if a config hook was available it would be used before this is called)
-                             )
-    elif PYTEST38_OR_GREATER:
-        _idval_kwargs = dict(idfn=None,
-                             item=None,  # item is only used by idfn
-                             config=None  # if a config hook was available it would be used before this is called)
-                             )
-    else:
-        _idval_kwargs = dict(idfn=None,
-                             # config=None  # if a config hook was available it would be used before this is called)
-                             )
+    _idval_kwargs = dict(idfn=None,
+                         nodeid=None,  # item is not used in pytest(>=6.0.0) nodeid is only used by idfn
+                         config=None  # if a config hook was available it would be used before this is called)
+                         )
 
 
 def mini_idval(
@@ -737,14 +693,14 @@ except ImportError:
         return arg_names
 
 
-class FakeSession(object):
+class FakeSession:
     __slots__ = ('_fixturemanager',)
 
     def __init__(self):
         self._fixturemanager = None
 
 
-class MiniFuncDef(object):
+class MiniFuncDef:
     __slots__ = ('nodeid', 'session')
 
     def __init__(self, nodeid):
@@ -820,28 +776,12 @@ class MiniMetafunc(Metafunc):
         """
         for pmark in self.pmarks:
             if len(pmark.param_names) == 1:
-                if PYTEST3_OR_GREATER:
-                    argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
-                else:
-                    argvals = []
-                    for v in pmark.param_values:
-                        if is_marked_parameter_value(v):
-                            newmark = MarkDecorator(v.markname, v.args[:-1] + ((v.args[-1],),), v.kwargs)
-                            argvals.append(newmark)
-                        else:
-                            argvals.append((v,))
-                    argvals = tuple(argvals)
+                argvals = tuple(v if is_marked_parameter_value(v) else (v,) for v in pmark.param_values)
             else:
                 argvals = pmark.param_values
             self.parametrize(argnames=pmark.param_names, argvalues=argvals, ids=pmark.param_ids,
                              # use indirect = False and scope = 'function' to avoid having to implement complex patches
                              indirect=False, scope='function')
-
-        if not PYTEST33_OR_GREATER:
-            # fix the CallSpec2 instances so that the marks appear in an attribute "mark"
-            # noinspection PyProtectedMember
-            for c in self._calls:
-                c.marks = list(c.keywords.values())
 
 
 def add_fixture_params(func, new_names):
@@ -970,7 +910,7 @@ def inject_host(apply_decorator):
     :param apply_decorator:
     :return:
     """
-    # class _apply_decorator_with_host_tracking(object):
+    # class _apply_decorator_with_host_tracking:
     #     def __init__(self, _target):
     #         # This is called when the decorator is applied on the target. Remember the target and result of paramz
     #         self._target = _target
