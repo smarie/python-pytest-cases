@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.10.1 - Accurate metadata on PyPi
+
+- Fixed python version in package metadata. `3.13` was missing.
+
 ### 3.10.0 - New `with_case_tags` decorator + pytest 9 compatibility
 
 - Fixed an issue with `pytest 9` related to the fixture closure building fixes
