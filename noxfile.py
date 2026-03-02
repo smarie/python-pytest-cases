@@ -53,26 +53,32 @@ class Folders:
 ENVS = {
     # python 3.14
     (PY314, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY314, "pytest8.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<9"}},
     (PY314, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     (PY314, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     # python 3.13
     (PY313, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY313, "pytest8.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<9"}},
     (PY313, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     (PY313, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     # python 3.12
     (PY312, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY312, "pytest8.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<9"}},
     (PY312, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     (PY312, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     # python 3.11
     # We'll run 'pytest-latest' this last for coverage
+    (PY311, "pytest8.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<9"}},
     (PY311, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     (PY311, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     # python 3.10
     (PY310, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY310, "pytest8.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<9"}},
     (PY310, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     (PY310, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     # python 3.9
     (PY39, "pytest-latest"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": ""}},
+    (PY39, "pytest8.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<9"}},
     (PY39, "pytest7.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<8"}},
     (PY39, "pytest6.x"): {"coverage": False, "pkg_specs": {"pip": ">19", "pytest": "<7"}},
     # IMPORTANT: this should be last so that the folder docs/reports is not deleted afterwards
