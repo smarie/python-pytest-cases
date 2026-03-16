@@ -9,21 +9,15 @@ from collections import namedtuple
 
 import functools
 from importlib import import_module
-from inspect import getmembers, ismodule
+from inspect import getmembers, ismodule, signature
 import re
 from warnings import warn
-
-try:  # python 3.3+
-    from inspect import signature
-except ImportError:
-    from funcsigs import signature  # noqa
 
 try:
     from typing import Union, Callable, Iterable, Any, Type, List, Tuple  # noqa
 except ImportError:
     pass
 
-from .common_mini_six import string_types
 from .common_others import get_code_first_line, AUTO, qname, funcopy, needs_binding, get_function_host, \
     in_same_module, get_host_module, get_class_that_defined_method
 from .common_pytest_marks import copy_pytest_marks, make_marked_parameter_value, remove_pytest_mark, filter_marks, \
@@ -40,12 +34,6 @@ from .fixture_core2 import CombinedFixtureParamValue, fixture
 from .fixture__creation import check_name_available, get_caller_module, CHANGE
 from .fixture_parametrize_plus import fixture_ref, _parametrize_plus, FixtureParamAlternative, ParamAlternative, \
     SingleParamAlternative, MultiParamAlternative, FixtureRefItem
-
-try:
-    ModuleNotFoundError
-except NameError:
-    # python < 3.6
-    ModuleNotFoundError = ImportError
 
 
 THIS_MODULE = object()
@@ -240,7 +228,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
         needs to be selected.
     """
     # Handle single elements
-    if isinstance(cases, string_types):
+    if isinstance(cases, str):
         cases = (cases,)
     else:
         try:
@@ -255,7 +243,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
     # validate glob and filter and merge them in a single tuple of callables
     filters = ()
     if glob is not None:
-        if not isinstance(glob, string_types):
+        if not isinstance(glob, str):
             raise TypeError("`glob` should be a string containing a glob-like pattern (not a regex).")
 
         filters += (create_glob_name_filter(glob),)
@@ -355,7 +343,7 @@ def get_parametrize_args(host_class_or_module,    # type: Union[Type, ModuleType
                                                               debug)]
 
 
-class CaseParamValue(object):
+class CaseParamValue:
     """Common class for lazy values and fixture refs created from cases"""
     __slots__ = ()
 
@@ -821,7 +809,7 @@ def extract_cases_from_module(module,                           # type: Union[st
         A list of case functions
     """
     # optionally import module if passed as module name string
-    if isinstance(module, string_types):
+    if isinstance(module, str):
         try:
             module = import_module(module, package=package_name)
         except ModuleNotFoundError as e:
@@ -1267,7 +1255,7 @@ def get_current_case_id(request_or_item,
     warn("`get_current_case_id` is DEPRECATED - please use the `current_cases` fixture instead, or `get_current_cases`")
 
     # process argnames
-    if isinstance(argnames, string_types):
+    if isinstance(argnames, str):
         argnames = get_param_argnames_as_list(argnames)
 
     # retrieve the correct id
@@ -1299,7 +1287,7 @@ def get_current_case_id(request_or_item,
 #     __module__ = "pytest_cases"
 #
 #
-# class CasesModule(object):
+# class CasesModule:
 #     """
 #     A collector for test cases
 #     This is a very lightweight version of `_pytest.python.Module`,the pytest collector for test functions and classes.

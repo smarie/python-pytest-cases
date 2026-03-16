@@ -6,7 +6,6 @@ import warnings
 
 import pytest
 
-from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER
 from pytest_cases import fixture_union
 
 
@@ -41,22 +40,11 @@ def test_foo2(v):
 
 
 def test_synthesis(module_results_dct):
-    if not PYTEST3_OR_GREATER:
-        # the way to make ids uniques in case of duplicates was different in old pytest
-        assert list(module_results_dct) == [
-            'test_foo[1]',
-            'test_foo[2]',
-            'test_foo[3]',
-            'test_foo2[0/a]',
-            'test_foo2[1/b]',
-            'test_foo2[2/a]'
-        ]
-    else:
-        assert list(module_results_dct) == [
-            'test_foo[1]',
-            'test_foo[2]',
-            'test_foo[3]',
-            'test_foo2[/a0]',
-            'test_foo2[/b]',
-            'test_foo2[/a1]'
-        ]
+    assert list(module_results_dct) == [
+        'test_foo[1]',
+        'test_foo[2]',
+        'test_foo[3]',
+        'test_foo2[/a0]',
+        'test_foo2[/b]',
+        'test_foo2[/a1]'
+    ]

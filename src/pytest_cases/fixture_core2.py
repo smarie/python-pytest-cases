@@ -4,7 +4,7 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from __future__ import division
 
-from inspect import isgeneratorfunction
+from inspect import isasyncgenfunction, iscoroutinefunction, isgeneratorfunction, signature, Parameter
 from itertools import product
 from warnings import warn
 
@@ -12,24 +12,7 @@ from decopatch import function_decorator, DECORATED
 from makefun import with_signature, add_signature_parameters, remove_signature_parameters, wraps
 
 import pytest
-import sys
 
-try:  # python 3.3+
-    from inspect import signature, Parameter
-except ImportError:
-    from funcsigs import signature, Parameter  # noqa
-
-try: # native coroutines, python 3.5+
-    from inspect import iscoroutinefunction
-except ImportError:
-    def iscoroutinefunction(obj):
-        return False
-
-try: # native async generators, python 3.6+
-    from inspect import isasyncgenfunction
-except ImportError:
-    def isasyncgenfunction(obj):
-        return False
 
 try:  # type hints, python 3+
     from typing import Callable, Union, Any, List, Iterable, Sequence  # noqa
@@ -40,7 +23,7 @@ except ImportError:
 from .common_pytest_lazy_values import get_lazy_args
 from .common_pytest import get_pytest_parametrize_marks, make_marked_parameter_value, get_param_argnames_as_list, \
     combine_ids, is_marked_parameter_value, pytest_fixture, resolve_ids, extract_parameterset_info, make_test_ids
-from .common_pytest_marks import PYTEST3_OR_GREATER, PYTEST8_OR_GREATER
+from .common_pytest_marks import PYTEST8_OR_GREATER
 from .fixture__creation import get_caller_module, check_name_available, WARN, CHANGE
 from .fixture_core1_unions import ignore_unused, is_used_request, NOT_USED, _make_unpack_fixture
 
@@ -338,7 +321,7 @@ def fixture(scope="function",        # type: str
                                   hook=hook, _caller_module_offset_when_unpack=3, **kwargs)
 
 
-class FixtureParam(object):
+class FixtureParam:
     __slots__ = 'argnames',
 
     def __init__(self, argnames):
@@ -348,7 +331,7 @@ class FixtureParam(object):
         return "FixtureParam(argnames=%s)" % self.argnames
 
 
-class CombinedFixtureParamValue(object):
+class CombinedFixtureParamValue:
     """Represents a parameter value created when @parametrize is used on a @fixture """
     __slots__ = 'param_defs', 'argvalues',
 
@@ -402,13 +385,7 @@ def _decorate_fixture_plus(fixture_func,
     :param kwargs: other keyword arguments for `@pytest.fixture`
     """
     if name is not None:
-        # Compatibility for the 'name' argument
-        if PYTEST3_OR_GREATER:
-            # pytest version supports "name" keyword argument
-            kwargs['name'] = name
-        elif name is not None:
-            # 'name' argument is not supported in this old version, use the __name__ trick.
-            fixture_func.__name__ = name
+        kwargs['name'] = name
 
     # if unpacking is requested, do it first
     if unpack_into is not None:
@@ -541,26 +518,16 @@ def _decorate_fixture_plus(fixture_func,
         return _args, _kwargs
 
     # --Finally create the fixture function, a wrapper of user-provided fixture with the new signature
-    if isasyncgenfunction(fixture_func)and sys.version_info >= (3, 6):
-            from .pep525 import _decorate_fixture_plus_asyncgen_pep525
-            wrapped_fixture_func = _decorate_fixture_plus_asyncgen_pep525(fixture_func, new_sig, _map_arguments)
-    elif iscoroutinefunction(fixture_func) and sys.version_info >= (3, 5):
-            from .pep492 import _decorate_fixture_plus_coroutine_pep492
-            wrapped_fixture_func = _decorate_fixture_plus_coroutine_pep492(fixture_func, new_sig, _map_arguments)
+    if isasyncgenfunction(fixture_func):
+        from .pep525 import _decorate_fixture_plus_asyncgen_pep525
+        wrapped_fixture_func = _decorate_fixture_plus_asyncgen_pep525(fixture_func, new_sig, _map_arguments)
+    elif iscoroutinefunction(fixture_func):
+        from .pep492 import _decorate_fixture_plus_coroutine_pep492
+        wrapped_fixture_func = _decorate_fixture_plus_coroutine_pep492(fixture_func, new_sig, _map_arguments)
     elif isgeneratorfunction(fixture_func):
         # generator function (with a yield statement)
-        if sys.version_info >= (3, 3):
-            from .pep380 import _decorate_fixture_plus_generator_pep380
-            wrapped_fixture_func = _decorate_fixture_plus_generator_pep380(fixture_func, new_sig, _map_arguments)
-        else:
-            @wraps(fixture_func, new_sig=new_sig)
-            def wrapped_fixture_func(*_args, **_kwargs):
-                if not is_used_request(_kwargs['request']):
-                    yield NOT_USED
-                else:
-                    _args, _kwargs = _map_arguments(*_args, **_kwargs)
-                    for res in fixture_func(*_args, **_kwargs):
-                        yield res
+        from .pep380 import _decorate_fixture_plus_generator_pep380
+        wrapped_fixture_func = _decorate_fixture_plus_generator_pep380(fixture_func, new_sig, _map_arguments)
     else:
         # normal function with return statement
         @wraps(fixture_func, new_sig=new_sig)

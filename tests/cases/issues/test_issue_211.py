@@ -1,9 +1,5 @@
 import pytest
-import sys
 from pytest_cases import parametrize, parametrize_with_cases
-
-
-PY3 = sys.version_info >= (3,)
 
 
 class MyClassName:

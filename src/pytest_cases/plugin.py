@@ -3,21 +3,12 @@
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from collections import OrderedDict, namedtuple
+from collections.abc import MutableSequence
 from copy import copy
 from functools import partial
 from warnings import warn
 
-try:
-    from collections.abc import MutableSequence
-except:  # noqa
-    from collections import MutableSequence
-
 import pytest
-
-try:  # python 3.3+
-    from inspect import signature
-except ImportError:
-    from funcsigs import signature  # noqa
 
 try:  # python 3.3+ type hints
     from typing import List, Tuple, Union, Iterable, MutableMapping, Mapping, Optional  # noqa
@@ -26,9 +17,8 @@ try:  # python 3.3+ type hints
 except ImportError:
     pass
 
-from .common_mini_six import string_types
 from .common_pytest_lazy_values import get_lazy_args
-from .common_pytest_marks import PYTEST35_OR_GREATER, PYTEST46_OR_GREATER, PYTEST37_OR_GREATER, PYTEST7_OR_GREATER, \
+from .common_pytest_marks import PYTEST7_OR_GREATER, \
     PYTEST8_OR_GREATER, PYTEST9_OR_GREATER
 from .common_pytest import get_pytest_nodeid, get_pytest_function_scopeval, is_function_node, get_param_names, \
     get_param_argnames_as_list, has_function_scope, set_callspec_arg_scope_to_function, in_callspec_explicit_args
@@ -82,7 +72,7 @@ def pytest_collection(session):
     session._fixturemanager.getfixtureclosure = partial(getfixtureclosure, session._fixturemanager)  # noqa
 
 
-class FixtureDefsCache(object):
+class FixtureDefsCache:
     """
     A 'cache' for fixture definitions obtained from the FixtureManager `fm`, for test node `nodeid`
     """
@@ -108,7 +98,7 @@ class FixtureDefsCache(object):
         return fixdefs
 
 
-class FixtureClosureNode(object):
+class FixtureClosureNode:
     """
     A node in a fixture closure Tree.
 
@@ -202,7 +192,7 @@ class FixtureClosureNode(object):
                     return fixture_defs[-1]._scope if fixture_defs is not None else f_scope
                 items = sorted(list(items), key=sort_by_scope, reverse=True)
 
-            elif PYTEST35_OR_GREATER:
+            else:
                 # scopes is a list, values are indices in the list, and the field is scopenum
                 f_scope = get_pytest_function_scopeval()
                 def sort_by_scope(kv_pair):  # noqa
@@ -771,21 +761,15 @@ def _getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     """
 
     # (1) first retrieve the normal pytest output for comparison
-    kwargs = dict()
-    if PYTEST46_OR_GREATER:
-        # new argument "ignore_args" in 4.6+
-        kwargs['ignore_args'] = ignore_args
+    kwargs = {'ignore_args': ignore_args}
 
     if PYTEST8_OR_GREATER:
         # two outputs and sig change
         ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, parentnode, fixturenames, **kwargs)
-    elif PYTEST37_OR_GREATER:
+    else:
         # three outputs
         initial_names, ref_fixturenames, ref_arg2fixturedefs = \
             fm.__class__.getfixtureclosure(fm, fixturenames, parentnode, **kwargs)
-    else:
-        # two outputs
-        ref_fixturenames, ref_arg2fixturedefs = fm.__class__.getfixtureclosure(fm, fixturenames, parentnode)
 
     # (2) now let's do it by ourselves to support fixture unions
     _init_fixnames, super_closure, arg2fixturedefs = create_super_closure(fm, parentnode, fixturenames, ignore_args)
@@ -796,7 +780,7 @@ def _getfixtureclosure(fm, fixturenames, parentnode, ignore_args=()):
     assert set(super_closure) == set(ref_fixturenames)
     assert dict(arg2fixturedefs) == ref_arg2fixturedefs
 
-    if PYTEST37_OR_GREATER and not PYTEST8_OR_GREATER:
+    if not PYTEST8_OR_GREATER:
         return _init_fixnames, super_closure, arg2fixturedefs
     else:
         return super_closure, arg2fixturedefs
@@ -949,7 +933,7 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
 
         # detect union fixtures
         if is_fixture_union_params(argvalues):
-            if ',' in argnames or not isinstance(argnames, string_types):
+            if ',' in argnames or not isinstance(argnames, str):
                 raise ValueError("Union fixtures can not be parametrized")
             union_fixture_name = argnames
             union_fixture_alternatives = argvalues
@@ -963,7 +947,7 @@ def parametrize(metafunc, argnames, argvalues, indirect=False, ids=None, scope=N
             calls_reactor.append(NormalParamz(argnames, argvalues, indirect, ids, scope, kwargs))
 
 
-class CallsReactor(object):
+class CallsReactor:
     """
     This object replaces the list of calls that was in `metafunc._calls`.
     It behaves like a list, but it actually builds that list dynamically based on all parametrizations collected

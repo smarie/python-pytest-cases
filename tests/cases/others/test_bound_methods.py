@@ -1,4 +1,3 @@
-import sys
 from functools import partial
 
 import pytest
@@ -84,45 +83,38 @@ class Foo(object):
             return nested
 
 
-ALL_PY = True
-PY3_ONLY = sys.version_info >= (3,)
-
-
-@pytest.mark.parametrize("name, m, expected, supported", [
-    ("plain_py_func", a, False, ALL_PY),
-    ("partial_func", b, False, ALL_PY),
-    ("nested_func", c(), False, ALL_PY),
-    ("nested_partial_func", d(), False, ALL_PY),
+@pytest.mark.parametrize("name, m, expected", [
+    ("plain_py_func", a, False,),
+    ("partial_func", b, False,),
+    ("nested_func", c(), False,),
+    ("nested_partial_func", d(), False,),
     # --- class
-    ("method_on_instance", Foo().a, False, ALL_PY),
-    ("method_unbound", Foo.a, True, ALL_PY),
-    ("method_on_class_dict", Foo.__dict__['a'], True, PY3_ONLY),
-    ("static_method_on_instance", Foo().b, False, ALL_PY),
-    ("static_method_on_class", Foo.b, False, ALL_PY),
-    ("static_method_on_class_dict", Foo.__dict__['b'], True, ALL_PY),
-    ("class_method_on_instance", Foo().c, False, ALL_PY),
-    ("class_method_on_class", Foo.c, False, ALL_PY),
-    ("class_method_on_class_dict", Foo.__dict__['c'], True, PY3_ONLY),
-    ("descriptor_method_on_instance", Foo().d, False, ALL_PY),
-    ("descriptor_method_on_class", Foo.d, False, ALL_PY),
+    ("method_on_instance", Foo().a, False,),
+    ("method_unbound", Foo.a, True,),
+    ("method_on_class_dict", Foo.__dict__['a'], True),
+    ("static_method_on_instance", Foo().b, False,),
+    ("static_method_on_class", Foo.b, False,),
+    ("static_method_on_class_dict", Foo.__dict__['b'], True,),
+    ("class_method_on_instance", Foo().c, False,),
+    ("class_method_on_class", Foo.c, False,),
+    ("class_method_on_class_dict", Foo.__dict__['c'], True),
+    ("descriptor_method_on_instance", Foo().d, False,),
+    ("descriptor_method_on_class", Foo.d, False,),
     # --- nested class
-    ("cls_nested_py_func", Foo.Nested().e(), False, ALL_PY),
-    ("cls_nested_method_on_instance", Foo.Nested().a, False, ALL_PY),
-    ("cls_nested_method_unbound", Foo.Nested.a, True, ALL_PY),
-    ("cls_nested_method_on_class_dict", Foo.Nested.__dict__['a'], True, PY3_ONLY),
-    ("cls_nested_static_method_on_instance", Foo.Nested().b, False, ALL_PY),
-    ("cls_nested_static_method_on_class", Foo.Nested.b, False, ALL_PY),
-    ("cls_nested_static_method_on_class_dict", Foo.Nested.__dict__['b'], True, ALL_PY),
-    ("cls_nested_class_method_on_instance", Foo.Nested().c, False, ALL_PY),
-    ("cls_nested_class_method_on_class", Foo.Nested.c, False, ALL_PY),
-    ("cls_nested_class_method_on_class_dict", Foo.Nested.__dict__['c'], True, PY3_ONLY),
-    ("cls_nested_descriptor_method_on_instance", Foo.Nested().d, False, ALL_PY),
-    ("cls_nested_descriptor_method_on_class", Foo.Nested.d, False, ALL_PY),
+    ("cls_nested_py_func", Foo.Nested().e(), False,),
+    ("cls_nested_method_on_instance", Foo.Nested().a, False,),
+    ("cls_nested_method_unbound", Foo.Nested.a, True,),
+    ("cls_nested_method_on_class_dict", Foo.Nested.__dict__['a'], True),
+    ("cls_nested_static_method_on_instance", Foo.Nested().b, False,),
+    ("cls_nested_static_method_on_class", Foo.Nested.b, False,),
+    ("cls_nested_static_method_on_class_dict", Foo.Nested.__dict__['b'], True,),
+    ("cls_nested_class_method_on_instance", Foo.Nested().c, False,),
+    ("cls_nested_class_method_on_class", Foo.Nested.c, False,),
+    ("cls_nested_class_method_on_class_dict", Foo.Nested.__dict__['c'], True),
+    ("cls_nested_descriptor_method_on_instance", Foo.Nested().d, False,),
+    ("cls_nested_descriptor_method_on_class", Foo.Nested.d, False,),
 ], ids=lambda x: str(x) if isinstance(x, (str, bytes, bool)) else "")
-def test_needs_binding(name, m, expected, supported):
-
-    if not supported:
-        pytest.skip("Not supported on this version of python")
+def test_needs_binding(name, m, expected):
 
     should_bind = needs_binding(m)
     assert should_bind is expected

@@ -2,31 +2,10 @@
 #          + All contributors to <https://github.com/smarie/python-pytest-cases>
 #
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
-from inspect import isgeneratorfunction
+from collections.abc import Iterable
+from inspect import isasyncgenfunction, iscoroutinefunction, isgeneratorfunction, signature, Parameter
 from warnings import warn
 
-
-try:  # python 3.3+
-    from inspect import signature, Parameter
-except ImportError:
-    from funcsigs import signature, Parameter  # noqa
-
-try: # native coroutines, python 3.5+
-    from inspect import iscoroutinefunction
-except ImportError:
-    def iscoroutinefunction(obj):
-        return False
-
-try: # native async generators, python 3.6+
-    from inspect import isasyncgenfunction
-except ImportError:
-    def isasyncgenfunction(obj):
-        return False
-
-try:
-    from collections.abc import Iterable
-except ImportError:  # noqa
-    from collections import Iterable
 
 try:
     from typing import Union, Callable, List, Any, Sequence, Optional, Type, Tuple, TypeVar  # noqa
@@ -37,12 +16,10 @@ except ImportError:
     pass
 
 import pytest
-import sys
 from makefun import with_signature, remove_signature_parameters, add_signature_parameters, wraps
 
-from .common_mini_six import string_types
 from .common_others import AUTO, robust_isinstance, replace_list_contents
-from .common_pytest_marks import has_pytest_param, get_param_argnames_as_list
+from .common_pytest_marks import get_param_argnames_as_list
 from .common_pytest_lazy_values import is_lazy_value, get_lazy_args
 from .common_pytest import get_fixture_name, remove_duplicates, mini_idvalset, is_marked_parameter_value, \
     extract_parameterset_info, ParameterSet, cart_product_pytest, mini_idval, inject_host, \
@@ -143,7 +120,7 @@ _make_fixture_product = _fixture_product
 """A readable alias for callers not using the returned symbol"""
 
 
-class fixture_ref(object):  # noqa
+class fixture_ref:  # noqa
     """
     A reference to a fixture, to be used in `@parametrize`.
     You can create it from a fixture name or a fixture object (function).
@@ -201,7 +178,7 @@ class fixture_ref(object):  # noqa
         return FixtureRefItem(self, item)
 
 
-class FixtureRefItem(object):
+class FixtureRefItem:
     """An item in a fixture_ref when this fixture_ref is used as a tuple."""
     __slots__ = 'host', 'item'
 
@@ -557,48 +534,12 @@ class ProductParamAlternative(SingleParamAlternative):
             return mini_idvalset(self.argnames, argval, idx=self.alternative_index)
 
 
-# if PYTEST54_OR_GREATER:
-#     # an empty string will be taken into account but NOT filtered out in CallSpec2.id.
-#     # so instead we create a dedicated unique string and return it.
-#     # Ugly but the only viable alternative seems worse: it would be to return an empty string
-#     # and in `remove_empty_ids` to always remove all empty strings (not necessary the ones set by us).
-#     # That is too much of a change.
-
 EMPTY_ID = "<pytest_cases_empty_id>"
 
 
-if has_pytest_param:
-    def remove_empty_ids(callspec):
-        # used by plugin.py to remove the EMPTY_ID from the callspecs
-        replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.startswith(EMPTY_ID)])
-else:
-    def remove_empty_ids(callspec):
-        # used by plugin.py to remove the EMPTY_ID from the callspecs
-        replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.endswith(EMPTY_ID)])
-
-
-# elif PYTEST421_OR_GREATER:
-#     # an empty string will be taken into account and filtered out in CallSpec2.id.
-#     # but.... if this empty string appears several times in the tests it is appended with a number to become unique :(
-#     EMPTY_ID = ""
-#
-# else:
-#     # an empty string will only be taken into account if its truth value is True
-#     # but.... if this empty string appears several times in the tests it is appended with a number to become unique :(
-#     # it will be filtered out in CallSpec2.id
-#     class EmptyId(str):
-#         def __new__(cls):
-#             return str.__new__(cls, "")
-#
-#         def __nonzero__(self):
-#             # python 2
-#             return True
-#
-#         def __bool__(self):
-#             # python 3
-#             return True
-#
-#     EMPTY_ID = EmptyId()
+def remove_empty_ids(callspec):
+    # used by plugin.py to remove the EMPTY_ID from the callspecs
+    replace_list_contents(callspec._idlist, [c for c in callspec._idlist if not c.startswith(EMPTY_ID)])
 
 
 class ParamIdMakers(UnionIdMakers):
@@ -1032,7 +973,7 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                       % (fixture_union_name, UnionFixtureAlternative.to_list_of_fixture_names(fixture_alternatives)))
 
             # use the custom subclass of idstyle that was created for ParamAlternatives
-            if idstyle is None or isinstance(idstyle, string_types):
+            if idstyle is None or isinstance(idstyle, str):
                 _idstyle = ParamIdMakers.get(idstyle)
             else:
                 _idstyle = idstyle
@@ -1076,33 +1017,20 @@ def _parametrize_plus(argnames=None,   # type: Union[str, Tuple[str], List[str]]
                 # return
                 return kwargs
 
-
-            if isasyncgenfunction(test_func)and sys.version_info >= (3, 6):
+            if isasyncgenfunction(test_func):
                 from .pep525 import _parametrize_plus_decorate_asyncgen_pep525
                 wrapped_test_func = _parametrize_plus_decorate_asyncgen_pep525(test_func, new_sig, fixture_union_name,
                                                                                replace_paramfixture_with_values)
-            elif iscoroutinefunction(test_func) and sys.version_info >= (3, 5):
+            elif iscoroutinefunction(test_func):
                 from .pep492 import _parametrize_plus_decorate_coroutine_pep492
                 wrapped_test_func = _parametrize_plus_decorate_coroutine_pep492(test_func, new_sig, fixture_union_name,
-                                                                               replace_paramfixture_with_values)
+                                                                                replace_paramfixture_with_values)
             elif isgeneratorfunction(test_func):
                 # generator function (with a yield statement)
-                if sys.version_info >= (3, 3):
-                    from .pep380 import _parametrize_plus_decorate_generator_pep380
-                    wrapped_test_func = _parametrize_plus_decorate_generator_pep380(test_func, new_sig,
-                                                                                    fixture_union_name,
-                                                                                    replace_paramfixture_with_values)
-                else:
-                    @wraps(test_func, new_sig=new_sig)
-                    def wrapped_test_func(*args, **kwargs):  # noqa
-                        if kwargs.get(fixture_union_name, None) is NOT_USED:
-                            # TODO why this ? it is probably useless: this fixture
-                            #  is private and will never end up in another union
-                            yield NOT_USED
-                        else:
-                            replace_paramfixture_with_values(kwargs)
-                            for res in test_func(*args, **kwargs):
-                                yield res
+                from .pep380 import _parametrize_plus_decorate_generator_pep380
+                wrapped_test_func = _parametrize_plus_decorate_generator_pep380(test_func, new_sig,
+                                                                                fixture_union_name,
+                                                                                replace_paramfixture_with_values)
             else:
                 # normal function with return statement
                 @wraps(test_func, new_sig=new_sig)
@@ -1163,7 +1091,7 @@ def _get_argnames_argvalues(
             argvalues = [_l[0] if not is_marked_parameter_value(_l) else _l for _l in argvalues]
         return argnames, argvalues
 
-    if isinstance(argnames, string_types):
+    if isinstance(argnames, str):
         # (2) argnames + argvalues, as usual. However **args can also be passed and should be added
         argnames = get_param_argnames_as_list(argnames)
 
@@ -1203,7 +1131,7 @@ def _gen_ids(argnames, argvalues, idgen):
     """
     if not callable(idgen):
         # idgen is a new-style string formatting template
-        if not isinstance(idgen, string_types):
+        if not isinstance(idgen, str):
             raise TypeError("idgen should be a callable or a string, found: %r" % idgen)
 
         _formatter = idgen
@@ -1342,17 +1270,9 @@ def _process_argvalues(argnames, marked_argvalues, nb_params, has_custom_ids, au
 
                 # TUPLE usage: if the id is not provided elsewhere we HAVE to set an id to avoid <id>[0]-<id>[1]...
                 if p_ids[i] is None and not has_custom_ids:
-                    if not has_pytest_param:
-                        if v._id is not None:
-                            # (on pytest 2 we cannot do it since pytest.param does not exist)
-                            warn("The custom id %r in `lazy_value` will be ignored as this version of pytest is too old"
-                                 " to support `pytest.param`." % v._id)
-                        else:
-                            pass  # no warning, but no p_id update
-                    else:
-                        # update/create the pytest.param id on this value
-                        p_ids[i] = v.get_id()
-                        mod_lvid_indices.append(i)
+                    # update/create the pytest.param id on this value
+                    p_ids[i] = v.get_id()
+                    mod_lvid_indices.append(i)
 
                 # handle marks
                 _mks = v.get_marks(as_decorators=True)

@@ -5,26 +5,18 @@
 from functools import partial
 import weakref
 
-try:  # python 3.3+
-    from inspect import signature
-except ImportError:
-    from funcsigs import signature  # noqa
-
 try:
     from typing import Union, Callable, List, Set, Tuple, Any, Sequence, Optional, Iterable  # noqa
 except ImportError:
     pass
 
-try:
-    from _pytest.mark.structures import MarkDecorator, Mark  # noqa
-except ImportError:
-    pass
+from _pytest.mark.structures import MarkDecorator, Mark  # noqa
 
-from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, PYTEST53_OR_GREATER, \
+from .common_pytest_marks import get_pytest_marks_on_function, markdecorators_as_tuple, \
     markdecorators_to_markinfos
 
 
-class Lazy(object):
+class Lazy:
     """
     All lazy items should inherit from this for good pytest compliance (ids, marks, etc.)
     """
@@ -132,13 +124,8 @@ class _LazyValue(Lazy):
     See https://github.com/smarie/python-pytest-cases/issues/149
     and https://github.com/smarie/python-pytest-cases/issues/143
     """
-    if PYTEST53_OR_GREATER:
-        __slots__ = 'valuegetter', '_id', '_marks', 'cached_value_context', 'cached_value'
-        _field_names = __slots__
-    else:
-        # we can not define __slots__ since we'll extend int in a subclass
-        # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
-        _field_names = 'valuegetter', '_id', '_marks', 'cached_value_context', 'cached_value'
+    __slots__ = 'valuegetter', '_id', '_marks', 'cached_value_context', 'cached_value'
+    _field_names = __slots__
 
     @classmethod
     def copy_from(cls,
@@ -274,13 +261,8 @@ class _LazyTupleItem(Lazy):
     """
     An item in a Lazy Tuple
     """
-    if PYTEST53_OR_GREATER:
-        __slots__ = 'host', 'item'
-        _field_names = __slots__
-    else:
-        # we can not define __slots__ since we'll extend int in a subclass
-        # see https://docs.python.org/3/reference/datamodel.html?highlight=__slots__#notes-on-using-slots
-        _field_names = 'host', 'item'
+    __slots__ = 'host', 'item'
+    _field_names = __slots__
 
     @classmethod
     def copy_from(cls,
@@ -425,62 +407,15 @@ class LazyTuple(Lazy):
                                 argvalue, item, e.__class__, e))
 
 
-if PYTEST53_OR_GREATER:
-    # in the latest versions of pytest, the default _idmaker returns the value of __name__ if it is available,
-    # even if an object is not a class nor a function. So we do not need to use any special trick with our
-    # lazy objects
-    class LazyValue(_LazyValue):
-        pass
+# in the latest versions of pytest, the default _idmaker returns the value of __name__ if it is available,
+# even if an object is not a class nor a function. So we do not need to use any special trick with our
+# lazy objects
+class LazyValue(_LazyValue):
+    pass
 
-    class LazyTupleItem(_LazyTupleItem):
-        pass
-else:
-    # in this older version of pytest, the default _idmaker does *not* return the value of __name__ for
-    # objects that are not functions not classes. However it *does* return str(obj) for objects that are
-    # instances of bool, int or float. So that's why we make our lazy objects inherit from int.
-    fake_base = int
 
-    class _LazyValueBase(fake_base, object):
-
-        __slots__ = ()
-
-        def __new__(cls, *args, **kwargs):
-            """ Inheriting from int is a bit hard in python: we have to override __new__ """
-            obj = fake_base.__new__(cls, 111111)  # noqa
-            cls.__init__(obj, *args, **kwargs)  # noqa
-            return obj
-
-        def __getattribute__(self, item):
-            """Map all default attribute and method access to the ones in object, not in int"""
-            return object.__getattribute__(self, item)
-
-        def __repr__(self):
-            """Magic methods are not intercepted by __getattribute__ and need to be overridden manually.
-            We do not need all of them by at least override this one for easier debugging"""
-            return object.__repr__(self)
-
-    class LazyValue(_LazyValue, _LazyValueBase):
-        """Same than _LazyValue but inherits from int so that pytest calls str(o) for the id.
-        Note that we do it afterwards so that _LazyValue remains "pure" - pytest-harvest needs to reuse it"""
-
-        def clone(self, remove_int_base=False):
-            if not remove_int_base:
-                # return a type(self) (LazyValue or subclass)
-                return _LazyValue.clone(self)
-            else:
-                # return a _LazyValue without the int base from _LazyValueBase
-                return _LazyValue.copy_from(self)
-
-    class LazyTupleItem(_LazyTupleItem, _LazyValueBase):
-        """Same than _LazyTupleItem but inherits from int so that pytest calls str(o) for the id"""
-
-        def clone(self, remove_int_base=False):
-            if not remove_int_base:
-                # return a type(self) (LazyTupleItem or subclass)
-                return _LazyTupleItem.clone(self)
-            else:
-                # return a _LazyTupleItem without the int base from _LazyValueBase
-                return _LazyTupleItem.copy_from(self)
+class LazyTupleItem(_LazyTupleItem):
+    pass
 
 
 def lazy_value(valuegetter,  # type: Callable[[], Any]

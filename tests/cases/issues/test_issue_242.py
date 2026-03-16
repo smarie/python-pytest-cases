@@ -1,17 +1,7 @@
-import pytest
-from packaging.version import Version
-
-import sys
-
 from pytest_cases import parametrize_with_cases
 from multiprocessing import Pool, Process
 
 from functools import partial
-
-
-PYTEST_VERSION = Version(pytest.__version__)
-PYTEST3_OR_GREATER = PYTEST_VERSION >= Version('3.0.0')
-PY3 = sys.version_info >= (3,)
 
 
 class TestCases:
@@ -38,15 +28,11 @@ def test_f_xy(x, y):
     p.join()
     p.terminate()
 
-    if PY3:
-        # in a pool
-        pool = Pool(processes=2)
-        pool.starmap(partial(f), [(x, y, False), (x, y, True)])
-        pool.terminate()
+    # in a pool
+    pool = Pool(processes=2)
+    pool.starmap(partial(f), [(x, y, False), (x, y, True)])
+    pool.terminate()
 
 
 def test_synthesis(module_results_dct):
-    if PYTEST3_OR_GREATER:
-        assert list(module_results_dct) == ["test_f_xy[A]", "test_f_xy[B]"]
-    else:
-        assert list(module_results_dct) == ['test_f_xy[A[0]-A[1]]', 'test_f_xy[B[0]-B[1]]']
+    assert list(module_results_dct) == ["test_f_xy[A]", "test_f_xy[B]"]

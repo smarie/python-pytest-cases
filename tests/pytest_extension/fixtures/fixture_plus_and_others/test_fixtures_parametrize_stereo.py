@@ -4,11 +4,9 @@
 # License: 3-clause BSD, <https://github.com/smarie/python-pytest-cases/blob/master/LICENSE>
 from itertools import product
 
-from pytest_cases.common_mini_six import string_types
 import pytest
 
 from pytest_cases import fixture
-from pytest_cases.common_pytest_marks import PYTEST3_OR_GREATER, PYTEST34_OR_GREATER
 
 STEREO_PATHS = ['stereo 1.wav', 'stereo 2.wav']
 CFG_TYPES = [list, dict]
@@ -26,19 +24,7 @@ class StateAsserter:
         self.current_state += 1
 
 
-if PYTEST3_OR_GREATER:
-    a = StateAsserter()
-else:
-    # for old versions of pytest, the execution order seems harder to get strictly
-    class UnOrderedStateAsserter:
-        def __init__(self):
-            self.all_remaining = list(product(STEREO_PATHS, CFG_TYPES))
-
-        def assert_state_and_move(self, path, cfg_factory):
-            # just check that this state has not been reached yet and remove it
-            self.all_remaining.remove((path, cfg_factory))
-
-    a = UnOrderedStateAsserter()
+a = StateAsserter()
 
 
 @fixture
@@ -51,7 +37,7 @@ def stereo_cfg(path, cfg_factory, request):
     As opposed to `stereo_cfg_2`, we use here two @parametrize decorators.
     We check that the execution order is correct.
     """
-    assert isinstance(path, string_types)
+    assert isinstance(path, str)
     assert isinstance(cfg_factory, type)
     a.assert_state_and_move(path=path, cfg_factory=cfg_factory)
     return "hello"
@@ -70,8 +56,6 @@ def test_stereo_two_parametrizers(stereo_cfg):
 b = StateAsserter()
 
 
-@pytest.mark.skipif(not PYTEST34_OR_GREATER,
-                    reason="with old versions of pytest pytest-cases cannot fix the parametrization order.")
 @pytest.mark.parametrize("path", STEREO_PATHS)
 @pytest.mark.parametrize("cfg_factory", CFG_TYPES)   # not actual params
 def test_reference_test(path, cfg_factory, request):
@@ -99,7 +83,7 @@ def stereo_cfg_2(path, request, cfg_factory):
     `product(CFG_TYPES, STEREO_PATHS)` and a single call to parametrize is made.
     We check that the execution order is the same.
     """
-    assert isinstance(path, string_types)
+    assert isinstance(path, str)
     assert isinstance(cfg_factory, type)
 
     c.assert_state_and_move(path=path, cfg_factory=cfg_factory)

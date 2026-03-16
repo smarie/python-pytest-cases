@@ -7,8 +7,6 @@ This is a copy of test at https://github.com/pytest-dev/pytest/blob/master/testi
 """
 import pytest
 
-from pytest_cases.common_pytest_marks import PYTEST34_OR_GREATER
-
 data = {}
 
 
@@ -22,8 +20,6 @@ def add_data():
     data.update(value=True)
 
 
-@pytest.mark.skipif(not PYTEST34_OR_GREATER,
-                    reason="This bug was not fixed in old pytest.")
 @pytest.mark.usefixtures('clean_data')
 def test_value():
     assert data.get('value')
