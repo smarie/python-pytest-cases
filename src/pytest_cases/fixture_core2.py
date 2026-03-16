@@ -119,23 +119,23 @@ def _create_param_fixture(fixtures_dest,
             raise ValueError("When auto_simplify=True the argvalue can not be a pytest.param")
 
         # create the fixture - set its name so that the optional hook can read it easily
-        @with_signature("%s(request)" % argname)
+        @with_signature(f"{argname}(request)")
         def __param_fixture(request):
             # do not forget to resolve the lazy values !
             return get_lazy_args(argvalue_to_return, request)
 
         if debug:
-            print("Creating unparametrized fixture %r returning %r" % (argname, argvalue_to_return))
+            print(f"Creating unparametrized fixture {argname!r} returning {argvalue_to_return!r}")
 
         fix = fixture(name=argname, scope=scope, autouse=autouse, ids=ids, hook=hook, **kwargs)(__param_fixture)
     else:
         # create the fixture - set its name so that the optional hook can read it easily
-        @with_signature("%s(request)" % argname)
+        @with_signature(f"{argname}(request)")
         def __param_fixture(request):
             return get_lazy_args(request.param, request)
 
         if debug:
-            print("Creating parametrized fixture %r returning %r" % (argname, argvalues))
+            print(f"Creating parametrized fixture {argname!r} returning {argvalues!r}")
 
         fix = fixture(name=argname, scope=scope, autouse=autouse, params=argvalues, ids=ids,
                       hook=hook, **kwargs)(__param_fixture)
@@ -218,18 +218,18 @@ def _create_params_fixture(fixtures_dest,
 
     # create the root fixture that will contain all parameter values
     # note: we sort the list so that the first in alphabetical order appears first. Indeed pytest uses this order.
-    root_fixture_name = "%s__param_fixtures_root" % ('_'.join(sorted(argnames_lst)))
+    root_fixture_name = f"{'_'.join(sorted(argnames_lst))}__param_fixtures_root"
 
     # Dynamically add fixture to caller's module as explained in https://github.com/pytest-dev/pytest/issues/2424
     root_fixture_name = check_name_available(fixtures_dest, root_fixture_name, if_name_exists=CHANGE,
                                              caller=param_fixtures)
 
     if debug:
-        print("Creating parametrized 'root' fixture %r returning %r" % (root_fixture_name, argvalues))
+        print(f"Creating parametrized 'root' fixture {root_fixture_name!r} returning {argvalues!r}")
 
     @fixture(name=root_fixture_name, autouse=autouse, scope=scope, hook=hook, **kwargs)
     @pytest.mark.parametrize(argnames, argvalues, ids=ids)
-    @with_signature("%s(%s)" % (root_fixture_name, argnames))
+    @with_signature(f"{root_fixture_name}({argnames})")
     def _root_fixture(**_kwargs):
         return tuple(_kwargs[k] for k in argnames_lst)
 
@@ -244,11 +244,11 @@ def _create_params_fixture(fixtures_dest,
         def _create_fixture(_param_idx):
 
             if debug:
-                print("Creating nonparametrized 'view' fixture %r returning %r[%s]"
-                      % (argname, root_fixture_name, _param_idx))
+                print(f"Creating nonparametrized 'view' fixture {argname!r} "
+                      f"returning {root_fixture_name!r}[{_param_idx}]")
 
             @fixture(name=argname, scope=scope, autouse=autouse, hook=hook, **kwargs)
-            @with_signature("%s(%s)" % (argname, root_fixture_name))
+            @with_signature(f"{argname}({root_fixture_name})")
             def _param_fixture(**_kwargs):
                 params = _kwargs.pop(root_fixture_name)
                 return params[_param_idx]
@@ -345,7 +345,7 @@ class FixtureParam(object):
         self.argnames = argnames
 
     def __repr__(self):
-        return "FixtureParam(argnames=%s)" % self.argnames
+        return f"FixtureParam(argnames={self.argnames})"
 
 
 class CombinedFixtureParamValue(object):
@@ -362,8 +362,8 @@ class CombinedFixtureParamValue(object):
         return ((pdef.argnames, v) for pdef, v in zip(self.param_defs, self.argvalues))
 
     def __repr__(self):
-        list_str = " ; ".join(["<%r: %s>" % (a, v) for a, v in self.iterparams()])
-        return "CombinedFixtureParamValue(%s)" % list_str
+        list_str = " ; ".join([f"<{a!r}: {v}>" for a, v in self.iterparams()])
+        return f"CombinedFixtureParamValue({list_str})"
 
 
 def _decorate_fixture_plus(fixture_func,
@@ -452,7 +452,7 @@ def _decorate_fixture_plus(fixture_func,
 
         # check number of parameter names in this parameterset
         if len(pmark.param_names) < 1:
-            raise ValueError("Fixture function '%s' decorated with '@fixture' has an empty parameter "
+            raise ValueError(f"Fixture function '{fixture_func!r}' decorated with '@fixture' has an empty parameter "
                              "name in a @pytest.mark.parametrize mark")
 
         # remember the argnames
@@ -507,8 +507,7 @@ def _decorate_fixture_plus(fixture_func,
     old_sig = signature(fixture_func)
     for p in all_param_names:
         if p not in old_sig.parameters:
-            raise ValueError("parameter '%s' not found in fixture signature '%s%s'"
-                             "" % (p, fixture_func.__name__, old_sig))
+            raise ValueError(f"parameter '{p}' not found in fixture signature '{fixture_func.__name__}{old_sig}'")
     new_sig = remove_signature_parameters(old_sig, *all_param_names)
     # add request if needed
     func_needs_request = 'request' in old_sig.parameters

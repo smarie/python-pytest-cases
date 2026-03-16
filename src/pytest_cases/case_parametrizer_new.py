@@ -250,7 +250,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
 
     # validate prefix
     if not isinstance(prefix, str):
-        raise TypeError("`prefix` should be a string, found: %r" % prefix)
+        raise TypeError(f"`prefix` should be a string, found: {prefix} ({type(prefix)})")
 
     # validate glob and filter and merge them in a single tuple of callables
     filters = ()
@@ -276,7 +276,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
     elif callable(parametrization_target):
         caller_module_name = getattr(parametrization_target, '__module__', None)
     else:
-        raise ValueError("Can't handle parametrization_target=%s" % parametrization_target)
+        raise ValueError(f"Can't handle parametrization_target={parametrization_target}")
 
     parent_pkg_name = '.'.join(caller_module_name.split('.')[:-1]) if caller_module_name is not None else None
 
@@ -295,7 +295,7 @@ def get_all_cases(parametrization_target=None,  # type: Callable
                 shall_bind, bound_c = needs_binding(c, return_bound=True)
                 cases_funs.append(bound_c)
             else:
-                raise ValueError("Unsupported case function: %r" % c)
+                raise ValueError(f"Unsupported case function: {c!r}")
         else:
             # module
             if c is AUTO:
@@ -306,9 +306,8 @@ def get_all_cases(parametrization_target=None,  # type: Callable
                 # import_default_cases_module. See #309.
                 if not caller_module_name.split('.')[-1].startswith('test_'):
                     raise ValueError(
-                        'Cannot use `cases=AUTO` in file "%s". `cases=AUTO` is '
+                        f'Cannot use `cases=AUTO` in file "{caller_module_name}". `cases=AUTO` is '
                         'only allowed in files whose name starts with "test_" '
-                        % caller_module_name
                         )
                 # First try `test_<name>_cases.py` Then `cases_<name>.py`
                 c = import_default_cases_module(caller_module_name)
@@ -447,8 +446,8 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         # single unparametrized case function
         if debug:
             case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
-            print("Case function %s > 1 lazy_value() with id %s and additional marks %s"
-                  % (case_fun_str, case_id, case_marks))
+            print(f"Case function {case_fun_str} > 1 lazy_value() with id {case_id} "
+                  f"and additional marks {case_marks}")
         return (_LazyValueCaseParamValue(case_fun, id=case_id, marks=case_marks),)
         # else:
         #     THIS WAS A PREMATURE OPTIMIZATION WITH MANY SHORTCOMINGS. For example what if the case function is
@@ -459,11 +458,12 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         #     # do not forget to merge the marks !
         #     if debug:
         #         case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
-        #         print("Case function %s > tuple of lazy_value() with ids %s and additional marks %s"
-        #               % (case_fun_str, ["%s-%s" % (case_id, c.id) for c in meta._calls],
-        #                  [case_marks + tuple(c.marks) for c in meta._calls]))
+        #         ids = [f"{case_id}-{case_id}" for c in meta._calls]
+        #         additional_marks = [case_marks + tuple(c.marks) for c in meta._calls]
+        #         print(f"Case function {case_fun_str} > tuple of lazy_value() with ids {ids} "
+        #               f" and additional marks {additional_marks}")
         #     return tuple(lazy_value(functools.partial(case_fun, **c.funcargs),
-        #                             id="%s-%s" % (case_id, c.id), marks=case_marks + tuple(c.marks))
+        #                             id=f"{case_id}-{c.id}", marks=case_marks + tuple(c.marks))
         #                  for c in meta._calls)
     else:
         # at least 1 required fixture (direct req or through @pytest.mark.usefixtures ), OR parametrized.
@@ -480,7 +480,7 @@ def case_to_argvalues(host_class_or_module,    # type: Union[Type, ModuleType]
         argvalues = _FixtureRefCaseParamValue(fix_name, id=case_id)
         if debug:
             case_fun_str = qname(case_fun.func if isinstance(case_fun, functools.partial) else case_fun)
-            print("Case function %s > fixture_ref(%r) with marks %s" % (case_fun_str, fix_name, remaining_marks))
+            print(f"Case function {case_fun_str} > fixture_ref({fix_name!r}) with marks {remaining_marks}")
         # return a length-1 tuple because there is a single case created
         return (make_marked_parameter_value((argvalues,), marks=remaining_marks) if remaining_marks else argvalues,)
 
@@ -518,8 +518,8 @@ def get_or_create_case_fixture(case_id,                # type: str
     """
     if is_fixture(case_fun):
         raise ValueError("A case function can not be decorated as a `@fixture`. This seems to be the case for"
-                         " %s. If you did not decorate it but still see this error, please report this issue"
-                         % case_fun)
+                         f" {case_fun}. If you did not decorate it but still see this error, please report this issue"
+                         )
 
     # source: detect a functools.partial wrapper created by us because of a host class
     true_case_func, case_in_class = _get_original_case_func(case_fun)
@@ -537,7 +537,7 @@ def get_or_create_case_fixture(case_id,                # type: str
     try:
         fix_name, marks = fix_cases_dct[(true_case_func, scope)]
         if debug:
-            print("Case function %s > Reusing fixture %r and marks %s" % (qname(true_case_func), fix_name, marks))
+            print(f"Case function {qname(true_case_func)} > Reusing fixture {fix_name!r} and marks {marks}")
         return fix_name, marks
     except KeyError:
         pass
@@ -558,9 +558,9 @@ def get_or_create_case_fixture(case_id,                # type: str
                     for f in list_all_fixtures_in(true_case_func_host, recurse_to_module=False, return_names=False):
                         f_name = get_fixture_name(f)
                         if (f_name in existing_fixture_names) or (f.__name__ in existing_fixture_names):
-                            raise ValueError("Cannot import fixture %r from %r as it would override an existing symbol "
-                                             "in %r. Please set `@parametrize_with_cases(import_fixtures=False)`"
-                                             "" % (f, from_module, target_host))
+                            raise ValueError(f"Cannot import fixture {f!r} from {from_module!r} as it would override "
+                                             f"an existing symbol in {target_host!r}. "
+                                             "Please set `@parametrize_with_cases(import_fixtures=False)`")
                         target_host_module = target_host if not target_in_class else get_host_module(target_host)
                         setattr(target_host_module, f.__name__, f)
 
@@ -592,7 +592,7 @@ def get_or_create_case_fixture(case_id,                # type: str
                                     if_name_exists=CHANGE, name_changer=name_changer)
 
     if debug:
-        print("Case function %s > Creating fixture %r in %s" % (qname(true_case_func), fix_name, target_host))
+        print(f"Case function {qname(true_case_func)} > Creating fixture {fix_name!r} in {target_host}")
 
     if case_in_class:
         if target_in_class:
@@ -687,7 +687,7 @@ def import_default_cases_module(test_module_name):
     :return:
     """
     # First try `test_<name>_cases.py`
-    cases_module_name1 = "%s_cases" % test_module_name
+    cases_module_name1 = f"{test_module_name}_cases"
 
     try:
         cases_module = import_module(cases_module_name1)
@@ -695,15 +695,14 @@ def import_default_cases_module(test_module_name):
         # Then try `cases_<name>.py`
         parts = test_module_name.split('.')
         assert parts[-1][0:5] == 'test_'
-        cases_module_name2 = "%s.cases_%s" % ('.'.join(parts[:-1]), parts[-1][5:])
+        cases_module_name2 = f"{'.'.join(parts[:-1])}.cases_{parts[-1][5:]}"
         try:
             cases_module = import_module(cases_module_name2)
         except ModuleNotFoundError:
             # Nothing worked
-            raise ValueError("Error importing test cases module to parametrize %r: unable to import AUTO "
-                             "cases module %r nor %r. Maybe you wish to import cases from somewhere else ? In that case"
-                             " please specify `cases=...`."
-                             % (test_module_name, cases_module_name1, cases_module_name2))
+            raise ValueError(f"Error importing test cases module to parametrize {test_module_name}: unable to import "
+                             f"AUTO cases module {cases_module_name1!r} nor {cases_module_name2!r}. Maybe you wish "
+                             "to import cases from somewhere else ? In that case please specify `cases=...`.")
 
     return cases_module
 
@@ -763,18 +762,16 @@ def extract_cases_from_class(cls,
         if hasinit(cls):
             warn(
                 CasesCollectionWarning(
-                    "cannot collect cases class %r because it has a "
+                    f"cannot collect cases class {cls.__name__!r} because it has a "
                     "__init__ constructor"
-                    % (cls.__name__, )
                 )
             )
             return []
         elif hasnew(cls):
             warn(
                 CasesCollectionWarning(
-                    "cannot collect test class %r because it has a "
+                    f"cannot collect test class {cls.__name__!r} because it has a "
                     "__new__ constructor"
-                    % (cls.__name__, )
                 )
             )
             return []
@@ -826,8 +823,8 @@ def extract_cases_from_module(module,                           # type: Union[st
             module = import_module(module, package=package_name)
         except ModuleNotFoundError as e:
             raise ModuleNotFoundError(
-                "Error loading cases from module. `import_module(%r, package=%r)` raised an error: %r"
-                % (module, package_name, e)
+                f"Error loading cases from module. `import_module({module!r}, package={package_name!r})` "
+                f"raised an error: {e!r}"
             )
 
     return _extract_cases_from_module_or_class(module=module, _case_param_factory=_case_param_factory,
@@ -905,9 +902,9 @@ def _extract_cases_from_module_or_class(module=None,                      # type
             else:
                 # currently we only support replacing inside the same module
                 if m_for_placing.__module__ != m.__module__:
-                    raise ValueError("Unsupported value for 'place_as' special pytest attribute on case function %s: %s"
-                                     ". Virtual placing in another module is not supported yet by pytest-cases."
-                                     % (m, m_for_placing))
+                    raise ValueError("Unsupported value for 'place_as' special pytest attribute on case function "
+                                     f"{m}: {m_for_placing}. Virtual placing in another module is not supported yet "
+                                     "by pytest-cases.")
                 co_firstlineno = get_code_first_line(m_for_placing)
 
             if cls is not None:
@@ -926,7 +923,7 @@ def _extract_cases_from_module_or_class(module=None,                      # type
                         pass
                     else:
                         if len(s.parameters) < 1 or (tuple(s.parameters.keys())[0] != "self"):
-                            raise TypeError("case method is missing 'self' argument but is not static: %s" % m)
+                            raise TypeError(f"case method is missing 'self' argument but is not static: {m}")
                     # partialize the function to get one without the 'self' argument
                     new_m = functools.partial(m, cls())
 
@@ -944,8 +941,8 @@ def _extract_cases_from_module_or_class(module=None,                      # type
             if _case_param_factory is None:
                 # Nominal usage: put the case in the dictionary
                 if co_firstlineno in cases_dct:
-                    raise ValueError("Error collecting case functions, line number used by %r is already used by %r !"
-                                     % (m, cases_dct[co_firstlineno]))
+                    raise ValueError(f"Error collecting case functions, line number used by {m!r} is already used by "
+                                     f"{cases_dct[co_firstlineno]!r} !")
                 cases_dct[co_firstlineno] = m
             else:
                 # Not used anymore
@@ -1115,7 +1112,7 @@ def get_current_param(value, argname_or_fixturename, mp_fix_to_args):
                 if len(argnames) == 1 and not isinstance(value, FixtureParamAlternative):
                     actual_value = actual_value[0]
             else:
-                raise TypeError("Unsupported type, please report: %r" % type(value))
+                raise TypeError(f"Unsupported type, please report: {type(value)!r}")
         else:
             # (3) "normal" parameter: each (argname, value) pair is received independently
             argnames = (argname_or_fixturename,)
@@ -1349,7 +1346,7 @@ def get_current_case_id(request_or_item,
 #         """ An adapted copy of _pytest.python.pytest_pycollect_makeitem """
 #         if safe_isclass(obj):
 #             if self.iscaseclass(obj, name):
-#                 raise ValueError("Case classes are not yet supported: %r" % obj)
+#                 raise ValueError(f"Case classes are not yet supported: {obj!r}")
 #         elif self.iscasefunction(obj, name):
 #             # mock seems to store unbound methods (issue473), normalize it
 #             obj = getattr(obj, "__func__", obj)
@@ -1360,7 +1357,7 @@ def get_current_case_id(request_or_item,
 #                 filename, lineno = compat_getfslineno(obj)
 #                 warn_explicit(
 #                     message=PytestCasesCollectionWarning(
-#                         "cannot collect %r because it is not a function." % name
+#                         f"cannot collect {name!r} because it is not a function."
 #                     ),
 #                     category=None,
 #                     filename=str(filename),
@@ -1371,7 +1368,7 @@ def get_current_case_id(request_or_item,
 #                     filename, lineno = compat_getfslineno(obj)
 #                     warn_explicit(
 #                         message=PytestCasesCollectionWarning(
-#                             "cannot collect %r because it is a generator function." % name
+#                             f"cannot collect {name!r} because it is a generator function."
 #                         ),
 #                         category=None,
 #                         filename=str(filename),
