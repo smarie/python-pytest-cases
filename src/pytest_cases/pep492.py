@@ -20,6 +20,7 @@ def _ignore_unused_coroutine_pep492(fixture_func, new_sig, func_needs_request):
 
     return wrapped_fixture_func
 
+
 def _decorate_fixture_plus_coroutine_pep492(fixture_func, new_sig, map_arguments):
     @wraps(fixture_func, new_sig=new_sig)
     async def wrapped_fixture_func(*_args, **_kwargs):
